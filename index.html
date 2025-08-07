@@ -73,6 +73,7 @@
             padding: 12px 15px;
             text-align: right;
             border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
         }
         th {
             background-color: #f8f9fa;
@@ -134,8 +135,7 @@
                                 <th>رمز المقرر</th>
                                 <th>اسم المقرر</th>
                                 <th>الشعبة</th>
-                                <th>الأيام</th>
-                                <th>الوقت</th>
+                                <th style="width: 35%;">الوقت والمكان</th>
                                 <th>المحاضر</th>
                             </tr>
                         </thead>
@@ -148,8 +148,7 @@
                             <td>${course.code || ''}</td>
                             <td>${course.name || ''}</td>
                             <td>${course.section || ''}</td>
-                            <td>${course.days || ''}</td>
-                            <td>${course.time || ''}</td>
+                            <td>${course.time.replace(/<br>/g, '<br>') || ''}</td>
                             <td>${course.instructor || ''}</td>
                         </tr>
                     `;
@@ -158,9 +157,6 @@
                 tableHTML += `</tbody></table>`;
                 tableContainer.innerHTML = tableHTML;
                 
-                // يمكنك إزالة التعليق من السطر التالي ليتم حذف البيانات بعد عرضها
-                // localStorage.removeItem('myUniversityCourses');
-
             } else {
                 noDataMessage.style.display = 'block';
             }
