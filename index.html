@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جدولي الدراسي - تصميم جديد</title>
+    <title>جدولي الدراسي - تصميم مجمّع</title>
     
-    <!-- تحميل الخطوط ومكتبة FullCalendar -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,6 +19,7 @@
             --border-color: #e2e8f0;
             --primary-color: #6366f1;
             --secondary-color: #8b5cf6;
+            --light-bg: #f1f5f9;
         }
 
         body {
@@ -46,11 +46,14 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             border: 1px solid var(--border-color);
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
 
         .section-header {
             padding: 1.5rem;
             border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
         }
 
         .section-header h2 {
@@ -60,50 +63,67 @@
         }
 
         .section-content {
-            padding: 1.5rem;
-            height: 75vh;
+            padding: 1rem;
+            height: 100%;
             overflow-y: auto;
         }
         
-        /* تخصيص شريط التمرير */
         .section-content::-webkit-scrollbar { width: 6px; }
         .section-content::-webkit-scrollbar-track { background: #f1f5f9; }
         .section-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
 
-        #calendar {
-            height: 100%;
-        }
+        #calendar { height: 100%; padding: 0.5rem; }
         
-        .course-card {
-            background-color: #f8fafc;
+        /* --- ✨ تصميم جديد لتجميع الشعب --- */
+        .course-group {
+            background-color: var(--container-bg);
             border: 1px solid var(--border-color);
-            border-right: 4px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border-radius: 12px;
+            margin-bottom: 1.5rem;
+            overflow: hidden;
         }
-        .course-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+        .course-group-header {
+            background-color: var(--light-bg);
+            padding: 1rem 1.25rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        .course-card h3 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.1rem;
+        .course-group-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
             font-weight: 600;
         }
-        .course-info {
+        .course-group-header .badge {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .sections-container {
+            padding: 0.5rem 1.25rem 1.25rem;
+            display: grid;
+            gap: 0.75rem;
+        }
+        .section-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
             font-size: 0.9rem;
+            background-color: var(--container-bg);
+        }
+        .section-info {
             color: var(--text-secondary);
             display: flex;
             flex-direction: column;
             gap: 0.25rem;
         }
+        .section-info strong { color: var(--text-primary); }
 
-        /* تخصيص FullCalendar ليبدو مشابهًا لـ "بوكيت" */
         .fc-col-header-cell { background-color: #f1f5f9; border: none; padding: 1rem 0; }
-        .fc-day-sun .fc-col-header-cell-cushion { color: #ef4444; }
         .fc .fc-toolbar-title { font-size: 1.5rem; font-weight: 700; }
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 60px !important; border-bottom: 1px solid #f1f5f9; }
@@ -115,9 +135,9 @@
         @media (max-width: 1024px) {
             body { padding: 1rem; }
             .main-container { grid-template-columns: 1fr; }
+            .courses-section { order: -1; } /* وضع قائمة المقررات في الأعلى */
             .section-content { height: auto; max-height: 50vh; }
         }
-
     </style>
 </head>
 <body>
@@ -145,14 +165,28 @@
             const noDataMessage = document.getElementById('no-data-message');
             const calendarEl = document.getElementById('calendar');
 
-            const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 };
-            const colorPalette = ['#6366f1', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#3b82f6'];
+            const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
+            const colorPalette = ['#6366f1', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#3b82f6', '#ef4444'];
 
             function displayData(courses) {
                 if (!courses || courses.length === 0) {
                     noDataMessage.innerHTML = "<p>لم يتم العثور على بيانات.</p>";
                     return;
                 }
+                
+                // --- ✨ خطوة التجميع ---
+                const groupedCourses = courses.reduce((acc, course) => {
+                    if (!acc[course.code]) {
+                        acc[course.code] = {
+                            name: course.name,
+                            code: course.code,
+                            sections: []
+                        };
+                    }
+                    acc[course.code].sections.push(course);
+                    return acc;
+                }, {});
+
 
                 noDataMessage.style.display = 'none';
                 coursesListContainer.innerHTML = '';
@@ -160,81 +194,83 @@
                 const calendarEvents = [];
                 let colorIndex = 0;
 
-                courses.forEach(course => {
+                Object.values(groupedCourses).forEach(group => {
                     const courseColor = colorPalette[colorIndex % colorPalette.length];
                     colorIndex++;
 
-                    // عرض بطاقة المقرر
-                    const card = document.createElement('div');
-                    card.className = 'course-card';
-                    card.style.borderRightColor = courseColor;
-                    card.innerHTML = `
-                        <h3>${course.name} (${course.code})</h3>
-                        <div class="course-info">
-                            <span><strong>الشعبة:</strong> ${course.section}</span>
-                            <span><strong>المحاضر:</strong> ${course.instructor}</span>
-                            <span><strong>الوقت:</strong> ${course.time.replace(/<br>/g, ', ')}</span>
-                        </div>
-                    `;
-                    coursesListContainer.appendChild(card);
+                    // عرض بطاقة المقرر الرئيسية
+                    const groupContainer = document.createElement('div');
+                    groupContainer.className = 'course-group';
                     
-                    // تحضير بيانات الجدول
-                    const timeEntries = course.time.split('<br>');
-                    timeEntries.forEach(entry => {
-                        const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
-                        if (parts) {
-                            const daysString = parts[1];
-                            const startTime = convertTo24Hour(parts[2], parts[3]);
-                            const endTime = convertTo24Hour(parts[4], parts[5]);
-                            const daysArray = daysString.trim().split(/\s+/);
+                    let sectionsHTML = '';
+                    group.sections.forEach(section => {
+                        sectionsHTML += `
+                            <div class="section-card" style="border-left: 3px solid ${courseColor}">
+                                <div class="section-info">
+                                    <span><strong>الشعبة:</strong> ${section.section}</span>
+                                    <span><strong>المحاضر:</strong> ${section.instructor}</span>
+                                    <span><strong>الوقت:</strong> ${section.time.replace(/<br>/g, ', ')}</span>
+                                </div>
+                            </div>
+                        `;
 
-                            daysArray.forEach(dayName => {
-                                if (dayMapping.hasOwnProperty(dayName)) {
-                                    calendarEvents.push({
-                                        title: `${course.name} (${course.code})`,
-                                        daysOfWeek: [dayMapping[dayName]],
-                                        startTime: startTime,
-                                        endTime: endTime,
-                                        backgroundColor: courseColor,
-                                        borderColor: courseColor,
-                                        extendedProps: {
-                                            instructor: course.instructor,
-                                            section: course.section
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                        // تحضير بيانات الجدول لكل شعبة
+                        const timeEntries = section.time.split('<br>');
+                        timeEntries.forEach(entry => {
+                            const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
+                            if (parts) {
+                                const daysString = parts[1];
+                                const startTime = convertTo24Hour(parts[2], parts[3]);
+                                const endTime = convertTo24Hour(parts[4], parts[5]);
+                                const daysArray = daysString.trim().split(/\s+/);
+
+                                daysArray.forEach(dayName => {
+                                    if (dayMapping.hasOwnProperty(dayName)) {
+                                        calendarEvents.push({
+                                            title: `${section.name} (${section.code})`,
+                                            daysOfWeek: [dayMapping[dayName]],
+                                            startTime: startTime,
+                                            endTime: endTime,
+                                            backgroundColor: courseColor,
+                                            borderColor: courseColor,
+                                            extendedProps: {
+                                                instructor: section.instructor,
+                                                section: section.section
+                                            }
+                                        });
+                                    }
+                                });
+                            }
+                        });
                     });
+
+                    groupContainer.innerHTML = `
+                        <div class="course-group-header">
+                            <h3>${group.name} (${group.code})</h3>
+                            <span class="badge">${group.sections.length} شعبة</span>
+                        </div>
+                        <div class="sections-container">${sectionsHTML}</div>
+                    `;
+                    coursesListContainer.appendChild(groupContainer);
                 });
 
                 renderCalendar(calendarEvents);
             }
-
+            
             function renderCalendar(events) {
                 const calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'timeGridWeek',
                     locale: 'ar',
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: 'timeGridWeek,timeGridDay'
-                    },
+                    headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridWeek,timeGridDay' },
                     allDaySlot: false,
                     slotMinTime: '08:00:00',
                     slotMaxTime: '22:00:00',
                     events: events,
                     dir: 'rtl',
                     hiddenDays: [5, 6], // إخفاء الجمعة والسبت
-                    eventContent: function(arg) {
-                        return {
-                            html: `
-                                <b>${arg.event.title}</b><br>
-                                <small>${arg.event.extendedProps.instructor}</small><br>
-                                <small>شعبة: ${arg.event.extendedProps.section}</small>
-                            `
-                        };
-                    }
+                    eventContent: (arg) => ({
+                        html: `<b>${arg.event.title.split('(')[0]}</b><br><small>شعبة: ${arg.event.extendedProps.section}</small>`
+                    })
                 });
                 calendar.render();
             }
@@ -242,30 +278,23 @@
             function convertTo24Hour(time, period) {
                 let [hours, minutes] = time.split(':');
                 hours = parseInt(hours);
-                if (period === 'م' && hours !== 12) {
-                    hours += 12;
-                }
-                if (period === 'ص' && hours === 12) {
-                    hours = 0;
-                }
+                if (period === 'م' && hours !== 12) hours += 12;
+                if (period === 'ص' && hours === 12) hours = 0;
                 return `${String(hours).padStart(2, '0')}:${minutes}:00`;
             }
 
-            // استمع للبيانات القادمة من الأداة
             window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'universityCoursesData') {
                     displayData(event.data.data);
-                    // حفظ البيانات كحل احتياطي
                     localStorage.setItem('myUniversityCourses', JSON.stringify(event.data.data));
                 }
             });
 
-            // تحقق من localStorage عند تحميل الصفحة
             const storedCourses = localStorage.getItem('myUniversityCourses');
             if (storedCourses) {
                 displayData(JSON.parse(storedCourses));
             } else {
-                 renderCalendar([]); // عرض جدول فارغ
+                 renderCalendar([]);
             }
         });
     </script>
