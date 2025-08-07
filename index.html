@@ -12,20 +12,23 @@
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <style>
-        :root { /* All CSS variables */
+        :root {
             --bg-main: #f8fafc; --bg-sidebar: #ffffff; --bg-calendar: #ffffff;
             --bg-calendar-header: #f1f5f9; --bg-item-hover: #f1f5f9;
             --primary: #6366f1; --secondary: #94a3b8; --danger: #ef4444; --danger-bg: #fee2e2;
             --text-dark: #1e293b; --text-light: #64748b; --border-color: #e2e8f0;
         }
-        .dark { /* All dark mode variables */
+        .dark {
             --bg-main: #111827; --bg-sidebar: #1f2937; --bg-calendar: #1f2937;
             --bg-calendar-header: #374151; --bg-item-hover: #374151;
             --primary: #818cf8; --secondary: #9ca3af; --danger: #f87171; --danger-bg: #452b2b;
             --text-dark: #f9fafb; --text-light: #d1d5db; --border-color: #374151;
         }
         *, *::before, *::after { box-sizing: border-box; }
-        html, body { font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main); color: var(--text-dark); margin: 0; overflow: hidden; height: 100%; }
+        html, body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main);
+            color: var(--text-dark); margin: 0; overflow: hidden; height: 100%;
+        }
         
         #install-section {
             position: fixed; top: 1rem; left: 50%;
@@ -33,7 +36,7 @@
             background-color: var(--bg-sidebar); padding: 1rem 1.5rem;
             border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1);
             border: 1px solid var(--border-color); width: 90%; max-width: 600px;
-            text-align: center; display: none; /* يبدأ مخفياً */
+            text-align: center; display: none;
         }
         #install-section h3 { margin: 0 0 0.5rem; color: var(--primary); }
         #install-section p { margin: 0 0 1rem; font-size: 0.9rem; }
@@ -193,7 +196,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // كل كود الجافاسكريبت هنا
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
@@ -347,11 +349,54 @@
                 });
             }
 
-            function createEventsForSection(section, color) { /* ... */ return []; }
-            function parseTimeEntries(timeString) { /* ... */ return []; }
-            function convertTo24Hour(time, period) { /* ... */ return ''; }
+            function createEventsForSection(section, color) {
+                return section.timeSlots.map(slot => ({
+                    title: `${section.name}`, daysOfWeek: [slot.day],
+                    startTime: slot.start, endTime: slot.end,
+                    backgroundColor: color, borderColor: color,
+                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId }
+                }));
+            }
             
-            // --- Event Listeners ---
+            function parseTimeEntries(timeString) {
+                if (!timeString) return [];
+                return timeString.split('<br>').map(entry => {
+                    const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
+                    if (!parts) return null;
+                    const daysArray = parts[1].trim().split(/\s+/);
+                    const startTime = convertTo24Hour(parts[2], parts[3]);
+                    const endTime = convertTo24Hour(parts[4], parts[5]);
+                    return daysArray.map(dayName => dayMapping.hasOwnProperty(dayName) ? { day: dayMapping[dayName], start: startTime, end: endTime } : null);
+                }).flat().filter(Boolean);
+            }
+
+            function convertTo24Hour(time, period) {
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                if (period === 'م' && hours !== 12) hours += 12;
+                if (period === 'ص' && hours === 12) hours = 0;
+                return `${String(hours).padStart(2, '0')}:${minutes}:00`;
+            }
+
+            function populateSettingsModal() {
+                visibilitySettingsContainer.innerHTML = '';
+                colorSettingsContainer.innerHTML = '';
+                let colorIndex = 0;
+                Object.values(groupedCourses).forEach(group => {
+                    const isVisible = !userSettings.hiddenCourses.includes(group.code);
+                    const visibilityItem = document.createElement('div');
+                    visibilityItem.className = 'setting-item';
+                    visibilityItem.innerHTML = `<div class="setting-item-label">${group.name} (${group.code})</div><label class="toggle-switch"><input type="checkbox" data-course-code="${group.code}" ${isVisible ? 'checked' : ''}><span class="slider"></span></label>`;
+                    visibilitySettingsContainer.appendChild(visibilityItem);
+                    const courseColor = userSettings.customColors[group.code] || colorPalette[colorIndex % colorPalette.length];
+                    colorIndex++;
+                    const colorItem = document.createElement('div');
+                    colorItem.className = 'setting-item';
+                    colorItem.innerHTML = `<div class="setting-item-label">${group.name} (${group.code})</div><span class="color-dot" style="background-color: ${courseColor}; cursor: pointer;" data-course-code="${group.code}"></span>`;
+                    colorSettingsContainer.appendChild(colorItem);
+                });
+            }
+            
             settingsBtn.addEventListener('click', () => { settingsModal.classList.add('open'); modalOverlay.classList.add('open'); });
             function closeModal() { settingsModal.classList.remove('open'); modalOverlay.classList.remove('open'); }
             closeModalBtn.addEventListener('click', closeModal);
@@ -388,9 +433,22 @@
                 colorDot.parentElement.appendChild(palette);
             });
             
-            clearCalendarBtn.addEventListener('click', () => { /* ... */ });
-            themeToggle.addEventListener('click', () => { /* ... */ });
-            function toggleSidebar() { /* ... */ }
+            clearCalendarBtn.addEventListener('click', () => {
+                if (confirm('هل أنت متأكد؟')) {
+                    calendar.removeAllEvents();
+                    selectedSections.clear();
+                    document.querySelectorAll('.section-btn.selected').forEach(btn => btn.classList.remove('selected'));
+                    updateCalendarAndConflicts();
+                }
+            });
+            
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark');
+                if (document.body.classList.contains('dark')) themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
+                else themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
+            });
+            
+            function toggleSidebar() { sidebar.classList.toggle('open'); overlay.classList.toggle('open'); }
             mobileFab.addEventListener('click', toggleSidebar);
             overlay.addEventListener('click', toggleSidebar);
             closeSidebarBtn.addEventListener('click', toggleSidebar);
@@ -402,7 +460,6 @@
                 }
             });
 
-            // --- Initial Load ---
             loadSettings();
             const storedCourses = localStorage.getItem('myUniversityCourses');
             if (storedCourses) {
