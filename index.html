@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جدولي الدراسي</title>
+    <title>أداة جدولي الدراسي</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -11,9 +11,38 @@
             color: #333;
             margin: 0;
             padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+        }
+        .install-container {
+            background-color: #ffffff;
+            border: 1px dashed #667eea;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 25px;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .install-container h2 {
+            margin-top: 0;
+            color: #667eea;
+        }
+        .bookmarklet-button {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            text-decoration: none;
+            cursor: grab;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .bookmarklet-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
         }
         .container {
             width: 100%;
@@ -22,6 +51,7 @@
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             overflow: hidden;
+            margin: 0 auto;
         }
         header {
             background: linear-gradient(45deg, #667eea, #764ba2);
@@ -59,6 +89,21 @@
     </style>
 </head>
 <body>
+
+    <!-- === القسم الجديد للتثبيت === -->
+    <div class="install-container">
+        <h2>طريقة التثبيت</h2>
+        <p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك لتثبيت الأداة:</p>
+        <a 
+            class="bookmarklet-button" 
+            href="javascript:(function(){var s=document.createElement('script');s.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now();document.head.appendChild(s);})();"
+            onclick="alert('لا تضغط على الزر، بل اسحبه إلى شريط الإشارات المرجعية!'); return false;">
+            🎓 استخراج جدولي
+        </a>
+    </div>
+    <!-- ============================= -->
+
+
     <div class="container">
         <header>
             <h1>🎓 جدولي الدراسي</h1>
@@ -112,6 +157,9 @@
 
                 tableHTML += `</tbody></table>`;
                 tableContainer.innerHTML = tableHTML;
+                
+                // يمكنك إزالة التعليق من السطر التالي ليتم حذف البيانات بعد عرضها
+                // localStorage.removeItem('myUniversityCourses');
 
             } else {
                 noDataMessage.style.display = 'block';
