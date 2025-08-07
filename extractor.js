@@ -2,32 +2,29 @@
     'use strict';
 
     // =========================================================================
-    // --- 🔴 هذه هي المنطقة الوحيدة التي تحتاج إلى تعديلها 🔴 ---
+    // --- 🔴 تم تعديل هذه المنطقة لتناسب بوابة جامعة القصيم 🔴 ---
     
-    // 1. لقد تم وضع رابط صفحة العرض الخاصة بك تلقائيًا.
+    // 1. رابط صفحة العرض الخاص بك (تم وضعه تلقائياً)
     const VIEWER_PAGE_URL = 'https://mutlaq001.github.io/schedule/';
 
-    // 2. قائمة النطاقات (الدومينات) المسموح للأداة بالعمل عليها
-    // 💡 أضف هنا رابط بوابة جامعتك
+    // 2. تم وضع النطاق الصحيح لجامعة القصيم
     const VALID_DOMAINS = [
-        'stu-gate.qu.edu.sa', // مثال جامعة القصيم - يجب تغييره
-        'edugate.ksu.edu.sa', // مثال جامعة الملك سعود - يجب تغييره
-        'uom.edu.sa'          // مثال جامعة المجمعة - يجب تغييره
+        'stu-gate.qu.edu.sa'
     ];
 
-    // 3. المحددات (Selectors) الخاصة بجدول المقررات في موقع جامعتك
-    // 💡 هذا هو أهم جزء يجب أن تعدله ليناسب موقع جامعتك
-    const courseRowSelector = 'tr.courserow';
-    const courseNameSelector = 'td:nth-of-type(3)';
-    const courseCodeSelector = 'td:nth-of-type(2)';
-    const sectionNumberSelector = 'td:nth-of-type(4)';
-    const daysSelector = 'td:nth-of-type(7)';
-    const timeSelector = 'td:nth-of-type(8)';
-    const instructorSelector = 'td:nth-of-type(11)';
+    // 3. المحددات (Selectors) المقترحة لجامعة القصيم
+    // 💡 ملاحظة: هذه أفضل تخمينات بناءً على أنظمة مشابهة.
+    const courseRowSelector = 'tr.rich-table-row'; // المحدد للصفوف التي تحتوي على بيانات
+    const courseCodeSelector = 'td:nth-of-type(2)'; // العمود الثاني لرمز المقرر
+    const courseNameSelector = 'td:nth-of-type(3)'; // العمود الثالث لاسم المقرر
+    const sectionNumberSelector = 'td:nth-of-type(4)'; // العمود الرابع لرقم الشعبة
+    const daysSelector = 'td:nth-of-type(7)'; // العمود السابع للأيام
+    const timeSelector = 'td:nth-of-type(8)'; // العمود الثامن للوقت
+    const instructorSelector = 'td:nth-of-type(11)'; // العمود الحادي عشر للمحاضر
     // =========================================================================
 
 
-    // --- الكود المأخوذ من الأداة الأصلية (مع تعديلات) ---
+    // --- بقية الكود يعمل كما هو (لا تحتاج لتعديله) ---
 
     function createOverlay(innerHTML) {
         const overlay = document.createElement('div');
@@ -92,11 +89,10 @@
             showLoading();
             updateProgress(20);
 
-            console.log("🚀 أداة استخراج المقررات بدأت العمل...");
             const courseRows = document.querySelectorAll(courseRowSelector);
             
             if (courseRows.length === 0) {
-                throw new Error("لم يتم العثور على أي مقررات. تأكد من أنك في الصفحة الصحيحة وأن المحددات (selectors) في الكود صحيحة.");
+                throw new Error("لم يتم العثور على أي مقررات. تأكد من أنك في الصفحة الصحيحة وأن المحدد 'courseRowSelector' في الكود صحيح. قد يكون اسم الكلاس هو 'even' أو 'odd' بدلاً من 'rich-table-row'.");
             }
             updateProgress(50);
 
@@ -113,12 +109,10 @@
             }).filter(course => course.name && course.code);
 
             if (coursesData.length === 0) {
-                throw new Error("تم العثور على صفوف ولكن لم يتم استخراج بيانات. تحقق من محددات الأعمدة.");
+                throw new Error("تم العثور على صفوف ولكن لم يتم استخراج بيانات. تحقق من أرقام الأعمدة في المحددات.");
             }
             
             updateProgress(80);
-            console.log(`✅ تم استخراج ${coursesData.length} مقرر بنجاح.`);
-            
             localStorage.setItem('myUniversityCourses', JSON.stringify(coursesData));
             updateProgress(100);
 
@@ -163,15 +157,7 @@
             </div>
         </div>
     `;
-
     createOverlay(termsHTML);
-    
-    document.getElementById('tool-accept').onclick = () => {
-        removeOverlay();
-        startExtraction();
-    };
-
-    document.getElementById('tool-decline').onclick = () => {
-        removeOverlay();
-    };
+    document.getElementById('tool-accept').onclick = () => { removeOverlay(); startExtraction(); };
+    document.getElementById('tool-decline').onclick = () => { removeOverlay(); };
 })();
