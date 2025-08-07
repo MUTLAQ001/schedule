@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>جدولي الدراسي - تصميم مجمّع</title>
+    <title>أداة بناء الجداول</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,114 +12,65 @@
 
     <style>
         :root {
-            --bg-color: #f8fafc;
-            --container-bg: #ffffff;
-            --text-primary: #1e293b;
-            --text-secondary: #64748b;
-            --border-color: #e2e8f0;
-            --primary-color: #6366f1;
-            --secondary-color: #8b5cf6;
-            --light-bg: #f1f5f9;
+            --bg-color: #f8fafc; --container-bg: #ffffff; --text-primary: #1e293b;
+            --text-secondary: #64748b; --border-color: #e2e8f0; --primary-color: #6366f1;
+            --secondary-color: #8b5cf6; --light-bg: #f1f5f9; --success-color: #10b981;
         }
-
         body {
-            font-family: 'IBM Plex Sans Arabic', sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 2rem;
-            display: flex;
-            justify-content: center;
+            font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-color);
+            color: var(--text-primary); margin: 0; padding: 2rem;
+            display: flex; justify-content: center;
         }
-
         .main-container {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 2rem;
-            width: 100%;
-            max-width: 1400px;
+            display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;
+            width: 100%; max-width: 1400px;
         }
-
         .calendar-section, .courses-section {
-            background-color: var(--container-bg);
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            border: 1px solid var(--border-color);
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
+            background-color: var(--container-bg); border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid var(--border-color);
+            overflow: hidden; display: flex; flex-direction: column;
         }
-
         .section-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0;
+            padding: 1.5rem; border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
         }
-
-        .section-header h2 {
-            margin: 0;
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .section-content {
-            padding: 1rem;
-            height: 100%;
-            overflow-y: auto;
-        }
-        
+        .section-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; }
+        .section-content { padding: 1rem; height: 100%; overflow-y: auto; }
         .section-content::-webkit-scrollbar { width: 6px; }
         .section-content::-webkit-scrollbar-track { background: #f1f5f9; }
         .section-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-
         #calendar { height: 100%; padding: 0.5rem; }
         
-        /* --- ✨ تصميم جديد لتجميع الشعب --- */
+        /* --- ✨ تصميم جديد تفاعلي --- */
         .course-group {
-            background-color: var(--container-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            margin-bottom: 1.5rem;
-            overflow: hidden;
+            border: 1px solid var(--border-color); border-radius: 12px;
+            margin-bottom: 1rem; overflow: hidden;
         }
         .course-group-header {
-            background-color: var(--light-bg);
-            padding: 1rem 1.25rem;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background-color: var(--light-bg); padding: 1rem 1.25rem;
+            display: flex; justify-content: space-between; align-items: center;
         }
-        .course-group-header h3 {
-            margin: 0;
-            font-size: 1.2rem;
-            font-weight: 600;
-        }
-        .course-group-header .badge {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 99px;
-            font-size: 0.8rem;
-            font-weight: 500;
+        .course-group-header h3 { margin: 0; font-size: 1.1rem; font-weight: 600; }
+        .badge {
+            background-color: var(--primary-color); color: white; padding: 0.25rem 0.75rem;
+            border-radius: 99px; font-size: 0.8rem; font-weight: 500;
         }
         .sections-container {
-            padding: 0.5rem 1.25rem 1.25rem;
-            display: grid;
-            gap: 0.75rem;
+            padding: 0.5rem 1.25rem 1.25rem; display: grid; gap: 0.75rem;
         }
         .section-card {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 0.75rem;
-            font-size: 0.9rem;
-            background-color: var(--container-bg);
+            border: 1px solid var(--border-color); border-radius: 8px;
+            padding: 0.75rem; font-size: 0.9rem; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .section-card:hover { background-color: var(--light-bg); }
+        .section-card.selected {
+            background-color: #e0f2f1; border-color: var(--success-color);
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
         }
         .section-info {
-            color: var(--text-secondary);
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
+            color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.25rem;
+            pointer-events: none; /* لمنع تداخل الأحداث مع البطاقة الرئيسية */
         }
         .section-info strong { color: var(--text-primary); }
 
@@ -128,6 +79,9 @@
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 60px !important; border-bottom: 1px solid #f1f5f9; }
         .fc-event { border: none; border-radius: 6px; font-weight: 600; padding: 4px 8px; }
+        .fc-event.preview-event {
+             opacity: 0.5; border-style: dashed !important;
+        }
 
         .no-data { text-align: center; padding-top: 5rem; }
         .no-data p { font-size: 1.2rem; color: var(--text-secondary); }
@@ -135,7 +89,7 @@
         @media (max-width: 1024px) {
             body { padding: 1rem; }
             .main-container { grid-template-columns: 1fr; }
-            .courses-section { order: -1; } /* وضع قائمة المقررات في الأعلى */
+            .courses-section { order: -1; }
             .section-content { height: auto; max-height: 50vh; }
         }
     </style>
@@ -152,9 +106,7 @@
                 <h2>قائمة المقررات</h2>
             </header>
             <div class="section-content" id="courses-list">
-                <div class="no-data" id="no-data-message">
-                    <p>جاري انتظار البيانات من صفحة الجامعة...</p>
-                </div>
+                <div class="no-data" id="no-data-message"><p>جاري انتظار البيانات...</p></div>
             </div>
         </section>
     </div>
@@ -164,48 +116,58 @@
             const coursesListContainer = document.getElementById('courses-list');
             const noDataMessage = document.getElementById('no-data-message');
             const calendarEl = document.getElementById('calendar');
-
-            const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
+            let calendar;
+            let allCoursesData = [];
+            const selectedSections = new Set();
             const colorPalette = ['#6366f1', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#3b82f6', '#ef4444'];
+            const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
 
+            // --- ✨ تهيئة الجدول الزمني فارغًا ---
+            function initializeCalendar() {
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'timeGridWeek', locale: 'ar',
+                    headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridWeek,timeGridDay' },
+                    allDaySlot: false, slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
+                    events: [], dir: 'rtl', hiddenDays: [5, 6],
+                    eventContent: (arg) => ({
+                        html: `<b>${arg.event.title.split('(')[0]}</b><br><small>شعبة: ${arg.event.extendedProps.section}</small>`
+                    })
+                });
+                calendar.render();
+            }
+            initializeCalendar();
+
+            // --- ✨ عرض البيانات وتجميعها ---
             function displayData(courses) {
                 if (!courses || courses.length === 0) {
-                    noDataMessage.innerHTML = "<p>لم يتم العثور على بيانات.</p>";
-                    return;
+                    noDataMessage.innerHTML = "<p>لم يتم العثور على بيانات.</p>"; return;
                 }
                 
-                // --- ✨ خطوة التجميع ---
+                allCoursesData = courses;
                 const groupedCourses = courses.reduce((acc, course) => {
                     if (!acc[course.code]) {
-                        acc[course.code] = {
-                            name: course.name,
-                            code: course.code,
-                            sections: []
-                        };
+                        acc[course.code] = { name: course.name, code: course.code, sections: [] };
                     }
                     acc[course.code].sections.push(course);
                     return acc;
                 }, {});
 
-
                 noDataMessage.style.display = 'none';
                 coursesListContainer.innerHTML = '';
-                
-                const calendarEvents = [];
                 let colorIndex = 0;
 
                 Object.values(groupedCourses).forEach(group => {
                     const courseColor = colorPalette[colorIndex % colorPalette.length];
                     colorIndex++;
-
-                    // عرض بطاقة المقرر الرئيسية
                     const groupContainer = document.createElement('div');
                     groupContainer.className = 'course-group';
-                    
                     let sectionsHTML = '';
-                    group.sections.forEach(section => {
+
+                    group.sections.forEach((section, index) => {
+                        const uniqueId = `${section.code}-${section.section}-${index}`;
+                        section.uniqueId = uniqueId;
                         sectionsHTML += `
-                            <div class="section-card" style="border-left: 3px solid ${courseColor}">
+                            <div class="section-card" data-section-id="${uniqueId}">
                                 <div class="section-info">
                                     <span><strong>الشعبة:</strong> ${section.section}</span>
                                     <span><strong>المحاضر:</strong> ${section.instructor}</span>
@@ -213,35 +175,6 @@
                                 </div>
                             </div>
                         `;
-
-                        // تحضير بيانات الجدول لكل شعبة
-                        const timeEntries = section.time.split('<br>');
-                        timeEntries.forEach(entry => {
-                            const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
-                            if (parts) {
-                                const daysString = parts[1];
-                                const startTime = convertTo24Hour(parts[2], parts[3]);
-                                const endTime = convertTo24Hour(parts[4], parts[5]);
-                                const daysArray = daysString.trim().split(/\s+/);
-
-                                daysArray.forEach(dayName => {
-                                    if (dayMapping.hasOwnProperty(dayName)) {
-                                        calendarEvents.push({
-                                            title: `${section.name} (${section.code})`,
-                                            daysOfWeek: [dayMapping[dayName]],
-                                            startTime: startTime,
-                                            endTime: endTime,
-                                            backgroundColor: courseColor,
-                                            borderColor: courseColor,
-                                            extendedProps: {
-                                                instructor: section.instructor,
-                                                section: section.section
-                                            }
-                                        });
-                                    }
-                                });
-                            }
-                        });
                     });
 
                     groupContainer.innerHTML = `
@@ -252,27 +185,106 @@
                         <div class="sections-container">${sectionsHTML}</div>
                     `;
                     coursesListContainer.appendChild(groupContainer);
+                    
+                    // --- ✨ إضافة الأحداث التفاعلية ---
+                    groupContainer.addEventListener('mouseenter', () => handlePreview(group.code, courseColor));
+                    groupContainer.addEventListener('mouseleave', () => clearPreview());
                 });
 
-                renderCalendar(calendarEvents);
+                coursesListContainer.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('section-card')) {
+                        handleSectionClick(e.target);
+                    }
+                });
             }
             
-            function renderCalendar(events) {
-                const calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'timeGridWeek',
-                    locale: 'ar',
-                    headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridWeek,timeGridDay' },
-                    allDaySlot: false,
-                    slotMinTime: '08:00:00',
-                    slotMaxTime: '22:00:00',
-                    events: events,
-                    dir: 'rtl',
-                    hiddenDays: [5, 6], // إخفاء الجمعة والسبت
-                    eventContent: (arg) => ({
-                        html: `<b>${arg.event.title.split('(')[0]}</b><br><small>شعبة: ${arg.event.extendedProps.section}</small>`
-                    })
+            // --- ✨ دوال التفاعل ---
+            function handleSectionClick(cardElement) {
+                const sectionId = cardElement.dataset.sectionId;
+                if (selectedSections.has(sectionId)) {
+                    selectedSections.delete(sectionId);
+                    cardElement.classList.remove('selected');
+                } else {
+                    selectedSections.add(sectionId);
+                    cardElement.classList.add('selected');
+                }
+                updateCalendar();
+            }
+
+            function handlePreview(courseCode, color) {
+                const previewEvents = generateEventsForCourse(courseCode, color, true);
+                const currentEvents = calendar.getEvents();
+                currentEvents.forEach(event => {
+                    if (!event.extendedProps.isPreview) event.remove();
                 });
-                calendar.render();
+                calendar.addEventSource(previewEvents);
+            }
+
+            function clearPreview() {
+                const currentEvents = calendar.getEvents();
+                currentEvents.forEach(event => {
+                    if (event.extendedProps.isPreview) event.remove();
+                });
+                updateCalendar();
+            }
+
+            function updateCalendar() {
+                calendar.removeAllEvents();
+                const finalEvents = [];
+                let colorIndex = 0;
+                const courseColors = {};
+
+                selectedSections.forEach(id => {
+                    const section = allCoursesData.find(c => c.uniqueId === id);
+                    if (section) {
+                        if (!courseColors[section.code]) {
+                            courseColors[section.code] = colorPalette[colorIndex % colorPalette.length];
+                            colorIndex++;
+                        }
+                        const events = generateEventsForSection(section, courseColors[section.code]);
+                        finalEvents.push(...events);
+                    }
+                });
+                calendar.addEventSource(finalEvents);
+            }
+
+            function generateEventsForCourse(courseCode, color, isPreview = false) {
+                const course = allCoursesData.find(c => c.code === courseCode);
+                if (!course) return [];
+                const courseSections = allCoursesData.filter(c => c.code === courseCode);
+                const events = [];
+                courseSections.forEach(section => {
+                    events.push(...generateEventsForSection(section, color, isPreview));
+                });
+                return events;
+            }
+
+            function generateEventsForSection(section, color, isPreview = false) {
+                const events = [];
+                const timeEntries = section.time.split('<br>');
+                timeEntries.forEach(entry => {
+                    const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
+                    if (parts) {
+                        const daysString = parts[1];
+                        const startTime = convertTo24Hour(parts[2], parts[3]);
+                        const endTime = convertTo24Hour(parts[4], parts[5]);
+                        const daysArray = daysString.trim().split(/\s+/);
+                        daysArray.forEach(dayName => {
+                            if (dayMapping.hasOwnProperty(dayName)) {
+                                events.push({
+                                    id: isPreview ? `preview-${section.uniqueId}` : section.uniqueId,
+                                    title: `${section.name} (${section.code})`,
+                                    daysOfWeek: [dayMapping[dayName]],
+                                    startTime: startTime, endTime: endTime,
+                                    backgroundColor: color, borderColor: color,
+                                    className: isPreview ? 'preview-event' : '',
+                                    extendedProps: { instructor: section.instructor, section: section.section, isPreview: isPreview }
+                                });
+                            }
+                        });
+                    }
+                });
+                return events;
             }
 
             function convertTo24Hour(time, period) {
@@ -283,6 +295,7 @@
                 return `${String(hours).padStart(2, '0')}:${minutes}:00`;
             }
 
+            // استلام البيانات
             window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'universityCoursesData') {
                     displayData(event.data.data);
@@ -293,8 +306,6 @@
             const storedCourses = localStorage.getItem('myUniversityCourses');
             if (storedCourses) {
                 displayData(JSON.parse(storedCourses));
-            } else {
-                 renderCalendar([]);
             }
         });
     </script>
