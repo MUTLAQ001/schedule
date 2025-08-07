@@ -8,104 +8,212 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link id="favicon" rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSI5MCIgZmlsbD0iIzBhMGEwYSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDY0IDApIj48cmVjdCB4PSI2NCIgeT0iNDgiIHdpZHRoPSIzODQiIGhlaWdodD0iNDE2IiByeD0iNDAiIGZpbGw9IiMyMjI1MmQiLz48cmVjdCB4PSI5NiIgeT0iODAiIHdpZHRoPSIzMjAiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iIzVlOWNmZiIvPjxnIGZpbGw9IiM0YjUwNWEiPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjI0MCIgcj0iMzIiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNDAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIzNjIiIGN5PSIyNDAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIxNTAiIGN5PSIzMzAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIyNTYiIGN5PSIzMzAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIzNjIiIGN5PSIzMzAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIxNTAiIGN5PSI0MjAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIyNTYiIGN5PSI0MjAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIzNjIiIGN5PSI0MjAiIHI9IjMyIi8%2BPC9nPjwvZz48L3N2Zz4%3D">
+
 
     <style>
         :root {
-            --bg-main: #f8fafc; --bg-sidebar: #ffffff; --bg-calendar: #ffffff;
-            --bg-calendar-header: #f1f5f9; --bg-item-hover: #f1f5f9;
-            --primary: #6366f1; --secondary: #94a3b8; --danger: #ef4444; --danger-bg: #fee2e2;
-            --text-dark: #1e293b; --text-light: #64748b; --border-color: #e2e8f0;
+            --color-primary:#5e9cff; --color-primary-dark:#4b7dcc;
+            --color-danger-red:#ff5252; --color-warning-gold:#ffc400;
+            --color-bg:#0a0a0a; --color-card:rgba(20,20,22,0.75);
+            --color-border:rgba(255,255,255,0.1); --color-text:#e0e0e0;
+            --color-text-muted:#999; --font-body:"Cairo",sans-serif;
+            --font-title:"IBM Plex Sans Arabic",sans-serif; --radius:20px;
+            --radius-md:16px; --radius-full:999px;
+            --transition:0.3s cubic-bezier(0.25,0.8,0.25,1);
+            --transition-smooth:0.5s cubic-bezier(0.2,0.8,0.2,1);
+            --rgb-primary:94,156,255; --rgb-danger:255,82,82;
+            --primary-hue:217; --secondary-hue:257;
+
+            /* Variables mapped from AI Studio for compatibility */
+            --bg-main: var(--color-bg); --bg-sidebar: var(--color-card);
+            --bg-calendar: var(--color-card); --bg-calendar-header: rgba(255, 255, 255, 0.05);
+            --bg-item-hover: rgba(255, 255, 255, 0.08); --primary: var(--color-primary);
+            --secondary: var(--color-text-muted); --danger: var(--color-danger-red);
+            --danger-bg: rgba(var(--rgb-danger), 0.15); --text-dark: var(--color-text);
+            --text-light: var(--color-text-muted); --border-color: var(--color-border);
         }
-        .dark {
-            --bg-main: #111827; --bg-sidebar: #1f2937; --bg-calendar: #1f2937;
-            --bg-calendar-header: #374151; --bg-item-hover: #374151;
-            --primary: #818cf8; --secondary: #9ca3af; --danger: #f87171; --danger-bg: #452b2b;
-            --text-dark: #f9fafb; --text-light: #d1d5db; --border-color: #374151;
+        .light {
+            --color-bg: #f9f9f9; --color-card: rgba(255, 255, 255, 0.75);
+            --color-border: rgba(0, 0, 0, 0.09); --color-text: #202020;
+            --color-text-muted: #707070;
+            --bg-main: var(--color-bg); --bg-sidebar: var(--color-card);
+            --bg-calendar: var(--color-card); --bg-calendar-header: rgba(0, 0, 0, 0.04);
+            --bg-item-hover: rgba(0, 0, 0, 0.06); --primary: var(--color-primary);
+            --secondary: var(--color-text-muted); --danger: var(--color-danger-red);
+            --danger-bg: rgba(var(--rgb-danger), 0.1); --text-dark: var(--color-text);
+            --text-light: var(--color-text-muted); --border-color: var(--color-border);
         }
+        
         *, *::before, *::after { box-sizing: border-box; }
-        body { font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main); color: var(--text-dark); margin: 0; display: flex; overflow: hidden; }
+		html{ scrollbar-width: none; }
+		::-webkit-scrollbar { display: none; }
+        body { 
+            font-family: var(--font-title), sans-serif; 
+            background-color: var(--bg-main); 
+            color: var(--text-dark); 
+            margin: 0; 
+            display: flex; 
+            height: 100vh;
+            overflow: hidden;
+            transition: background-color var(--transition-smooth), color var(--transition-smooth);
+        }
 
-        /* --- ✨ قسم التثبيت الجديد --- */
+        /* --- ✨ Cosmic Background from Absence Calculator --- */
+        .cosmic-bg-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;overflow:hidden}
+		#starfield-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+		.nebula-glow{position:absolute;top:50%;left:50%;width:80vmax;height:80vmax;margin-top:-40vmax;margin-left:-40vmax;background:radial-gradient(circle,hsl(var(--primary-hue),90%,60%,.15) 0%,hsl(var(--secondary-hue),80%,50%,.1) 40%,transparent 70%);filter:blur(100px);border-radius:50%;animation:move-nebula 90s infinite alternate ease-in-out;transition:opacity .5s ease,background .5s ease}
+        .light .nebula-glow{opacity:.5;filter:blur(120px)}
+        @keyframes move-nebula{0%{transform:translate(0,0) rotate(0deg) scale(1.2)}50%{transform:translate(10vw,5vh) rotate(180deg) scale(1.5)}100%{transform:translate(0,0) rotate(360deg) scale(1.2)}}
+
+        /* --- ✨ Styled Install Section --- */
         #install-section {
-            position: fixed;
-            top: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            background-color: var(--bg-sidebar);
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 1rem;
+            position: fixed; top: 1.5rem; left: 50%;
+            transform: translateX(-50%); z-index: 1000;
+            background: var(--color-card); border: 1px solid var(--color-border);
+            border-radius: var(--radius); padding: 1.25rem 2rem;
+            backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+            display: flex; align-items: center; gap: 1.5rem;
+            animation:scaleIn .8s var(--transition-smooth) .4s both;
         }
-        #install-section p { margin: 0; font-size: 0.9rem; font-weight: 500; }
+        #install-section p { margin: 0; font-size: 1rem; font-weight: 500; }
         .bookmarklet-button {
-            display: inline-block; background: var(--primary); color: white;
-            padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600;
-            text-decoration: none; cursor: grab;
+            display: inline-block; padding: 0.8rem 1.5rem;
+            font-family:var(--font-body); font-size:1rem; font-weight:600;
+            border:none; border-radius:var(--radius-full); cursor: grab;
+            background:linear-gradient(90deg,var(--color-primary-dark),var(--color-primary));
+            color:#fff; text-decoration: none;
+            transition: all .2s ease-in-out; user-select:none;
         }
+        .bookmarklet-button:hover{transform:translateY(-3px);box-shadow:0 4px 15px rgba(var(--rgb-primary),0.25); filter: brightness(1.1);}
+        @keyframes scaleIn{from{opacity:0;transform:scale(.95) translateX(-50%);}to{opacity:1;transform:scale(1) translateX(-50%)}}
 
-        .sidebar { width: 380px; height: 100vh; background-color: var(--bg-sidebar); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
+        /* --- Layout --- */
+        .sidebar { width: 400px; height: 100vh; background-color: transparent; display: flex; flex-direction: column; flex-shrink: 0; padding: 1.5rem 1rem 1.5rem 1.5rem; }
+        .sidebar-inner {
+            display: flex; flex-direction: column; height: 100%;
+            background: var(--bg-sidebar); border: 1px solid var(--border-color);
+            border-radius: var(--radius); backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
         .sidebar-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-header h2 { margin: 0; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
+        .sidebar-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: #fff}
+        .light .sidebar-header h2 { color: var(--text-dark); }
         .sidebar-content { flex-grow: 1; overflow-y: auto; padding: 1rem; }
-        .sidebar-content::-webkit-scrollbar { width: 5px; }
-        .sidebar-content::-webkit-scrollbar-track { background: transparent; }
-        .sidebar-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
-        .course-item { border: 1px solid transparent; border-radius: 10px; margin-bottom: 0.5rem; transition: background-color 0.2s; }
-        .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; cursor: pointer; }
-        .course-item-header:hover { background-color: var(--bg-item-hover); border-radius: 10px; }
-        .course-item-header .color-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .course-info { flex-grow: 1; }
-        .course-info h3 { margin: 0; font-size: 0.9rem; font-weight: 600; }
-        .course-info p { margin: 2px 0 0; font-size: 0.8rem; color: var(--text-light); }
-        .course-item-header .toggle-icon { transition: transform 0.3s; }
-        .course-item.open .toggle-icon { transform: rotate(180deg); }
-        .sections-wrapper { padding: 0 1rem 1rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; }
-        .course-item.open .sections-wrapper { max-height: 600px; }
-        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
-        
-        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; background-color: var(--bg-sidebar); transition: all 0.2s; position: relative; }
-        .section-btn:hover { border-color: var(--primary); }
-        .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
-        .section-btn.selected .section-type { color: white !important; }
-        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.7; }
-        .section-btn.conflicted:hover { border-color: var(--danger); }
-        .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--danger); background: var(--bg-sidebar); border-radius: 50%; font-size: 1.2em; }
-        .section-btn-number { font-weight: 700; font-size: 1rem; }
-        .section-type { font-size: 0.75rem; color: var(--text-light); }
-        
         .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
-        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .main-header h1 { margin: 0; font-size: 1.75rem; display: flex; align-items: center; gap: 0.75rem; }
-        .header-actions button { background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
-        .header-actions button:hover { background-color: var(--bg-item-hover); color: var(--text-dark); }
-        .calendar-container { flex-grow: 1; background-color: var(--bg-calendar); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; min-height: 0;}
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .main-header h1 { margin: 0; font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem;
+            background:linear-gradient(90deg,var(--color-primary-dark),var(--color-primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .header-actions button {
+            background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color);
+            border-radius: var(--radius-full); padding: 0.7rem 1.2rem; color: var(--color-primary);
+            font-family: var(--font-body); font-size: 0.9rem; font-weight: 600;
+            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+            cursor: pointer; transition: all var(--transition);
+        }
+        .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: var(--primary); transform: translateY(-2px); }
+        
+        .calendar-container {
+            flex-grow: 1; min-height: 0;
+            background: var(--bg-calendar); border: 1px solid var(--border-color);
+            border-radius: var(--radius); padding: 1.5rem;
+            backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        }
         #calendar { height: 100%; }
 
-        .fc { --fc-border-color: var(--border-color); }
-        .fc-col-header-cell { background-color: var(--bg-calendar-header); border: none; padding: 0.75rem 0; font-weight: 600;}
-        .fc-theme-standard .fc-scrollgrid { border: none; }
-        .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
-        .fc-event { border: 2px solid transparent !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
+        /* --- Sidebar Items --- */
+        .course-item { 
+            background: rgba(255,255,255,0.03);
+            border: 1px solid transparent; 
+            border-radius: var(--radius-md); 
+            margin-bottom: 0.75rem; 
+            transition: all 0.3s ease; 
+        }
+        .course-item:hover { background: var(--bg-item-hover); border-color: var(--border-color); }
+        .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; cursor: pointer; }
+        .course-item-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .course-info { flex-grow: 1; }
+        .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; }
+        .light .course-info h3 { color: var(--text-dark); }
+        .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--text-light); }
+        .course-item-header .toggle-icon { transition: transform 0.3s; font-size: 1.2rem; }
+        .course-item.open .toggle-icon { transform: rotate(180deg); }
         
-        .no-data { text-align: center; padding: 3rem 0; color: var(--text-light); }
-        .theme-toggle { cursor: pointer; color: var(--text-light); transition: color 0.2s ease; }
-        .theme-toggle:hover { color: var(--text-dark); }
+        .sections-wrapper { padding: 0 1rem 1rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; }
+        .course-item.open { background-color: transparent; border-color: var(--border-color); }
+        .course-item.open .sections-wrapper { max-height: 600px; }
+        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 0.75rem; }
+        
+        .section-btn { 
+            padding: 0.6rem; border: 1px solid var(--border-color); 
+            border-radius: var(--radius-md); text-align: center; 
+            cursor: pointer; background-color: var(--bg-sidebar); 
+            transition: all 0.2s; position: relative;
+        }
+        .section-btn:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .section-btn.selected { 
+            background-color: var(--primary); color: white; 
+            border-color: var(--primary); transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(var(--rgb-primary),0.25);
+        }
+        .section-btn.selected .section-type { color: rgba(255,255,255,0.8) !important; }
+        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.8; }
+        .section-btn.conflicted:hover { transform: none; box-shadow: none; }
+        .section-btn.conflicted .conflict-icon { 
+            position: absolute; top: -6px; right: -6px; 
+            color: var(--danger); background: var(--bg-main); 
+            border-radius: 50%; font-size: 1.3em; line-height: 1;
+        }
+        .section-btn-number { font-weight: 700; font-size: 1.1rem; }
+        .section-type { font-size: 0.75rem; color: var(--text-light); transition: color 0.2s; }
+
+        /* --- Calendar Styling --- */
+        .fc { --fc-border-color: var(--border-color); --fc-today-bg-color: rgba(var(--rgb-primary), 0.05); }
+        .fc-col-header-cell { background-color: var(--bg-calendar-header); border: none; padding: 1rem 0; font-weight: 600; font-size: 0.9rem;}
+        .fc-theme-standard .fc-scrollgrid { border: none; }
+        .fc .fc-timegrid-slot-lane { border-color: var(--border-color); }
+        .fc .fc-timegrid-slot { height: 60px !important; }
+        .fc .fc-timegrid-axis-cushion { padding: 0 1rem; }
+        .fc-direction-rtl .fc-timegrid-slot-label { border: none; }
+        .fc-event { 
+            border: none !important; 
+            border-radius: var(--radius-md) !important; 
+            font-weight: 600; padding: 6px 10px !important; cursor: pointer; 
+            box-shadow: 0 4px 15px -5px rgba(0,0,0, 0.4);
+            transition: all 0.2s ease;
+        }
+        .fc-event:hover { transform: scale(1.03); box-shadow: 0 6px 20px -5px rgba(0,0,0, 0.5); }
+        .fc-event .fc-event-main { color: #fff !important; }
+
+        .no-data { text-align: center; padding: 4rem 1rem; color: var(--text-light); }
+        .no-data p { font-family: var(--font-body); font-size: 1.1rem; line-height: 1.8; }
+        .theme-toggle { 
+            cursor: pointer; color: var(--text-light); 
+            font-size: 1.5rem; transition: color 0.2s ease, transform 0.3s ease; 
+        }
+        .theme-toggle:hover { color: var(--text-dark); transform: rotate(15deg) scale(1.1); }
+        .light .theme-toggle:hover { color: var(--color-primary); }
     </style>
 </head>
 <body class="dark">
-    <!-- --- ✨ قسم التثبيت الذي تمت إعادته --- -->
+    <!-- --- ✨ Cosmic Background --- -->
+    <div class="cosmic-bg-container">
+        <div class="nebula-glow"></div>
+        <canvas id="starfield-canvas"></canvas>
+    </div>
+    
+    <!-- --- ✨ Styled Install Section --- -->
     <div id="install-section">
         <p>لتثبيت الأداة، اسحب هذا الزر إلى شريط الإشارات المرجعية:</p>
         <a class="bookmarklet-button" href="javascript:(function(){var s=document.createElement('script');s.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now();document.head.appendChild(s);})();" 
-           onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">
+           onclick="alert('لا تضغط على الزر، بل اسحبه إلى شريط الإشارات!'); return false;">
             🎓 استخراج جدولي
         </a>
     </div>
@@ -120,18 +228,20 @@
         <div class="calendar-container"><div id='calendar'></div></div>
     </main>
     <aside class="sidebar">
-        <header class="sidebar-header">
-            <h2><i class="ri-function-line"></i> شعب المقررات</h2>
-            <i class="ri-sun-line theme-toggle" title="تغيير المظهر"></i>
-        </header>
-        <div class="sidebar-content" id="courses-list">
-            <div class="no-data" id="no-data-message"><p>شغل الأداة من موقع الجامعة...</p></div>
+        <div class="sidebar-inner">
+            <header class="sidebar-header">
+                <h2><i class="ri-function-line"></i> المقررات</h2>
+                <i class="ri-sun-line theme-toggle" title="تغيير المظهر"></i>
+            </header>
+            <div class="sidebar-content" id="courses-list">
+                <div class="no-data" id="no-data-message"><p>في انتظار البيانات...<br>الرجاء تشغيل أداة "استخراج جدولي" من صفحة المقررات المطروحة في موقع الجامعة.</p></div>
+            </div>
         </div>
     </aside>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // كل كود الجافاسكريبت هنا (لم يتغير عن النسخة السابقة)
+            // --- AI Studio Logic (unchanged) ---
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
@@ -140,7 +250,7 @@
             
             let calendar, allCoursesData = [], groupedCourses;
             const selectedSections = new Set();
-            const colorPalette = ['#818cf8', '#f472b6', '#4ade80', '#fbbf24', '#60a5fa', '#c084fc', '#f87171', '#fb923c'];
+            const colorPalette = ['#5e9cff', '#f472b6', '#4ade80', '#fbbf24', '#a777ff', '#c084fc', '#f87171', '#fb923c'];
             const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
 
             function initializeCalendar() {
@@ -150,6 +260,7 @@
                     slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
                     events: [], dir: 'rtl', hiddenDays: [5, 6],
                     dayHeaderFormat: { weekday: 'long' },
+                    slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false, meridiem: 'short' },
                     eventClick: (info) => {
                         const uniqueId = info.event.extendedProps.uniqueId;
                         if (selectedSections.has(uniqueId)) {
@@ -180,7 +291,7 @@
             }
 
             function displayData(courses) {
-                installSection.style.display = 'none'; // إخفاء شريط التثبيت عند وجود بيانات
+                installSection.style.display = 'none';
                 allCoursesData = courses.map((section, index) => {
                     const uniqueId = `${section.code}-${section.section}-${index}`;
                     return { ...section, uniqueId, timeSlots: parseTimeEntries(section.time) };
@@ -205,12 +316,12 @@
                     let sectionsHTML = '';
 
                     group.sections.forEach(section => {
-                        const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'تدريب' : 'نظري';
+                        const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'عملي' : 'نظري';
                         sectionsHTML += `<div class="section-btn" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div></div>`;
                     });
 
                     courseItem.innerHTML = `
-                        <div class="course-item-header"><span class="color-dot" style="background-color: ${courseColor};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعبة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div>
+                        <div class="course-item-header"><span class="color-dot" style="background-color: ${courseColor};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div>
                         <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
                     coursesListContainer.appendChild(courseItem);
                 });
@@ -250,7 +361,11 @@
 
                 allCoursesData.forEach(section => {
                     const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
-                    if (!btn || selectedSections.has(section.uniqueId)) return;
+                    if (!btn || selectedSections.has(section.uniqueId)) {
+                        if (btn) btn.classList.remove('conflicted');
+                        btn?.querySelector('.conflict-icon')?.remove();
+                        return;
+                    }
                     
                     const isConflicted = section.timeSlots.some(slot =>
                         currentScheduleSlots.some(scheduleSlot =>
@@ -305,15 +420,24 @@
                     calendar.removeAllEvents();
                     selectedSections.clear();
                     document.querySelectorAll('.section-btn.selected').forEach(btn => btn.classList.remove('selected'));
-                    updateCalendarAndConflicts(); // إعادة فحص التعارضات بعد المسح
+                    updateCalendarAndConflicts();
                 }
             });
             
             themeToggle.addEventListener('click', () => {
-                document.body.classList.toggle('dark');
-                if (document.body.classList.contains('dark')) themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
-                else themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
+                const isDark = document.body.classList.toggle('dark');
+                document.body.classList.toggle('light', !isDark);
+                if (isDark) {
+                    themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
+                } else {
+                    themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
+                }
+                calendar.render(); // Re-render to apply theme
             });
+            // Initial theme setup
+            document.body.classList.add('dark');
+            document.body.classList.remove('light');
+            themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
 
             window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'universityCoursesData') {
@@ -329,6 +453,106 @@
             
             initializeCalendar();
         });
+    </script>
+    <script>
+    // --- Absence Calculator's Cosmic Background Logic ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const initCosmicEffects = () => {
+            const canvas = document.getElementById('starfield-canvas'); if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let stars = [], shootingStars = [], scrollSpeed = 0, lastScrollY = window.scrollY;
+            let mouseX = 0, mouseY = 0;
+
+            function resizeCanvas() { 
+                canvas.width = window.innerWidth; 
+                canvas.height = window.innerHeight; 
+            }
+
+            window.addEventListener('mousemove', e => {
+                mouseX = e.clientX - canvas.width / 2;
+                mouseY = e.clientY - canvas.height / 2;
+            });
+            
+            class Star { 
+                constructor() {
+                    this.depth = Math.random() * 0.9 + 0.1;
+                    this.reset();
+                    this.pulsate = Math.random() > 0.98;
+                    this.alpha = 0;
+                    this.alphaChange = (Math.random() * 0.02) + 0.005;
+					this.vx = (Math.random() - 0.5) * 0.1 * this.depth;
+                    this.vy = (Math.random() - 0.5) * 0.1 * this.depth;
+                }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.radius = (Math.random() * 1.2 + 0.3) * this.depth;
+                    this.maxAlpha = (Math.random() * 0.5 + 0.3) * this.depth;
+                }
+                draw() {
+                    const parallaxX = (mouseX / (canvas.width / 2)) * -25 * this.depth;
+                    const parallaxY = (mouseY / (canvas.height / 2)) * -25 * this.depth;
+
+                    if (this.pulsate) { 
+                        this.alpha += this.alphaChange; 
+                        if (this.alpha >= this.maxAlpha || this.alpha <= 0) this.alphaChange *= -1; 
+                    } else { 
+                        this.alpha = this.maxAlpha; 
+                    }
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x + parallaxX, this.y + parallaxY, this.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsl(220, 80%, 95%)`;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+                update() {
+                    this.y += (scrollSpeed * this.depth) + this.vy; 
+					this.x += this.vx;
+
+					if (this.x > canvas.width + this.radius) this.x = -this.radius;
+					if (this.x < -this.radius) this.x = canvas.width + this.radius;
+                    if (this.y > canvas.height + this.radius) this.y = -this.radius;
+                    if (this.y < -this.radius) this.y = canvas.height + this.radius;
+
+                    this.draw();
+                }
+            }
+            class ShootingStar { constructor() { this.reset(); } reset() { this.x = Math.random() * canvas.width; this.y = 0; this.len = Math.random() * 80 + 10; this.speed = Math.random() * 10 + 6; this.size = Math.random() * 1 + 0.1; this.waitTime = new Date().getTime() + Math.random() * 3000 + 500; this.active = false; } update() { if (this.active) { this.x -= this.speed; this.y += this.speed; if (this.x < 0 || this.y >= canvas.height) this.reset(); } else if (this.waitTime < new Date().getTime()) this.active = true; } draw() { if (this.active) { ctx.strokeStyle = `hsla(220, 100%, 80%, ${Math.random() * 0.5 + 0.5})`; ctx.lineWidth = this.size; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + this.len, this.y - this.len); ctx.stroke(); } } }
+            
+            function initStars() { 
+                stars = []; 
+                shootingStars = []; 
+                const starCount = Math.floor(canvas.width * canvas.height / 8000); 
+                for (let i = 0; i < starCount; i++) { stars.push(new Star()); } 
+                for (let i = 0; i < 3; i++) { shootingStars.push(new ShootingStar()); } 
+            }
+
+            function animate() { 
+                requestAnimationFrame(animate); 
+                ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                stars.forEach(s => s.update()); 
+                shootingStars.forEach(s => { s.update(); s.draw(); }); 
+                scrollSpeed *= 0.9; 
+            }
+
+            window.addEventListener('scroll', () => { 
+                const delta = window.scrollY - lastScrollY; 
+                scrollSpeed += delta * 0.03;
+                lastScrollY = window.scrollY; 
+            });
+
+            window.addEventListener('resize', () => { 
+                resizeCanvas(); 
+                initStars(); 
+            });
+            
+            resizeCanvas(); 
+            initStars(); 
+            animate();
+        };
+        initCosmicEffects();
+    });
     </script>
 </body>
 </html>
