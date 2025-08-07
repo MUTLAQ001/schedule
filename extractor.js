@@ -2,20 +2,21 @@
     'use strict';
 
     // =========================================================================
-    // --- 🔴 المنطقة التي ستحتاج إلى تعديلها 🔴 ---
+    // --- 🔴 هذه هي المنطقة الوحيدة التي تحتاج إلى تعديلها 🔴 ---
     
-    // 1. ضع هنا رابط صفحة العرض (ملف index.html) بعد رفعها على GitHub.
-    // مثال: 'https://username.github.io/repo-name/'
-    const VIEWER_PAGE_URL = 'ضع هنا رابط صفحة العرض بعد رفعها';
+    // 1. لقد تم وضع رابط صفحة العرض الخاصة بك تلقائيًا.
+    const VIEWER_PAGE_URL = 'https://mutlaq001.github.io/schedule/';
 
     // 2. قائمة النطاقات (الدومينات) المسموح للأداة بالعمل عليها
+    // 💡 أضف هنا رابط بوابة جامعتك
     const VALID_DOMAINS = [
-        'stu-gate.qu.edu.sa', // مثال جامعة القصيم
-        // أضف هنا رابط بوابة جامعتك
-        'my-university-portal.edu.sa'
+        'stu-gate.qu.edu.sa', // مثال جامعة القصيم - يجب تغييره
+        'edugate.ksu.edu.sa', // مثال جامعة الملك سعود - يجب تغييره
+        'uom.edu.sa'          // مثال جامعة المجمعة - يجب تغييره
     ];
 
     // 3. المحددات (Selectors) الخاصة بجدول المقررات في موقع جامعتك
+    // 💡 هذا هو أهم جزء يجب أن تعدله ليناسب موقع جامعتك
     const courseRowSelector = 'tr.courserow';
     const courseNameSelector = 'td:nth-of-type(3)';
     const courseCodeSelector = 'td:nth-of-type(2)';
@@ -51,7 +52,7 @@
     function showLoading() {
         const loadingHTML = `
             <div style="text-align: center; background: white; padding: 30px; border-radius: 10px; color: #333; min-width: 300px;">
-                <div style="font-size: 18px; margin-bottom: 15px;">🎓 أداتي الخاصة</div>
+                <div style="font-size: 18px; margin-bottom: 15px;">🎓 أداة جدولي</div>
                 <div style="font-size: 14px; margin-bottom: 20px;">جاري استخراج بيانات المقررات...</div>
                 <div style="width: 100%; background: #f0f0f0; border-radius: 10px; overflow: hidden;">
                     <div id="my-progress-bar" style="width: 0%; height: 4px; background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); transition: width 0.3s ease;"></div>
@@ -85,8 +86,6 @@
         const hostname = window.location.hostname.toLowerCase();
         return VALID_DOMAINS.some(domain => hostname.includes(domain));
     }
-
-    // --- الوظيفة الرئيسية الجديدة ---
     
     function startExtraction() {
         try {
@@ -97,7 +96,7 @@
             const courseRows = document.querySelectorAll(courseRowSelector);
             
             if (courseRows.length === 0) {
-                throw new Error("لم يتم العثور على أي مقررات. تأكد من أنك في الصفحة الصحيحة وأن المحددات (selectors) صحيحة.");
+                throw new Error("لم يتم العثور على أي مقررات. تأكد من أنك في الصفحة الصحيحة وأن المحددات (selectors) في الكود صحيحة.");
             }
             updateProgress(50);
 
@@ -123,7 +122,6 @@
             localStorage.setItem('myUniversityCourses', JSON.stringify(coursesData));
             updateProgress(100);
 
-            // تمهيداً للانتقال
             setTimeout(() => {
                 window.open(VIEWER_PAGE_URL, '_blank');
                 removeOverlay();
@@ -133,13 +131,6 @@
             console.error('Extraction Error:', error);
             showError(error.message || 'حدث خطأ غير متوقع.');
         }
-    }
-
-    // --- بداية التنفيذ ---
-    
-    if (VIEWER_PAGE_URL === 'ضع هنا رابط صفحة العرض بعد رفعها') {
-        alert("خطأ في الإعداد: الرجاء تعديل ملف my-pro-extractor.js ووضع رابط صفحة العرض الصحيح.");
-        return;
     }
     
     if (!isValidPage()) {
@@ -152,11 +143,10 @@
         return;
     }
 
-    // عرض شروط وأحكام مبسطة قبل البدء
     const termsHTML = `
         <div style="background: white; border-radius: 15px; max-width: 450px; width: 90%; color: #333; padding: 25px;">
             <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 22px; margin-bottom: 10px;">🎓 أداتي الخاصة</div>
+                <div style="font-size: 22px; margin-bottom: 10px;">🎓 أداة جدولي</div>
                 <div style="font-size: 16px; color: #667eea; font-weight: 600;">استخراج جدول المقررات</div>
             </div>
             <p style="font-size: 14px; line-height: 1.6; text-align: center; margin-bottom: 25px;">
@@ -184,5 +174,4 @@
     document.getElementById('tool-decline').onclick = () => {
         removeOverlay();
     };
-
 })();
