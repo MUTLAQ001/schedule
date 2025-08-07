@@ -1,11 +1,75 @@
-// extractor.js - QU Schedule v14 (كمبيوتر + جوال + فترة الاختبار)
+// extractor.js - QU Schedule v15 (Fixed)
 (function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v14 Initialized...");
+    console.log("🚀 QU Schedule Extractor v15 Initialized...");
 
-    // --- START: LZString Compression Library ---
-    var LZString=function(){var f={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",compressToEncodedURIComponent:function(a){return null==a?"":f._compress(a,6,function(a){return f._keyStr.charAt(a)})},_compress:function(a,g,b){if(null==a)return"";var h,d,c,e={},f={},k="",l="",m="",n=2,p=3,q=2,r=[],s=0,t=0;for(c=0;c<a.length;c+=1)if(k=a.charAt(c),!Object.prototype.hasOwnProperty.call(e,k)&&(e[k]=p++,f[k]=!0),l=m+k,Object.prototype.hasOwnProperty.call(e,l))m=l;else{if(Object.prototype.hasOwnProperty.call(f,m)){if(m.charCodeAt(0)<256){for(h=0;h<q;h++)s<<=1,t==g-1?(t=0,r.push(b(s)),s=0):t++;for(d=m.charCodeAt(0),h=0;h<8;h++)s=s<<1|1&d,t==g-1?(t=0,r.push(b(s)),s=0):t++,d>>=1}else{for(d=1,h=0;h<q;h++)s=s<<1|d,t==g-1?(t=0,r.push(b(s)),s=0):t++,d=0;for(d=m.charCodeAt(0),h=0;h<16;h++)s=s<<1|1&d,t==g-1?(t=0,r.push(b(s)),s=0):t++,d>>=1}n--,0==n&&(n=Math.pow(2,q),q++),delete f[m]}else for(d=e[m],h=0;h<q;h++)s=s<<1|1&d,t==g-1?(t=0,r.push(b(s)),s=0):t++,d>>=1;n--,0==n&&(n=Math.pow(2,q),q++),e[l]=p++,m=String(k)}if(""!==m){if(Object.prototype.hasOwnProperty.call(f,m)){if(m.charCodeAt(0)<256){for(h=0;h<q;h++)s<<=1,t==g-1?(t=0,r.push(b(s)),s=0):t++;for(d=m.charCodeAt(0),h=0;h<8;h++)s=s<<1|1&d,t==g-1?(t=0,r.push(b(s)),s=0):t++,d>>=1}else{for(d=1,h=0;h<q;h++)s=s<<1|d,t==g-1?(t=0,r.push(b(s)),s=0):t++,d=0;for(d=m.charCodeAt(0),h=0;h<16;h++)s=s<<1|1&d,t==g-1?(t=0,r.push(b(s)),s=0):t++,d>>=1}n--,0==n&&(n=Math.pow(2,q),q++),delete f[m]}else for(d=e[m],h=0;h<q;h++)s=s<<1|1&d,t==g-1?(t=0,r.push(b(s)),s=0):t++,d>>=1;n--,0==n&&(n=Math.pow(2,q),q++)}for(d=2,h=0;h<q;h++)s=s<<1|1&d,t==g-1?(t=0,r.push(b(s)),s=0):t++,d>>=1;for(;;){if(s<<=1,t==g-1){r.push(b(s));break}t++}return r.join("")}};return f}();
+    // --- START: LZString Compression Library (Corrected Version) ---
+    var LZString = (function() {
+        var f = Object.create(null),
+            i = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".split("");
+        f.compressToEncodedURIComponent = function(o) {
+            if (null == o) return "";
+            var r = f._compress(o, 6, function(o) {
+                return i[o]
+            });
+            return r
+        };
+        f._compress = function(o, r, n) {
+            if (null == o) return "";
+            var t, e, s, u = Object.create(null),
+                p = Object.create(null),
+                a = "",
+                l = "",
+                c = "",
+                d = 2,
+                h = 3,
+                g = 2,
+                v = [],
+                _ = 0,
+                m = 0;
+            for (s = 0; s < o.length; s += 1)
+                if (a = o.charAt(s), u[a] || (u[a] = h++, p[a] = !0), l = c + a, u[l]) c = l;
+                else {
+                    if (p[c]) {
+                        if (c.charCodeAt(0) < 256) {
+                            for (t = 0; t < g; t++) _ <<= 1, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++;
+                            for (e = c.charCodeAt(0), t = 0; t < 8; t++) _ = _ << 1 | 1 & e, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++, e >>= 1
+                        } else {
+                            for (e = 1, t = 0; t < g; t++) _ = _ << 1 | e, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++, e = 0;
+                            for (e = c.charCodeAt(0), t = 0; t < 16; t++) _ = _ << 1 | 1 & e, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++, e >>= 1
+                        }
+                        d--, 0 == d && (d = Math.pow(2, g), g++), delete p[c]
+                    } else
+                        for (e = u[c], t = 0; t < g; t++) _ = _ << 1 | 1 & e, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++, e >>= 1;
+                    d--, 0 == d && (d = Math.pow(2, g), g++), u[l] = h++, c = String(a)
+                }
+            if ("" !== c) {
+                if (p[c]) {
+                    if (c.charCodeAt(0) < 256) {
+                        for (t = 0; t < g; t++) _ <<= 1, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++;
+                        for (e = c.charCodeAt(0), t = 0; t < 8; t++) _ = _ << 1 | 1 & e, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++, e >>= 1
+                    } else {
+                        for (e = 1, t = 0; t < g; t++) _ = _ << 1 | e, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++, e = 0;
+                        for (e = c.charCodeAt(0), t = 0; t < 16; t++) _ = _ << 1 | 1 & e, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++, e >>= 1
+                    }
+                    d--, 0 == d && (d = Math.pow(2, g), g++), delete p[c]
+                } else
+                    for (e = u[c], t = 0; t < g; t++) _ = _ << 1 | 1 & e, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++, e >>= 1;
+                d--, 0 == d && (d = Math.pow(2, g), g++)
+            }
+            for (e = 2, t = 0; t < g; t++) _ = _ << 1 | 1 & e, m == r - 1 ? (m = 0, v.push(n(_)), _ = 0) : m++, e >>= 1;
+            for (;;) {
+                if (_ <<= 1, m == r - 1) {
+                    v.push(n(_));
+                    break
+                }
+                m++
+            }
+            return v.join("")
+        };
+        return f
+    })();
     // --- END: LZString ---
 
     const SELECTORS = {
@@ -85,34 +149,6 @@
             window.open(viewerURL, '_blank');
         } else {
             alert("Extraction failed. No courses found. Please make sure the courses page is fully loaded.");
-        }
-
-    }, 1500);
-})();        const isDesktop = document.querySelector(SELECTORS.desktop.container);
-        const isMobile = document.querySelector(SELECTORS.mobile.container);
-
-        if (isDesktop) {
-            courses = extractFromDesktop();
-        } else if (isMobile) {
-            courses = extractFromMobile();
-        } else {
-            courses = extractFromDesktop();
-            if (courses.length === 0) {
-                courses = extractFromMobile();
-            }
-        }
-
-        if (courses && courses.length > 0) {
-            console.log(`🎉 نجاح! تم استخراج بيانات ${courses.length} مقررًا.`);
-            const jsonString = JSON.stringify(courses);
-            const compressedData = LZString.compressToEncodedURIComponent(jsonString);
-            const viewerURL = `https://mutlaq001.github.io/schedule/?data=${compressedData}`;
-            
-            console.log("📨 جار التوجيه إلى صفحة العرض مع البيانات...");
-            window.open(viewerURL, '_blank');
-            
-        } else {
-            alert("فشل الاستخراج. لم يتم العثور على أي مقررات. تأكد من أن الصفحة محملة بالكامل.");
         }
 
     }, 1500);
