@@ -692,7 +692,6 @@
                 else if(period === 3) { startTime = '13:00:00'; endTime = '15:00:00'; }
                 else { return null; }
 
-                // Placeholder date. A proper Hijri-Gregorian library is needed for real conversion.
                 return {
                     title: `اختبار ${section.code}`,
                     start: `2030-01-01T${startTime}`, end: `2030-01-01T${endTime}`,
@@ -757,14 +756,17 @@
 
             function parseTimeEntries(timeString) {
                 if (!timeString) return [];
-                return timeString.split('<br>').map(entry => {
-                    const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
-                    if (!parts) return null;
-                    const daysArray = parts[1].trim().split(/\s+/);
-                    const startTime = convertTo24Hour(parts[2], parts[3]);
-                    const endTime = convertTo24Hour(parts[4], parts[5]);
-                    return daysArray.map(dayName => dayMapping.hasOwnProperty(dayName) ? { day: dayMapping[dayName], start: startTime, end: endTime } : null);
-                }).flat().filter(Boolean);
+                const timeRegex = /([\u0621-\u064A\s]+):\s*(\d{1,2}:\d{2})\s*(ص|م)\s*-\s*(\d{1,2}:\d{2})\s*(ص|م)/g;
+                let match;
+                const entries = [];
+                while ((match = timeRegex.exec(timeString)) !== null) {
+                    const daysArray = match[1].trim().split(/\s+/);
+                    const startTime = convertTo24Hour(match[2], match[3]);
+                    const endTime = convertTo24Hour(match[4], match[5]);
+                    const entry = daysArray.map(dayName => dayMapping.hasOwnProperty(dayName) ? { day: dayMapping[dayName], start: startTime, end: endTime } : null);
+                    entries.push(...entry);
+                }
+                return entries.flat().filter(Boolean);
             }
 
             function convertTo24Hour(time, period) {
@@ -772,7 +774,7 @@
                 hours = parseInt(hours);
                 if (period === 'م' && hours !== 12) hours += 12;
                 if (period === 'ص' && hours === 12) hours = 0;
-                return `${String(hours).padStart(2, '0')}:${minutes}:00`;
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
             }
             // --- END: Data Handling & Display ---
 
@@ -875,13 +877,11 @@
                 }
             }
             
-            // Listen for data from the extractor script
             window.addEventListener('message', (event) => {
                 if (event.data && event.data.type === 'universityCoursesData') {
                     console.log("Received data from opener via postMessage.");
                     localStorage.setItem('quScheduleCourses', JSON.stringify(event.data.data));
                     displayData(event.data.data);
-                    // Clear any old selected schedule if new data arrives
                     localStorage.removeItem('quScheduleSelected');
                     selectedSections.clear();
                     updateCalendarAndConflicts();
@@ -891,25 +891,30 @@
             populateTimeSelects();
             loadSettings();
 
-            // Try to load from localStorage first
             const storedCourses = localStorage.getItem('quScheduleCourses');
             if (storedCourses) {
                 console.log("Loading data from localStorage.");
                 displayData(JSON.parse(storedCourses));
                 const storedSchedule = localStorage.getItem('quScheduleSelected');
                 if(storedSchedule) {
-                    const parsedSchedule = JSON.parse(storedSchedule);
-                    parsedSchedule.forEach(id => selectedSections.add(id));
-                     document.querySelectorAll('.section-btn').forEach(btn => {
-                        if(btn) btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
-                    });
+                    try {
+                        const parsedSchedule = JSON.parse(storedSchedule);
+                        if(Array.isArray(parsedSchedule)) {
+                           parsedSchedule.forEach(id => selectedSections.add(id));
+                            document.querySelectorAll('.section-btn').forEach(btn => {
+                                if(btn) btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
+                            });
+                        }
+                    } catch(e) {
+                        console.error("Could not parse selected schedule:", e);
+                        localStorage.removeItem('quScheduleSelected');
+                    }
                 }
             } else {
-                // If no stored data, show install section and request data from opener
                 if(installSection) installSection.style.display = 'block';
                 if (window.opener) {
                     console.log("Requesting data from opener window...");
-                    window.opener.postMessage('request_schedule_data', '*'); // Use a specific origin in production
+                    window.opener.postMessage('request_schedule_data', '*');
                 }
             }
             
