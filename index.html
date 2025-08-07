@@ -32,48 +32,56 @@
         <header><h1>🎓 جدولي الدراسي</h1></header>
         <div class="content">
             <div id="table-container"></div>
-            <div id="no-data-message" class="no-data" style="display: none;">
-                <p>لم يتم العثور على بيانات. يمكنك تثبيت الأداة من الأعلى، ثم الذهاب لصفحة الجامعة وتشغيلها.</p>
+            <div id="no-data-message" class="no-data">
+                <p>جاري انتظار البيانات من صفحة الجامعة...</p>
+                <p style="font-size: 14px; color: #aaa;">إذا لم يظهر الجدول، تأكد من أنك قمت بتشغيل الأداة من موقع الجامعة.</p>
             </div>
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const tableContainer = document.getElementById('table-container');
-            const noDataMessage = document.getElementById('no-data-message');
+        const tableContainer = document.getElementById('table-container');
+        const noDataMessage = document.getElementById('no-data-message');
 
-            // --- ✨ تحديث مهم: قراءة البيانات من الرابط ---
-            const params = new URLSearchParams(window.location.search);
-            const dataParam = params.get('data');
-
-            if (dataParam) {
-                try {
-                    // 1. فك ضغط البيانات من الرابط
-                    const decodedString = decodeURIComponent(dataParam);
-                    // 2. تحويل النص إلى بيانات قابلة للاستخدام
-                    const courses = JSON.parse(decodedString);
-
-                    let tableHTML = `<table><thead><tr><th>رمز المقرر</th><th>اسم المقرر</th><th>الشعبة</th><th style="width: 35%;">الوقت والمكان</th><th>المحاضر</th></tr></thead><tbody>`;
-                    courses.forEach(course => {
-                        tableHTML += `<tr>
-                            <td>${course.code || ''}</td>
-                            <td>${course.name || ''}</td>
-                            <td>${course.section || ''}</td>
-                            <td>${course.time || ''}</td>
-                            <td>${course.instructor || ''}</td>
-                        </tr>`;
-                    });
-                    tableHTML += `</tbody></table>`;
-                    tableContainer.innerHTML = tableHTML;
-                } catch (e) {
-                    console.error("خطأ في قراءة البيانات من الرابط:", e);
-                    noDataMessage.innerHTML = "<p>حدث خطأ أثناء معالجة البيانات من الرابط.</p>";
-                    noDataMessage.style.display = 'block';
-                }
-            } else {
+        function displayCourses(courses) {
+            if (!courses || courses.length === 0) {
+                noDataMessage.innerHTML = "<p>لم يتم العثور على بيانات.</p>";
                 noDataMessage.style.display = 'block';
+                return;
+            }
+
+            let tableHTML = `<table><thead><tr><th>رمز المقرر</th><th>اسم المقرر</th><th>الشعبة</th><th style="width: 35%;">الوقت والمكان</th><th>المحاضر</th></tr></thead><tbody>`;
+            courses.forEach(course => {
+                tableHTML += `<tr>
+                    <td>${course.code || ''}</td>
+                    <td>${course.name || ''}</td>
+                    <td>${course.section || ''}</td>
+                    <td>${course.time || ''}</td>
+                    <td>${course.instructor || ''}</td>
+                </tr>`;
+            });
+            tableHTML += `</tbody></table>`;
+            tableContainer.innerHTML = tableHTML;
+            noDataMessage.style.display = 'none';
+        }
+
+        // --- ✨ الخدعة الذكية: استمع للرسائل القادمة ---
+        window.addEventListener('message', function(event) {
+            // تحقق من أن الرسالة من مصدر موثوق (صفحة الجامعة) وأنها تحتوي على البيانات
+            if (event.data && event.data.type === 'universityCoursesData') {
+                console.log("🎉 تم استلام البيانات بنجاح!");
+                const courses = event.data.data;
+                displayCourses(courses);
+                // (اختياري) يمكنك حفظها في localStorage الآن إذا أردت
+                localStorage.setItem('myUniversityCourses', JSON.stringify(courses));
             }
         });
+
+        // كحل احتياطي، تحقق من localStorage إذا تم تحديث الصفحة
+        const storedCourses = localStorage.getItem('myUniversityCourses');
+        if (storedCourses) {
+            displayCourses(JSON.parse(storedCourses));
+        }
+
     </script>
 </body>
 </html>
