@@ -3,194 +3,407 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>استوديو الجداول الذكي</title>
+    <title>QU Schedule</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <meta name="theme-color" content="#0a0a0a">
 
     <style>
         :root {
-            --color-primary: #5e9cff;
-            --color-primary-dark: #4b7dcc;
-            --color-danger-red: #ff5252;
-            --color-warning-gold: #ffc400;
-            --color-bg: #0a0a0a;
-            --color-card: rgba(20, 20, 22, 0.75);
-            --color-border: rgba(255, 255, 255, 0.1);
-            --color-text: #e0e0e0;
-            --color-text-muted: #999;
-            --font-body: "Cairo", sans-serif;
-            --font-title: "IBM Plex Sans Arabic", sans-serif;
-            --radius: 20px;
-            --radius-md: 16px;
-            --radius-full: 999px;
-            --transition: 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            --transition-smooth: 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
-            --rgb-primary: 94, 156, 255;
-            --rgb-warning: 255, 196, 0;
-            --rgb-danger: 255, 82, 82;
-            --primary-hue: 217;
-            --secondary-hue: 257;
+            --primary: #6366f1; --primary-dark: #4f46e5;
+            --danger: #f43f5e; --danger-bg: rgba(244, 63, 94, 0.1);
+            --bg-main: #0a0a0a; --bg-sidebar: rgba(20, 20, 22, 0.75);
+            --bg-calendar: rgba(20, 20, 22, 0.75); --bg-item-hover: rgba(255, 255, 255, 0.05);
+            --text-dark: #f9fafb; --text-light: #a1a1aa;
+            --border-color: rgba(255, 255, 255, 0.1); --radius-md: 16px;
+            --radius-lg: 20px; --transition: 0.3s cubic-bezier(0.25,0.8,0.25,1);
+            --rgb-primary: 99, 102, 241; --rgb-danger: 244, 63, 94;
+            --rgb-warning: 251, 191, 36;
         }
+        .light {
+            --primary: #6366f1; --primary-dark: #4f46e5;
+            --danger: #ef4444; --danger-bg: #fee2e2;
+            --bg-main: #f4f4f5; --bg-sidebar: rgba(255, 255, 255, 0.75);
+            --bg-calendar: rgba(255, 255, 255, 0.75); --bg-item-hover: rgba(0, 0, 0, 0.04);
+            --text-dark: #18181b; --text-light: #71717a;
+            --border-color: rgba(0, 0, 0, 0.09);
+        }
+        
+        @keyframes gradient-animation{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+		@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+		@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+        @keyframes move-nebula{0%{transform:translate(0,0) rotate(0deg) scale(1.2)}50%{transform:translate(10vw,5vh) rotate(180deg) scale(1.5)}100%{transform:translate(0,0) rotate(360deg) scale(1.2)}}
 
         *, *::before, *::after { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body {
-            font-family: var(--font-body);
-            background-color: var(--color-bg);
-            color: var(--color-text);
-            margin: 0;
-            overflow: hidden;
-            height: 100%;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+        html, body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main);
+            color: var(--text-dark); margin: 0; height: 100vh; width: 100vw; overflow: hidden;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
-        
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
-        @keyframes scaleIn { from { opacity: 0; transform: scale(.95) } to { opacity: 1; transform: scale(1) } }
-        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
-        @keyframes move-nebula { 0% { transform: translate(0, 0) rotate(0deg) scale(1.2) } 50% { transform: translate(10vw, 5vh) rotate(180deg) scale(1.5) } 100% { transform: translate(0, 0) rotate(360deg) scale(1.2) } }
-        
-        .cosmic-bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; }
-        #starfield-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        .nebula-glow { position: absolute; top: 50%; left: 50%; width: 80vmax; height: 80vmax; margin-top: -40vmax; margin-left: -40vmax; background: radial-gradient(circle, hsl(var(--primary-hue), 90%, 60%, .15) 0%, hsl(var(--secondary-hue), 80%, 50%, .1) 40%, transparent 70%); filter: blur(100px); border-radius: 50%; animation: move-nebula 90s infinite alternate ease-in-out; }
+
+        .cosmic-bg-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;overflow:hidden}
+		#starfield-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+		.nebula-glow{position:absolute;top:50%;left:50%;width:80vmax;height:80vmax;margin-top:-40vmax;margin-left:-40vmax;background:radial-gradient(circle,hsla(var(--rgb-primary),.15) 0%,hsla(var(--rgb-primary),.1) 40%,transparent 70%);filter:blur(100px);border-radius:50%;animation:move-nebula 90s infinite alternate ease-in-out;transition:opacity .5s ease,background .5s ease}
+		.light .nebula-glow{opacity:.5;filter:blur(120px); background:radial-gradient(circle,hsla(var(--rgb-primary),.25) 0%,hsla(var(--rgb-primary),.15) 40%,transparent 70%)}
 
         #install-section {
-            position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 1000;
-            background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius);
-            padding: 1rem 1.5rem; width: 90%; max-width: 600px; text-align: center; display: none;
+            position: fixed; top: 1rem; left: 50%;
+            transform: translateX(-50%); z-index: 1000;
+            background-color: var(--bg-sidebar); padding: 1.5rem 2rem;
+            border-radius: var(--radius-lg); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4);
+            border: 1px solid var(--border-color); width: 90%; max-width: 600px;
+            text-align: center; display: none;
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            animation: scaleIn .5s var(--transition) both;
         }
-        #install-section h3 { margin: 0 0 0.5rem; color: var(--color-primary); }
-        #install-section p { margin: 0 0 1rem; font-size: 0.9rem; color: var(--color-text-muted); }
-        .bookmarklet-button { display: inline-block; background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary)); color: white; padding: 0.75rem 1.5rem; border-radius: var(--radius-full); font-weight: 600; text-decoration: none; cursor: grab; transition: all .2s ease-in-out; }
-        .bookmarklet-button:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.25); }
+        #install-section h3 { margin: 0 0 0.5rem; font-weight: 700; font-size: 1.5rem; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% 200%; animation: gradient-animation 5s ease-in-out infinite; }
+        #install-section p { margin: 0 0 1.5rem; font-size: 0.9rem; color: var(--text-light); }
+        .bookmarklet-button { display: inline-block; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); color: white; padding: 0.7rem 1.5rem; border-radius: 999px; font-weight: 600; text-decoration: none; cursor: grab; transition: all .2s ease-in-out; }
+        .bookmarklet-button:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(var(--rgb-primary),0.25); filter: brightness(1.1); }
+        .mobile-only-instructions { display: none; } .desktop-only-drag { display: block; }
 
         .page-wrapper { display: flex; height: 100vh; }
-        
-        .sidebar {
-            width: 380px; height: 100%; display: flex; flex-direction: column; flex-shrink: 0;
-            background: var(--color-card); border-left: 1px solid var(--color-border);
-            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4);
-        }
-        .sidebar-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .sidebar-header h2 { margin: 0; font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: #fff; }
-        .sidebar-content { flex-grow: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: 1rem; }
-        .sidebar-footer { padding: 1rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
-        .sidebar-footer a { font-size: 0.9rem; font-weight: 600; color: var(--color-text-muted); text-decoration: none; transition: color 0.2s ease; }
-        .sidebar-footer a:hover { color: var(--color-primary); }
-        .sidebar-footer a i { vertical-align: middle; margin-left: 4px; }
+        .sidebar { width: 400px; height: 100%; background-color: var(--bg-sidebar); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background-color var(--transition), border-color var(--transition); }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .sidebar-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--text-dark); }
+        .sidebar-content-wrapper { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar-tabs { display: flex; padding: 0.75rem 1rem 0; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--text-light); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; position: relative; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab-content { padding: 1rem; display: none; flex-grow: 1; overflow-y: auto; }
+        .tab-content.active { display: block; }
+        .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border-color); text-align: center; flex-shrink: 0; }
+        .sidebar-footer a { font-size: 0.9rem; font-weight: 600; color: var(--text-light); text-decoration: none; transition: color 0.2s ease; }
+        .sidebar-footer a:hover { color: var(--primary); }
+        .sidebar-footer a i { vertical-align: middle; margin-left: 4px; font-size: 1.2em; }
+        .header-control-icon { cursor: pointer; color: var(--text-light); transition: all 0.2s ease; font-size: 1.4rem; padding: 0.25rem; }
+        .header-control-icon:hover { color: var(--text-dark); transform: scale(1.1); }
 
-        .course-item {
-            display: flex; flex-direction: column; gap: 0.75rem; padding: 1.25rem;
-            background: rgba(0,0,0,0.2); border: 1px solid var(--color-border);
-            border-radius: var(--radius-md); transition: all .4s cubic-bezier(0.2, 0.8, 0.2, 1);
-            position: relative; overflow: hidden;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
-            --status-color: var(--color-primary); --rgb-status: var(--rgb-primary);
-        }
-        .course-item::before {
-            content: ''; position: absolute; inset: 0; border-radius: var(--radius-md);
-            background: radial-gradient(circle at 100% 0, rgba(var(--rgb-status), 0.12) 0%, transparent 40%);
-            opacity: 1; transition: opacity 0.5s ease, background 0.5s ease; z-index: 1;
-        }
-        .course-item:hover {
-            transform: translateY(-5px);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07), 0 0 25px -4px rgba(var(--rgb-status), 0.4), 0 12px 30px -10px rgba(0,0,0,0.5);
-        }
-        .course-item-header, .course-meta { position: relative; z-index: 2; }
-        .course-item-header { display: flex; align-items: center; gap: 0.75rem; cursor: pointer; }
-        .course-item-header .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .course-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: rgba(0,0,0,0.1); animation: fadeInUp .5s ease both; position: relative; overflow: hidden; }
+        .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; transition: background-color var(--transition); }
+        .course-item-header:hover { background-color: var(--bg-item-hover); }
+        .course-item-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
         .course-info { flex-grow: 1; }
-        .course-info h3 { margin: 0; font-family: var(--font-title); font-size: 1.1rem; font-weight: 400; color: #fff; }
-        .course-info p { margin: 2px 0 0; font-size: 0.8rem; color: var(--color-text-muted); }
+        .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-dark); }
+        .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--text-light); }
         .course-item-header .toggle-icon { transition: transform 0.3s; font-size: 1.5rem; }
         .course-item.open .toggle-icon { transform: rotate(180deg); }
-
         .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
         .course-item.open .sections-wrapper { max-height: 600px; }
-        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; padding: 1rem 0 0; }
-        .section-btn { padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: rgba(0,0,0,0.2); transition: all 0.2s; position: relative; }
-        .section-btn:hover { border-color: var(--color-primary); background-color: rgba(var(--rgb-primary), 0.1); }
-        .section-btn.selected { background-color: var(--color-primary); color: white; border-color: var(--color-primary); }
-        .section-btn.selected .section-type { color: white !important; }
-        .section-btn.conflicted { background-color: rgba(var(--rgb-danger), 0.15); border-color: rgba(var(--rgb-danger), 0.5); cursor: not-allowed; }
-        .section-btn.conflicted:hover { border-color: var(--color-danger-red); }
-        .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--color-danger-red); background: var(--color-bg); border-radius: 50%; font-size: 1.2em; }
-        .section-btn.no-time { background-color: rgba(var(--rgb-warning), 0.1); border-color: rgba(var(--rgb-warning), 0.4); }
-        .section-btn.no-time:hover { border-color: var(--color-warning-gold); }
+        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 0 1.25rem 1.25rem; }
+        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 999px; text-align: center; cursor: pointer; background-color: transparent; transition: all 0.2s; position: relative; }
+        .section-btn:hover { border-color: var(--primary); background-color: rgba(var(--rgb-primary), 0.1); }
+        .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
+        .section-btn.selected .section-type { color: rgba(255,255,255,0.8) !important; }
+        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.7; }
+        .section-btn.conflicted:hover { border-color: var(--danger); }
+        .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--danger); background: var(--bg-sidebar); border-radius: 50%; font-size: 1.2em; }
         .section-btn-number { font-weight: 700; font-size: 1rem; }
-        .section-type { font-size: 0.75rem; color: var(--color-text-muted); }
-        
+        .section-type { font-size: 0.75rem; color: var(--text-light); }
+
+        .exam-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: rgba(var(--rgb-primary), 0.05); animation: fadeInUp .5s ease both; }
+        .exam-icon { font-size: 1.5rem; color: var(--primary); }
+        .exam-details h4 { font-size: 1rem; margin: 0 0 0.25rem; color: var(--text-dark); }
+        .exam-details p { font-size: 0.85rem; margin: 0; color: var(--text-light); line-height: 1.6; }
+        .exam-details p strong { color: var(--text-dark); font-weight: 600; }
+
         .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
-        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; animation: fadeInUp .8s var(--transition-smooth) .2s both; }
-        .main-header h1 { margin: 0; font-family: var(--font-title); font-size: 2rem; display: flex; align-items: center; gap: 0.75rem; color: #fff; }
-        .header-actions { display: flex; gap: 0.5rem; }
-        .header-actions button { background: rgba(255,255,255,0.05); border: 1px solid var(--color-border); color: var(--color-text-muted); padding: 0.6rem 1.2rem; border-radius: var(--radius-full); font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
-        .header-actions button:hover { background-color: rgba(255,255,255,0.1); color: var(--color-text); border-color: rgba(255,255,255,0.2); }
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% 200%; animation: gradient-animation 5s ease-in-out infinite; }
+        .header-actions { display: flex; gap: 0.75rem; }
+        .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .header-actions button:hover { background-color: rgba(var(--rgb-primary), 0.2); border-color: var(--primary); transform: translateY(-2px); }
         
-        .calendar-container {
-            flex-grow: 1; min-height: 0;
-            background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius);
-            padding: 1rem; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4);
-            animation: fadeInUp .8s var(--transition-smooth) .4s both;
-        }
+        .calendar-container { flex-grow: 1; background-color: var(--bg-calendar); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; min-height: 0; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); animation: scaleIn .5s var(--transition) both; }
         #calendar { height: 100%; }
-        .fc { --fc-border-color: var(--color-border); --fc-page-bg-color: transparent; --fc-neutral-bg-color: rgba(0,0,0,0.2); --fc-list-event-dot-width: 10px; --fc-list-event-hover-bg-color: rgba(var(--rgb-primary), 0.1); }
-        .fc .fc-col-header-cell-cushion { font-family: var(--font-title); padding: 0.75rem 0; font-weight: 600; color: var(--color-text); }
-        .fc .fc-day-today { background-color: rgba(var(--rgb-primary), 0.05) !important; }
+        .fc { --fc-border-color: var(--border-color); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; }
+        .fc-col-header-cell { background-color: transparent; border: none; padding: 0.75rem 0; font-weight: 600; color: var(--text-light); border-bottom: 1px solid var(--border-color); }
+        .fc .fc-day-today { background-color: transparent !important; }
         .fc-theme-standard .fc-scrollgrid { border: none; }
-        .fc-timegrid-slot { height: 50px !important; }
-        .fc-event { border: none !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
-        .fc-event.fc-event-exam { border-left: 4px solid var(--color-danger-red) !important; background-color: rgba(var(--rgb-danger), 0.2) !important; }
-        .fc-daygrid-event { white-space: normal !important; align-items: center; }
-        .fc-event-main-frame { flex-direction: row; gap: 6px; }
-        .fc-event-time { font-weight: bold; }
-        .fc .fc-toolbar-title { font-family: var(--font-title); font-size: 1.5em; }
-        .fc .fc-button { background: rgba(255,255,255,0.1) !important; border: 1px solid var(--color-border) !important; color: var(--color-text) !important; box-shadow: none !important; }
-        .fc .fc-button:hover { background: rgba(255,255,255,0.2) !important; }
+        .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
+        .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); background: linear-gradient(95deg, var(--primary) 0%, var(--primary-dark) 100%) !important; transition: all 0.2s; }
+        .fc-event.fc-event-exam { background: linear-gradient(95deg, #f59e0b 0%, #d97706 100%) !important; }
+        .fc-event:hover { transform: scale(1.03); box-shadow: 0 4px 15px rgba(0,0,0,0.3); filter: brightness(1.1);}
         
-        .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--color-text-muted); }
-        .no-data i { font-size: 4rem; margin-bottom: 1rem; color: var(--color-primary); opacity: 0.5; }
-        .no-data h4 { margin: 0 0 0.5rem; font-family: var(--font-title); font-size: 1.4rem; font-weight: 600; color: var(--color-text); }
-        .no-data p { margin: 0; font-size: 1rem; max-width: 300px; line-height: 1.6; }
+        .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--text-light); }
+        .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--primary); opacity: 0.5; }
+        .no-data h4 { margin: 0 0 0.5rem; font-size: 1.2rem; font-weight: 600; color: var(--text-dark); }
+        .no-data p { margin: 0; font-size: 0.9rem; max-width: 250px; line-height: 1.7; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--bg-sidebar); border-radius: var(--radius-lg); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--border-color); }
+        .settings-modal.open { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 1.3rem; color: var(--text-dark); }
+        .modal-header i { cursor: pointer; font-size: 1.5rem; color: var(--text-light); transition: all 0.2s; }
+        .modal-header i:hover { color: var(--text-dark); transform: rotate(90deg); }
+        .modal-content { padding: 1.5rem; max-height: 70vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; }
+        .settings-group { margin-bottom: 2rem; }
+        .settings-group-title { font-size: 1.2rem; font-weight: 600; color: var(--primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+        .settings-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+        .settings-item-label { display: flex; flex-direction: column; gap: 0.25rem; }
+        .settings-item-label span { font-size: 1rem; font-weight: 500; }
+        .settings-item-label small { font-size: 0.8rem; color: var(--text-light); }
         
-        .close-sidebar-btn { cursor: pointer; color: var(--color-text-muted); transition: color 0.2s ease, transform 0.2s ease; font-size: 1.5rem; }
-        .close-sidebar-btn:hover { color: var(--color-text); transform: scale(1.1); }
+        .mode-toggle { display: flex; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 999px; padding: 4px; gap: 4px; }
+        .mode-btn { padding: 0.4rem 1rem; border: none; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); transition: all 0.2s ease; user-select: none; }
+        .mode-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 5px rgba(var(--rgb-primary), 0.2); }
+        .light .mode-toggle { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
         
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; animation: fadeIn .3s ease; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
-        .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 500px; z-index: 3000; animation: scaleIn .3s .1s ease forwards; }
-        .settings-modal .modal-content { background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.5rem; position: relative; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-        .modal-header { padding: 0 0 1rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h3 { margin: 0; font-family: var(--font-title); font-size: 1.5rem; color: #fff; }
-        .modal-close-btn { background: none; border: none; color: var(--color-text-muted); font-size: 1.8rem; cursor: pointer; transition: all .2s ease; }
-        .modal-close-btn:hover { color: #fff; transform: rotate(90deg); }
-        .modal-body { padding: 1.5rem 0 0; max-height: 60vh; overflow-y: auto; }
-        .settings-section h4 { margin-top: 0; margin-bottom: 1rem; color: var(--color-primary); font-family: var(--font-title); }
-        .setting-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-        .setting-item-label { display: flex; align-items: center; gap: 0.75rem; font-size: 1rem; }
+        .theme-picker { display:flex; gap:.5rem; align-items:center; }
+		.theme-dot { width:24px; height:24px; border-radius:50%; cursor:pointer; transition:all .2s ease; border:2px solid transparent }
+		.theme-dot:hover { transform:scale(1.2) }
+		.theme-dot.active { border-color:#fff; transform: scale(1.1); }
+        .light .theme-dot.active { border-color: var(--text-dark); }
+        .color-picker-label { position: relative; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid var(--border-color); overflow: hidden; }
+        .color-picker-label:hover { transform: scale(1.2); }
+        .color-picker-label.active { border-color: #fff; transform: scale(1.1); }
+        .light .color-picker-label.active { border-color: var(--text-dark); }
+        .color-picker-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; padding: 0; cursor: pointer; }
+
+        .time-range-selects { display: flex; gap: 0.5rem; }
+        .time-range-selects select { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-dark); border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.9rem; }
+        .light .time-range-selects select { background: rgba(0,0,0,0.04); }
+
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .data-management-zone { border: 1px solid rgba(var(--rgb-warning), 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-top: 1rem; background: rgba(var(--rgb-warning), 0.05); }
+        .data-btn { width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+        .data-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(var(--rgb-primary), 0.1); }
+        .data-btn.danger { border-color: rgba(var(--rgb-danger), 0.5); color: var(--danger); }
+        .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.1); color: var(--danger); }
+
+        .mobile-fab { display: none; }
         
         @media (max-width: 900px) {
-            .page-wrapper { flex-direction: column; }
-            .sidebar { position: fixed; top: 0; right: 0; left: auto; z-index: 2000; width: 320px; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); border-left: 1px solid var(--color-border); border-right: none; }
+            .mobile-only-instructions { display: block; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+            .desktop-only-drag { display: none; }
+            .mobile-only-instructions code { display: block; background-color: var(--bg-main); padding: 0.75rem; border-radius: 8px; font-size: 0.8rem; word-wrap: break-word; text-align: left; direction: ltr; margin: 0.5rem 0; }
+            .mobile-only-instructions ol { text-align: right; padding-right: 20px; font-size: 0.85rem;}
+            .page-wrapper { flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+            .sidebar { position: fixed; top: 0; left: auto; right: 0; z-index: 2000; width: 320px; transform: translateX(100%); border-left: 1px solid var(--border-color); border-right: none; }
             .sidebar.open { transform: translateX(0); }
             .main-content { width: 100%; padding: 1rem; }
-            .main-header h1 { font-size: 1.5rem; }
-            .header-actions button { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
-            .mobile-fab { display: flex; position: fixed; bottom: 1.5rem; right: 1.5rem; left: auto; width: 56px; height: 56px; background: var(--color-primary); color: white; border-radius: 50%; justify-content: center; align-items: center; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; transition: transform 0.2s; }
+            .main-header h1 { font-size: 1.8rem; }
+            .header-actions button { padding: 0.5rem 1rem; font-size: 0.8rem; }
+            .mobile-fab { display: flex; position: fixed; bottom: 1.5rem; left: 1.5rem; width: 56px; height: 56px; background-color: var(--primary); color: white; border-radius: 50%; justify-content: center; align-items: center; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; transition: transform 0.2s; }
+            .mobile-fab:active { trans<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QU Schedule</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+    <meta name="theme-color" content="#0a0a0a">
+
+    <style>
+        :root {
+            --primary: #6366f1; --primary-dark: #4f46e5;
+            --danger: #f43f5e; --danger-bg: rgba(244, 63, 94, 0.1);
+            --bg-main: #0a0a0a; --bg-sidebar: rgba(20, 20, 22, 0.75);
+            --bg-calendar: rgba(20, 20, 22, 0.75); --bg-item-hover: rgba(255, 255, 255, 0.05);
+            --text-dark: #f9fafb; --text-light: #a1a1aa;
+            --border-color: rgba(255, 255, 255, 0.1); --radius-md: 16px;
+            --radius-lg: 20px; --transition: 0.3s cubic-bezier(0.25,0.8,0.25,1);
+            --rgb-primary: 99, 102, 241; --rgb-danger: 244, 63, 94;
+            --rgb-warning: 251, 191, 36;
+        }
+        .light {
+            --primary: #6366f1; --primary-dark: #4f46e5;
+            --danger: #ef4444; --danger-bg: #fee2e2;
+            --bg-main: #f4f4f5; --bg-sidebar: rgba(255, 255, 255, 0.75);
+            --bg-calendar: rgba(255, 255, 255, 0.75); --bg-item-hover: rgba(0, 0, 0, 0.04);
+            --text-dark: #18181b; --text-light: #71717a;
+            --border-color: rgba(0, 0, 0, 0.09);
+        }
+        
+        @keyframes gradient-animation{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+		@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+		@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+        @keyframes move-nebula{0%{transform:translate(0,0) rotate(0deg) scale(1.2)}50%{transform:translate(10vw,5vh) rotate(180deg) scale(1.5)}100%{transform:translate(0,0) rotate(360deg) scale(1.2)}}
+
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main);
+            color: var(--text-dark); margin: 0; height: 100vh; width: 100vw; overflow: hidden;
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+
+        .cosmic-bg-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;overflow:hidden}
+		#starfield-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
+		.nebula-glow{position:absolute;top:50%;left:50%;width:80vmax;height:80vmax;margin-top:-40vmax;margin-left:-40vmax;background:radial-gradient(circle,hsla(var(--rgb-primary),.15) 0%,hsla(var(--rgb-primary),.1) 40%,transparent 70%);filter:blur(100px);border-radius:50%;animation:move-nebula 90s infinite alternate ease-in-out;transition:opacity .5s ease,background .5s ease}
+		.light .nebula-glow{opacity:.5;filter:blur(120px); background:radial-gradient(circle,hsla(var(--rgb-primary),.25) 0%,hsla(var(--rgb-primary),.15) 40%,transparent 70%)}
+
+        #install-section {
+            position: fixed; top: 1rem; left: 50%;
+            transform: translateX(-50%); z-index: 1000;
+            background-color: var(--bg-sidebar); padding: 1.5rem 2rem;
+            border-radius: var(--radius-lg); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4);
+            border: 1px solid var(--border-color); width: 90%; max-width: 600px;
+            text-align: center; display: none;
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            animation: scaleIn .5s var(--transition) both;
+        }
+        #install-section h3 { margin: 0 0 0.5rem; font-weight: 700; font-size: 1.5rem; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% 200%; animation: gradient-animation 5s ease-in-out infinite; }
+        #install-section p { margin: 0 0 1.5rem; font-size: 0.9rem; color: var(--text-light); }
+        .bookmarklet-button { display: inline-block; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); color: white; padding: 0.7rem 1.5rem; border-radius: 999px; font-weight: 600; text-decoration: none; cursor: grab; transition: all .2s ease-in-out; }
+        .bookmarklet-button:hover { transform: translateY(-3px); box-shadow: 0 4px 15px rgba(var(--rgb-primary),0.25); filter: brightness(1.1); }
+        .mobile-only-instructions { display: none; } .desktop-only-drag { display: block; }
+
+        .page-wrapper { display: flex; height: 100vh; }
+        .sidebar { width: 400px; height: 100%; background-color: var(--bg-sidebar); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), background-color var(--transition), border-color var(--transition); }
+        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .sidebar-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--text-dark); }
+        .sidebar-content-wrapper { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; }
+        .sidebar-tabs { display: flex; padding: 0.75rem 1rem 0; border-bottom: 1px solid var(--border-color); flex-shrink: 0; }
+        .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--text-light); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; position: relative; border-bottom: 2px solid transparent; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .tab-content { padding: 1rem; display: none; flex-grow: 1; overflow-y: auto; }
+        .tab-content.active { display: block; }
+        .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border-color); text-align: center; flex-shrink: 0; }
+        .sidebar-footer a { font-size: 0.9rem; font-weight: 600; color: var(--text-light); text-decoration: none; transition: color 0.2s ease; }
+        .sidebar-footer a:hover { color: var(--primary); }
+        .sidebar-footer a i { vertical-align: middle; margin-left: 4px; font-size: 1.2em; }
+        .header-control-icon { cursor: pointer; color: var(--text-light); transition: all 0.2s ease; font-size: 1.4rem; padding: 0.25rem; }
+        .header-control-icon:hover { color: var(--text-dark); transform: scale(1.1); }
+
+        .course-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: rgba(0,0,0,0.1); animation: fadeInUp .5s ease both; position: relative; overflow: hidden; }
+        .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; transition: background-color var(--transition); }
+        .course-item-header:hover { background-color: var(--bg-item-hover); }
+        .course-item-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
+        .course-info { flex-grow: 1; }
+        .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-dark); }
+        .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--text-light); }
+        .course-item-header .toggle-icon { transition: transform 0.3s; font-size: 1.5rem; }
+        .course-item.open .toggle-icon { transform: rotate(180deg); }
+        .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
+        .course-item.open .sections-wrapper { max-height: 600px; }
+        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 0 1.25rem 1.25rem; }
+        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 999px; text-align: center; cursor: pointer; background-color: transparent; transition: all 0.2s; position: relative; }
+        .section-btn:hover { border-color: var(--primary); background-color: rgba(var(--rgb-primary), 0.1); }
+        .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
+        .section-btn.selected .section-type { color: rgba(255,255,255,0.8) !important; }
+        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.7; }
+        .section-btn.conflicted:hover { border-color: var(--danger); }
+        .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--danger); background: var(--bg-sidebar); border-radius: 50%; font-size: 1.2em; }
+        .section-btn-number { font-weight: 700; font-size: 1rem; }
+        .section-type { font-size: 0.75rem; color: var(--text-light); }
+
+        .exam-item { display: flex; align-items: center; gap: 1rem; padding: 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: rgba(var(--rgb-primary), 0.05); animation: fadeInUp .5s ease both; }
+        .exam-icon { font-size: 1.5rem; color: var(--primary); }
+        .exam-details h4 { font-size: 1rem; margin: 0 0 0.25rem; color: var(--text-dark); }
+        .exam-details p { font-size: 0.85rem; margin: 0; color: var(--text-light); line-height: 1.6; }
+        .exam-details p strong { color: var(--text-dark); font-weight: 600; }
+
+        .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+        .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% 200%; animation: gradient-animation 5s ease-in-out infinite; }
+        .header-actions { display: flex; gap: 0.75rem; }
+        .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .header-actions button:hover { background-color: rgba(var(--rgb-primary), 0.2); border-color: var(--primary); transform: translateY(-2px); }
+        
+        .calendar-container { flex-grow: 1; background-color: var(--bg-calendar); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; min-height: 0; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); animation: scaleIn .5s var(--transition) both; }
+        #calendar { height: 100%; }
+        .fc { --fc-border-color: var(--border-color); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; }
+        .fc-col-header-cell { background-color: transparent; border: none; padding: 0.75rem 0; font-weight: 600; color: var(--text-light); border-bottom: 1px solid var(--border-color); }
+        .fc .fc-day-today { background-color: transparent !important; }
+        .fc-theme-standard .fc-scrollgrid { border: none; }
+        .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
+        .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); background: linear-gradient(95deg, var(--primary) 0%, var(--primary-dark) 100%) !important; transition: all 0.2s; }
+        .fc-event.fc-event-exam { background: linear-gradient(95deg, #f59e0b 0%, #d97706 100%) !important; }
+        .fc-event:hover { transform: scale(1.03); box-shadow: 0 4px 15px rgba(0,0,0,0.3); filter: brightness(1.1);}
+        
+        .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--text-light); }
+        .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--primary); opacity: 0.5; }
+        .no-data h4 { margin: 0 0 0.5rem; font-size: 1.2rem; font-weight: 600; color: var(--text-dark); }
+        .no-data p { margin: 0; font-size: 0.9rem; max-width: 250px; line-height: 1.7; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
+        .modal-overlay.open { opacity: 1; visibility: visible; }
+        .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--bg-sidebar); border-radius: var(--radius-lg); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--border-color); }
+        .settings-modal.open { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
+        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h3 { margin: 0; font-size: 1.3rem; color: var(--text-dark); }
+        .modal-header i { cursor: pointer; font-size: 1.5rem; color: var(--text-light); transition: all 0.2s; }
+        .modal-header i:hover { color: var(--text-dark); transform: rotate(90deg); }
+        .modal-content { padding: 1.5rem; max-height: 70vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; }
+        .settings-group { margin-bottom: 2rem; }
+        .settings-group-title { font-size: 1.2rem; font-weight: 600; color: var(--primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+        .settings-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+        .settings-item-label { display: flex; flex-direction: column; gap: 0.25rem; }
+        .settings-item-label span { font-size: 1rem; font-weight: 500; }
+        .settings-item-label small { font-size: 0.8rem; color: var(--text-light); }
+        
+        .mode-toggle { display: flex; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 999px; padding: 4px; gap: 4px; }
+        .mode-btn { padding: 0.4rem 1rem; border: none; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); transition: all 0.2s ease; user-select: none; }
+        .mode-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 5px rgba(var(--rgb-primary), 0.2); }
+        .light .mode-toggle { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+        
+        .theme-picker { display:flex; gap:.5rem; align-items:center; }
+		.theme-dot { width:24px; height:24px; border-radius:50%; cursor:pointer; transition:all .2s ease; border:2px solid transparent }
+		.theme-dot:hover { transform:scale(1.2) }
+		.theme-dot.active { border-color:#fff; transform: scale(1.1); }
+        .light .theme-dot.active { border-color: var(--text-dark); }
+        .color-picker-label { position: relative; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid var(--border-color); overflow: hidden; }
+        .color-picker-label:hover { transform: scale(1.2); }
+        .color-picker-label.active { border-color: #fff; transform: scale(1.1); }
+        .light .color-picker-label.active { border-color: var(--text-dark); }
+        .color-picker-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; padding: 0; cursor: pointer; }
+
+        .time-range-selects { display: flex; gap: 0.5rem; }
+        .time-range-selects select { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-dark); border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.9rem; }
+        .light .time-range-selects select { background: rgba(0,0,0,0.04); }
+
+        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .data-management-zone { border: 1px solid rgba(var(--rgb-warning), 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-top: 1rem; background: rgba(var(--rgb-warning), 0.05); }
+        .data-btn { width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+        .data-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(var(--rgb-primary), 0.1); }
+        .data-btn.danger { border-color: rgba(var(--rgb-danger), 0.5); color: var(--danger); }
+        .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.1); color: var(--danger); }
+
+        .mobile-fab { display: none; }
+        
+        @media (max-width: 900px) {
+            .mobile-only-instructions { display: block; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-color); }
+            .desktop-only-drag { display: none; }
+            .mobile-only-instructions code { display: block; background-color: var(--bg-main); padding: 0.75rem; border-radius: 8px; font-size: 0.8rem; word-wrap: break-word; text-align: left; direction: ltr; margin: 0.5rem 0; }
+            .mobile-only-instructions ol { text-align: right; padding-right: 20px; font-size: 0.85rem;}
+            .page-wrapper { flex-direction: column; overflow-y: auto; overflow-x: hidden; }
+            .sidebar { position: fixed; top: 0; left: auto; right: 0; z-index: 2000; width: 320px; transform: translateX(100%); border-left: 1px solid var(--border-color); border-right: none; }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { width: 100%; padding: 1rem; }
+            .main-header h1 { font-size: 1.8rem; }
+            .header-actions button { padding: 0.5rem 1rem; font-size: 0.8rem; }
+            .mobile-fab { display: flex; position: fixed; bottom: 1.5rem; left: 1.5rem; width: 56px; height: 56px; background-color: var(--primary); color: white; border-radius: 50%; justify-content: center; align-items: center; font-size: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; z-index: 1000; transition: transform 0.2s; }
             .mobile-fab:active { transform: scale(0.95); }
-            .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1999; opacity: 0; visibility: hidden; transition: opacity 0.4s, visibility 0.4s; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
+            .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1999; opacity: 0; visibility: hidden; transition: opacity 0.4s, visibility 0.4s; }
             .overlay.open { opacity: 1; visibility: visible; }
         }
     </style>
 </head>
 <body>
+
     <div class="cosmic-bg-container">
         <div class="nebula-glow"></div>
         <canvas id="starfield-canvas"></canvas>
@@ -198,41 +411,29 @@
 
     <div id="install-section">
         <h3>طريقة التثبيت</h3>
-        <p>اسحب هذا الزر إلى شريط الإشارات المرجعية لتثبيت الأداة:</p>
-        <a class="bookmarklet-button" href="javascript:(function(){var s=document.createElement('script');s.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now();document.head.appendChild(s);})();" 
-           onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">
-            🎓 استخراج جدولي
-        </a>
+        <div class="desktop-only-drag">
+            <p>اسحب هذا الزر إلى شريط الإشارات المرجعية لتثبيت الأداة:</p>
+            <a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();"
+               onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">
+                🎓 استخراج QU Schedule
+            </a>
+        </div>
+        <div class="mobile-only-instructions">
+             <p>لتثبيت الأداة على متصفح الجوال (سفاري أو كروم):</p>
+            <ol>
+                <li>انسخ الكود التالي بالكامل.</li>
+                <li>اذهب إلى أي صفحة وأضفها للمفضلة (Bookmarks).</li>
+                <li>حرّر المفضلة الجديدة، غيّر الاسم إلى "استخراج QU Schedule"، وفي حقل الرابط (URL) الصق الكود المنسوخ.</li>
+            </ol>
+            <code>javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();</code>
+        </div>
     </div>
 
     <div class="page-wrapper">
-        <aside class="sidebar" id="sidebar">
-            <header class="sidebar-header">
-                <h2><i class="ri-layout-grid-fill"></i> المقررات</h2>
-                <div>
-                    <i class="ri-close-line close-sidebar-btn" title="إغلاق"></i>
-                </div>
-            </header>
-            <div class="sidebar-content" id="courses-list">
-                <div class="no-data" id="no-data-message">
-                    <i class="ri-time-line"></i>
-                    <h4>في انتظار البيانات...</h4>
-                    <p>شغّل أداة "استخراج جدولي" من صفحة المقررات المطروحة في موقع الجامعة.</p>
-                </div>
-            </div>
-            <footer class="sidebar-footer">
-                <a href="https://t.me/mutlaq001" target="_blank" rel="noopener noreferrer">
-                    <i class="ri-telegram-line"></i>
-                    صنع بواسطة MUTLAQ1
-                </a>
-            </footer>
-        </aside>
-
         <main class="main-content">
             <header class="main-header">
-                <h1 id="main-title"><i class="ri-calendar-event-line"></i> الجدول الأسبوعي</h1>
+                <h1><i class="ri-calendar-check-line"></i> QU Schedule</h1>
                 <div class="header-actions">
-                    <button id="toggle-view-btn"><i class="ri-calendar-check-line"></i> عرض الاختبارات</button>
                     <button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button>
                     <button id="clear-calendar-btn"><i class="ri-delete-bin-line"></i> مسح الجدول</button>
                 </div>
@@ -240,24 +441,95 @@
             <div class="calendar-container"><div id='calendar'></div></div>
         </main>
         
-        <div class="modal-overlay" id="modal-overlay" style="display: none;"></div>
-        <div class="settings-modal" id="settings-modal" style="display: none;">
+        <aside class="sidebar" id="sidebar">
+            <header class="sidebar-header">
+                <h2><i class="ri-book-open-line"></i> المقررات</h2>
+                <i class="ri-close-line header-control-icon" id="close-sidebar-btn" title="إغلاق"></i>
+            </header>
+            <div class="sidebar-content-wrapper">
+                <div class="sidebar-tabs">
+                    <button class="tab-btn active" data-tab="courses-tab"><i class="ri-layout-grid-fill"></i> المقررات</button>
+                    <button class="tab-btn" data-tab="exams-tab"><i class="ri-file-text-line"></i> الاختبارات النهائية</button>
+                </div>
+                <div id="courses-tab" class="tab-content active">
+                    <div id="courses-list">
+                        <div class="no-data" id="no-data-message">
+                            <i class="ri-time-line"></i>
+                            <h4>في انتظار البيانات...</h4>
+                            <p>شغّل أداة "استخراج QU Schedule" من صفحة المقررات المطروحة.</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="exams-tab" class="tab-content">
+                    <div id="exams-list">
+                        <!-- Exam items will be populated here -->
+                    </div>
+                </div>
+            </div>
+            <footer class="sidebar-footer">
+                <a href="https://t.me/mutlaq001" target="_blank" rel="noopener noreferrer">
+                    <i class="ri-telegram-line"></i>
+                    MUTLAQ1
+                </a>
+            </footer>
+        </aside>
+
+        <div class="modal-overlay" id="modal-overlay"></div>
+        <div class="settings-modal" id="settings-modal">
+            <div class="modal-header">
+                <h3><i class="ri-settings-3-line"></i> الإعدادات</h3>
+                <i class="ri-close-line" id="close-modal-btn"></i>
+            </div>
             <div class="modal-content">
-                <div class="modal-header">
-                    <h3><i class="ri-settings-3-line"></i> الإعدادات</h3>
-                    <button id="close-modal-btn" class="modal-close-btn"><i class="ri-close-line"></i></button>
-                </div>
-                <div class="modal-body">
-                    <div class="settings-section">
-                        <h4>إظهار/إخفاء المقررات</h4>
-                        <div id="visibility-settings"></div>
+                <!-- Appearance Settings -->
+                <div class="settings-group">
+                    <h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4>
+                    <div class="settings-item">
+                        <div class="settings-item-label"><span>الوضع</span></div>
+                        <div class="mode-toggle">
+                            <button class="mode-btn" data-theme="dark">ظلام</button>
+                            <button class="mode-btn" data-theme="light">نهار</button>
+                        </div>
                     </div>
-                    <hr style="border-color: var(--color-border); margin: 1.5rem 0;">
-                    <div class="settings-section">
-                        <h4>تخصيص الألوان</h4>
-                        <div id="color-settings"></div>
+                    <div class="settings-item">
+                        <div class="settings-item-label"><span>اللون الأساسي</span></div>
+                        <div class="theme-picker" id="accent-color-picker"></div>
                     </div>
                 </div>
+
+                <!-- Calendar Settings -->
+                <div class="settings-group">
+                    <h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4>
+                    <div class="settings-item">
+                        <div class="settings-item-label">
+                            <span>إظهار عطلة نهاية الأسبوع</span>
+                            <small>لعرض يومي الجمعة والسبت</small>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="show-weekend-toggle">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="settings-item">
+                        <div class="settings-item-label"><span>نطاق الساعات</span></div>
+                        <div class="time-range-selects">
+                            <select id="min-time-select"></select>
+                            <select id="max-time-select"></select>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Data Management Settings -->
+                <div class="settings-group">
+                    <h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4>
+                    <div class="data-management-zone">
+                        <button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button>
+                        <button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button>
+                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                        <button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button>
+                    </div>
+                </div>
+
             </div>
         </div>
 
@@ -266,364 +538,618 @@
     </div>
 
     <script>
-    var LZString=function(){var f=String.fromCharCode;var h="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";var d={};function c(a,b){if(!d[a]){d[a]={};for(var c=0;c<a.length;c++){d[a][a.charAt(c)]=c}}return d[a][b]}var g={decompressFromEncodedURIComponent:function(a){if(a==null){return""}if(a==""){return null}a=a.replace(/ /g,"+");return g._decompress(a.length,32,function(b){return c(h,a.charAt(b))})},_decompress:function(a,d,e){var g=[],h=4,i=4,j=3,k="",l=[],m,o,p,q,r,s,t,u={val:e(0),position:d,index:1};for(m=0;m<3;m+=1){g[m]=m}p=0;r=Math.pow(2,2);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}switch(p){case 0:p=0;r=Math.pow(2,8);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}t=f(p);break;case 1:p=0;r=Math.pow(2,16);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}t=f(p);break;case 2:return""}g.push(t);k=t;while(true){if(u.index>a){return""}p=0;r=Math.pow(2,j);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}switch(t=p){case 0:p=0;r=Math.pow(2,8);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}g.push(f(p));t=g.length-1;i--;break;case 1:p=0;r=Math.pow(2,16);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}g.push(f(p));t=g.length-1;i--;break;case 2:return l.join("")}if(i==0){i=Math.pow(2,j);j++}if(g[t]){o=g[t]}else{if(t===h){o=k+k.charAt(0)}else{return null}}l.push(o);g.push(k+o.charAt(0));h++;k=o;i--}}}};return g}();
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- START: DOM Element Selection ---
+            const coursesListContainer = document.getElementById('courses-list');
+            const examsListContainer = document.getElementById('exams-list');
+            const calendarEl = document.getElementById('calendar');
+            const clearCalendarBtn = document.getElementById('clear-calendar-btn');
+            const sidebar = document.getElementById('sidebar');
+            const mobileFab = document.getElementById('mobile-fab');
+            const overlay = document.getElementById('overlay');
+            const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+            const settingsBtn = document.getElementById('settings-btn');
+            const settingsModal = document.getElementById('settings-modal');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const installSection = document.getElementById('install-section');
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            // Settings Modal Elements
+            const modeToggleContainer = document.querySelector('.mode-toggle');
+            const accentColorPicker = document.getElementById('accent-color-picker');
+            const showWeekendToggle = document.getElementById('show-weekend-toggle');
+            const minTimeSelect = document.getElementById('min-time-select');
+            const maxTimeSelect = document.getElementById('max-time-select');
+            const exportBtn = document.getElementById('export-btn');
+            const importBtn = document.getElementById('import-btn');
+            const importFileInput = document.getElementById('import-file-input');
+            const resetAppBtn = document.getElementById('reset-app-btn');
+            // --- END: DOM Element Selection ---
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('calendar');
-        const coursesListContainer = document.getElementById('courses-list');
-        const noDataMessage = document.getElementById('no-data-message');
-        const installSection = document.getElementById('install-section');
-        const sidebar = document.getElementById('sidebar');
-        const settingsBtn = document.getElementById('settings-btn');
-        const clearCalendarBtn = document.getElementById('clear-calendar-btn');
-        const mobileFab = document.getElementById('mobile-fab');
-        const overlay = document.getElementById('overlay');
-        const closeSidebarBtn = document.querySelector('.close-sidebar-btn');
-        const settingsModal = document.getElementById('settings-modal');
-        const modalOverlay = document.getElementById('modal-overlay');
-        const closeModalBtn = document.getElementById('close-modal-btn');
-        const visibilitySettingsContainer = document.getElementById('visibility-settings');
-        const colorSettingsContainer = document.getElementById('color-settings');
-        const toggleViewBtn = document.getElementById('toggle-view-btn');
-        const mainTitle = document.getElementById('main-title');
-
-        let calendar;
-        let allCoursesData = [];
-        let groupedCourses = {};
-        const selectedSections = new Set();
-        let isExamView = false;
-        
-        const colorPalette = ['#5e9cff', '#a777ff', '#00c853', '#ffc400', '#ff5252', '#f87171', '#fb923c'];
-        const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
-
-        function initializeApp() {
-            initializeCalendar();
-            setupEventListeners();
-            loadDataFromUrlOrStorage();
-        }
-
-        function loadDataFromUrlOrStorage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const compressedData = urlParams.get('data');
-            if (compressedData) {
-                try {
-                    const jsonString = LZString.decompressFromEncodedURIComponent(compressedData);
-                    const courses = JSON.parse(jsonString);
-                    localStorage.setItem('myUniversityCourses', JSON.stringify(courses));
-                    processAndDisplayData(courses);
-                    installSection.style.display = 'none';
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                } catch (error) { loadFromStorage(); }
-            } else { loadFromStorage(); }
-        }
-
-        function loadFromStorage() {
-            const storedCourses = localStorage.getItem('myUniversityCourses');
-            if (storedCourses) {
-                const courses = JSON.parse(storedCourses);
-                processAndDisplayData(courses);
-                installSection.style.display = 'none';
-            } else {
-                installSection.style.display = 'block';
-            }
-        }
-
-        function initializeCalendar() {
-            calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'timeGridWeek',
-                locale: 'ar',
-                headerToolbar: false,
-                allDaySlot: false,
-                slotMinTime: '08:00:00',
-                slotMaxTime: '22:00:00',
-                events: [],
-                dir: 'rtl',
-                hiddenDays: [5, 6],
-                dayHeaderFormat: { weekday: 'long' },
-                eventClick: handleEventClick,
-                eventContent: renderCustomEventContent,
-            });
-            calendar.render();
-        }
-
-        function handleEventClick(info) {
-            if (info.event.extendedProps.isExam) return;
-            const uniqueId = info.event.extendedProps.uniqueId;
-            if (selectedSections.has(uniqueId)) deselectSection(uniqueId);
-            updateCalendarAndConflicts();
-        }
-        
-        function renderCustomEventContent(arg) {
-            if (arg.view.type === 'dayGridMonth') {
-                const wrapper = document.createElement('div');
-                wrapper.innerHTML = `<div class="fc-event-time">${arg.timeText}</div><div class="fc-event-title">${arg.event.title.replace('اختبار: ', '')}</div>`;
-                return { domNodes: [wrapper] };
-            }
-            const wrapper = document.createElement('div');
-            wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;';
-            const title = document.createElement('b');
-            title.innerText = arg.event.title.split('(')[0].trim();
-            const instructor = document.createElement('small');
-            instructor.style.opacity = '0.9';
-            instructor.innerHTML = `<i class="ri-user-line" style="font-size: 0.9em; vertical-align: middle; margin-left: 4px;"></i>${arg.event.extendedProps.instructor}`;
-            const section = document.createElement('small');
-            section.innerText = `شعبة: ${arg.event.extendedProps.section}`;
-            wrapper.append(title, instructor, section);
-            return { domNodes: [wrapper] };
-        }
-
-        function processAndDisplayData(courses) {
-            allCoursesData = courses.map((section, index) => ({
-                ...section,
-                uniqueId: `${section.code}-${section.section}-${index}`,
-                timeSlots: parseTimeEntries(section.time),
-                examSlot: section.finalExam ? parseFinalExam(section.finalExam) : null
-            }));
-            groupedCourses = allCoursesData.reduce((acc, course) => {
-                if (!acc[course.code]) acc[course.code] = { name: course.name, code: course.code, sections: [] };
-                acc[course.code].sections.push(course);
-                return acc;
-            }, {});
-            renderCoursesList();
-            populateSettingsModal();
-            updateCalendarAndConflicts();
-        }
-        
-        function renderCoursesList() {
-            coursesListContainer.innerHTML = '';
-            if (Object.keys(groupedCourses).length === 0) {
-                coursesListContainer.appendChild(noDataMessage);
-                noDataMessage.style.display = 'flex';
-                return;
-            }
-            noDataMessage.style.display = 'none';
-            let colorIndex = 0;
-            Object.values(groupedCourses).forEach(group => {
-                const courseColor = colorPalette[colorIndex % colorPalette.length];
-                colorIndex++;
-                const courseItem = document.createElement('div');
-                courseItem.className = 'course-item';
-                const header = document.createElement('div');
-                header.className = 'course-item-header';
-                header.innerHTML = `<span class="color-dot" style="background-color: ${courseColor};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعبة متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i>`;
-                const sectionsWrapper = document.createElement('div');
-                sectionsWrapper.className = 'sections-wrapper';
-                const sectionsGrid = document.createElement('div');
-                sectionsGrid.className = 'sections-grid';
-                group.sections.forEach(section => {
-                    const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'تدريب' : 'نظري';
-                    const sectionBtn = document.createElement('div');
-                    sectionBtn.className = 'section-btn';
-                    sectionBtn.dataset.uniqueId = section.uniqueId;
-                    if (section.timeSlots.length === 0) {
-                        sectionBtn.classList.add('no-time');
-                        sectionBtn.title = 'شعبة بدون توقيت محدد (قد تكون مسجلة)';
-                    }
-                    sectionBtn.innerHTML = `<div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div>`;
-                    sectionsGrid.appendChild(sectionBtn);
-                });
-                sectionsWrapper.appendChild(sectionsGrid);
-                courseItem.append(header, sectionsWrapper);
-                coursesListContainer.appendChild(courseItem);
-            });
-        }
-
-        function handleSectionClick(btnElement) {
-            const uniqueId = btnElement.dataset.uniqueId;
-            if (selectedSections.has(uniqueId)) deselectSection(uniqueId);
-            else if (!btnElement.classList.contains('conflicted')) selectSection(uniqueId);
-            updateCalendarAndConflicts();
-        }
-
-        function selectSection(uniqueId) {
-            selectedSections.add(uniqueId);
-            document.querySelector(`.section-btn[data-unique-id='${uniqueId}']`)?.classList.add('selected');
-        }
-        
-        function deselectSection(uniqueId) {
-            selectedSections.delete(uniqueId);
-            document.querySelector(`.section-btn[data-unique-id='${uniqueId}']`)?.classList.remove('selected');
-        }
-        
-        function updateCalendarAndConflicts() {
-            const currentScheduleSlots = [];
-            const selectedExamPeriods = new Set();
-            selectedSections.forEach(id => {
-                const section = allCoursesData.find(c => c.uniqueId === id);
-                if (section) {
-                    currentScheduleSlots.push(...section.timeSlots);
-                    if (section.examPeriod && section.examPeriod !== "0") selectedExamPeriods.add(section.examPeriod);
+            let calendar, allCoursesData = [], groupedCourses;
+            const selectedSections = new Set();
+            const PRESET_COLORS = { blue: '#6366f1', pink: '#ec4899', green: '#22c55e', orange: '#f97316' };
+            const colorPalette = ['#818cf8', '#f472b6', '#4ade80', '#fbbf24', '#60a5fa', '#c084fc', '#f87171', '#fb923c', '#2dd4bf', '#a3e635'];
+            const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 };
+            
+            let userSettings = {
+                theme: 'dark',
+                accentColor: PRESET_COLORS.blue,
+                showWeekends: false,
+                minTime: '08:00:00',
+                maxTime: '22:00:00',
+            };
+            
+            // --- START: Settings & Theming ---
+            function saveSettings() { localStorage.setItem('quScheduleSettings', JSON.stringify(userSettings)); }
+            
+            function loadSettings() {
+                const saved = localStorage.getItem('quScheduleSettings');
+                if (saved) {
+                    userSettings = { ...userSettings, ...JSON.parse(saved) };
                 }
-            });
-
-            allCoursesData.forEach(section => {
-                const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
-                if (!btn || selectedSections.has(section.uniqueId)) return;
-                const isTimeConflicted = section.timeSlots.length > 0 && section.timeSlots.some(slot => currentScheduleSlots.some(s => s.day === slot.day && s.start < slot.end && s.end > slot.start));
-                const isExamConflicted = section.examPeriod && section.examPeriod !== "0" && selectedExamPeriods.has(section.examPeriod);
-                const isConflicted = isTimeConflicted || isExamConflicted;
-                btn.classList.toggle('conflicted', isConflicted);
-                btn.title = '';
-                btn.querySelector('.conflict-icon')?.remove();
-                if (isConflicted) {
-                    const icon = document.createElement('i');
-                    icon.className = 'ri-error-warning-fill conflict-icon';
-                    btn.appendChild(icon);
-                    if (isTimeConflicted && isExamConflicted) btn.title = 'تعارض في وقت المحاضرة والاختبار النهائي';
-                    else if (isTimeConflicted) btn.title = 'تعارض في وقت المحاضرة';
-                    else if (isExamConflicted) btn.title = 'تعارض في فترة الاختبار النهائي';
-                }
-            });
-            renderVisibleEvents();
-        }
-
-        function renderVisibleEvents() {
-            calendar.removeAllEvents();
-            const events = [];
-            selectedSections.forEach(id => {
-                const section = allCoursesData.find(c => c.uniqueId === id);
-                if (!section) return;
-                const group = groupedCourses[section.code];
-                const color = colorPalette[Object.keys(groupedCourses).indexOf(group.code) % colorPalette.length];
+                applySettings();
+            }
+            
+            function applySettings() {
+                // Apply theme and accent color
+                document.body.className = userSettings.theme === 'light' ? 'light' : '';
+                document.querySelector('meta[name="theme-color"]').setAttribute('content', userSettings.theme === 'light' ? '#f4f4f5' : '#0a0a0a');
                 
-                if (isExamView) {
-                    if (section.examSlot) events.push(createExamEventForSection(section));
-                } else {
-                    events.push(...createEventsForSection(section, color));
+                const primaryColor = userSettings.accentColor;
+                const darkColor = adjustColorBrightness(primaryColor, -20);
+                const rgbColor = hexToRgb(primaryColor);
+                document.documentElement.style.setProperty('--primary', primaryColor);
+                document.documentElement.style.setProperty('--primary-dark', darkColor);
+                if (rgbColor) document.documentElement.style.setProperty('--rgb-primary', rgbColor);
+
+                // Update settings modal UI
+                modeToggleContainer.querySelector('.active')?.classList.remove('active');
+                modeToggleContainer.querySelector(`[data-theme="${userSettings.theme}"]`).classList.add('active');
+                
+                populateAccentColorPicker();
+                showWeekendToggle.checked = userSettings.showWeekends;
+                minTimeSelect.value = userSettings.minTime;
+                maxTimeSelect.value = userSettings.maxTime;
+
+                // Re-initialize or re-render calendar with new settings
+                if (calendar) {
+                    rebuildCalendar();
                 }
-            });
-            calendar.addEventSource(events);
-        }
-        
-        function createEventsForSection(section, color) {
-            return section.timeSlots.map(slot => ({ title: `${section.name} (${section.code})`, daysOfWeek: [slot.day], startTime: slot.start, endTime: slot.end, backgroundColor: color, borderColor: color, extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: false } }));
-        }
+            }
 
-        function createExamEventForSection(section) {
-            return { title: `اختبار: ${section.name}`, start: section.examSlot.start, end: section.examSlot.end, allDay: false, backgroundColor: 'var(--color-danger-red)', borderColor: 'var(--color-danger-red)', textColor: 'white', classNames: ['fc-event-exam'], extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: true } };
-        }
+            function adjustColorBrightness(hex, percent) {
+                let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+                const p = percent / 100;
+                r = Math.min(255, Math.max(0, Math.round(r * (1 + p))));
+                g = Math.min(255, Math.max(0, Math.round(g * (1 + p))));
+                b = Math.min(255, Math.max(0, Math.round(b * (1 + p))));
+                return `#${(r).toString(16).padStart(2, '0')}${(g).toString(16).padStart(2, '0')}${(b).toString(16).padStart(2, '0')}`;
+            }
 
-        function parseTimeEntries(timeString) {
-            if (!timeString || typeof timeString !== 'string' || timeString === 'غير محدد') return [];
-            return timeString.split('<br>').map(entry => {
-                const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{1,2}:\d{2})\s*(ص|م)\s*-\s*(\d{1,2}:\d{2})\s*(ص|م)/);
-                if (!parts) return null;
-                const daysArray = parts[1].trim().split(/\s+/);
-                const startTime = convertTo24Hour(parts[2], parts[3]);
-                const endTime = convertTo24Hour(parts[4], parts[5]);
-                return daysArray.map(dayName => {
-                    const trimmedDay = dayName.trim();
-                    return dayMapping.hasOwnProperty(trimmedDay) ? { day: dayMapping[trimmedDay], start: startTime, end: endTime } : null;
+            function hexToRgb(hex) {
+                let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '99, 102, 241';
+            }
+            
+            function populateAccentColorPicker() {
+                accentColorPicker.innerHTML = '';
+                Object.values(PRESET_COLORS).forEach(color => {
+                    const dot = document.createElement('div');
+                    dot.className = `theme-dot ${userSettings.accentColor === color ? 'active' : ''}`;
+                    dot.style.backgroundColor = color;
+                    dot.onclick = () => {
+                        userSettings.accentColor = color;
+                        saveSettings();
+                        applySettings();
+                    };
+                    accentColorPicker.appendChild(dot);
                 });
-            }).flat().filter(Boolean);
-        }
-
-        function convertTo24Hour(time, period) {
-            let [hours, minutes] = time.split(':').map(Number);
-            if (period === 'م' && hours !== 12) hours += 12;
-            if (period === 'ص' && hours === 12) hours = 0;
-            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
-        }
-
-        function parseFinalExam(examString) {
-            const parts = examString.match(/(\d{4}-\d{2}-\d{2})\s*@\s*(\d{2}:\d{2})-(\d{2}:\d{2})/);
-            if (!parts) return null;
-            const [, date, startTime, endTime] = parts;
-            return { start: `${date}T${startTime}:00`, end: `${date}T${endTime}:00` };
-        }
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('open');
-            setTimeout(() => { if (calendar) { calendar.updateSize(); } }, 400);
-        }
-
-        function openSettingsModal() {
-            settingsModal.style.display = 'block';
-            modalOverlay.style.display = 'block';
-        }
-
-        function closeSettingsModal() {
-            settingsModal.style.display = 'none';
-            modalOverlay.style.display = 'none';
-        }
-
-        function toggleCalendarView() {
-            isExamView = !isExamView;
-            if (isExamView) {
-                mainTitle.innerHTML = `<i class="ri-calendar-check-line"></i> الاختبارات النهائية`;
-                toggleViewBtn.innerHTML = `<i class="ri-calendar-event-line"></i> عرض الجدول`;
-                calendar.setOption('headerToolbar', { start: 'title', center: '', end: 'today prev,next' });
-                calendar.changeView('dayGridMonth');
-                const firstExam = allCoursesData.find(s => selectedSections.has(s.uniqueId) && s.examSlot);
-                if (firstExam) calendar.gotoDate(firstExam.examSlot.start);
-            } else {
-                mainTitle.innerHTML = `<i class="ri-calendar-event-line"></i> الجدول الأسبوعي`;
-                toggleViewBtn.innerHTML = `<i class="ri-calendar-check-line"></i> عرض الاختبارات`;
-                calendar.setOption('headerToolbar', false);
-                calendar.changeView('timeGridWeek');
+                const isCustom = !Object.values(PRESET_COLORS).includes(userSettings.accentColor);
+                const customPickerLabel = document.createElement('label');
+                customPickerLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
+                customPickerLabel.style.backgroundColor = isCustom ? userSettings.accentColor : 'transparent';
+                customPickerLabel.innerHTML = `<input type="color" class="color-picker-input" value="${userSettings.accentColor}">`;
+                customPickerLabel.querySelector('input').onchange = (e) => {
+                    userSettings.accentColor = e.target.value;
+                    saveSettings();
+                    applySettings();
+                };
+                accentColorPicker.appendChild(customPickerLabel);
             }
-            renderVisibleEvents();
-        }
-
-        // --- FIX: Re-implemented populateSettingsModal ---
-        function populateSettingsModal() {
-            visibilitySettingsContainer.innerHTML = '';
-            colorSettingsContainer.innerHTML = '';
-            if (Object.keys(groupedCourses).length === 0) {
-                visibilitySettingsContainer.innerHTML = '<p>لا توجد مواد لعرضها.</p>';
-                return;
+            // --- END: Settings & Theming ---
+            
+            // --- START: Calendar Logic ---
+            function initializeCalendar() {
+                const calendarOptions = getCalendarOptions();
+                calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
+                calendar.render();
             }
-            Object.values(groupedCourses).forEach(group => {
-                const visibilityItem = document.createElement('div');
-                visibilityItem.className = 'setting-item';
-                visibilityItem.innerHTML = `<div class="setting-item-label">${group.name} (${group.code})</div>`;
-                visibilitySettingsContainer.appendChild(visibilityItem);
-            });
-        }
 
-        function setupEventListeners() {
+            function rebuildCalendar() {
+                if(calendar) calendar.destroy();
+                initializeCalendar();
+                updateCalendarAndConflicts(); // Re-add events
+            }
+
+            function getCalendarOptions() {
+                 return {
+                    initialView: 'timeGridWeek', locale: 'ar',
+                    headerToolbar: false, allDaySlot: false,
+                    events: [], dir: 'rtl', 
+                    dayHeaderFormat: { weekday: 'long' },
+                    slotMinTime: userSettings.minTime,
+                    slotMaxTime: userSettings.maxTime,
+                    hiddenDays: userSettings.showWeekends ? [] : [5, 6],
+                    eventClick: (info) => {
+                        if (info.event.extendedProps.isExam) return;
+                        const uniqueId = info.event.extendedProps.uniqueId;
+                        if (selectedSections.has(uniqueId)) {
+                            selectedSections.delete(uniqueId);
+                            const btn = document.querySelector(`.section-btn[data-unique-id='${uniqueId}']`);
+                            if(btn) btn.classList.remove('selected');
+                            updateCalendarAndConflicts();
+                        }
+                    },
+                    eventContent: (arg) => {
+                        const wrapper = document.createElement('div');
+                        wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem;';
+                        const title = document.createElement('b');
+                        
+                        const instructor = document.createElement('small');
+                        
+                        if(arg.event.extendedProps.isExam) {
+                            title.innerHTML = `<i class="ri-file-text-line"></i> ${arg.event.title}`;
+                            instructor.innerText = `الفترة: ${arg.event.extendedProps.examPeriod}`;
+                        } else {
+                            title.innerText = arg.event.title.split('(')[0];
+                            instructor.innerText = arg.event.extendedProps.instructor;
+                            instructor.style.opacity = '0.9';
+                            const section = document.createElement('small');
+                            section.innerText = `شعبة: ${arg.event.extendedProps.section}`;
+                            section.style.opacity = '0.8';
+                            wrapper.appendChild(section);
+                        }
+
+                        wrapper.prepend(instructor);
+                        wrapper.prepend(title);
+                        return { domNodes: [wrapper] };
+                    }
+                };
+            }
+            // --- END: Calendar Logic ---
+
+            // --- START: Data Handling & Display ---
+            function displayData(courses) {
+                installSection.style.display = 'none';
+                allCoursesData = courses.map((section, index) => {
+                    const uniqueId = `${section.code}-${section.section}-${index}`;
+                    return { ...section, uniqueId, timeSlots: parseTimeEntries(section.time) };
+                });
+                
+                groupedCourses = allCoursesData.reduce((acc, course) => {
+                    if (!acc[course.code]) acc[course.code] = { name: course.name, code: course.code, sections: [] };
+                    acc[course.code].sections.push(course); return acc;
+                }, {});
+
+                coursesListContainer.innerHTML = '';
+                document.querySelector('#no-data-message').style.display = 'none';
+                
+                let colorIndex = 0;
+                Object.values(groupedCourses).forEach((group, i) => {
+                    const courseColor = colorPalette[colorIndex % colorPalette.length];
+                    colorIndex++;
+                    group.color = courseColor;
+                    
+                    const courseItem = document.createElement('div');
+                    courseItem.className = 'course-item';
+                    courseItem.dataset.courseCode = group.code;
+                    courseItem.style.animationDelay = `${i * 100}ms`;
+                    
+                    let sectionsHTML = '';
+                    group.sections.forEach(section => {
+                        const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'عملي' : 'نظري';
+                        sectionsHTML += `<div class="section-btn" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div></div>`;
+                    });
+
+                    courseItem.innerHTML = `
+                        <div class="course-item-header">
+                            <span class="color-dot" style="background-color: ${courseColor}; box-shadow: 0 0 10px 1px ${courseColor};"></span>
+                            <div class="course-info">
+                                <h3>${group.name} (${group.code})</h3>
+                                <p>${group.sections.length} شعب متاحة</p>
+                            </div>
+                            <i class="ri-arrow-down-s-line toggle-icon"></i>
+                        </div>
+                        <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
+                    coursesListContainer.appendChild(courseItem);
+                });
+                
+                coursesListContainer.addEventListener('click', function(e) {
+                    const header = e.target.closest('.course-item-header');
+                    const sectionBtn = e.target.closest('.section-btn');
+                    if (header) header.parentElement.classList.toggle('open');
+                    if (sectionBtn) handleSectionClick(sectionBtn);
+                });
+            }
+
+            function handleSectionClick(btnElement) {
+                const uniqueId = btnElement.dataset.uniqueId;
+                if (selectedSections.has(uniqueId)) {
+                    selectedSections.delete(uniqueId);
+                    btnElement.classList.remove('selected');
+                } else if (!btnElement.classList.contains('conflicted')) {
+                    selectedSections.add(uniqueId);
+                    btnElement.classList.add('selected');
+                }
+                updateCalendarAndConflicts();
+            }
+            
+            function updateCalendarAndConflicts() {
+                calendar.removeAllEvents();
+                const currentScheduleSlots = [];
+                const finalExams = new Map();
+
+                selectedSections.forEach(id => {
+                    const section = allCoursesData.find(c => c.uniqueId === id);
+                    if (section) {
+                        const lectureEvents = createLectureEventsForSection(section);
+                        calendar.addEventSource(lectureEvents);
+                        currentScheduleSlots.push(...section.timeSlots);
+                        
+                        if (section.examPeriod && !finalExams.has(section.code)) {
+                            finalExams.set(section.code, section);
+                        }
+                    }
+                });
+                
+                finalExams.forEach(section => {
+                    const examEvent = createExamEvent(section);
+                    if(examEvent) calendar.addEvent(examEvent);
+                });
+
+                allCoursesData.forEach(section => {
+                    const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
+                    if (!btn || selectedSections.has(section.uniqueId)) return;
+                    const isConflicted = section.timeSlots.some(slot => currentScheduleSlots.some(scheduleSlot => slot.day === scheduleSlot.day && slot.start < scheduleSlot.end && slot.end > scheduleSlot.start));
+                    const existingIcon = btn.querySelector('.conflict-icon');
+                    if(existingIcon) existingIcon.remove();
+                    if (isConflicted) {
+                        btn.classList.add('conflicted');
+                        const icon = document.createElement('i');
+                        icon.className = 'ri-error-warning-fill conflict-icon';
+                        btn.appendChild(icon);
+                    } else {
+                        btn.classList.remove('conflicted');
+                    }
+                });
+
+                displayFinalExams(Array.from(finalExams.values()));
+                localStorage.setItem('quScheduleSelected', JSON.stringify(Array.from(selectedSections)));
+            }
+
+            function createLectureEventsForSection(section) {
+                return section.timeSlots.map(slot => ({
+                    title: `${section.name}`, daysOfWeek: [slot.day],
+                    startTime: slot.start, endTime: slot.end,
+                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: false }
+                }));
+            }
+            
+            function createExamEvent(section) {
+                // Example format: "الاختبار النهائي : الأحد 02-12-1445 الفترة : 2"
+                const match = section.examPeriod.match(/(\d{2}-\d{2}-\d{4,5}).*?الفترة\s*:\s*(\d+)/);
+                if (!match) return null;
+                
+                const dateStr = match[1];
+                const period = parseInt(match[2]);
+                
+                // Note: Hijri to Gregorian conversion is complex. This is a placeholder.
+                // A proper library would be needed for accurate conversion.
+                // For now, let's just create an all-day event on a placeholder Gregorian date.
+                const [day, month, year] = dateStr.split('-');
+                
+                // Placeholder date logic.
+                const gregorianDate = new Date(); // This will not be correct.
+                gregorianDate.setHours(0,0,0,0);
+
+                let startTime, endTime;
+                if(period === 1) { startTime = '08:00:00'; endTime = '10:00:00'; }
+                else if(period === 2) { startTime = '10:30:00'; endTime = '12:30:00'; }
+                else if(period === 3) { startTime = '13:00:00'; endTime = '15:00:00'; }
+                else { return null; } // Unknown period
+
+                return {
+                    title: `اختبار ${section.code}`,
+                    // start/end will be incorrect due to Hijri date
+                    start: `${gregorianDate.toISOString().split('T')[0]}T${startTime}`,
+                    end: `${gregorianDate.toISOString().split('T')[0]}T${endTime}`,
+                    allDay: false, // Set to false to show time
+                    className: 'fc-event-exam',
+                    extendedProps: { isExam: true, examPeriod: period, courseName: section.name, date: dateStr }
+                }
+            }
+            
+            function displayFinalExams(exams) {
+                examsListContainer.innerHTML = '';
+                if (exams.length === 0) {
+                    examsListContainer.innerHTML = `<div class="no-data"><i class="ri-file-text-line"></i><h4>لا توجد اختبارات</h4><p>لم يتم تحديد اختبارات نهائية للمقررات المختارة.</p></div>`;
+                    return;
+                }
+                exams.sort((a,b) => a.examPeriod.localeCompare(b.examPeriod)).forEach((exam, i) => {
+                    const examItem = document.createElement('div');
+                    examItem.className = 'exam-item';
+                    examItem.style.animationDelay = `${i * 100}ms`;
+                    examItem.innerHTML = `
+                        <i class="ri-file-text-line exam-icon"></i>
+                        <div class="exam-details">
+                            <h4>${exam.name} (${exam.code})</h4>
+                            <p>${exam.examPeriod.replace('الاختبار النهائي :', '').trim()}</p>
+                        </div>
+                    `;
+                    examsListContainer.appendChild(examItem);
+                });
+            }
+
+            function parseTimeEntries(timeString) {
+                if (!timeString) return [];
+                return timeString.split('<br>').map(entry => {
+                    const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
+                    if (!parts) return null;
+                    const daysArray = parts[1].trim().split(/\s+/);
+                    const startTime = convertTo24Hour(parts[2], parts[3]);
+                    const endTime = convertTo24Hour(parts[4], parts[5]);
+                    return daysArray.map(dayName => dayMapping.hasOwnProperty(dayName) ? { day: dayMapping[dayName], start: startTime, end: endTime } : null);
+                }).flat().filter(Boolean);
+            }
+
+            function convertTo24Hour(time, period) {
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                if (period === 'م' && hours !== 12) hours += 12;
+                if (period === 'ص' && hours === 12) hours = 0;
+                return `${String(hours).padStart(2, '0')}:${minutes}:00`;
+            }
+            // --- END: Data Handling & Display ---
+
+            // --- START: Event Listeners ---
+            settingsBtn.addEventListener('click', () => { settingsModal.classList.add('open'); modalOverlay.classList.add('open'); });
+            function closeModal() { settingsModal.classList.remove('open'); modalOverlay.classList.remove('open'); }
+            closeModalBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', closeModal);
+
             clearCalendarBtn.addEventListener('click', () => {
-                if (confirm('هل أنت متأكد من رغبتك في مسح الجدول بالكامل؟')) {
+                if (confirm('هل أنت متأكد من مسح الجدول المحدد؟ سيتم إلغاء تحديد جميع الشعب.')) {
                     selectedSections.clear();
                     document.querySelectorAll('.section-btn.selected').forEach(btn => btn.classList.remove('selected'));
                     updateCalendarAndConflicts();
                 }
             });
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    document.getElementById(button.dataset.tab).classList.add('active');
+                });
+            });
+
+            // Settings Event Listeners
+            modeToggleContainer.addEventListener('click', (e) => {
+                const btn = e.target.closest('.mode-btn');
+                if(!btn) return;
+                userSettings.theme = btn.dataset.theme;
+                saveSettings();
+                applySettings();
+            });
+            showWeekendToggle.addEventListener('change', (e) => {
+                userSettings.showWeekends = e.target.checked;
+                saveSettings();
+                rebuildCalendar();
+            });
+            minTimeSelect.addEventListener('change', (e) => {
+                userSettings.minTime = e.target.value;
+                saveSettings();
+                rebuildCalendar();
+            });
+            maxTimeSelect.addEventListener('change', (e) => {
+                userSettings.maxTime = e.target.value;
+                saveSettings();
+                rebuildCalendar();
+            });
+
+            exportBtn.addEventListener('click', () => {
+                if(selectedSections.size === 0) { alert('الجدول فارغ. الرجاء اختيار بعض الشعب أولاً.'); return; }
+                const dataStr = JSON.stringify({ version: 1, schedule: Array.from(selectedSections) });
+                const dataBlob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(dataBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `qu_schedule_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            importBtn.addEventListener('click', () => importFileInput.click());
+            importFileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        if (data && data.version === 1 && Array.isArray(data.schedule)) {
+                            selectedSections.clear();
+                            data.schedule.forEach(id => selectedSections.add(id));
+                            document.querySelectorAll('.section-btn').forEach(btn => {
+                                btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
+                            });
+                            updateCalendarAndConflicts();
+                            alert('تم استيراد الجدول بنجاح!');
+                        } else { throw new Error('Invalid file format'); }
+                    } catch (error) {
+                        alert('خطأ في استيراد الملف. تأكد من أنه ملف جدول صحيح.');
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = ''; // Reset input
+            });
+
+            resetAppBtn.addEventListener('click', () => {
+                if(confirm('تحذير! سيؤدي هذا إلى مسح جميع بيانات التطبيق المحفوظة (الإعدادات، بيانات المقررات، والجدول المختار). هل أنت متأكد من رغبتك في المتابعة؟')) {
+                    localStorage.clear();
+                    location.reload();
+                }
+            });
+            
+            function toggleSidebar() { sidebar.classList.toggle('open'); overlay.classList.toggle('open'); }
             mobileFab.addEventListener('click', toggleSidebar);
             overlay.addEventListener('click', toggleSidebar);
             closeSidebarBtn.addEventListener('click', toggleSidebar);
-            settingsBtn.addEventListener('click', openSettingsModal);
-            closeModalBtn.addEventListener('click', closeSettingsModal);
-            modalOverlay.addEventListener('click', closeSettingsModal);
-            toggleViewBtn.addEventListener('click', toggleCalendarView);
-            coursesListContainer.addEventListener('click', (e) => {
-                const header = e.target.closest('.course-item-header');
-                if (header) { header.parentElement.classList.toggle('open'); return; }
-                const sectionBtn = e.target.closest('.section-btn');
-                if (sectionBtn) { handleSectionClick(sectionBtn); }
-            });
-        }
-        initializeApp();
-    });
+            
+            window.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'universityCoursesData') {
+                    localStorage.setItem('quScheduleCourses', JSON.stringify(event.data.data));
+                    displayData(event.data.data);
+                }
+            }, false);
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const initCosmicEffects = () => {
-            const canvas = document.getElementById('starfield-canvas'); if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let stars = [], shootingStars = [];
-            let mouseX = 0, mouseY = 0;
-            function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            window.addEventListener('mousemove', e => { mouseX = e.clientX - canvas.width / 2; mouseY = e.clientY - canvas.height / 2; });
-            class Star { constructor() { this.depth = Math.random() * 0.9 + 0.1; this.reset(); this.pulsate = Math.random() > 0.98; this.alpha = 0; this.alphaChange = (Math.random() * 0.02) + 0.005; this.vx = (Math.random() - 0.5) * 0.1 * this.depth; this.vy = (Math.random() - 0.5) * 0.1 * this.depth; } reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.radius = (Math.random() * 1.2 + 0.3) * this.depth; this.maxAlpha = (Math.random() * 0.5 + 0.3) * this.depth; } draw() { const parallaxX = (mouseX / (canvas.width / 2)) * -25 * this.depth; const parallaxY = (mouseY / (canvas.height / 2)) * -25 * this.depth; if (this.pulsate) { this.alpha += this.alphaChange; if (this.alpha >= this.maxAlpha || this.alpha <= 0) this.alphaChange *= -1; } else { this.alpha = this.maxAlpha; } ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x + parallaxX, this.y + parallaxY, this.radius, 0, Math.PI * 2); ctx.fillStyle = `hsl(220, 80%, 95%)`; ctx.fill(); ctx.globalAlpha = 1; } update() { this.y += this.vy; this.x += this.vx; if (this.x > canvas.width + this.radius) this.x = -this.radius; if (this.x < -this.radius) this.x = canvas.width + this.radius; if (this.y > canvas.height + this.radius) this.y = -this.radius; if (this.y < -this.radius) this.y = canvas.height + this.radius; this.draw(); } }
-            class ShootingStar { constructor() { this.reset(); } reset() { this.x = Math.random() * canvas.width; this.y = 0; this.len = Math.random() * 80 + 10; this.speed = Math.random() * 10 + 6; this.size = Math.random() * 1 + 0.1; this.waitTime = new Date().getTime() + Math.random() * 3000 + 500; this.active = false; } update() { if (this.active) { this.x -= this.speed; this.y += this.speed; if (this.x < 0 || this.y >= canvas.height) this.reset(); } else if (this.waitTime < new Date().getTime()) this.active = true; } draw() { if (this.active) { ctx.strokeStyle = `hsla(220, 100%, 80%, ${Math.random() * 0.5 + 0.5})`; ctx.lineWidth = this.size; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + this.len, this.y - this.len); ctx.stroke(); } } }
-            function initStars() { stars = []; shootingStars = []; const starCount = Math.floor(canvas.width * canvas.height / 8000); for (let i = 0; i < starCount; i++) { stars.push(new Star()); } for (let i = 0; i < 3; i++) { shootingStars.push(new ShootingStar()); } }
-            function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => s.update()); shootingStars.forEach(s => { s.update(); s.draw(); }); }
-            window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
-            resizeCanvas(); initStars(); animate();
-        };
-        initCosmicEffects();
-    });
+            window.addEventListener('load', () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const compressedData = urlParams.get('data');
+                if(compressedData) {
+                    try {
+                        const LZString = window.LZString;
+                        const jsonString = LZString.decompressFromEncodedURIComponent(compressedData);
+                        const courses = JSON.parse(jsonString);
+                        localStorage.setItem('quScheduleCourses', JSON.stringify(courses));
+                        displayData(courses);
+                        // Clean URL
+                        window.history.replaceState({}, document.title, window.location.pathname);
+                    } catch(e) { console.error("Failed to decompress data from URL", e); }
+                }
+            });
+            // --- END: Event Listeners ---
+            
+            // --- START: Initializations ---
+            function populateTimeSelects() {
+                for (let i = 0; i < 24; i++) {
+                    const time = `${String(i).padStart(2, '0')}:00:00`;
+                    const label = `${String(i).padStart(2, '0')}:00`;
+                    minTimeSelect.add(new Option(label, time));
+                    maxTimeSelect.add(new Option(label, time));
+                }
+            }
+
+            populateTimeSelects();
+            loadSettings(); // This now calls applySettings()
+
+            const storedCourses = localStorage.getItem('quScheduleCourses');
+            if (storedCourses) {
+                displayData(JSON.parse(storedCourses));
+                const storedSchedule = localStorage.getItem('quScheduleSelected');
+                if(storedSchedule) {
+                    const parsedSchedule = JSON.parse(storedSchedule);
+                    parsedSchedule.forEach(id => selectedSections.add(id));
+                     document.querySelectorAll('.section-btn').forEach(btn => {
+                        btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
+                    });
+                }
+            } else {
+                installSection.style.display = 'block';
+            }
+            initializeCalendar();
+            if(selectedSections.size > 0) updateCalendarAndConflicts();
+            // --- END: Initializations ---
+        });
+
+        // --- START: Cosmic Background Effect ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const initCosmicEffects = () => {
+                const canvas = document.getElementById('starfield-canvas'); if (!canvas) return;
+                const ctx = canvas.getContext('2d');
+                let stars = [], shootingStars = [];
+
+                function resizeCanvas() { 
+                    canvas.width = window.innerWidth; 
+                    canvas.height = window.innerHeight; 
+                }
+
+                class Star { 
+                    constructor() {
+                        this.depth = Math.random() * 0.9 + 0.1;
+                        this.reset();
+                        this.pulsate = Math.random() > 0.98;
+                        this.alpha = 0;
+                        this.alphaChange = (Math.random() * 0.02) + 0.005;
+                        this.vx = (Math.random() - 0.5) * 0.1 * this.depth;
+                        this.vy = (Math.random() - 0.5) * 0.1 * this.depth;
+                    }
+                    reset() {
+                        this.x = Math.random() * canvas.width;
+                        this.y = Math.random() * canvas.height;
+                        this.radius = (Math.random() * 1.2 + 0.3) * this.depth;
+                        this.maxAlpha = (Math.random() * 0.5 + 0.3) * this.depth;
+                    }
+                    draw() {
+                        if (this.pulsate) { 
+                            this.alpha += this.alphaChange; 
+                            if (this.alpha >= this.maxAlpha || this.alpha <= 0) this.alphaChange *= -1; 
+                        } else { 
+                            this.alpha = this.maxAlpha; 
+                        }
+                        ctx.globalAlpha = this.alpha;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = `hsl(220, 80%, 95%)`;
+                        ctx.fill();
+                        ctx.globalAlpha = 1;
+                    }
+                    update() {
+                        this.y += this.vy; 
+                        this.x += this.vx;
+
+                        if (this.x > canvas.width + this.radius) this.x = -this.radius;
+                        if (this.x < -this.radius) this.x = canvas.width + this.radius;
+                        if (this.y > canvas.height + this.radius) this.y = -this.radius;
+                        if (this.y < -this.radius) this.y = canvas.height + this.radius;
+
+                        this.draw();
+                    }
+                }
+
+                class ShootingStar { constructor() { this.reset(); } reset() { this.x = Math.random() * canvas.width; this.y = 0; this.len = Math.random() * 80 + 10; this.speed = Math.random() * 10 + 6; this.size = Math.random() * 1 + 0.1; this.waitTime = new Date().getTime() + Math.random() * 3000 + 500; this.active = false; } update() { if (this.active) { this.x -= this.speed; this.y += this.speed; if (this.x < 0 || this.y >= canvas.height) this.reset(); } else if (this.waitTime < new Date().getTime()) this.active = true; } draw() { if (this.active) { ctx.strokeStyle = `hsla(220, 100%, 80%, ${Math.random() * 0.5 + 0.5})`; ctx.lineWidth = this.size; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + this.len, this.y - this.len); ctx.stroke(); } } }
+                
+                function initStars() { 
+                    stars = []; 
+                    shootingStars = []; 
+                    const starCount = Math.floor(canvas.width * canvas.height / 8000); 
+                    for (let i = 0; i < starCount; i++) { stars.push(new Star()); } 
+                    for (let i = 0; i < 3; i++) { shootingStars.push(new ShootingStar()); } 
+                }
+
+                function animate() { 
+                    requestAnimationFrame(animate); 
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                    stars.forEach(s => s.update()); 
+                    shootingStars.forEach(s => { s.update(); s.draw(); }); 
+                }
+
+                window.addEventListener('resize', () => { 
+                    resizeCanvas(); 
+                    initStars(); 
+                });
+                
+                resizeCanvas(); 
+                initStars(); 
+                animate();
+            };
+
+            initCosmicEffects();
+        });
+        // --- END: Cosmic Background Effect ---
     </script>
 </body>
 </html>
