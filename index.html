@@ -50,19 +50,22 @@
         .course-item-header .toggle-icon { transition: transform 0.3s; }
         .course-item.open .toggle-icon { transform: rotate(180deg); }
         
-        /* --- ✨ الإصلاح هنا --- */
+        /* --- ✨ الإصلاح النهائي هنا --- */
         .sections-wrapper {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
-            padding: 0 1rem; /* Padding أفقي دائمًا */
+            transition: max-height 0.4s ease-out;
         }
         .course-item.open .sections-wrapper {
             max-height: 600px;
-            padding: 0 1rem 1rem; /* إضافة padding سفلي عند الفتح */
+        }
+        .sections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 0.5rem;
+            padding: 0 1rem 1rem; /* تم نقل الهامش إلى هنا */
         }
         
-        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
         .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; background-color: var(--bg-sidebar); transition: all 0.2s; position: relative; }
         .section-btn:hover { border-color: var(--primary); }
         .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
@@ -159,7 +162,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // كل كود الجافاسكريبت هنا (لم يتغير)
-            // ... (بقية الكود تبقى كما هي)
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
