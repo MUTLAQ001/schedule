@@ -32,11 +32,7 @@
 
         .page-wrapper { display: flex; height: 100vh; }
 
-        .sidebar {
-            width: 380px; height: 100%; background-color: var(--bg-sidebar);
-            border-left: 1px solid var(--border-color); display: flex;
-            flex-direction: column; flex-shrink: 0;
-        }
+        .sidebar { width: 380px; height: 100%; background-color: var(--bg-sidebar); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .sidebar-header h2 { margin: 0; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
         .sidebar-content { flex-grow: 1; overflow-y: auto; padding: 1rem; }
@@ -44,7 +40,7 @@
         .sidebar-content::-webkit-scrollbar-track { background: transparent; }
         .sidebar-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
-        .course-item { border: 1px solid transparent; border-radius: 10px; margin-bottom: 0.5rem; transition: background-color 0.2s; }
+        .course-item { border: 1px solid var(--border-color); border-radius: 12px; margin-bottom: 0.5rem; background-color: var(--bg-main); }
         .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; cursor: pointer; }
         .course-item-header:hover { background-color: var(--bg-item-hover); border-radius: 10px; }
         .course-item-header .color-dot { width: 10px; height: 10px; border-radius: 50%; }
@@ -53,14 +49,21 @@
         .course-info p { margin: 2px 0 0; font-size: 0.8rem; color: var(--text-light); }
         .course-item-header .toggle-icon { transition: transform 0.3s; }
         .course-item.open .toggle-icon { transform: rotate(180deg); }
-        .sections-wrapper { padding: 0 1rem 1rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; }
-        .course-item.open .sections-wrapper { max-height: 600px; }
-        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
-        .section-btn {
-            padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;
-            text-align: center; cursor: pointer; background-color: var(--bg-sidebar);
-            transition: all 0.2s; position: relative;
+        
+        /* --- ✨ الإصلاح هنا --- */
+        .sections-wrapper {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            padding: 0 1rem; /* Padding أفقي دائمًا */
         }
+        .course-item.open .sections-wrapper {
+            max-height: 600px;
+            padding: 0 1rem 1rem; /* إضافة padding سفلي عند الفتح */
+        }
+        
+        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
+        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; background-color: var(--bg-sidebar); transition: all 0.2s; position: relative; }
         .section-btn:hover { border-color: var(--primary); }
         .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
         .section-btn.selected .section-type { color: white !important; }
@@ -94,17 +97,13 @@
         @media (max-width: 900px) {
             .page-wrapper { flex-direction: column; }
             .sidebar {
-                /* --- ✨ التعديل هنا: تغيير الاتجاه إلى اليسار --- */
                 position: fixed; top: 0; left: 0; z-index: 2000;
-                width: 320px;
-                transform: translateX(-100%); /* Hides it to the left */
+                width: 320px; transform: translateX(-100%);
                 transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-                border-left: none;
-                border-right: 1px solid var(--border-color); /* Border on the right now */
+                border-left: none; border-right: 1px solid var(--border-color);
                 box-shadow: 5px 0 25px rgba(0,0,0,0.1);
             }
-            .sidebar.open { transform: translateX(0); } /* Shows it */
-
+            .sidebar.open { transform: translateX(0); }
             .main-content { width: 100%; padding: 1rem; }
             .main-header h1 { font-size: 1.5rem; }
             .header-actions button { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
@@ -160,6 +159,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // كل كود الجافاسكريبت هنا (لم يتغير)
+            // ... (بقية الكود تبقى كما هي)
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
