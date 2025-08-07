@@ -3,24 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>استوديو بناء الجداول</title>
+    <title>استوديو الجداول</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
-    <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.9/index.global.min.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <style>
         :root {
             --bg-main: #f8fafc; --bg-sidebar: #ffffff; --bg-calendar: #ffffff;
-            --bg-calendar-header: #f1f5f9; --primary: #6366f1; --secondary: #94a3b8;
+            --bg-calendar-header: #f1f5f9; --bg-item-hover: #f1f5f9;
+            --primary: #6366f1; --secondary: #94a3b8; --danger: #ef4444;
             --text-dark: #1e293b; --text-light: #64748b; --border-color: #e2e8f0;
         }
         .dark {
             --bg-main: #111827; --bg-sidebar: #1f2937; --bg-calendar: #1f2937;
-            --bg-calendar-header: #374151; --primary: #818cf8; --secondary: #9ca3af;
+            --bg-calendar-header: #374151; --bg-item-hover: #374151;
+            --primary: #818cf8; --secondary: #9ca3af; --danger: #f87171;
             --text-dark: #f9fafb; --text-light: #d1d5db; --border-color: #374151;
         }
         *, *::before, *::after { box-sizing: border-box; }
@@ -34,33 +35,47 @@
         .sidebar-content::-webkit-scrollbar-track { background: transparent; }
         .sidebar-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
-        /* --- ✨ تصميم جديد لواجهة رئيسي-تفصيلي --- */
-        .course-list-item {
+        /* --- ✨ تصميم القائمة المنسدلة المتداخلة --- */
+        .course-item {
+            border: 1px solid transparent; border-radius: 10px; margin-bottom: 0.5rem;
+            transition: background-color 0.2s;
+        }
+        .course-item:hover { background-color: var(--bg-item-hover); }
+        .course-header {
             display: flex; align-items: center; gap: 0.75rem; padding: 1rem;
-            border-radius: 10px; cursor: pointer; transition: background-color 0.2s ease;
-            margin-bottom: 0.5rem; border: 1px solid transparent;
+            cursor: pointer;
         }
-        .course-list-item:hover { background-color: var(--bg-main); border-color: var(--border-color); }
-        .course-list-item .color-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .course-list-item h3 { margin: 0; font-size: 1rem; font-weight: 600; flex-grow: 1; }
-        .badge { background-color: var(--bg-calendar-header); color: var(--text-light); padding: 2px 8px; font-size: 0.75rem; border-radius: 99px; }
-        .back-btn { cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-weight: 500; color: var(--primary); }
-        
-        .section-card {
-            display: flex; justify-content: space-between; align-items: center; padding: 0.75rem;
-            border: 1px solid var(--border-color); background-color: var(--bg-main); border-radius: 8px;
-            cursor: grab; transition: all 0.2s ease; margin-bottom: 0.5rem;
+        .course-header .color-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .course-info { flex-grow: 1; }
+        .course-info h3 { margin: 0; font-size: 0.9rem; font-weight: 600; }
+        .course-info p { margin: 2px 0 0; font-size: 0.8rem; color: var(--text-light); }
+        .course-header .toggle-icon { transition: transform 0.3s; }
+        .course-item.open .toggle-icon { transform: rotate(180deg); }
+        .sections-wrapper {
+            padding: 0 1rem 1rem; max-height: 0; overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
         }
-        .section-card:hover { border-color: var(--primary); background-color: var(--bg-calendar-header); }
-        .section-card-info { font-size: 0.8rem; color: var(--text-light); }
-        .section-card-type { font-weight: 600; color: var(--text-dark); }
-        .section-card-time { direction: ltr; text-align: left; }
+        .course-item.open .sections-wrapper { max-height: 600px; }
+        .sections-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 0.5rem;
+        }
+        .section-btn {
+            padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;
+            text-align: center; cursor: pointer; background-color: var(--bg-sidebar);
+            transition: all 0.2s;
+        }
+        .section-btn:hover { border-color: var(--primary); }
+        .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
+        .section-btn.selected .section-type { color: white !important; }
+        .section-btn-number { font-weight: 700; font-size: 1rem; }
+        .section-type { font-size: 0.75rem; color: var(--text-light); }
         
         .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
-        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-shrink: 0; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
         .main-header h1 { margin: 0; font-size: 1.75rem; display: flex; align-items: center; gap: 0.75rem; }
-        .header-actions button { background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease; }
-        .header-actions button:hover { background-color: var(--bg-calendar-header); color: var(--text-dark); }
+        .header-actions button { background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .header-actions button:hover { background-color: var(--bg-item-hover); color: var(--text-dark); }
         .calendar-container { flex-grow: 1; background-color: var(--bg-calendar); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; }
         #calendar { height: 100%; }
 
@@ -69,7 +84,6 @@
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
         .fc-event { border: none !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
-        .fc-event.preview-event { opacity: 0.5; border-style: dashed !important; }
         
         .no-data { text-align: center; padding: 3rem 0; color: var(--text-light); }
         .theme-toggle { cursor: pointer; color: var(--text-light); transition: color 0.2s ease; }
@@ -77,7 +91,6 @@
     </style>
 </head>
 <body class="dark">
-
     <main class="main-content">
         <header class="main-header">
             <h1><i class="ri-calendar-event-line"></i> الجدول الأسبوعي</h1>
@@ -87,10 +100,10 @@
         </header>
         <div class="calendar-container"><div id='calendar'></div></div>
     </main>
-    
     <aside class="sidebar">
-        <header class="sidebar-header" id="sidebar-header">
-            <!-- سيتم تحديث المحتوى هنا بواسطة الجافاسكريبت -->
+        <header class="sidebar-header">
+            <h2><i class="ri-function-line"></i> شعب المقررات</h2>
+            <i class="ri-sun-line theme-toggle" title="تغيير المظهر"></i>
         </header>
         <div class="sidebar-content" id="courses-list">
             <div class="no-data" id="no-data-message"><p>شغل الأداة من موقع الجامعة...</p></div>
@@ -100,113 +113,27 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const coursesListContainer = document.getElementById('courses-list');
-            const sidebarHeader = document.getElementById('sidebar-header');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
             const clearCalendarBtn = document.getElementById('clear-calendar-btn');
             
-            let calendar, allCoursesData, groupedCourses;
+            let calendar, allCoursesData = [], groupedCourses;
+            const selectedSections = new Set();
             const colorPalette = ['#818cf8', '#f472b6', '#4ade80', '#fbbf24', '#60a5fa', '#c084fc', '#f87171', '#fb923c'];
             const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
 
-            function initializeCalendar() { /* ... الكود كما هو ... */ }
-            initializeCalendar(); // تم ترك الكود الداخلي كما هو لأنه سليم
-
-            function displayData(courses) {
-                allCoursesData = courses;
-                groupedCourses = courses.reduce((acc, course) => {
-                    if (!acc[course.code]) acc[course.code] = { name: course.name, code: course.code, sections: [] };
-                    acc[course.code].sections.push(course); return acc;
-                }, {});
-                renderCourseListView();
-            }
-
-            // --- ✨ واجهة عرض المقررات الرئيسية ---
-            function renderCourseListView() {
-                sidebarHeader.innerHTML = `<h2><i class="ri-function-line"></i> قائمة المقررات</h2>`;
-                document.getElementById('no-data-message').style.display = 'none';
-                coursesListContainer.innerHTML = '';
-                let colorIndex = 0;
-
-                Object.values(groupedCourses).forEach(group => {
-                    const courseColor = colorPalette[colorIndex % colorPalette.length];
-                    colorIndex++;
-                    group.color = courseColor; // حفظ اللون مع بيانات المقرر
-                    
-                    const courseItem = document.createElement('div');
-                    courseItem.className = 'course-list-item';
-                    courseItem.dataset.courseCode = group.code;
-                    courseItem.innerHTML = `
-                        <span class="color-dot" style="background-color: ${courseColor};"></span>
-                        <h3>${group.name} (${group.code})</h3>
-                        <span class="badge">${group.sections.length}</span>
-                    `;
-                    coursesListContainer.appendChild(courseItem);
-                    
-                    courseItem.addEventListener('mouseenter', () => handlePreview(group.code, courseColor));
-                    courseItem.addEventListener('mouseleave', () => clearPreview());
-                });
-            }
-
-            // --- ✨ واجهة عرض الشعب التفصيلية ---
-            function renderSectionListView(courseCode) {
-                const group = groupedCourses[courseCode];
-                if (!group) return;
-
-                sidebarHeader.innerHTML = `
-                    <div class="back-btn"><i class="ri-arrow-right-s-line"></i> عودة</div>
-                    <h2>${group.name}</h2>
-                `;
-                coursesListContainer.innerHTML = '';
-                let sectionsHTML = '';
-
-                group.sections.forEach((section, index) => {
-                    const uniqueId = `${section.code}-${section.section}-${index}`;
-                    const timeText = section.time.replace(/<br>/g, ', ').replace(/.*:\s*/, '');
-                    const eventData = createEventDataForSection(section, group.color, uniqueId);
-                    
-                    sectionsHTML += `<div class='section-card' data-unique-id='${uniqueId}' data-event='${JSON.stringify(eventData)}'>
-                        <div><div class="section-card-type">${section.section}</div><div class="section-card-info">${section.instructor}</div></div>
-                        <div class="section-card-info section-card-time">${timeText}</div>
-                    </div>`;
-                });
-                coursesListContainer.innerHTML = sectionsHTML;
-
-                new FullCalendar.Draggable(coursesListContainer, {
-                    itemSelector: '.section-card',
-                    eventData: (el) => JSON.parse(el.dataset.event)
-                });
-            }
-
-            // --- إدارة الأحداث والتفاعل ---
-            coursesListContainer.addEventListener('click', function(e) {
-                const courseItem = e.target.closest('.course-list-item');
-                if (courseItem) {
-                    renderSectionListView(courseItem.dataset.courseCode);
-                }
-            });
-            sidebarHeader.addEventListener('click', function(e) {
-                if (e.target.closest('.back-btn')) {
-                    renderCourseListView();
-                }
-            });
-
-            // باقي الدوال (handlePreview, clearPreview, etc.) تبقى كما هي
-            
-            // --- لصق الدوال المتبقية هنا ---
-             function initializeCalendar() {
+            function initializeCalendar() {
                 calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'timeGridWeek', locale: 'ar',
                     headerToolbar: false, allDaySlot: false,
                     slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
                     events: [], dir: 'rtl', hiddenDays: [5, 6],
-                    editable: true, droppable: true,
-                    eventReceive: function(info) {
-                        info.event.setExtendedProp('uniqueId', info.draggedEl.dataset.uniqueId);
-                    },
-                    eventClick: function(info) {
-                        if (confirm(`هل تريد حذف مقرر "${info.event.title}" من الجدول؟`)) {
-                            info.event.remove();
+                    eventClick: (info) => {
+                        const uniqueId = info.event.extendedProps.uniqueId;
+                        if (selectedSections.has(uniqueId)) {
+                            selectedSections.delete(uniqueId);
+                            document.querySelector(`.section-btn[data-unique-id='${uniqueId}']`)?.classList.remove('selected');
+                            updateCalendar();
                         }
                     },
                     eventContent: (arg) => ({
@@ -215,22 +142,89 @@
                 });
                 calendar.render();
             }
+            initializeCalendar();
 
-            function handlePreview(courseCode, color) {
-                const previewEvents = [];
-                allCoursesData.filter(c => c.code === courseCode).forEach((section, index) => {
-                    const uniqueId = `${section.code}-${section.section}-${index}-preview`;
-                    previewEvents.push(...createEventDataForSection(section, color, uniqueId, true));
+            function displayData(courses) {
+                allCoursesData = courses;
+                groupedCourses = courses.reduce((acc, course) => {
+                    if (!acc[course.code]) acc[course.code] = { name: course.name, code: course.code, sections: [] };
+                    acc[course.code].sections.push(course); return acc;
+                }, {});
+
+                document.getElementById('no-data-message').style.display = 'none';
+                coursesListContainer.innerHTML = '';
+                let colorIndex = 0;
+
+                Object.values(groupedCourses).forEach(group => {
+                    const courseColor = colorPalette[colorIndex % colorPalette.length];
+                    colorIndex++;
+                    group.color = courseColor;
+                    
+                    const courseItem = document.createElement('div');
+                    courseItem.className = 'course-item';
+                    let sectionsHTML = '';
+
+                    group.sections.forEach((section, index) => {
+                        const uniqueId = `${section.code}-${section.section}-${index}`;
+                        section.uniqueId = uniqueId;
+                        const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'تدريب' : 'نظري';
+                        
+                        sectionsHTML += `
+                            <div class="section-btn" data-unique-id="${uniqueId}">
+                                <div class="section-btn-number">${section.section}</div>
+                                <div class="section-type">${type}</div>
+                            </div>`;
+                    });
+
+                    courseItem.innerHTML = `
+                        <div class="course-header">
+                            <span class="color-dot" style="background-color: ${courseColor};"></span>
+                            <div class="course-info">
+                                <h3>${group.name} (${group.code})</h3>
+                                <p>${group.sections.length} شعبة</p>
+                            </div>
+                            <i class="ri-arrow-down-s-line toggle-icon"></i>
+                        </div>
+                        <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>
+                    `;
+                    coursesListContainer.appendChild(courseItem);
                 });
-                calendar.addEventSource({ id: 'preview-source', events: previewEvents });
+                
+                coursesListContainer.addEventListener('click', function(e) {
+                    const header = e.target.closest('.course-header');
+                    const sectionBtn = e.target.closest('.section-btn');
+
+                    if (header) header.parentElement.classList.toggle('open');
+                    if (sectionBtn) handleSectionClick(sectionBtn);
+                });
             }
 
-            function clearPreview() {
-                const previewSource = calendar.getEventSourceById('preview-source');
-                if (previewSource) previewSource.remove();
+            function handleSectionClick(btnElement) {
+                const uniqueId = btnElement.dataset.uniqueId;
+                if (selectedSections.has(uniqueId)) {
+                    selectedSections.delete(uniqueId);
+                    btnElement.classList.remove('selected');
+                } else {
+                    selectedSections.add(uniqueId);
+                    btnElement.classList.add('selected');
+                }
+                updateCalendar();
             }
 
-            function createEventDataForSection(section, color, uniqueId, isPreview = false) {
+            function updateCalendar() {
+                calendar.removeAllEvents();
+                const finalEvents = [];
+                selectedSections.forEach(id => {
+                    const section = allCoursesData.find(c => c.uniqueId === id);
+                    if (section) {
+                        const group = groupedCourses[section.code];
+                        finalEvents.push(...createEventsForSection(section, group.color));
+                    }
+                });
+                calendar.addEventSource(finalEvents);
+            }
+
+            function createEventsForSection(section, color) {
                 const events = [];
                 const timeEntries = section.time.split('<br>');
                 timeEntries.forEach(entry => {
@@ -247,8 +241,7 @@
                                     daysOfWeek: [dayMapping[dayName]],
                                     startTime: startTime, endTime: endTime,
                                     backgroundColor: color, borderColor: color,
-                                    className: isPreview ? 'preview-event' : '',
-                                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: uniqueId }
+                                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId }
                                 });
                             }
                         });
@@ -268,6 +261,8 @@
             clearCalendarBtn.addEventListener('click', () => {
                 if (confirm('هل أنت متأكد من أنك تريد مسح جميع المقررات من الجدول؟')) {
                     calendar.removeAllEvents();
+                    selectedSections.clear();
+                    document.querySelectorAll('.section-btn.selected').forEach(btn => btn.classList.remove('selected'));
                 }
             });
             
