@@ -1,21 +1,70 @@
 (function() {
     'use strict';
-    console.clear();
-    console.log("🚀 أداة الاستخراج v6 (الحل النهائي) بدأت...");
 
-    setTimeout(function() {
+    // --- 🔴 منطقة التعديل (قد نحتاجها لاحقًا) ---
+    // هذا هو المحدد لزر "التالي". إذا لم تعمل الأداة، فسنحتاج إلى تغييره.
+    const nextButtonSelector = '.ui-paginator-next'; 
+    // ---------------------------------------------
+
+    let allCoursesData = [];
+    let currentPage = 1;
+    let overlay;
+
+    function createProgressOverlay() {
+        overlay = document.createElement('div');
+        overlay.style.cssText = `
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); z-index: 10000; display: flex;
+            justify-content: center; align-items: center; color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            direction: rtl;
+        `;
+        document.body.appendChild(overlay);
+        updateProgress(0); // ابدأ برسالة أولية
+    }
+
+    function updateProgress(count) {
+        if (!overlay) return;
+        overlay.innerHTML = `
+            <div style="text-align: center; padding: 30px;">
+                <h2 style="margin-bottom: 15px;">🚀 جاري تجميع المقررات...</h2>
+                <p style="font-size: 18px;">الرجاء عدم إغلاق الصفحة أو التفاعل معها.</p>
+                <div style="margin-top: 20px; font-size: 22px; background: #667eea; padding: 10px 20px; border-radius: 8px;">
+                    الصفحة الحالية: ${currentPage} | المجموع: ${count} مقرر
+                </div>
+            </div>
+        `;
+    }
+
+    function finishAndSendData() {
+        if (!overlay) return;
+        overlay.innerHTML = `
+            <div style="text-align: center; padding: 30px;">
+                <h2 style="color: #4CAF50;">✅ اكتمل التجميع بنجاح!</h2>
+                <p style="font-size: 18px;">تم العثور على ${allCoursesData.length} مقرر في المجموع.</p>
+                <p>جاري الآن فتح صفحة العرض...</p>
+            </div>
+        `;
+        
+        // إرسال البيانات النهائية
+        const viewerWindow = window.open('https://mutlaq001.github.io/schedule/', '_blank');
+        setTimeout(() => {
+            viewerWindow.postMessage({
+                type: 'universityCoursesData',
+                data: allCoursesData
+            }, 'https://mutlaq001.github.io');
+            console.log("📨 تم إرسال كل البيانات إلى صفحة العرض بنجاح.");
+            setTimeout(() => document.body.removeChild(overlay), 2000); // إزالة النافذة بعد ثانيتين
+        }, 1500);
+    }
+
+    function scrapeCurrentPage() {
         const courseRowSelector = 'tr[class^="ROW"]';
         const courseRows = document.querySelectorAll(courseRowSelector);
-        
-        if (courseRows.length === 0) {
-            alert("لم يتم العثور على أي صفوف للمقررات.");
-            return;
-        }
+        const pageCourses = [];
 
-        const coursesData = [];
         courseRows.forEach(row => {
-            if (row.style.display === 'none') return;
-            
+            // هذه المرة سنقوم بتضمين الصفوف المخفية كما طلبت
             const code = row.querySelector('td[data-th="رمز المقرر"]')?.textContent.trim();
             const name = row.querySelector('td[data-th="اسم المقرر"]')?.textContent.trim();
             const section = row.querySelector('td[data-th^="الشعبة"]')?.textContent.trim();
@@ -40,30 +89,37 @@
                 } else if (detailsRaw && detailsRaw.trim() !== '') {
                     time = detailsRaw;
                 }
-                coursesData.push({ code, name, section, time, instructor: instructor || 'غير محدد' });
+                pageCourses.push({ code, name, section, time, instructor: instructor || 'غير محدد' });
             }
         });
-        
-        if (coursesData.length > 0) {
-            console.log(`🎉 نجاح! تم استخراج بيانات ${coursesData.length} مقررًا.`);
-            
-            // --- ✨ الخدعة الذكية ---
-            // 1. افتح نافذة جديدة لموقعك
-            const viewerWindow = window.open('https://mutlaq001.github.io/schedule/', '_blank');
-            
-            // 2. انتظر قليلاً حتى تفتح النافذة
-            setTimeout(() => {
-                // 3. أرسل رسالة تحتوي على البيانات إلى النافذة الجديدة
-                viewerWindow.postMessage({
-                    type: 'universityCoursesData',
-                    data: coursesData
-                }, 'https://mutlaq001.github.io');
-                console.log("📨 تم إرسال البيانات إلى صفحة العرض بنجاح.");
-            }, 1000); // انتظر ثانية واحدة لضمان فتح النافذة
-            
-        } else {
-            alert("تم العثور على الصفوف، لكن لم يتم استخراج البيانات بنجاح.");
+        return pageCourses;
+    }
+
+    function processPages() {
+        const newCourses = scrapeCurrentPage();
+        allCoursesData.push(...newCourses);
+        console.log(`الصفحة ${currentPage}: تم استخراج ${newCourses.length} مقرر. المجموع حتى الآن: ${allCoursesData.length}`);
+        updateProgress(allCoursesData.length);
+
+        const nextButton = document.querySelector(nextButtonSelector);
+
+        // التحقق إذا كان زر التالي موجودًا وغير قابل للضغط (وصلنا للنهاية)
+        if (!nextButton || nextButton.classList.contains('ui-state-disabled')) {
+            console.log("وصلنا إلى آخر صفحة. إنهاء العملية.");
+            finishAndSendData();
+            return;
         }
 
-    }, 2000);
+        // الانتقال للصفحة التالية
+        currentPage++;
+        nextButton.click();
+        
+        // انتظر 4 ثوانٍ لتحميل الصفحة التالية ثم كرر العملية
+        setTimeout(processPages, 4000); 
+    }
+
+    // --- بداية التشغيل ---
+    createProgressOverlay();
+    setTimeout(processPages, 1000); // ابدأ بعد ثانية واحدة
+
 })();
