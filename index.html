@@ -88,7 +88,12 @@
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
         .fc-event { border: 2px solid transparent !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
-        .no-data { text-align: center; padding: 3rem 0; color: var(--text-light); }
+        
+        .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--text-light); }
+        .no-data i { font-size: 3rem; margin-bottom: 1rem; color: var(--secondary); }
+        .no-data h4 { margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 600; color: var(--text-dark); }
+        .no-data p { margin: 0; font-size: 0.9rem; max-width: 250px; line-height: 1.6; }
+
         .theme-toggle, .close-sidebar-btn { cursor: pointer; color: var(--text-light); transition: color 0.2s ease; }
         .theme-toggle:hover, .close-sidebar-btn:hover { color: var(--text-dark); }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2999; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
@@ -165,19 +170,23 @@
         
         <aside class="sidebar" id="sidebar">
             <header class="sidebar-header">
-                <h2><i class="ri-function-line"></i> شعب المقررات</h2>
+                <h2><i class="ri-layout-grid-fill"></i> المقررات</h2>
                 <div>
-                    <i class="ri-sun-line theme-toggle" title="تغيير المظهر" style="margin-left: 1rem;"></i>
+                    <i class="ri-moon-line theme-toggle" title="تغيير المظهر" style="margin-left: 1rem;"></i>
                     <i class="ri-close-line close-sidebar-btn" title="إغلاق"></i>
                 </div>
             </header>
             <div class="sidebar-content" id="courses-list">
-                <div class="no-data" id="no-data-message"><p>شغل الأداة من موقع الجامعة...</p></div>
+                <div class="no-data" id="no-data-message">
+                    <i class="ri-time-line"></i>
+                    <h4>في انتظار البيانات...</h4>
+                    <p>الرجاء تشغيل أداة "استخراج جدولي" من صفحة المقررات المطروحة في موقع الجامعة.</p>
+                </div>
             </div>
             <footer class="sidebar-footer">
                 <a href="https://t.me/mutlaq001" target="_blank" rel="noopener noreferrer">
                     <i class="ri-telegram-line"></i>
-                    بواسطة: MUTLAQ1
+                    MUTLAQ1
                 </a>
             </footer>
         </aside>
@@ -207,7 +216,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // كل كود الجافاسكريبت هنا
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
@@ -233,7 +241,12 @@
             function saveSettings() { localStorage.setItem('userScheduleSettings', JSON.stringify(userSettings)); }
             function loadSettings() {
                 const saved = localStorage.getItem('userScheduleSettings');
-                if (saved) userSettings = JSON.parse(saved);
+                if (saved) {
+                    // التأكد من أن userSettings يحتوي على المفاتيح المطلوبة
+                    const parsedSettings = JSON.parse(saved);
+                    userSettings.hiddenCourses = parsedSettings.hiddenCourses || [];
+                    userSettings.customColors = parsedSettings.customColors || {};
+                }
             }
             
             function initializeCalendar() {
