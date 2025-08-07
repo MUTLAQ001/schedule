@@ -9,7 +9,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
-    <!-- ✨ إضافة مكتبة FullCalendar للتفاعل مع السحب والإفلات -->
     <script src='https://cdn.jsdelivr.net/npm/@fullcalendar/interaction@6.1.9/index.global.min.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
@@ -25,71 +24,42 @@
             --text-dark: #f9fafb; --text-light: #d1d5db; --border-color: #374151;
         }
         *, *::before, *::after { box-sizing: border-box; }
+        body { font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main); color: var(--text-dark); margin: 0; display: flex; }
 
-        body {
-            font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main);
-            color: var(--text-dark); margin: 0; display: flex;
-        }
-
-        .sidebar {
-            width: 380px; height: 100vh; background-color: var(--bg-sidebar);
-            border-left: 1px solid var(--border-color); display: flex;
-            flex-direction: column; flex-shrink: 0; transition: width 0.3s ease;
-        }
-        .sidebar-header {
-            padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color);
-            display: flex; justify-content: space-between; align-items: center;
-        }
+        .sidebar { width: 380px; height: 100vh; background-color: var(--bg-sidebar); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
+        .sidebar-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .sidebar-header h2 { margin: 0; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
         .sidebar-content { flex-grow: 1; overflow-y: auto; padding: 1rem; }
         .sidebar-content::-webkit-scrollbar { width: 5px; }
         .sidebar-content::-webkit-scrollbar-track { background: transparent; }
         .sidebar-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
-        .course-group {
-            border: 1px solid var(--border-color); border-radius: 12px;
-            margin-bottom: 1rem; overflow: hidden;
+        /* --- ✨ تصميم جديد لواجهة رئيسي-تفصيلي --- */
+        .course-list-item {
+            display: flex; align-items: center; gap: 0.75rem; padding: 1rem;
+            border-radius: 10px; cursor: pointer; transition: background-color 0.2s ease;
+            margin-bottom: 0.5rem; border: 1px solid transparent;
         }
-        .course-group-header {
-            background-color: var(--bg-main); padding: 1rem 1.25rem;
-            display: flex; align-items: center; gap: 0.75rem; cursor: pointer;
-            transition: background-color 0.2s ease;
-        }
-        .course-group-header:hover { background-color: var(--bg-calendar-header); }
-        .course-group.open .course-group-header { border-bottom: 1px solid var(--border-color); }
-        .course-group-header .color-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .course-group-header h3 { margin: 0; font-size: 1rem; font-weight: 600; flex-grow: 1;}
+        .course-list-item:hover { background-color: var(--bg-main); border-color: var(--border-color); }
+        .course-list-item .color-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .course-list-item h3 { margin: 0; font-size: 1rem; font-weight: 600; flex-grow: 1; }
         .badge { background-color: var(--bg-calendar-header); color: var(--text-light); padding: 2px 8px; font-size: 0.75rem; border-radius: 99px; }
-        .sections-container {
-            padding: 0; max-height: 0; overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-        }
-        .course-group.open .sections-container { max-height: 500px; padding: 0.75rem; }
+        .back-btn { cursor: pointer; display: flex; align-items: center; gap: 0.25rem; font-weight: 500; color: var(--primary); }
         
-        /* ✨ تصميم بطاقة الشعبة للسحب */
         .section-card {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0.75rem; border: 1px solid var(--border-color);
-            background-color: var(--bg-sidebar); border-radius: 8px;
+            display: flex; justify-content: space-between; align-items: center; padding: 0.75rem;
+            border: 1px solid var(--border-color); background-color: var(--bg-main); border-radius: 8px;
             cursor: grab; transition: all 0.2s ease; margin-bottom: 0.5rem;
         }
         .section-card:hover { border-color: var(--primary); background-color: var(--bg-calendar-header); }
         .section-card-info { font-size: 0.8rem; color: var(--text-light); }
         .section-card-type { font-weight: 600; color: var(--text-dark); }
         .section-card-time { direction: ltr; text-align: left; }
-        .fc-dragging { opacity: 0.7; }
-
-        .main-content {
-            flex-grow: 1; height: 100vh; display: flex; flex-direction: column;
-            padding: 1.5rem;
-        }
+        
+        .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
         .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-shrink: 0; }
         .main-header h1 { margin: 0; font-size: 1.75rem; display: flex; align-items: center; gap: 0.75rem; }
-        .header-actions button {
-            background: transparent; border: 1px solid var(--border-color); color: var(--text-light);
-            padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer;
-            display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease;
-        }
+        .header-actions button { background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease; }
         .header-actions button:hover { background-color: var(--bg-calendar-header); color: var(--text-dark); }
         .calendar-container { flex-grow: 1; background-color: var(--bg-calendar); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; }
         #calendar { height: 100%; }
@@ -99,7 +69,8 @@
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
         .fc-event { border: none !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
-
+        .fc-event.preview-event { opacity: 0.5; border-style: dashed !important; }
+        
         .no-data { text-align: center; padding: 3rem 0; color: var(--text-light); }
         .theme-toggle { cursor: pointer; color: var(--text-light); transition: color 0.2s ease; }
         .theme-toggle:hover { color: var(--text-dark); }
@@ -111,18 +82,15 @@
         <header class="main-header">
             <h1><i class="ri-calendar-event-line"></i> الجدول الأسبوعي</h1>
             <div class="header-actions">
-                <button><i class="ri-settings-3-line"></i> إعدادات</button>
+                <button id="clear-calendar-btn"><i class="ri-delete-bin-line"></i> مسح الجدول</button>
             </div>
         </header>
-        <div class="calendar-container">
-            <div id='calendar'></div>
-        </div>
+        <div class="calendar-container"><div id='calendar'></div></div>
     </main>
     
     <aside class="sidebar">
-        <header class="sidebar-header">
-            <h2><i class="ri-function-line"></i> شعب المقررات</h2>
-            <i class="ri-sun-line theme-toggle" title="تغيير المظهر"></i>
+        <header class="sidebar-header" id="sidebar-header">
+            <!-- سيتم تحديث المحتوى هنا بواسطة الجافاسكريبت -->
         </header>
         <div class="sidebar-content" id="courses-list">
             <div class="no-data" id="no-data-message"><p>شغل الأداة من موقع الجامعة...</p></div>
@@ -132,51 +100,30 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const coursesListContainer = document.getElementById('courses-list');
+            const sidebarHeader = document.getElementById('sidebar-header');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
-            let calendar;
+            const clearCalendarBtn = document.getElementById('clear-calendar-btn');
+            
+            let calendar, allCoursesData, groupedCourses;
             const colorPalette = ['#818cf8', '#f472b6', '#4ade80', '#fbbf24', '#60a5fa', '#c084fc', '#f87171', '#fb923c'];
             const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
 
-            function initializeCalendar() {
-                calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'timeGridWeek', locale: 'ar',
-                    headerToolbar: false, allDaySlot: false,
-                    slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
-                    events: [], dir: 'rtl', hiddenDays: [5, 6],
-                    editable: true, // للسماح بالتفاعل
-                    droppable: true, // للسماح بإفلات العناصر
-                    eventReceive: function(info) {
-                        // عند إفلات شعبة بنجاح
-                        const sectionData = JSON.parse(info.draggedEl.dataset.event);
-                        info.event.setExtendedProp('uniqueId', sectionData.uniqueId);
-                        info.event.setProp('backgroundColor', sectionData.backgroundColor);
-                        info.event.setProp('borderColor', sectionData.borderColor);
-                    },
-                    eventClick: function(info) {
-                        // لحذف المقرر عند الضغط عليه
-                        if (confirm(`هل تريد حذف مقرر "${info.event.title}" من الجدول؟`)) {
-                            info.event.remove();
-                        }
-                    },
-                    eventContent: (arg) => ({
-                        html: `
-                            <b>${arg.event.title.split('(')[0]}</b><br>
-                            <small>${arg.event.extendedProps.instructor}</small><br>
-                            <small>شعبة: ${arg.event.extendedProps.section}</small>
-                        `
-                    })
-                });
-                calendar.render();
-            }
-            initializeCalendar();
+            function initializeCalendar() { /* ... الكود كما هو ... */ }
+            initializeCalendar(); // تم ترك الكود الداخلي كما هو لأنه سليم
 
             function displayData(courses) {
-                const groupedCourses = courses.reduce((acc, course) => {
+                allCoursesData = courses;
+                groupedCourses = courses.reduce((acc, course) => {
                     if (!acc[course.code]) acc[course.code] = { name: course.name, code: course.code, sections: [] };
                     acc[course.code].sections.push(course); return acc;
                 }, {});
+                renderCourseListView();
+            }
 
+            // --- ✨ واجهة عرض المقررات الرئيسية ---
+            function renderCourseListView() {
+                sidebarHeader.innerHTML = `<h2><i class="ri-function-line"></i> قائمة المقررات</h2>`;
                 document.getElementById('no-data-message').style.display = 'none';
                 coursesListContainer.innerHTML = '';
                 let colorIndex = 0;
@@ -184,62 +131,145 @@
                 Object.values(groupedCourses).forEach(group => {
                     const courseColor = colorPalette[colorIndex % colorPalette.length];
                     colorIndex++;
+                    group.color = courseColor; // حفظ اللون مع بيانات المقرر
                     
-                    const groupContainer = document.createElement('div');
-                    groupContainer.className = 'course-group';
-                    let sectionsHTML = '';
-
-                    group.sections.forEach((section, index) => {
-                        const uniqueId = `${section.code}-${section.section}-${index}`;
-                        const timeText = section.time.replace(/<br>/g, ', ').replace(/.*:\s*/, '');
-
-                        // ✨ تحويل بيانات الشعبة إلى نص JSON لوضعه في البطاقة
-                        const eventData = {
-                            title: `${section.name} (${section.code})`,
-                            duration: '01:40', // مدة افتراضية
-                            backgroundColor: courseColor,
-                            borderColor: courseColor,
-                            extendedProps: {
-                                instructor: section.instructor,
-                                section: section.section
-                            }
-                        };
-
-                        sectionsHTML += `
-                            <div class='section-card' data-event='${JSON.stringify(eventData)}'>
-                                <div><div class="section-card-type">${section.section}</div><div class="section-card-info">${section.instructor}</div></div>
-                                <div class="section-card-info section-card-time">${timeText}</div>
-                            </div>`;
-                    });
-
-                    groupContainer.innerHTML = `
-                        <div class="course-group-header">
-                            <span class="color-dot" style="background-color: ${courseColor};"></span>
-                            <h3>${group.name} (${group.code})</h3>
-                            <span class="badge">${group.sections.length}</span>
-                        </div>
-                        <div class="sections-container">${sectionsHTML}</div>`;
-                    coursesListContainer.appendChild(groupContainer);
-                });
-
-                // ✨ تفعيل السحب والإفلات بعد إنشاء البطاقات
-                new FullCalendar.Draggable(coursesListContainer, {
-                    itemSelector: '.section-card',
-                    eventData: function(draggedEl) {
-                        const eventData = JSON.parse(draggedEl.dataset.event);
-                        // هذه البيانات ستستخدم لإنشاء الحدث في الجدول
-                        return eventData;
-                    }
-                });
-                
-                // تفعيل القوائم المنسدلة
-                coursesListContainer.addEventListener('click', function(e) {
-                    const header = e.target.closest('.course-group-header');
-                    if (header) {
-                        header.parentElement.classList.toggle('open');
-                    }
+                    const courseItem = document.createElement('div');
+                    courseItem.className = 'course-list-item';
+                    courseItem.dataset.courseCode = group.code;
+                    courseItem.innerHTML = `
+                        <span class="color-dot" style="background-color: ${courseColor};"></span>
+                        <h3>${group.name} (${group.code})</h3>
+                        <span class="badge">${group.sections.length}</span>
+                    `;
+                    coursesListContainer.appendChild(courseItem);
+                    
+                    courseItem.addEventListener('mouseenter', () => handlePreview(group.code, courseColor));
+                    courseItem.addEventListener('mouseleave', () => clearPreview());
                 });
             }
+
+            // --- ✨ واجهة عرض الشعب التفصيلية ---
+            function renderSectionListView(courseCode) {
+                const group = groupedCourses[courseCode];
+                if (!group) return;
+
+                sidebarHeader.innerHTML = `
+                    <div class="back-btn"><i class="ri-arrow-right-s-line"></i> عودة</div>
+                    <h2>${group.name}</h2>
+                `;
+                coursesListContainer.innerHTML = '';
+                let sectionsHTML = '';
+
+                group.sections.forEach((section, index) => {
+                    const uniqueId = `${section.code}-${section.section}-${index}`;
+                    const timeText = section.time.replace(/<br>/g, ', ').replace(/.*:\s*/, '');
+                    const eventData = createEventDataForSection(section, group.color, uniqueId);
+                    
+                    sectionsHTML += `<div class='section-card' data-unique-id='${uniqueId}' data-event='${JSON.stringify(eventData)}'>
+                        <div><div class="section-card-type">${section.section}</div><div class="section-card-info">${section.instructor}</div></div>
+                        <div class="section-card-info section-card-time">${timeText}</div>
+                    </div>`;
+                });
+                coursesListContainer.innerHTML = sectionsHTML;
+
+                new FullCalendar.Draggable(coursesListContainer, {
+                    itemSelector: '.section-card',
+                    eventData: (el) => JSON.parse(el.dataset.event)
+                });
+            }
+
+            // --- إدارة الأحداث والتفاعل ---
+            coursesListContainer.addEventListener('click', function(e) {
+                const courseItem = e.target.closest('.course-list-item');
+                if (courseItem) {
+                    renderSectionListView(courseItem.dataset.courseCode);
+                }
+            });
+            sidebarHeader.addEventListener('click', function(e) {
+                if (e.target.closest('.back-btn')) {
+                    renderCourseListView();
+                }
+            });
+
+            // باقي الدوال (handlePreview, clearPreview, etc.) تبقى كما هي
+            
+            // --- لصق الدوال المتبقية هنا ---
+             function initializeCalendar() {
+                calendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'timeGridWeek', locale: 'ar',
+                    headerToolbar: false, allDaySlot: false,
+                    slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
+                    events: [], dir: 'rtl', hiddenDays: [5, 6],
+                    editable: true, droppable: true,
+                    eventReceive: function(info) {
+                        info.event.setExtendedProp('uniqueId', info.draggedEl.dataset.uniqueId);
+                    },
+                    eventClick: function(info) {
+                        if (confirm(`هل تريد حذف مقرر "${info.event.title}" من الجدول؟`)) {
+                            info.event.remove();
+                        }
+                    },
+                    eventContent: (arg) => ({
+                        html: `<b>${arg.event.title.split('(')[0]}</b><br><small>${arg.event.extendedProps.instructor}</small><br><small>شعبة: ${arg.event.extendedProps.section}</small>`
+                    })
+                });
+                calendar.render();
+            }
+
+            function handlePreview(courseCode, color) {
+                const previewEvents = [];
+                allCoursesData.filter(c => c.code === courseCode).forEach((section, index) => {
+                    const uniqueId = `${section.code}-${section.section}-${index}-preview`;
+                    previewEvents.push(...createEventDataForSection(section, color, uniqueId, true));
+                });
+                calendar.addEventSource({ id: 'preview-source', events: previewEvents });
+            }
+
+            function clearPreview() {
+                const previewSource = calendar.getEventSourceById('preview-source');
+                if (previewSource) previewSource.remove();
+            }
+
+            function createEventDataForSection(section, color, uniqueId, isPreview = false) {
+                const events = [];
+                const timeEntries = section.time.split('<br>');
+                timeEntries.forEach(entry => {
+                    const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
+                    if (parts) {
+                        const daysString = parts[1];
+                        const startTime = convertTo24Hour(parts[2], parts[3]);
+                        const endTime = convertTo24Hour(parts[4], parts[5]);
+                        const daysArray = daysString.trim().split(/\s+/);
+                        daysArray.forEach(dayName => {
+                            if (dayMapping.hasOwnProperty(dayName)) {
+                                events.push({
+                                    title: `${section.name}`,
+                                    daysOfWeek: [dayMapping[dayName]],
+                                    startTime: startTime, endTime: endTime,
+                                    backgroundColor: color, borderColor: color,
+                                    className: isPreview ? 'preview-event' : '',
+                                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: uniqueId }
+                                });
+                            }
+                        });
+                    }
+                });
+                return events;
+            }
+
+            function convertTo24Hour(time, period) {
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                if (period === 'م' && hours !== 12) hours += 12;
+                if (period === 'ص' && hours === 12) hours = 0;
+                return `${String(hours).padStart(2, '0')}:${minutes}:00`;
+            }
+            
+            clearCalendarBtn.addEventListener('click', () => {
+                if (confirm('هل أنت متأكد من أنك تريد مسح جميع المقررات من الجدول؟')) {
+                    calendar.removeAllEvents();
+                }
+            });
             
             themeToggle.addEventListener('click', () => {
                 document.body.classList.toggle('dark');
