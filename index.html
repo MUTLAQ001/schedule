@@ -566,9 +566,20 @@
             renderVisibleEvents();
         }
 
+        // --- FIX: Re-implemented populateSettingsModal ---
         function populateSettingsModal() {
-            visibilitySettingsContainer.innerHTML = 'سيتم إضافة إعدادات الإظهار هنا قريبًا.';
-            colorSettingsContainer.innerHTML = 'سيتم إضافة إعدادات الألوان هنا قريبًا.';
+            visibilitySettingsContainer.innerHTML = '';
+            colorSettingsContainer.innerHTML = '';
+            if (Object.keys(groupedCourses).length === 0) {
+                visibilitySettingsContainer.innerHTML = '<p>لا توجد مواد لعرضها.</p>';
+                return;
+            }
+            Object.values(groupedCourses).forEach(group => {
+                const visibilityItem = document.createElement('div');
+                visibilityItem.className = 'setting-item';
+                visibilityItem.innerHTML = `<div class="setting-item-label">${group.name} (${group.code})</div>`;
+                visibilitySettingsContainer.appendChild(visibilityItem);
+            });
         }
 
         function setupEventListeners() {
