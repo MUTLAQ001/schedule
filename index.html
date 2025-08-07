@@ -95,7 +95,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- كل المتغيرات هنا ---
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
@@ -112,7 +111,6 @@
                     headerToolbar: false, allDaySlot: false,
                     slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
                     events: [], dir: 'rtl', hiddenDays: [5, 6],
-                    // --- ✨ التعديل هنا: إظهار اسم اليوم فقط بدون تاريخ ---
                     dayHeaderFormat: { weekday: 'long' },
                     eventClick: (info) => {
                         const uniqueId = info.event.extendedProps.uniqueId;
@@ -154,22 +152,11 @@
                         section.uniqueId = uniqueId;
                         const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'تدريب' : 'نظري';
                         
-                        sectionsHTML += `
-                            <div class="section-btn" data-unique-id="${uniqueId}">
-                                <div class="section-btn-number">${section.section}</div>
-                                <div class="section-type">${type}</div>
-                            </div>`;
+                        sectionsHTML += `<div class="section-btn" data-unique-id="${uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div></div>`;
                     });
 
                     courseItem.innerHTML = `
-                        <div class="course-header">
-                            <span class="color-dot" style="background-color: ${courseColor};"></span>
-                            <div class="course-info">
-                                <h3>${group.name} (${group.code})</h3>
-                                <p>${group.sections.length} شعبة</p>
-                            </div>
-                            <i class="ri-arrow-down-s-line toggle-icon"></i>
-                        </div>
+                        <div class="course-header"><span class="color-dot" style="background-color: ${courseColor};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعبة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div>
                         <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
                     coursesListContainer.appendChild(courseItem);
                 });
@@ -256,21 +243,21 @@
                 else themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
             });
 
-            // --- استقبال البيانات ---
+            // --- ✨ استقبال البيانات + الاعتماد على النسخة الاحتياطية ---
             window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'universityCoursesData') {
-                    displayData(event.data.data);
-                    // حفظ البيانات في localStorage كنسخة احتياطية عند تحديث الصفحة
+                    console.log("تم استلام البيانات عبر الرسالة، جاري العرض...");
                     localStorage.setItem('myUniversityCourses', JSON.stringify(event.data.data));
+                    displayData(event.data.data);
                 }
             });
 
-            // استعادة البيانات من localStorage عند فتح الصفحة مباشرة
             const storedCourses = localStorage.getItem('myUniversityCourses');
             if (storedCourses) {
+                console.log("تم العثور على بيانات في التخزين المحلي، جاري العرض...");
                 displayData(JSON.parse(storedCourses));
             }
-
+            
             initializeCalendar();
         });
     </script>
