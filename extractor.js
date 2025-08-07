@@ -1,21 +1,20 @@
 (function() {
     'use strict';
-    // --- النسخة النهائية والمتوافقة ---
+    // --- النسخة النهائية والمضمونة v8 ---
     console.clear();
-    console.log("🚀 أداة الاستخراج v7 (النهائية) بدأت...");
+    console.log("🚀 أداة الاستخراج v8 (النهائية) بدأت...");
 
     setTimeout(function() {
         const courseRowSelector = 'tr[class^="ROW"]';
         const courseRows = document.querySelectorAll(courseRowSelector);
         
         if (courseRows.length === 0) {
-            alert("لم يتم العثور على أي صفوف للمقررات.");
+            alert("لم يتم العثور على أي صفوف للمقررات. تأكد من أن الجدول محمل بالكامل.");
             return;
         }
 
         const coursesData = [];
         courseRows.forEach(row => {
-            // سنقوم بتضمين الصفوف المخفية أيضًا
             const code = row.querySelector('td[data-th="رمز المقرر"]')?.textContent.trim();
             const name = row.querySelector('td[data-th="اسم المقرر"]')?.textContent.trim();
             const section = row.querySelector('td[data-th^="الشعبة"]')?.textContent.trim();
@@ -29,7 +28,7 @@
                         const subParts = part.split('@t');
                         if (subParts.length > 1) {
                             let dayPart = subParts[0].trim();
-                            let timePart = subParts[1].replace(/@r.*$/, '').trim(); // تعديل لإزالة أي نص بعد @r
+                            let timePart = subParts[1].replace(/@r.*$/, '').trim();
                             const dayMapping = {'1': 'الأحد', '2': 'الاثنين', '3': 'الثلاثاء', '4': 'الأربعاء', '5': 'الخميس'};
                             const translatedDays = dayPart.split(/\s+/).map(d => dayMapping[d] || d).join(' ');
                             return `${translatedDays}: ${timePart}`;
@@ -48,13 +47,14 @@
             console.log(`🎉 نجاح! تم استخراج بيانات ${coursesData.length} مقررًا.`);
             
             const viewerWindow = window.open('https://mutlaq001.github.io/schedule/', '_blank');
+            // زيادة وقت الانتظار إلى 2 ثانية لضمان أن الصفحة الجديدة جاهزة تمامًا للاستماع
             setTimeout(() => {
                 viewerWindow.postMessage({
                     type: 'universityCoursesData',
                     data: coursesData
                 }, 'https://mutlaq001.github.io');
                 console.log("📨 تم إرسال البيانات إلى صفحة العرض بنجاح.");
-            }, 1500); // زيادة وقت الانتظار قليلاً لضمان فتح النافذة
+            }, 2000);
             
         } else {
             alert("تم العثور على الصفوف، لكن لم يتم استخراج البيانات بنجاح.");
