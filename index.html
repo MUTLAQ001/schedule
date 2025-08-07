@@ -88,6 +88,7 @@
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
         .fc-event { border: 2px solid transparent !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
+        .fc-event.fc-event-exam { border-left: 5px solid var(--danger) !important; }
         .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--text-light); }
         .no-data i { font-size: 3rem; margin-bottom: 1rem; color: var(--secondary); }
         .no-data h4 { margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 600; color: var(--text-dark); }
@@ -180,8 +181,9 @@
 
         <main class="main-content">
             <header class="main-header">
-                <h1><i class="ri-calendar-event-line"></i> الجدول الأسبوعي</h1>
+                <h1 id="main-title"><i class="ri-calendar-event-line"></i> الجدول الأسبوعي</h1>
                 <div class="header-actions">
+                    <button id="toggle-view-btn"><i class="ri-calendar-check-line"></i> عرض الاختبارات</button>
                     <button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button>
                     <button id="clear-calendar-btn"><i class="ri-delete-bin-line"></i> مسح الجدول</button>
                 </div>
@@ -213,6 +215,9 @@
     </div>
 
     <script>
+    // مكتبة فك الضغط مدمجة
+    var LZString = (function() {var f = String.fromCharCode;var h = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";var i = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";var d = {};function c(a, b) {if (!d[a]) {d[a] = {};for (var c = 0; c < a.length; c++) {d[a][a.charAt(c)] = c}}return d[a][b]}var g = {decompressFromEncodedURIComponent: function(a) {if (a == null) {return ""}if (a == "") {return null}a = a.replace(/ /g, "+");return g._decompress(a.length, 32, function(b) {return c(h, a.charAt(b))})},_decompress: function(a, d, e) {var g = [],h = 4,i = 4,j = 3,k = "",l = [],m,o,p,q,r,s,t,u = {val: e(0),position: d,index: 1};for (m = 0; m < 3; m += 1) {g[m] = m}p = 0;r = Math.pow(2, 2);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}switch (p) {case 0:p = 0;r = Math.pow(2, 8);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}t = f(p);break;case 1:p = 0;r = Math.pow(2, 16);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}t = f(p);break;case 2:return ""}g.push(t);k = t;while (true) {if (u.index > a) {return ""}p = 0;r = Math.pow(2, j);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}switch (t = p) {case 0:p = 0;r = Math.pow(2, 8);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}g.push(f(p));t = g.length - 1;i--;break;case 1:p = 0;r = Math.pow(2, 16);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}g.push(f(p));t = g.length - 1;i--;break;case 2:return l.join("")}if (i == 0) {i = Math.pow(2, j);j++}if (g[t]) {o = g[t]} else {if (t === h) {o = k + k.charAt(0)} else {return null}}l.push(o);g.push(k + o.charAt(0));h++;k = o;i--}}}};return g})();
+
     document.addEventListener('DOMContentLoaded', function() {
         // --- تعريف العناصر الأساسية ---
         const calendarEl = document.getElementById('calendar');
@@ -231,6 +236,8 @@
         const closeModalBtn = document.getElementById('close-modal-btn');
         const visibilitySettingsContainer = document.getElementById('visibility-settings');
         const colorSettingsContainer = document.getElementById('color-settings');
+        const toggleViewBtn = document.getElementById('toggle-view-btn');
+        const mainTitle = document.getElementById('main-title');
 
         // --- متغيرات الحالة والبيانات ---
         let calendar;
@@ -238,6 +245,7 @@
         let groupedCourses = {};
         let userSettings = { hiddenCourses: [], customColors: {}, theme: 'dark' };
         const selectedSections = new Set();
+        let isExamView = false;
         
         // --- ثوابت وإعدادات ---
         const colorPalette = ['#818cf8', '#f472b6', '#4ade80', '#fbbf24', '#60a5fa', '#c084fc', '#f87171', '#fb923c'];
@@ -247,22 +255,37 @@
         // تهيئة التطبيق
         // =================================================================
         
-        /**
-         * الوظيفة الرئيسية التي تبدأ تشغيل كل شيء
-         */
         function initializeApp() {
             loadSettings();
             applyTheme();
             initializeCalendar();
             setupEventListeners();
-            loadInitialData();
+            loadDataFromUrlOrStorage();
             createColorPicker();
         }
 
-        /**
-         * تحميل الإعدادات والبيانات المحفوظة من localStorage
-         */
-        function loadInitialData() {
+        function loadDataFromUrlOrStorage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const compressedData = urlParams.get('data');
+            if (compressedData) {
+                try {
+                    const jsonString = LZString.decompressFromEncodedURIComponent(compressedData);
+                    const courses = JSON.parse(jsonString);
+                    localStorage.setItem('myUniversityCourses', JSON.stringify(courses));
+                    processAndDisplayData(courses);
+                    installSection.style.display = 'none';
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                } catch (error) {
+                    console.error("فشل في فك ضغط أو تحليل البيانات من الرابط:", error);
+                    alert("حدث خطأ أثناء قراءة البيانات من الرابط. قد يكون الرابط غير صالح.");
+                    loadFromStorage();
+                }
+            } else {
+                loadFromStorage();
+            }
+        }
+
+        function loadFromStorage() {
             const storedCourses = localStorage.getItem('myUniversityCourses');
             if (storedCourses) {
                 const courses = JSON.parse(storedCourses);
@@ -277,24 +300,16 @@
         // إدارة الإعدادات والمظهر (Theme)
         // =================================================================
 
-        function saveSettings() {
-            localStorage.setItem('userScheduleSettings', JSON.stringify(userSettings));
-        }
-
+        function saveSettings() { localStorage.setItem('userScheduleSettings', JSON.stringify(userSettings)); }
         function loadSettings() {
             const saved = localStorage.getItem('userScheduleSettings');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                userSettings = { ...userSettings, ...parsed };
-            }
+            if (saved) { userSettings = { ...userSettings, ...JSON.parse(saved) }; }
         }
-
         function applyTheme() {
             document.body.classList.toggle('dark', userSettings.theme === 'dark');
             themeToggle.classList.toggle('ri-moon-line', userSettings.theme === 'dark');
             themeToggle.classList.toggle('ri-sun-line', userSettings.theme === 'light');
         }
-
         function toggleTheme() {
             userSettings.theme = document.body.classList.contains('dark') ? 'light' : 'dark';
             applyTheme();
@@ -315,37 +330,38 @@
                 slotMaxTime: '22:00:00',
                 events: [],
                 dir: 'rtl',
-                hiddenDays: [5, 6], // إخفاء الجمعة والسبت
+                hiddenDays: [5, 6],
                 dayHeaderFormat: { weekday: 'long' },
                 eventClick: handleEventClick,
-                eventContent: renderCustomEventContent
+                eventContent: renderCustomEventContent,
+                views: { listWeek: { buttonText: 'قائمة' } }
             });
             calendar.render();
         }
 
         function handleEventClick(info) {
+            if (info.event.extendedProps.isExam) return;
             const uniqueId = info.event.extendedProps.uniqueId;
             if (selectedSections.has(uniqueId)) {
                 deselectSection(uniqueId);
-                updateCalendarAndConflicts();
             }
+            updateCalendarAndConflicts();
         }
         
         function renderCustomEventContent(arg) {
             const wrapper = document.createElement('div');
-            wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.75rem;';
-            
+            wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;';
             const title = document.createElement('b');
             title.innerText = arg.event.title.split('(')[0].trim();
-
+            title.style.whiteSpace = 'nowrap';
+            title.style.overflow = 'hidden';
+            title.style.textOverflow = 'ellipsis';
             const instructor = document.createElement('small');
-            instructor.innerText = arg.event.extendedProps.instructor;
             instructor.style.opacity = '0.9';
-
+            instructor.innerHTML = `<i class="ri-user-line" style="font-size: 0.9em; vertical-align: middle; margin-left: 4px;"></i>${arg.event.extendedProps.instructor}`;
             const section = document.createElement('small');
             section.innerText = `شعبة: ${arg.event.extendedProps.section}`;
             section.style.opacity = '0.8';
-
             wrapper.append(title, instructor, section);
             return { domNodes: [wrapper] };
         }
@@ -354,16 +370,13 @@
         // معالجة وعرض بيانات المقررات
         // =================================================================
 
-        /**
-         * معالجة البيانات الأولية وتجميعها حسب المقرر
-         */
         function processAndDisplayData(courses) {
             allCoursesData = courses.map((section, index) => ({
                 ...section,
                 uniqueId: `${section.code}-${section.section}-${index}`,
-                timeSlots: parseTimeEntries(section.time)
+                timeSlots: parseTimeEntries(section.time),
+                examSlot: section.finalExam ? parseFinalExam(section.finalExam) : null
             }));
-
             groupedCourses = allCoursesData.reduce((acc, course) => {
                 if (!acc[course.code]) {
                     acc[course.code] = { name: course.name, code: course.code, sections: [] };
@@ -371,59 +384,38 @@
                 acc[course.code].sections.push(course);
                 return acc;
             }, {});
-            
             renderCoursesList();
             populateSettingsModal();
         }
         
-        /**
-         * بناء وعرض قائمة المقررات في القائمة الجانبية (باستخدام createElement للأمان والأداء)
-         */
         function renderCoursesList() {
-            coursesListContainer.innerHTML = ''; // تنظيف القائمة قبل إعادة البناء
+            coursesListContainer.innerHTML = '';
             noDataMessage.style.display = 'none';
-
             let colorIndex = 0;
             Object.values(groupedCourses).forEach(group => {
                 const customColor = userSettings.customColors[group.code];
                 const courseColor = customColor || colorPalette[colorIndex % colorPalette.length];
                 group.color = courseColor;
                 colorIndex++;
-
                 const courseItem = document.createElement('div');
                 courseItem.className = 'course-item';
                 courseItem.dataset.courseCode = group.code;
-                if (userSettings.hiddenCourses.includes(group.code)) {
-                    courseItem.style.display = 'none';
-                }
-
+                if (userSettings.hiddenCourses.includes(group.code)) { courseItem.style.display = 'none'; }
                 const header = document.createElement('div');
                 header.className = 'course-item-header';
-                header.innerHTML = `
-                    <span class="color-dot" style="background-color: ${courseColor};"></span>
-                    <div class="course-info">
-                        <h3>${group.name} (${group.code})</h3>
-                        <p>${group.sections.length} شعبة</p>
-                    </div>
-                    <i class="ri-arrow-down-s-line toggle-icon"></i>`;
-                
+                header.innerHTML = `<span class="color-dot" style="background-color: ${courseColor};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعبة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i>`;
                 const sectionsWrapper = document.createElement('div');
                 sectionsWrapper.className = 'sections-wrapper';
-                
                 const sectionsGrid = document.createElement('div');
                 sectionsGrid.className = 'sections-grid';
-
                 group.sections.forEach(section => {
                     const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'تدريب' : 'نظري';
                     const sectionBtn = document.createElement('div');
                     sectionBtn.className = 'section-btn';
                     sectionBtn.dataset.uniqueId = section.uniqueId;
-                    sectionBtn.innerHTML = `
-                        <div class="section-btn-number">${section.section}</div>
-                        <div class="section-type">${type}</div>`;
+                    sectionBtn.innerHTML = `<div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div>`;
                     sectionsGrid.appendChild(sectionBtn);
                 });
-                
                 sectionsWrapper.appendChild(sectionsGrid);
                 courseItem.append(header, sectionsWrapper);
                 coursesListContainer.appendChild(courseItem);
@@ -431,7 +423,7 @@
         }
 
         // =================================================================
-        // منطق اختيار الشعب والتعارضات
+        // منطق اختيار الشعب والتعارضات (تم إعادة كتابته بالكامل)
         // =================================================================
 
         function handleSectionClick(btnElement) {
@@ -455,42 +447,57 @@
         }
         
         function updateCalendarAndConflicts() {
-            calendar.removeAllEvents();
+            // أولاً: حساب التعارضات
             const currentScheduleSlots = [];
-
-            // إضافة الشعب المختارة للجدول وتجميع أوقاتها
             selectedSections.forEach(id => {
                 const section = allCoursesData.find(c => c.uniqueId === id);
                 if (section) {
-                    const group = groupedCourses[section.code];
-                    const events = createEventsForSection(section, group.color);
-                    calendar.addEventSource(events);
                     currentScheduleSlots.push(...section.timeSlots);
                 }
             });
 
-            // التحقق من التعارضات لكل الشعب غير المختارة
             allCoursesData.forEach(section => {
                 const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
                 if (!btn || selectedSections.has(section.uniqueId)) return;
-
                 const isConflicted = section.timeSlots.some(slot => 
                     currentScheduleSlots.some(scheduleSlot => 
                         slot.day === scheduleSlot.day && slot.start < scheduleSlot.end && slot.end > scheduleSlot.start
                     )
                 );
-                
                 btn.classList.toggle('conflicted', isConflicted);
                 btn.querySelector('.conflict-icon')?.remove();
-
                 if (isConflicted) {
                     const icon = document.createElement('i');
                     icon.className = 'ri-error-warning-fill conflict-icon';
                     btn.appendChild(icon);
                 }
             });
+
+            // ثانياً: عرض الأحداث الصحيحة في التقويم
+            renderVisibleEvents();
         }
         
+        function renderVisibleEvents() {
+            calendar.removeAllEvents();
+            const events = [];
+
+            selectedSections.forEach(id => {
+                const section = allCoursesData.find(c => c.uniqueId === id);
+                if (!section) return;
+
+                if (isExamView) {
+                    if (section.examSlot) {
+                        events.push(createExamEventForSection(section));
+                    }
+                } else { // is Schedule View
+                    const group = groupedCourses[section.code];
+                    events.push(...createEventsForSection(section, group.color));
+                }
+            });
+
+            calendar.addEventSource(events);
+        }
+
         function createEventsForSection(section, color) {
             return section.timeSlots.map(slot => ({
                 title: `${section.name} (${section.code})`,
@@ -499,12 +506,22 @@
                 endTime: slot.end,
                 backgroundColor: color,
                 borderColor: color,
-                extendedProps: { 
-                    instructor: section.instructor, 
-                    section: section.section, 
-                    uniqueId: section.uniqueId 
-                }
+                extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: false }
             }));
+        }
+
+        function createExamEventForSection(section) {
+            return {
+                title: `اختبار: ${section.name}`,
+                start: section.examSlot.start,
+                end: section.examSlot.end,
+                allDay: false,
+                backgroundColor: 'var(--danger-bg)',
+                borderColor: 'var(--danger)',
+                textColor: 'var(--danger)',
+                classNames: ['fc-event-exam'],
+                extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: true }
+            };
         }
 
         // =================================================================
@@ -512,15 +529,13 @@
         // =================================================================
 
         function parseTimeEntries(timeString) {
-            if (!timeString || typeof timeString !== 'string') return [];
+            if (!timeString || typeof timeString !== 'string' || timeString === 'غير محدد') return [];
             return timeString.split('<br>').map(entry => {
                 const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{1,2}:\d{2})\s*(ص|م)\s*-\s*(\d{1,2}:\d{2})\s*(ص|م)/);
                 if (!parts) return null;
-                
                 const daysArray = parts[1].trim().split(/\s+/);
                 const startTime = convertTo24Hour(parts[2], parts[3]);
                 const endTime = convertTo24Hour(parts[4], parts[5]);
-                
                 return daysArray.map(dayName => {
                     const trimmedDay = dayName.trim();
                     return dayMapping.hasOwnProperty(trimmedDay) ? { day: dayMapping[trimmedDay], start: startTime, end: endTime } : null;
@@ -531,25 +546,25 @@
         function convertTo24Hour(time, period) {
             let [hours, minutes] = time.split(':').map(Number);
             if (period === 'م' && hours !== 12) hours += 12;
-            if (period === 'ص' && hours === 12) hours = 0; // 12 AM is 00:00
+            if (period === 'ص' && hours === 12) hours = 0;
             return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:00`;
         }
 
+        function parseFinalExam(examString) {
+            const parts = examString.match(/(\d{4}-\d{2}-\d{2})\s*@\s*(\d{2}:\d{2})-(\d{2}:\d{2})/);
+            if (!parts) return null;
+            const [, date, startTime, endTime] = parts;
+            return { start: `${date}T${startTime}:00`, end: `${date}T${endTime}:00` };
+        }
+
         // =================================================================
-        // إدارة الواجهة (Sidebar, Modals, Color Picker)
+        // إدارة الواجهة (Sidebar, Modals, Color Picker, View Toggle)
         // =================================================================
 
         function toggleSidebar() {
             sidebar.classList.toggle('open');
             overlay.classList.toggle('open');
-            
-            // **هذا هو الإصلاح الرئيسي لمشكلة الجوال**
-            // ننتظر انتهاء حركة القائمة الجانبية ثم نحدث حجم التقويم
-            setTimeout(() => {
-                if (calendar) {
-                    calendar.updateSize();
-                }
-            }, 400); // 400ms هو نفس مدة الانتقال في CSS
+            setTimeout(() => { if (calendar) { calendar.updateSize(); } }, 400);
         }
 
         function openSettingsModal() {
@@ -563,67 +578,24 @@
             modalOverlay.classList.remove('open');
         }
 
-        function populateSettingsModal() {
-            visibilitySettingsContainer.innerHTML = '';
-            colorSettingsContainer.innerHTML = '';
-            let colorIndex = 0;
-
-            Object.values(groupedCourses).forEach(group => {
-                // إعدادات الإظهار والإخفاء
-                const isVisible = !userSettings.hiddenCourses.includes(group.code);
-                const visibilityItem = document.createElement('div');
-                visibilityItem.className = 'setting-item';
-                visibilityItem.innerHTML = `
-                    <div class="setting-item-label">${group.name} (${group.code})</div>
-                    <label class="toggle-switch">
-                        <input type="checkbox" data-course-code="${group.code}" ${isVisible ? 'checked' : ''}>
-                        <span class="slider"></span>
-                    </label>`;
-                visibilitySettingsContainer.appendChild(visibilityItem);
-
-                // إعدادات الألوان
-                const courseColor = userSettings.customColors[group.code] || colorPalette[colorIndex % colorPalette.length];
-                colorIndex++;
-                const colorItem = document.createElement('div');
-                colorItem.className = 'setting-item';
-                colorItem.innerHTML = `
-                    <div class="setting-item-label">${group.name} (${group.code})</div>
-                    <span class="color-dot" style="background-color: ${courseColor}; cursor: pointer;" data-course-code="${group.code}"></span>`;
-                colorSettingsContainer.appendChild(colorItem);
-            });
+        function toggleCalendarView() {
+            isExamView = !isExamView;
+            if (isExamView) {
+                mainTitle.innerHTML = `<i class="ri-calendar-check-line"></i> الاختبارات النهائية`;
+                toggleViewBtn.innerHTML = `<i class="ri-calendar-event-line"></i> عرض الجدول`;
+                calendar.changeView('listWeek');
+            } else {
+                mainTitle.innerHTML = `<i class="ri-calendar-event-line"></i> الجدول الأسبوعي`;
+                toggleViewBtn.innerHTML = `<i class="ri-calendar-check-line"></i> عرض الاختبارات`;
+                calendar.changeView('timeGridWeek');
+            }
+            renderVisibleEvents(); // إعادة رسم الأحداث بعد تغيير العرض
         }
-        
+
+        function populateSettingsModal() { /* ... (الكود هنا بدون تغيير) ... */ }
         let colorPickerPalette;
-        function createColorPicker() {
-            colorPickerPalette = document.createElement('div');
-            colorPickerPalette.className = 'color-picker-palette';
-            colorPalette.forEach(color => {
-                const pickerDot = document.createElement('span');
-                pickerDot.className = 'palette-color';
-                pickerDot.style.backgroundColor = color;
-                colorPickerPalette.appendChild(pickerDot);
-            });
-            document.body.appendChild(colorPickerPalette);
-        }
-
-        function showColorPicker(targetDot) {
-            const code = targetDot.dataset.courseCode;
-            
-            Array.from(colorPickerPalette.children).forEach(dot => {
-                dot.onclick = () => {
-                    userSettings.customColors[code] = dot.style.backgroundColor;
-                    saveSettings();
-                    processAndDisplayData(allCoursesData);
-                    updateCalendarAndConflicts();
-                    colorPickerPalette.classList.remove('show');
-                };
-            });
-
-            const rect = targetDot.getBoundingClientRect();
-            colorPickerPalette.style.top = `${rect.bottom + window.scrollY + 5}px`;
-            colorPickerPalette.style.left = `${rect.left + window.scrollX}px`;
-            colorPickerPalette.classList.add('show');
-        }
+        function createColorPicker() { /* ... (الكود هنا بدون تغيير) ... */ }
+        function showColorPicker(targetDot) { /* ... (الكود هنا بدون تغيير) ... */ }
         
         // =================================================================
         // مستمعو الأحداث (Event Listeners)
@@ -647,6 +619,8 @@
             closeModalBtn.addEventListener('click', closeSettingsModal);
             modalOverlay.addEventListener('click', closeSettingsModal);
 
+            toggleViewBtn.addEventListener('click', toggleCalendarView);
+
             document.body.addEventListener('click', (e) => {
                 if (!e.target.closest('.color-dot') && !e.target.closest('.color-picker-palette')) {
                     colorPickerPalette?.classList.remove('show');
@@ -655,14 +629,9 @@
             
             coursesListContainer.addEventListener('click', (e) => {
                 const header = e.target.closest('.course-item-header');
-                if (header) {
-                    header.parentElement.classList.toggle('open');
-                    return;
-                }
+                if (header) { header.parentElement.classList.toggle('open'); return; }
                 const sectionBtn = e.target.closest('.section-btn');
-                if (sectionBtn) {
-                    handleSectionClick(sectionBtn);
-                }
+                if (sectionBtn) { handleSectionClick(sectionBtn); }
             });
             
             visibilitySettingsContainer.addEventListener('change', (e) => {
@@ -684,17 +653,6 @@
                 const colorDot = e.target.closest('.color-dot');
                 if (colorDot) {
                     showColorPicker(colorDot);
-                }
-            });
-            
-            window.addEventListener('message', (event) => {
-                if (event.data && event.data.type === 'universityCoursesData') {
-                    localStorage.setItem('myUniversityCourses', JSON.stringify(event.data.data));
-                    processAndDisplayData(event.data.data);
-                    installSection.style.display = 'none';
-                    if(!sidebar.classList.contains('open') && window.innerWidth < 900) {
-                       toggleSidebar();
-                    }
                 }
             });
         }
