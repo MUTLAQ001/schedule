@@ -74,26 +74,10 @@
         .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.7; }
         .section-btn.conflicted:hover { border-color: var(--danger); }
         .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--danger); background: var(--bg-sidebar); border-radius: 50%; font-size: 1.2em; }
-        
-        /* --- START: التحسين --- */
-        .section-btn.no-time {
-            border-color: var(--warning);
-            background-color: var(--warning-bg);
-        }
-        .section-btn.no-time:hover {
-            border-color: var(--warning);
-            box-shadow: 0 0 5px var(--warning);
-        }
-        .section-btn.no-time.selected {
-            background-color: var(--warning);
-            border-color: var(--warning);
-            color: var(--text-dark);
-        }
-        .section-btn.no-time.selected .section-type {
-            color: var(--text-dark) !important;
-        }
-        /* --- END: التحسين --- */
-
+        .section-btn.no-time { border-color: var(--warning); background-color: var(--warning-bg); }
+        .section-btn.no-time:hover { border-color: var(--warning); box-shadow: 0 0 5px var(--warning); }
+        .section-btn.no-time.selected { background-color: var(--warning); border-color: var(--warning); color: var(--text-dark); }
+        .section-btn.no-time.selected .section-type { color: var(--text-dark) !important; }
         .section-btn-number { font-weight: 700; font-size: 1rem; }
         .section-type { font-size: 0.75rem; color: var(--text-light); }
         .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
@@ -111,6 +95,11 @@
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
         .fc-event { border: 2px solid transparent !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
         .fc-event.fc-event-exam { border-left: 5px solid var(--danger) !important; }
+        /* --- START: التحسين --- */
+        .fc-daygrid-event { white-space: normal !important; align-items: center; }
+        .fc-event-main-frame { flex-direction: row; gap: 6px; }
+        .fc-event-time { font-weight: bold; }
+        /* --- END: التحسين --- */
         .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--text-light); }
         .no-data i { font-size: 3rem; margin-bottom: 1rem; color: var(--secondary); }
         .no-data h4 { margin: 0 0 0.5rem; font-size: 1.1rem; font-weight: 600; color: var(--text-dark); }
@@ -157,6 +146,7 @@
     </style>
 </head>
 <body class="dark">
+    <!-- ... (نفس محتوى الـ body HTML) ... -->
     <div id="install-section">
         <h3>طريقة التثبيت</h3>
         <div class="desktop-only-drag">
@@ -463,7 +453,16 @@
             calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'timeGridWeek',
                 locale: 'ar',
-                headerToolbar: false,
+                headerToolbar: {
+                    start: 'title',
+                    center: '',
+                    end: 'today prev,next'
+                },
+                buttonText: {
+                    today: 'اليوم',
+                    month: 'شهر',
+                    week: 'أسبوع',
+                },
                 allDaySlot: false,
                 slotMinTime: '08:00:00',
                 slotMaxTime: '22:00:00',
@@ -473,7 +472,6 @@
                 dayHeaderFormat: { weekday: 'long' },
                 eventClick: handleEventClick,
                 eventContent: renderCustomEventContent,
-                views: { listWeek: { buttonText: 'قائمة' } },
                 eventDidMount: function(info) {
                     const isExam = info.event.extendedProps.isExam;
                     if (isExamView) {
@@ -496,6 +494,15 @@
         }
         
         function renderCustomEventContent(arg) {
+            // --- START: التحسين ---
+            // تخصيص عرض الحدث ليتناسب مع عرض الشهر
+            if (arg.view.type === 'dayGridMonth') {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = `<div class="fc-event-time">${arg.timeText}</div><div class="fc-event-title">${arg.event.title.replace('اختبار: ', '')}</div>`;
+                return { domNodes: [wrapper] };
+            }
+            // --- END: التحسين ---
+
             const wrapper = document.createElement('div');
             wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;';
             const title = document.createElement('b');
@@ -560,15 +567,10 @@
                     const sectionBtn = document.createElement('div');
                     sectionBtn.className = 'section-btn';
                     sectionBtn.dataset.uniqueId = section.uniqueId;
-                    
-                    // --- START: التحسين ---
-                    // التحقق إذا كانت الشعبة بدون توقيت
                     if (section.timeSlots.length === 0) {
                         sectionBtn.classList.add('no-time');
                         sectionBtn.title = 'شعبة بدون توقيت محدد (قد تكون مسجلة)';
                     }
-                    // --- END: التحسين ---
-
                     sectionBtn.innerHTML = `<div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div>`;
                     sectionsGrid.appendChild(sectionBtn);
                 });
@@ -612,14 +614,11 @@
             allCoursesData.forEach(section => {
                 const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
                 if (!btn || selectedSections.has(section.uniqueId)) return;
-                
-                // الشعب بدون توقيت لا تتعارض أبدًا
                 const isConflicted = section.timeSlots.length > 0 && section.timeSlots.some(slot => 
                     currentScheduleSlots.some(scheduleSlot => 
                         slot.day === scheduleSlot.day && slot.start < scheduleSlot.end && slot.end > scheduleSlot.start
                     )
                 );
-
                 btn.classList.toggle('conflicted', isConflicted);
                 btn.querySelector('.conflict-icon')?.remove();
                 if (isConflicted) {
@@ -662,9 +661,9 @@
                 start: section.examSlot.start,
                 end: section.examSlot.end,
                 allDay: false,
-                backgroundColor: 'var(--danger-bg)',
+                backgroundColor: 'var(--danger)',
                 borderColor: 'var(--danger)',
-                textColor: 'var(--danger)',
+                textColor: 'white',
                 classNames: ['fc-event-exam'],
                 extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: true }
             };
@@ -724,18 +723,30 @@
             modalOverlay.classList.remove('open');
         }
 
+        // --- START: التحسين ---
+        // دالة تبديل العرض المحسنة
         function toggleCalendarView() {
             isExamView = !isExamView;
             if (isExamView) {
                 mainTitle.innerHTML = `<i class="ri-calendar-check-line"></i> الاختبارات النهائية`;
                 toggleViewBtn.innerHTML = `<i class="ri-calendar-event-line"></i> عرض الجدول`;
-                calendar.changeView('listWeek');
+                calendar.setOption('headerToolbar', { start: 'title', center: '', end: 'today prev,next' });
+                calendar.changeView('dayGridMonth');
+                
+                // الانتقال إلى تاريخ أول اختبار
+                const firstExam = calendar.getEvents().find(e => e.extendedProps.isExam);
+                if (firstExam) {
+                    calendar.gotoDate(firstExam.start);
+                }
+
             } else {
                 mainTitle.innerHTML = `<i class="ri-calendar-event-line"></i> الجدول الأسبوعي`;
                 toggleViewBtn.innerHTML = `<i class="ri-calendar-check-line"></i> عرض الاختبارات`;
+                calendar.setOption('headerToolbar', false);
                 calendar.changeView('timeGridWeek');
             }
         }
+        // --- END: التحسين ---
 
         function populateSettingsModal() { /* ... (الكود هنا بدون تغيير) ... */ }
         let colorPickerPalette;
