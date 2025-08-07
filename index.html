@@ -8,279 +8,179 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    <link id="favicon" rel="icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjUxMiIgaGVpZ2h0PSI1MTIiIHJ4PSI5MCIgZmlsbD0iIzBhMGEwYSIvPjxnIHRyYW5zZm9ybT0idHJhbnNsYXRlKDY0IDApIj48cmVjdCB4PSI2NCIgeT0iNDgiIHdpZHRoPSIzODQiIGhlaWdodD0iNDE2IiByeD0iNDAiIGZpbGw9IiMyMjI1MmQiLz48cmVjdCB4PSI5NiIgeT0iODAiIHdpZHRoPSIzMjAiIGhlaWdodD0iOTYiIHJ4PSIyMCIgZmlsbD0iIzVlOWNmZiIvPjxnIGZpbGw9IiM0YjUwNWEiPjxjaXJjbGUgY3g9IjE1MCIgY3k9IjI0MCIgcj0iMzIiLz48Y2lyY2xlIGN4PSIyNTYiIGN5PSIyNDAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIzNjIiIGN5PSIyNDAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIxNTAiIGN5PSIzMzAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIyNTYiIGN5PSIzMzAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIzNjIiIGN5PSIzMzAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIxNTAiIGN5PSI0MjAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIyNTYiIGN5PSI0MjAiIHI9IjMyIi8%2BY2lyY2xlIGN4PSIzNjIiIGN5PSI0MjAiIHI9IjMyIi8%2BPC9nPjwvZz48L3N2Zz4%3D">
 
     <style>
         :root {
-            --color-primary:#5e9cff; --color-primary-dark:#4b7dcc;
-            --color-danger-red:#ff5252; --color-warning-gold:#ffc400;
-            --color-bg:#0a0a0a; --color-card:rgba(20,20,22,0.75);
-            --color-border:rgba(255,255,255,0.1); --color-text:#e0e0e0;
-            --color-text-muted:#999; --font-body:"Cairo",sans-serif;
-            --font-title:"IBM Plex Sans Arabic",sans-serif; --radius:20px;
-            --radius-md:16px; --radius-full:999px;
-            --transition:0.3s cubic-bezier(0.25,0.8,0.25,1);
-            --transition-smooth:0.5s cubic-bezier(0.2,0.8,0.2,1);
-            --rgb-primary:94,156,255; --rgb-danger:255,82,82;
-            --primary-hue:217; --secondary-hue:257;
-
-            --bg-main: var(--color-bg); --bg-sidebar: var(--color-card);
-            --bg-calendar: var(--color-card); --bg-calendar-header: rgba(255, 255, 255, 0.05);
-            --bg-item-hover: rgba(255, 255, 255, 0.08); --primary: var(--color-primary);
-            --secondary: var(--color-text-muted); --danger: var(--color-danger-red);
-            --danger-bg: rgba(var(--rgb-danger), 0.15); --text-dark: var(--color-text);
-            --text-light: var(--color-text-muted); --border-color: var(--color-border);
+            --bg-main: #f8fafc; --bg-sidebar: #ffffff; --bg-calendar: #ffffff;
+            --bg-calendar-header: #f1f5f9; --bg-item-hover: #f1f5f9;
+            --primary: #6366f1; --secondary: #94a3b8; --danger: #ef4444; --danger-bg: #fee2e2;
+            --text-dark: #1e293b; --text-light: #64748b; --border-color: #e2e8f0;
         }
-        .light {
-            --color-bg: #f9f9f9; --color-card: rgba(255, 255, 255, 0.75);
-            --color-border: rgba(0, 0, 0, 0.09); --color-text: #202020;
-            --color-text-muted: #707070;
-            --bg-main: var(--color-bg); --bg-sidebar: var(--color-card);
-            --bg-calendar: var(--color-card); --bg-calendar-header: rgba(0, 0, 0, 0.04);
-            --bg-item-hover: rgba(0, 0, 0, 0.06); --primary: var(--color-primary);
-            --secondary: var(--color-text-muted); --danger: var(--color-danger-red);
-            --danger-bg: rgba(var(--rgb-danger), 0.1); --text-dark: var(--color-text);
-            --text-light: var(--color-text-muted); --border-color: var(--color-border);
+        .dark {
+            --bg-main: #111827; --bg-sidebar: #1f2937; --bg-calendar: #1f2937;
+            --bg-calendar-header: #374151; --bg-item-hover: #374151;
+            --primary: #818cf8; --secondary: #9ca3af; --danger: #f87171; --danger-bg: #452b2b;
+            --text-dark: #f9fafb; --text-light: #d1d5db; --border-color: #374151;
         }
-        
         *, *::before, *::after { box-sizing: border-box; }
-		html{ scrollbar-width: none; }
-		::-webkit-scrollbar { display: none; }
-        body { 
-            font-family: var(--font-title), sans-serif; 
-            background-color: var(--bg-main); 
-            color: var(--text-dark); 
-            margin: 0; 
-            display: flex; 
-            height: 100vh;
-            overflow: hidden;
-            transition: background-color var(--transition-smooth), color var(--transition-smooth);
+        html, body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main);
+            color: var(--text-dark); margin: 0; overflow: hidden; height: 100%;
         }
 
-        .cosmic-bg-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;overflow:hidden}
-		#starfield-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
-		.nebula-glow{position:absolute;top:50%;left:50%;width:80vmax;height:80vmax;margin-top:-40vmax;margin-left:-40vmax;background:radial-gradient(circle,hsl(var(--primary-hue),90%,60%,.15) 0%,hsl(var(--secondary-hue),80%,50%,.1) 40%,transparent 70%);filter:blur(100px);border-radius:50%;animation:move-nebula 90s infinite alternate ease-in-out;transition:opacity .5s ease,background .5s ease}
-        .light .nebula-glow{opacity:.5;filter:blur(120px)}
-        @keyframes move-nebula{0%{transform:translate(0,0) rotate(0deg) scale(1.2)}50%{transform:translate(10vw,5vh) rotate(180deg) scale(1.5)}100%{transform:translate(0,0) rotate(360deg) scale(1.2)}}
+        .page-wrapper { display: flex; height: 100vh; }
 
-        #install-section {
-            position: fixed; top: 1.5rem; left: 50%;
-            transform: translateX(-50%); z-index: 1000;
-            background: var(--color-card); border: 1px solid var(--color-border);
-            border-radius: var(--radius); padding: 1.25rem 2rem;
-            backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-            display: flex; align-items: center; gap: 1.5rem;
-            animation:scaleIn .8s var(--transition-smooth) .4s both;
-        }
-        #install-section p { margin: 0; font-size: 1rem; font-weight: 500; }
-        .bookmarklet-button {
-            display: inline-block; padding: 0.8rem 1.5rem;
-            font-family:var(--font-body); font-size:1rem; font-weight:600;
-            border:none; border-radius:var(--radius-full); cursor: grab;
-            background:linear-gradient(90deg,var(--color-primary-dark),var(--color-primary));
-            color:#fff; text-decoration: none;
-            transition: all .2s ease-in-out; user-select:none;
-        }
-        .bookmarklet-button:hover{transform:translateY(-3px);box-shadow:0 4px 15px rgba(var(--rgb-primary),0.25); filter: brightness(1.1);}
-        @keyframes scaleIn{from{opacity:0;transform:scale(.95) translateX(-50%);}to{opacity:1;transform:scale(1) translateX(-50%)}}
-
-        .sidebar { width: 400px; height: 100vh; background-color: transparent; display: flex; flex-direction: column; flex-shrink: 0; padding: 1.5rem 1rem 1.5rem 1.5rem; }
-        .sidebar-inner {
-            display: flex; flex-direction: column; height: 100%;
-            background: var(--bg-sidebar); border: 1px solid var(--border-color);
-            border-radius: var(--radius); backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+        .sidebar {
+            width: 380px; height: 100%; background-color: var(--bg-sidebar);
+            border-left: 1px solid var(--border-color); display: flex;
+            flex-direction: column; flex-shrink: 0;
         }
         .sidebar-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: #fff}
-        .light .sidebar-header h2 { color: var(--text-dark); }
+        .sidebar-header h2 { margin: 0; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
         .sidebar-content { flex-grow: 1; overflow-y: auto; padding: 1rem; }
-        .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); text-align: center; }
-        .sidebar-footer a { color: var(--text-light); text-decoration: none; font-size: 1.2rem; transition: color 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
-        .sidebar-footer a:hover { color: var(--primary); }
+        .sidebar-content::-webkit-scrollbar { width: 5px; }
+        .sidebar-content::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
-        .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
-        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-        .main-header h1 { margin: 0; font-size: 2rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem;
-            background:linear-gradient(90deg,var(--color-primary-dark),var(--color-primary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        .course-item { border: 1px solid transparent; border-radius: 10px; margin-bottom: 0.5rem; transition: background-color 0.2s; }
+        .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; cursor: pointer; }
+        .course-item-header:hover { background-color: var(--bg-item-hover); border-radius: 10px; }
+        .course-item-header .color-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .course-info { flex-grow: 1; }
+        .course-info h3 { margin: 0; font-size: 0.9rem; font-weight: 600; }
+        .course-info p { margin: 2px 0 0; font-size: 0.8rem; color: var(--text-light); }
+        .course-item-header .toggle-icon { transition: transform 0.3s; }
+        .course-item.open .toggle-icon { transform: rotate(180deg); }
+        .sections-wrapper { padding: 0 1rem 1rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; }
+        .course-item.open .sections-wrapper { max-height: 600px; }
+        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
+        .section-btn {
+            padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;
+            text-align: center; cursor: pointer; background-color: var(--bg-sidebar);
+            transition: all 0.2s; position: relative;
         }
-        .header-actions button {
-            background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color);
-            border-radius: var(--radius-full); padding: 0.7rem 1.2rem; color: var(--color-primary);
-            font-family: var(--font-body); font-size: 0.9rem; font-weight: 600;
-            display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-            cursor: pointer; transition: all var(--transition);
-        }
-        .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: var(--primary); transform: translateY(-2px); }
+        .section-btn:hover { border-color: var(--primary); }
+        .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
+        .section-btn.selected .section-type { color: white !important; }
+        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.7; }
+        .section-btn.conflicted:hover { border-color: var(--danger); }
+        .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--danger); background: var(--bg-sidebar); border-radius: 50%; font-size: 1.2em; }
+        .section-btn-number { font-weight: 700; font-size: 1rem; }
+        .section-type { font-size: 0.75rem; color: var(--text-light); }
         
-        .calendar-container {
-            flex-grow: 1; min-height: 0;
-            background: var(--bg-calendar); border: 1px solid var(--border-color);
-            border-radius: var(--radius); padding: 1.5rem;
-            backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-        }
+        .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
+        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .main-header h1 { margin: 0; font-size: 1.75rem; display: flex; align-items: center; gap: 0.75rem; }
+        .header-actions button { background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.9rem; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
+        .header-actions button:hover { background-color: var(--bg-item-hover); color: var(--text-dark); }
+        .calendar-container { flex-grow: 1; background-color: var(--bg-calendar); border: 1px solid var(--border-color); border-radius: 12px; padding: 1rem; min-height: 0;}
         #calendar { height: 100%; }
 
-        .course-item { 
-            background: rgba(255,255,255,0.03); border: 1px solid transparent; 
-            border-radius: var(--radius-md); margin-bottom: 0.75rem; transition: all 0.3s ease; 
-        }
-        .course-item:hover { background: var(--bg-item-hover); border-color: var(--border-color); }
-        .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; cursor: pointer; }
-        .course-item-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
-        .course-info { flex-grow: 1; }
-        .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; }
-        .light .course-info h3 { color: var(--text-dark); }
-        .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--text-light); }
-        .course-controls { display: flex; align-items: center; gap: 0.5rem; }
-        .course-controls i { transition: transform 0.3s, color 0.2s; font-size: 1.2rem; padding: 0.25rem; border-radius: 50%; }
-        .course-controls i:hover { color: var(--primary); background-color: rgba(var(--rgb-primary), 0.1); }
-        .course-item.open .toggle-icon { transform: rotate(180deg); }
-        
-        .sections-wrapper { padding: 0 1rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding-bottom 0.4s ease-out; }
-        .course-item.open .sections-wrapper { max-height: 600px; padding-bottom: 1rem; }
-        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 0.75rem; }
-
-        .color-picker-wrapper { max-height: 0; overflow: hidden; transition: all 0.4s ease-out; padding: 0 1rem; }
-        .course-item.settings-open .color-picker-wrapper { max-height: 60px; padding-bottom: 1rem; }
-        .color-picker-wrapper label { display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; }
-        .course-color-input { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 40px; height: 28px; background-color: transparent; border: none; cursor: pointer; padding: 0; }
-        .course-color-input::-webkit-color-swatch-wrapper { padding: 0; }
-        .course-color-input::-webkit-color-swatch { border-radius: 6px; border: 1px solid var(--border-color); }
-        
-        .section-btn { 
-            padding: 0.6rem; border: 1px solid var(--border-color); 
-            border-radius: var(--radius-md); text-align: center; 
-            cursor: pointer; background-color: var(--bg-sidebar); 
-            transition: all 0.2s; position: relative; display: flex; flex-direction: column; gap: 0.25rem;
-        }
-        .section-btn:not(.closed):hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .section-btn.selected { 
-            background-color: var(--primary); color: white; 
-            border-color: var(--primary); transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(var(--rgb-primary),0.25);
-        }
-        .section-btn.selected .section-type, .section-btn.selected .section-exam-info { color: rgba(255,255,255,0.8) !important; }
-        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.8; }
-        .section-btn.conflicted:hover { transform: none; box-shadow: none; }
-        .conflict-icon { 
-            position: absolute; top: -6px; right: -6px; 
-            color: var(--danger); background: var(--bg-main); 
-            border-radius: 50%; font-size: 1.3em; line-height: 1; cursor: help;
-        }
-        .section-btn.closed { 
-            opacity: 0.5;
-            cursor: not-allowed;
-            background-color: rgba(100, 116, 139, 0.1);
-            text-decoration: line-through;
-        }
-
-        .section-btn-number { font-weight: 700; font-size: 1.1rem; }
-        .section-type { font-size: 0.75rem; color: var(--text-light); transition: color 0.2s; }
-        .section-exam-info { font-size: 0.7rem; color: var(--text-light); transition: color 0.2s; font-weight: 500; }
-
-        .fc { --fc-border-color: var(--border-color); --fc-today-bg-color: rgba(var(--rgb-primary), 0.05); }
-        .fc-col-header-cell { background-color: var(--bg-calendar-header); border: none; padding: 1rem 0; font-weight: 600; font-size: 0.9rem;}
+        .fc { --fc-border-color: var(--border-color); }
+        .fc-col-header-cell { background-color: var(--bg-calendar-header); border: none; padding: 0.75rem 0; font-weight: 600;}
+        .fc .fc-day-today { background-color: inherit !important; }
         .fc-theme-standard .fc-scrollgrid { border: none; }
-        .fc .fc-timegrid-slot-lane { border-color: var(--border-color); }
-        .fc .fc-timegrid-slot { height: 60px !important; }
-        .fc .fc-timegrid-axis-cushion { padding: 0 1rem; }
-        .fc-direction-rtl .fc-timegrid-slot-label { border: none; }
-        .fc-event { 
-            border: none !important; border-radius: var(--radius-md) !important; 
-            font-weight: 600; padding: 6px 10px !important; cursor: pointer; 
-            box-shadow: 0 4px 15px -5px rgba(0,0,0, 0.4);
-            transition: all 0.2s ease;
-        }
-        .fc-event:hover { transform: scale(1.03); box-shadow: 0 6px 20px -5px rgba(0,0,0, 0.5); }
-        .fc-event .fc-event-main { color: #fff !important; }
+        .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
+        .fc-event { border: 2px solid transparent !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
+        
+        .no-data { text-align: center; padding: 3rem 0; color: var(--text-light); }
+        .theme-toggle, .close-sidebar-btn { cursor: pointer; color: var(--text-light); transition: color 0.2s ease; }
+        .theme-toggle:hover, .close-sidebar-btn:hover { color: var(--text-dark); }
 
-        .no-data { text-align: center; padding: 4rem 1rem; color: var(--text-light); }
-        .no-data p { font-family: var(--font-body); font-size: 1.1rem; line-height: 1.8; }
-        .theme-toggle { 
-            cursor: pointer; color: var(--text-light); 
-            font-size: 1.5rem; transition: color 0.2s ease, transform 0.3s ease; 
+        .mobile-fab { display: none; }
+
+        @media (max-width: 900px) {
+            .page-wrapper { flex-direction: column; }
+            .sidebar {
+                /* --- ✨ التعديل هنا: تغيير الاتجاه إلى اليسار --- */
+                position: fixed; top: 0; left: 0; z-index: 2000;
+                width: 320px;
+                transform: translateX(-100%); /* Hides it to the left */
+                transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+                border-left: none;
+                border-right: 1px solid var(--border-color); /* Border on the right now */
+                box-shadow: 5px 0 25px rgba(0,0,0,0.1);
+            }
+            .sidebar.open { transform: translateX(0); } /* Shows it */
+
+            .main-content { width: 100%; padding: 1rem; }
+            .main-header h1 { font-size: 1.5rem; }
+            .header-actions button { padding: 0.4rem 0.8rem; font-size: 0.8rem; }
+            
+            .mobile-fab {
+                display: flex; position: fixed; bottom: 1.5rem; left: 1.5rem;
+                width: 56px; height: 56px; background-color: var(--primary);
+                color: white; border-radius: 50%; justify-content: center;
+                align-items: center; font-size: 1.5rem;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer;
+                z-index: 1000; transition: transform 0.2s;
+            }
+            .mobile-fab:active { transform: scale(0.95); }
+            
+            .overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background-color: rgba(0,0,0,0.5); z-index: 1999;
+                opacity: 0; visibility: hidden; transition: opacity 0.4s, visibility 0.4s;
+            }
+            .overlay.open { opacity: 1; visibility: visible; }
         }
-        .theme-toggle:hover { color: var(--text-dark); transform: rotate(15deg) scale(1.1); }
-        .light .theme-toggle:hover { color: var(--color-primary); }
     </style>
 </head>
 <body class="dark">
-    <div class="cosmic-bg-container">
-        <div class="nebula-glow"></div>
-        <canvas id="starfield-canvas"></canvas>
-    </div>
-    
-    <div id="install-section">
-        <p>لاستخراج موادك، اسحب هذا الزر إلى شريط الإشارات:</p>
-        <a class="bookmarklet-button" 
-           href="javascript:(function()%7B'use%20strict';console.clear();console.log('%F0%9F%9A%80%20%D8%A3%D8%AF%D8%A7%D8%A9%20%D8%A7%D9%84%D8%A7%D8%B3%D8%AA%D8%AE%D8%B1%D8%A7%D8%AC%20v2.9%20(%D8%A5%D8%B5%D8%AF%D8%A7%D8%B1%20%D9%86%D9%87%D8%A7%D8%A6%D9%8A)%20%D8%A8%D8%AF%D8%A3%D8%AA...');setTimeout(function()%7Bconst%20courseRows=document.querySelectorAll('tr%5Bclass%5E%3DROW%5D');if(0===courseRows.length)return%20void%20alert('%D9%84%D9%85%20%D9%8A%D8%AA%D9%85%20%D8%A7%D9%84%D8%B9%D8%AB%D9%88%D8%B1%20%D8%B9%D9%84%D9%89%20%D8%A3%D9%8A%20%D9%85%D9%82%D8%B1%D8%B1%D8%A7%D8%AA.%20%D8%AA%D8%A3%D9%83%D8%AF%20%D9%85%D9%86%20%D8%A3%D9%86%20%D8%A7%D9%84%D8%AC%D8%AF%D9%88%D9%84%20%D9%85%D8%AD%D9%85%D9%84%20%D8%A8%D8%A7%D9%84%D9%83%D8%A7%D9%85%D9%84%20%D9%82%D8%A8%D9%84%20%D8%AA%D8%B4%D8%BA%D9%8A%D9%84%20%D8%A7%D9%84%D8%A3%D8%AF%D8%A7%D8%A9.');console.log(%60%F0%9F%94%8D%20%D8%AA%D9%85%20%D8%A7%D9%84%D8%B9%D8%AB%D9%88%D8%B1%20%D8%B9%D9%84%D9%89%20%24%7BcourseRows.length%7D%20%D8%B5%D9%81%D9%8B%D8%A7.%20%D8%AC%D8%A7%D8%B1%D9%90%20%D8%A7%D8%B3%D8%AA%D8%AE%D8%B1%D8%A7%D8%AC%20%D8%A7%D9%84%D8%A8%D9%8A%D8%A7%D9%86%D8%A7%D8%AA...%60);const%20coursesData%3D%5B%5D;courseRows.forEach(row%3D%3E%7Bvar%20_a,_b,_c,_d,_e,_f,_g,_h;const%20code%3Dnull%3D%3D(_a%3Drow.querySelector('td%5Bdata-th%3D%22%D8%B1%D9%85%D8%B2%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D'))%3Fvoid%200%3A_a.textContent.trim(),name%3Dnull%3D%3D(_b%3Drow.querySelector('td%5Bdata-th%3D%22%D8%A7%D8%B3%D9%85%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D'))%3Fvoid%200%3A_b.textContent.trim(),section%3Dnull%3D%3D(_c%3Drow.querySelector('td%5Bdata-th%5E%3D%22%D8%A7%D9%84%D8%B4%D8%B9%D8%A8%D8%A9%22%5D'))%3Fvoid%200%3A_c.textContent.trim(),instructor%3Dnull%3D%3D(_d%3Drow.querySelector('input%5Btype%3Dhidden%5D%5Bid%24%3D%22%5C%5C%3Ainstructor%22%5D'))%3Fvoid%200%3A_d.value.trim(),detailsRaw%3Dnull%3D%3D(_e%3Drow.querySelector('input%5Btype%3Dhidden%5D%5Bid%24%3D%22%5C%5C%3Asection%22%5D'))%3Fvoid%200%3A_e.value.trim(),examPeriod%3Dnull%3D%3D(_f%3Drow.querySelector('input%5Btype%3Dhidden%5D%5Bid%24%3D%22%5C%5C%3AexamPeriod%22%5D'))%3Fvoid%200%3A_f.value.trim(),status%3D(null%3D%3D(_g%3Drow.querySelector('td%5Bdata-th*%3D%22%D8%A7%D9%84%D8%AD%D8%A7%D9%84%D8%A9%22%5D'))%3Fvoid%200%3A_g.textContent.trim())%7C%7C'',finalExam%3D(null%3D%3D(_h%3Drow.querySelector('td%5Bdata-th%3D%22%D8%A7%D9%84%D8%A7%D8%AE%D8%AA%D8%A8%D8%A7%D8%B1%20%D8%A7%D9%84%D9%86%D9%87%D8%A7%D8%A6%D9%8A%22%5D'))%3Fvoid%200%3A_h.textContent.trim())%7C%7C'%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AD%D8%AF%D8%AF';if(name%26%26code%26%26section)%7Blet%20time%3D'%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AD%D8%AF%D8%AF';if(detailsRaw%26%26detailsRaw.includes('%40t'))%7Bconst%20timeParts%3DdetailsRaw.split(/%40n%5Cs*/).map(part%3D%3E%7Bconst%20subParts%3Dpart.split('%40t');if(subParts.length%3E1)%7Blet%20dayPart%3DsubParts%5B0%5D.trim(),timePart%3DsubParts%5B1%5D.replace(/%40r.*/,'').trim();const%20dayMapping%3D%7B1:'%D8%A7%D9%84%D8%A3%D8%AD%D8%AF',2:'%D8%A7%D9%84%D8%A7%D8%AB%D9%86%D9%8A%D9%86',3:'%D8%A7%D9%84%D8%AB%D9%84%D8%A7%D8%AB%D8%A7%D8%A1',4:'%D8%A7%D9%84%D8%A3%D8%B1%D8%A8%D8%B9%D8%A7%D8%A1',5:'%D8%A7%D9%84%D8%AE%D9%85%D9%8A%D8%B3'%7D;return%60%24%7BdayPart.split(/%5Cs%2B/).map(d%3D%3EdayMapping%5Bd%5D%7C%7Cd).join(' ')%7D%3A%20%24%7BtimePart%7D%60%7Dreturn%20null%7D).filter(Boolean);timeParts.length%3E0%26%26(time%3DtimeParts.join('%3Cbr%3E'))%7Delse%20detailsRaw%26%26''!%3D%3DdetailsRaw.trim()%26%26(time%3DdetailsRaw);coursesData.push(%7Bcode,name,section,time,status,instructor:instructor%7C%7C'%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AD%D8%AF%D8%AF',finalExam,examPeriod:examPeriod%7C%7Cnull%7D)%7D%7D);if(coursesData.length%3E0)%7Bconsole.log(%60%F0%9F%8E%89%20%D9%86%D8%AC%D8%A7%D8%AD!%20%D8%AA%D9%85%20%D8%A7%D8%B3%D8%AA%D8%AE%D8%B1%D8%A7%D8%AC%20%D8%A8%D9%8A%D8%A7%D9%86%D8%A7%D8%AA%20%24%7BcoursesData.length%7D%20%D9%85%D9%82%D8%B1%D8%B1%D9%8B%D8%A7.%60);const%20viewerWindow%3Dwindow.open('https%3A//mutlaq001.github.io/schedule/','scheduleViewer');viewerWindow%3FviewerWindow.onload%3Dfunction()%7BsetTimeout(()%3D%3E%7BviewerWindow.postMessage(%7Btype:'universityCoursesData_v4',data:coursesData%7D,'https%3A//mutlaq001.github.io'),console.log('%F0%9F%93%A8%20%D8%AA%D9%85%20%D8%A5%D8%B1%D8%B3%D8%A7%D9%84%20%D8%A7%D9%84%D8%A8%D9%8A%D8%A7%D9%86%D8%A7%D8%AA%20%D8%A5%D9%84%D9%89%20%D8%B5%D9%81%D8%AD%D8%A9%20%D8%A7%D9%84%D8%B9%D8%B1%D8%B6%20%D8%A8%D9%86%D8%AC%D8%A7%D8%AD.')%7D,500)%7D:alert('%D9%81%D8%B4%D9%84%20%D9%81%D8%AA%D8%AD%20%D9%86%D8%A7%D9%81%D8%B0%D8%A9%20%D8%A7%D9%84%D8%B9%D8%B1%D8%B6.%20%D9%8A%D8%B1%D8%AC%D9%89%20%D8%A7%D9%84%D8%AA%D8%A3%D9%83%D8%AF%20%D9%85%D9%86%20%D8%A3%D9%86%20%D8%A7%D9%84%D9%85%D8%AA%D8%B5%D9%81%D8%AD%20%D9%84%D8%A7%20%D9%8A%D9%85%D9%86%D8%B9%20%D8%A7%D9%84%D9%86%D9%88%D8%A7%D9%81%D8%B0%20%D8%A7%D9%84%D9%85%D9%86%D8%A8%D8%AB%D9%82%D8%A9%20%D9%84%D9%85%D9%88%D9%82%D8%B9%20%D8%A7%D9%84%D8%AC%D8%A7%D9%85%D8%B9%D8%A9.')%7Delse%20alert('%D8%AA%D9%85%20%D8%A7%D9%84%D8%B9%D8%AB%D9%88%D8%B1%20%D8%B9%D9%84%D9%89%20%D8%A7%D9%84%D8%B5%D9%81%D9%88%D9%81%D8%8C%20%D9%84%D9%83%D9%86%20%D9%84%D9%85%20%D9%8A%D8%AA%D9%85%20%D8%A7%D8%B3%D8%AA%D8%AE%D8%B1%D8%A7%D8%AC%20%D8%A7%D9%84%D8%A8%D9%8A%D8%A7%D9%86%D8%A7%D8%AA%20%D8%A8%D9%86%D8%AC%D8%A7%D8%AD.%20%D8%AD%D8%A7%D9%88%D9%84%20%D8%AA%D8%AD%D8%AF%D9%8A%D8%AB%20%D8%A7%D9%84%D8%B5%D9%81%D8%AD%D8%A9%20%D9%88%D8%A5%D8%B9%D8%A7%D8%AF%D8%A9%20%D8%A7%D9%84%D9%85%D8%AD%D8%A7%D9%88%D9%84%D8%A9.')%7D,2e3)})();"
-           onclick="alert('لا تضغط على الزر، بل اسحبه إلى شريط الإشارات! إذا كانت لديك نسخة قديمة، احذفها أولاً.'); return false;">
-            🎓 استخراج جدولي
-        </a>
-    </div>
-
-    <main class="main-content">
-        <header class="main-header">
-            <h1><i class="ri-calendar-event-line"></i> الجدول الأسبوعي</h1>
-            <div class="header-actions">
-                <button id="clear-calendar-btn"><i class="ri-delete-bin-line"></i> مسح الجدول</button>
-            </div>
-        </header>
-        <div class="calendar-container"><div id='calendar'></div></div>
-    </main>
-    <aside class="sidebar">
-        <div class="sidebar-inner">
+    <div class="page-wrapper">
+        <main class="main-content">
+            <header class="main-header">
+                <h1><i class="ri-calendar-event-line"></i> الجدول الأسبوعي</h1>
+                <div class="header-actions">
+                    <button id="clear-calendar-btn"><i class="ri-delete-bin-line"></i> مسح الجدول</button>
+                </div>
+            </header>
+            <div class="calendar-container"><div id='calendar'></div></div>
+        </main>
+        
+        <aside class="sidebar" id="sidebar">
             <header class="sidebar-header">
-                <h2><i class="ri-function-line"></i> المقررات</h2>
-                <i class="ri-sun-line theme-toggle" title="تغيير المظهر"></i>
+                <h2><i class="ri-function-line"></i> شعب المقررات</h2>
+                <div>
+                    <i class="ri-sun-line theme-toggle" title="تغيير المظهر" style="margin-left: 1rem;"></i>
+                    <i class="ri-close-line close-sidebar-btn" title="إغلاق"></i>
+                </div>
             </header>
             <div class="sidebar-content" id="courses-list">
-                <div class="no-data" id="no-data-message"><p>في انتظار البيانات...<br>الرجاء تشغيل أداة "استخراج جدولي" من صفحة المقررات المطروحة في موقع الجامعة.</p></div>
+                <div class="no-data" id="no-data-message"><p>شغل الأداة من موقع الجامعة...</p></div>
             </div>
-            <footer class="sidebar-footer">
-                <a href="https://t.me/MUTLAQ1" target="_blank" rel="noopener noreferrer">
-                    <i class="ri-telegram-line"></i>
-                    <span>MUTLAQ1</span>
-                </a>
-            </footer>
-        </div>
-    </aside>
+        </aside>
+
+        <div class="overlay" id="overlay"></div>
+        <div class="mobile-fab" id="mobile-fab"><i class="ri-menu-2-line"></i></div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // كل كود الجافاسكريبت هنا (لم يتغير)
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
             const clearCalendarBtn = document.getElementById('clear-calendar-btn');
-            const installSection = document.getElementById('install-section');
+            const sidebar = document.getElementById('sidebar');
+            const mobileFab = document.getElementById('mobile-fab');
+            const overlay = document.getElementById('overlay');
+            const closeSidebarBtn = document.querySelector('.close-sidebar-btn');
             
-            let calendar, allCoursesData = [], groupedCourses, customColors = {};
+            let calendar, allCoursesData = [], groupedCourses;
             const selectedSections = new Set();
-            const colorPalette = ['#5e9cff', '#f472b6', '#4ade80', '#fbbf24', '#a777ff', '#c084fc', '#f87171', '#fb923c'];
+            const colorPalette = ['#818cf8', '#f472b6', '#4ade80', '#fbbf24', '#60a5fa', '#c084fc', '#f87171', '#fb923c'];
             const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
-
-            function loadCustomColors() {
-                const storedColors = localStorage.getItem('courseCustomColors');
-                customColors = storedColors ? JSON.parse(storedColors) : {};
-            }
-            function saveCustomColors() {
-                localStorage.setItem('courseCustomColors', JSON.stringify(customColors));
-            }
 
             function initializeCalendar() {
                 calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'timeGridWeek', locale: 'ar',
                     headerToolbar: false, allDaySlot: false,
-                    slotMinTime: '08:00:00', slotMaxTime: '20:00:00',
+                    slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
                     events: [], dir: 'rtl', hiddenDays: [5, 6],
                     dayHeaderFormat: { weekday: 'long' },
-                    slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false, meridiem: 'short' },
                     eventClick: (info) => {
                         const uniqueId = info.event.extendedProps.uniqueId;
                         if (selectedSections.has(uniqueId)) {
@@ -292,7 +192,7 @@
                     },
                     eventContent: (arg) => {
                         const wrapper = document.createElement('div');
-                        wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden;';
+                        wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.75rem;';
                         const title = document.createElement('b');
                         title.innerText = arg.event.title.split('(')[0];
                         const instructor = document.createElement('small');
@@ -310,37 +210,10 @@
                 calendar.render();
             }
 
-            function convertTo24Hour(time, period) {
-                if (!time || !period) return null;
-                let [hours, minutes] = time.split(':');
-                hours = parseInt(hours);
-                if (period === 'م' && hours !== 12) hours += 12;
-                if (period === 'ص' && hours === 12) hours = 0;
-                return `${String(hours).padStart(2, '0')}:${minutes}:00`;
-            }
-
-            function parseFinalExamTime(examString) {
-                if (!examString || examString.trim() === 'غير محدد') return null;
-                const match = examString.match(/(\d{4}\/\d{2}\/\d{2}).*?(\d{2}:\d{2})\s*(ص|م).*?(\d{2}:\d{2})\s*(ص|م)/);
-                if (!match) return null;
-                return {
-                    date: match[1].replace(/\//g, '-'),
-                    start: convertTo24Hour(match[2], match[3]),
-                    end: convertTo24Hour(match[4], match[5])
-                };
-            }
-
             function displayData(courses) {
-                installSection.style.display = 'none';
                 allCoursesData = courses.map((section, index) => {
                     const uniqueId = `${section.code}-${section.section}-${index}`;
-                    return { 
-                        ...section, 
-                        uniqueId, 
-                        timeSlots: parseTimeEntries(section.time),
-                        finalExamInfo: parseFinalExamTime(section.finalExam),
-                        isClosed: section.status.includes('مغلقة')
-                    };
+                    return { ...section, uniqueId, timeSlots: parseTimeEntries(section.time) };
                 });
                 
                 groupedCourses = allCoursesData.reduce((acc, course) => {
@@ -353,89 +226,34 @@
                 let colorIndex = 0;
 
                 Object.values(groupedCourses).forEach(group => {
-                    const customColor = customColors[group.code];
-                    const courseColor = customColor || colorPalette[colorIndex % colorPalette.length];
+                    const courseColor = colorPalette[colorIndex % colorPalette.length];
                     colorIndex++;
                     group.color = courseColor;
                     
                     const courseItem = document.createElement('div');
                     courseItem.className = 'course-item';
-                    courseItem.dataset.courseCode = group.code;
                     let sectionsHTML = '';
 
                     group.sections.forEach(section => {
-                        const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'عملي' : 'نظري';
-                        let examInfoHTML = '<div class="section-exam-info">لا يوجد اختبار</div>';
-                        if(section.finalExamInfo) {
-                            const date = new Date(section.finalExamInfo.date);
-                            const day = date.getDate();
-                            const month = date.getMonth() + 1;
-                            examInfoHTML = `<div class="section-exam-info" title="${section.finalExam}">اختبار: ${day}/${month}</div>`;
-                        } else if (section.examPeriod) {
-                            examInfoHTML = `<div class="section-exam-info" title="فترة الاختبار: ${section.examPeriod}">فترة: ${section.examPeriod}</div>`;
-                        }
-                        const closedClass = section.isClosed ? 'closed' : '';
-                        sectionsHTML += `
-                          <div class="section-btn ${closedClass}" data-unique-id="${section.uniqueId}">
-                            <div class="section-btn-number">${section.section}</div>
-                            <div class="section-type">${type}</div>
-                            ${examInfoHTML}
-                          </div>`;
+                        const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'تدريب' : 'نظري';
+                        sectionsHTML += `<div class="section-btn" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div></div>`;
                     });
 
                     courseItem.innerHTML = `
-                        <div class="course-item-header">
-                            <span class="color-dot" style="background-color: ${courseColor};"></span>
-                            <div class="course-info">
-                                <h3>${group.name} (${group.code})</h3>
-                                <p>${group.sections.length} شعب متاحة</p>
-                            </div>
-                            <div class="course-controls">
-                                <i class="ri-settings-3-line course-settings-btn" title="تغيير اللون"></i>
-                                <i class="ri-arrow-down-s-line toggle-icon"></i>
-                            </div>
-                        </div>
-                        <div class="color-picker-wrapper">
-                            <label><span>لون المقرر:</span><input type="color" class="course-color-input" value="${courseColor}"></label>
-                        </div>
+                        <div class="course-item-header"><span class="color-dot" style="background-color: ${courseColor};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعبة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div>
                         <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
                     coursesListContainer.appendChild(courseItem);
                 });
+                
+                coursesListContainer.addEventListener('click', function(e) {
+                    const header = e.target.closest('.course-item-header');
+                    const sectionBtn = e.target.closest('.section-btn');
+                    if (header) header.parentElement.classList.toggle('open');
+                    if (sectionBtn) handleSectionClick(sectionBtn);
+                });
             }
 
-            coursesListContainer.addEventListener('click', function(e) {
-                const settingsBtn = e.target.closest('.course-settings-btn');
-                const toggleBtn = e.target.closest('.toggle-icon');
-                const header = e.target.closest('.course-item-header');
-                const sectionBtn = e.target.closest('.section-btn');
-                
-                if (settingsBtn) {
-                    e.stopPropagation();
-                    settingsBtn.closest('.course-item').classList.toggle('settings-open');
-                } else if (toggleBtn || header) {
-                    const courseItem = (toggleBtn || header).closest('.course-item');
-                    if(courseItem) courseItem.classList.toggle('open');
-                }
-                
-                if (sectionBtn) handleSectionClick(sectionBtn);
-            });
-            
-            coursesListContainer.addEventListener('input', function(e) {
-                const colorInput = e.target.closest('.course-color-input');
-                if (colorInput) {
-                    const newColor = colorInput.value;
-                    const courseItem = colorInput.closest('.course-item');
-                    const courseCode = courseItem.dataset.courseCode;
-                    customColors[courseCode] = newColor;
-                    groupedCourses[courseCode].color = newColor;
-                    saveCustomColors();
-                    courseItem.querySelector('.color-dot').style.backgroundColor = newColor;
-                    updateCalendarAndConflicts();
-                }
-            });
-
             function handleSectionClick(btnElement) {
-                if (btnElement.classList.contains('closed')) return;
                 const uniqueId = btnElement.dataset.uniqueId;
                 if (selectedSections.has(uniqueId)) {
                     selectedSections.delete(uniqueId);
@@ -450,9 +268,6 @@
             function updateCalendarAndConflicts() {
                 calendar.removeAllEvents();
                 const currentScheduleSlots = [];
-                const currentFinalExams = [];
-                const currentExamPeriods = new Set();
-
                 selectedSections.forEach(id => {
                     const section = allCoursesData.find(c => c.uniqueId === id);
                     if (section) {
@@ -460,46 +275,25 @@
                         const events = createEventsForSection(section, group.color);
                         calendar.addEventSource(events);
                         currentScheduleSlots.push(...section.timeSlots);
-                        if(section.finalExamInfo) currentFinalExams.push(section.finalExamInfo);
-                        if(section.examPeriod) currentExamPeriods.add(section.examPeriod);
                     }
                 });
 
                 allCoursesData.forEach(section => {
                     const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
-                    if (!btn || selectedSections.has(section.uniqueId) || section.isClosed) {
-                        if (btn) btn.classList.remove('conflicted');
-                        btn?.querySelector('.conflict-icon')?.remove();
-                        return;
-                    }
+                    if (!btn || selectedSections.has(section.uniqueId)) return;
                     
-                    const classConflict = section.timeSlots.some(slot =>
+                    const isConflicted = section.timeSlots.some(slot =>
                         currentScheduleSlots.some(scheduleSlot =>
                             slot.day === scheduleSlot.day && slot.start < scheduleSlot.end && slot.end > scheduleSlot.start
                         )
                     );
                     
-                    const examConflict = section.finalExamInfo && currentFinalExams.some(exam =>
-                        section.finalExamInfo.date === exam.date &&
-                        section.finalExamInfo.start < exam.end &&
-                        section.finalExamInfo.end > exam.start
-                    );
-
-                    const periodConflict = section.examPeriod && currentExamPeriods.has(section.examPeriod);
-
                     btn.querySelector('.conflict-icon')?.remove();
                     
-                    if (classConflict || examConflict || periodConflict) {
+                    if (isConflicted) {
                         btn.classList.add('conflicted');
                         const icon = document.createElement('i');
                         icon.className = 'ri-error-warning-fill conflict-icon';
-                        if (examConflict) {
-                            icon.title = 'تعارض في وقت الاختبار النهائي';
-                        } else if (periodConflict) {
-                            icon.title = 'تعارض في فترة الاختبار';
-                        } else {
-                            icon.title = 'تعارض في وقت المحاضرة';
-                        }
                         btn.appendChild(icon);
                     } else {
                         btn.classList.remove('conflicted');
@@ -527,9 +321,17 @@
                     return daysArray.map(dayName => dayMapping.hasOwnProperty(dayName) ? { day: dayMapping[dayName], start: startTime, end: endTime } : null);
                 }).flat().filter(Boolean);
             }
+
+            function convertTo24Hour(time, period) {
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                if (period === 'م' && hours !== 12) hours += 12;
+                if (period === 'ص' && hours === 12) hours = 0;
+                return `${String(hours).padStart(2, '0')}:${minutes}:00`;
+            }
             
             clearCalendarBtn.addEventListener('click', () => {
-                if (confirm('هل أنت متأكد من أنك تريد مسح جميع المقررات من الجدول؟')) {
+                if (confirm('هل أنت متأكد؟')) {
                     calendar.removeAllEvents();
                     selectedSections.clear();
                     document.querySelectorAll('.section-btn.selected').forEach(btn => btn.classList.remove('selected'));
@@ -538,62 +340,33 @@
             });
             
             themeToggle.addEventListener('click', () => {
-                const isDark = document.body.classList.toggle('dark');
-                document.body.classList.toggle('light', !isDark);
-                if (isDark) {
-                    themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
-                } else {
-                    themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
-                }
-                calendar.render();
+                document.body.classList.toggle('dark');
+                if (document.body.classList.contains('dark')) themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
+                else themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
             });
             
-            document.body.classList.add('dark');
-            document.body.classList.remove('light');
-            themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
-
-            window.addEventListener('message', function(event) {
-                if (event.data && event.data.type === 'universityCoursesData_v4') {
-                    localStorage.setItem('myUniversityCourses_v4', JSON.stringify(event.data.data));
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('open');
+            }
+            mobileFab.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+            closeSidebarBtn.addEventListener('click', toggleSidebar);
+            
+            window.addEventListener('message', (event) => {
+                if (event.data && event.data.type === 'universityCoursesData') {
+                    localStorage.setItem('myUniversityCourses', JSON.stringify(event.data.data));
                     displayData(event.data.data);
                 }
             });
 
-            loadCustomColors();
-            const storedCourses = localStorage.getItem('myUniversityCourses_v4');
+            const storedCourses = localStorage.getItem('myUniversityCourses');
             if (storedCourses) {
                 displayData(JSON.parse(storedCourses));
             }
             
             initializeCalendar();
         });
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const initCosmicEffects = () => {
-            const canvas = document.getElementById('starfield-canvas'); if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            let stars = [], shootingStars = [], mouseX = 0, mouseY = 0;
-
-            function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
-            window.addEventListener('mousemove', e => { mouseX = e.clientX - canvas.width / 2; mouseY = e.clientY - canvas.height / 2; });
-            
-            class Star { 
-                constructor() { this.depth = Math.random() * 0.9 + 0.1; this.reset(); this.pulsate = Math.random() > 0.98; this.alpha = 0; this.alphaChange = (Math.random() * 0.02) + 0.005; this.vx = (Math.random() - 0.5) * 0.1 * this.depth; this.vy = (Math.random() - 0.5) * 0.1 * this.depth; }
-                reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.radius = (Math.random() * 1.2 + 0.3) * this.depth; this.maxAlpha = (Math.random() * 0.5 + 0.3) * this.depth; }
-                draw() { const parallaxX = (mouseX / (canvas.width / 2)) * -25 * this.depth; const parallaxY = (mouseY / (canvas.height / 2)) * -25 * this.depth; if (this.pulsate) { this.alpha += this.alphaChange; if (this.alpha >= this.maxAlpha || this.alpha <= 0) this.alphaChange *= -1; } else { this.alpha = this.maxAlpha; } ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x + parallaxX, this.y + parallaxY, this.radius, 0, Math.PI * 2); ctx.fillStyle = `hsl(220, 80%, 95%)`; ctx.fill(); ctx.globalAlpha = 1; }
-                update() { this.y += this.vy; this.x += this.vx; if (this.x > canvas.width + this.radius) this.x = -this.radius; if (this.x < -this.radius) this.x = canvas.width + this.radius; if (this.y > canvas.height + this.radius) this.y = -this.radius; if (this.y < -this.radius) this.y = canvas.height + this.radius; this.draw(); }
-            }
-            class ShootingStar { constructor() { this.reset(); } reset() { this.x = Math.random() * canvas.width; this.y = 0; this.len = Math.random() * 80 + 10; this.speed = Math.random() * 10 + 6; this.size = Math.random() * 1 + 0.1; this.waitTime = new Date().getTime() + Math.random() * 3000 + 500; this.active = false; } update() { if (this.active) { this.x -= this.speed; this.y += this.speed; if (this.x < 0 || this.y >= canvas.height) this.reset(); } else if (this.waitTime < new Date().getTime()) this.active = true; } draw() { if (this.active) { ctx.strokeStyle = `hsla(220, 100%, 80%, ${Math.random() * 0.5 + 0.5})`; ctx.lineWidth = this.size; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + this.len, this.y - this.len); ctx.stroke(); } } }
-            
-            function initStars() { stars = []; shootingStars = []; const starCount = Math.floor(canvas.width * canvas.height / 8000); for (let i = 0; i < starCount; i++) { stars.push(new Star()); } for (let i = 0; i < 3; i++) { shootingStars.push(new ShootingStar()); } }
-            function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => s.update()); shootingStars.forEach(s => { s.update(); s.draw(); }); }
-
-            window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
-            resizeCanvas(); initStars(); animate();
-        };
-        initCosmicEffects();
-    });
     </script>
 </body>
 </html>
