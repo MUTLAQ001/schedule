@@ -296,8 +296,6 @@
         const colorPalette = ['#5e9cff', '#a777ff', '#00c853', '#ffc400', '#ff5252', '#f87171', '#fb923c'];
         const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
 
-        // --- START: FIX - Combined all logic into a single, robust flow ---
-        
         function initializeApp() {
             initializeCalendar();
             setupEventListeners();
@@ -343,7 +341,7 @@
                 hiddenDays: [5, 6],
                 dayHeaderFormat: { weekday: 'long' },
                 eventClick: handleEventClick,
-                eventContent: renderCustomEventContent
+                eventContent: renderCustomEventContent,
             });
             calendar.render();
         }
@@ -388,6 +386,7 @@
             }, {});
             renderCoursesList();
             populateSettingsModal();
+            updateCalendarAndConflicts(); // --- FIX: Initial calendar render ---
         }
         
         function renderCoursesList() {
