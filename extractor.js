@@ -1,9 +1,8 @@
 (function() {
     'use strict';
     console.clear();
-    console.log("🚀 أداة الاستخراج v5 (إرسال عبر الرابط) بدأت...");
+    console.log("🚀 أداة الاستخراج v6 (الحل النهائي) بدأت...");
 
-    // انتظر قليلاً (2 ثانية) لضمان تحميل الصفحة
     setTimeout(function() {
         const courseRowSelector = 'tr[class^="ROW"]';
         const courseRows = document.querySelectorAll(courseRowSelector);
@@ -14,7 +13,6 @@
         }
 
         const coursesData = [];
-
         courseRows.forEach(row => {
             if (row.style.display === 'none') return;
             
@@ -42,24 +40,26 @@
                 } else if (detailsRaw && detailsRaw.trim() !== '') {
                     time = detailsRaw;
                 }
-
                 coursesData.push({ code, name, section, time, instructor: instructor || 'غير محدد' });
             }
         });
         
         if (coursesData.length > 0) {
-            console.log(`🎉 نجاح! تم استخراج بيانات ${coursesData.length} مقررًا. جاري إرسالها...`);
+            console.log(`🎉 نجاح! تم استخراج بيانات ${coursesData.length} مقررًا.`);
             
-            // --- ✨ تحديث مهم: إرسال البيانات عبر الرابط ---
-            // 1. تحويل البيانات إلى نص JSON
-            const dataString = JSON.stringify(coursesData);
-            // 2. ضغط النص ليكون آمنًا للاستخدام في الرابط
-            const encodedData = encodeURIComponent(dataString);
-            // 3. بناء الرابط الجديد مع البيانات
-            const url = `https://mutlaq001.github.io/schedule/?data=${encodedData}`;
-
-            // 4. فتح الرابط في نافذة جديدة
-            window.open(url, '_blank');
+            // --- ✨ الخدعة الذكية ---
+            // 1. افتح نافذة جديدة لموقعك
+            const viewerWindow = window.open('https://mutlaq001.github.io/schedule/', '_blank');
+            
+            // 2. انتظر قليلاً حتى تفتح النافذة
+            setTimeout(() => {
+                // 3. أرسل رسالة تحتوي على البيانات إلى النافذة الجديدة
+                viewerWindow.postMessage({
+                    type: 'universityCoursesData',
+                    data: coursesData
+                }, 'https://mutlaq001.github.io');
+                console.log("📨 تم إرسال البيانات إلى صفحة العرض بنجاح.");
+            }, 1000); // انتظر ثانية واحدة لضمان فتح النافذة
             
         } else {
             alert("تم العثور على الصفوف، لكن لم يتم استخراج البيانات بنجاح.");
