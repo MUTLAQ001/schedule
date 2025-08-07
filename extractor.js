@@ -1,163 +1,82 @@
-(function() {
-    'use strict';
+// --- تم ضبط هذه المحددات بناءً على الـ HTML الذي أرسلته ---
+// المحدد الذي يمثل كل صف مقرر (يستهدف الصفوف التي تبدأ بـ class="ROW")
+const courseRowSelector = 'tr[class^="ROW"]'; 
 
-    // =========================================================================
-    // --- 🔴 تم تحديث هذه المنطقة خصيصاً لتناسب بوابة جامعة القصيم 🔴 ---
+// --- دوال مساعدة لاستخراج البيانات من داخل الصف ---
+function getCourseData(row, dataTh) {
+    // نبحث عن الخلية التي لها السمة data-th المطابقة
+    const cell = row.querySelector(`td[data-th="${dataTh}"]`);
+    // نرجع النص الموجود داخلها بعد تنظيفه من الفراغات
+    return cell ? cell.textContent.trim() : null;
+}
+
+function getHiddenData(row, idEndsWith) {
+    // نبحث عن حقل الإدخال المخفي الذي ينتهي بـ id معين
+    const input = row.querySelector(`input[type="hidden"][id$="${idEndsWith}"]`);
+    // نرجع القيمة الموجودة فيه
+    return input ? input.value : null;
+}
+
+function parseCourses() {
+    console.log("🚀 أداة استخراج المقررات بدأت العمل...");
+    const courseRows = document.querySelectorAll(courseRowSelector);
     
-    // 1. رابط صفحة العرض الخاص بك (تم وضعه تلقائياً)
-    const VIEWER_PAGE_URL = 'https://mutlaq001.github.io/schedule/';
-
-    // 2. تم وضع النطاق الصحيح لجامعة القصيم
-    const VALID_DOMAINS = [
-        'stu-gate.qu.edu.sa'
-    ];
-
-    // 3. المحددات (Selectors) الصحيحة لصفحة "المقررات المطروحة" بجامعة القصيم
-    const courseRowSelector = '.rich-table-row'; // المحدد الصحيح لصفوف المقررات
-    
-    // تم تصحيح ترتيب الأعمدة بناءً على هيكل الموقع
-    const courseCodeSelector = 'td:nth-of-type(1)';      // العمود الأول: رمز المقرر
-    const courseNameSelector = 'td:nth-of-type(2)';      // العمود الثاني: اسم المقرر
-    const sectionNumberSelector = 'td:nth-of-type(4)';   // العمود الرابع: رقم الشعبة
-    
-    // ملاحظة: الأيام والوقت والمحاضر غير موجودة في هذه الصفحة، لذا ستكون فارغة.
-    const daysSelector = 'td:nth-of-type(99)'; // رقم وهمي ليبقى الحقل فارغاً
-    const timeSelector = 'td:nth-of-type(99)'; // رقم وهمي ليبقى الحقل فارغاً
-    const instructorSelector = 'td:nth-of-type(99)'; // رقم وهمي ليبقى الحقل فارغاً
-    // =========================================================================
-
-
-    // --- بقية الكود يعمل كما هو (لا تحتاج لتعديله) ---
-
-    function createOverlay(innerHTML) {
-        const overlay = document.createElement('div');
-        overlay.id = 'my-tool-overlay';
-        overlay.style.cssText = `
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); z-index: 999999; display: flex;
-            align-items: center; justify-content: center;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            direction: rtl;
-        `;
-        overlay.innerHTML = innerHTML;
-        document.body.appendChild(overlay);
-        return overlay;
-    }
-
-    function removeOverlay() {
-        const overlay = document.getElementById('my-tool-overlay');
-        if (overlay) overlay.remove();
-    }
-    
-    function showLoading() {
-        const loadingHTML = `
-            <div style="text-align: center; background: white; padding: 30px; border-radius: 10px; color: #333; min-width: 300px;">
-                <div style="font-size: 18px; margin-bottom: 15px;">🎓 أداة جدولي</div>
-                <div style="font-size: 14px; margin-bottom: 20px;">جاري استخراج بيانات المقررات...</div>
-                <div style="width: 100%; background: #f0f0f0; border-radius: 10px; overflow: hidden;">
-                    <div id="my-progress-bar" style="width: 0%; height: 4px; background: linear-gradient(45deg, #667eea 0%, #764ba2 100%); transition: width 0.3s ease;"></div>
-                </div>
-            </div>
-        `;
-        createOverlay(loadingHTML);
-    }
-    
-    function updateProgress(percent) {
-        const progressBar = document.getElementById('my-progress-bar');
-        if (progressBar) progressBar.style.width = percent + '%';
-    }
-
-    function showError(message) {
-        const errorHTML = `
-            <div style="text-align: center; background: white; padding: 30px; border-radius: 10px; color: #333; min-width: 300px;">
-                <div style="font-size: 18px; margin-bottom: 15px;">❌ خطأ</div>
-                <div style="font-size: 14px; margin-bottom: 20px; color: #e74c3c;">${message}</div>
-                <button onclick="document.getElementById('my-tool-overlay').remove()"
-                        style="background: #e74c3c; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
-                    إغلاق
-                </button>
-            </div>
-        `;
-        const overlay = document.getElementById('my-tool-overlay');
-        if(overlay) overlay.innerHTML = errorHTML; else createOverlay(errorHTML);
-    }
-
-    function isValidPage() {
-        const hostname = window.location.hostname.toLowerCase();
-        return VALID_DOMAINS.some(domain => hostname.includes(domain));
-    }
-    
-    function startExtraction() {
-        try {
-            showLoading();
-            updateProgress(20);
-
-            const courseRows = document.querySelectorAll(courseRowSelector);
-            
-            if (courseRows.length === 0) {
-                throw new Error("لم يتم العثور على أي مقررات. تأكد من أنك في صفحة 'المقررات المطروحة' وأن الجدول معروض أمامك.");
-            }
-            updateProgress(50);
-
-            const coursesData = Array.from(courseRows).map(row => {
-                const getText = (selector) => row.querySelector(selector)?.textContent.trim() || '';
-                return {
-                    name: getText(courseNameSelector),
-                    code: getText(courseCodeSelector),
-                    section: getText(sectionNumberSelector),
-                    days: getText(daysSelector),
-                    time: getText(timeSelector),
-                    instructor: getText(instructorSelector),
-                };
-            }).filter(course => course.name && course.code);
-
-            if (coursesData.length === 0) {
-                throw new Error("تم العثور على هيكل الجدول ولكن لم يتم استخراج بيانات. قد يكون هناك تحديث على تصميم الموقع.");
-            }
-            
-            updateProgress(80);
-            localStorage.setItem('myUniversityCourses', JSON.stringify(coursesData));
-            updateProgress(100);
-
-            setTimeout(() => {
-                window.open(VIEWER_PAGE_URL, '_blank');
-                removeOverlay();
-            }, 500);
-
-        } catch (error) {
-            console.error('Extraction Error:', error);
-            showError(error.message || 'حدث خطأ غير متوقع.');
-        }
-    }
-    
-    if (!isValidPage()) {
-        const currentDomain = window.location.hostname;
-        let errorMessage = '⚠️ هذه الأداة تعمل فقط على بوابة جامعة القصيم!\n\n' +
-                           '📍 الموقع الحالي: ' + currentDomain;
-        alert(errorMessage);
+    if (courseRows.length === 0) {
+        alert("لم يتم العثور على أي مقررات في الصفحة. تأكد من أنك في الصفحة الصحيحة.");
         return;
     }
 
-    const termsHTML = `
-        <div style="background: white; border-radius: 15px; max-width: 450px; width: 90%; color: #333; padding: 25px;">
-            <div style="text-align: center; margin-bottom: 20px;">
-                <div style="font-size: 22px; margin-bottom: 10px;">🎓 أداة جدولي (جامعة القصيم)</div>
-                <div style="font-size: 16px; color: #667eea; font-weight: 600;">استخراج المقررات المطروحة</div>
-            </div>
-            <p style="font-size: 14px; line-height: 1.6; text-align: center; margin-bottom: 25px;">
-                ستقوم الأداة بقراءة المقررات المعروضة في هذه الصفحة وفتحها في جدول جديد.
-            </p>
-            <div style="display: flex; gap: 15px; justify-content: center;">
-                <button id="tool-accept" style="background: #4caf50; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
-                    موافق ومتابعة
-                </button>
-                <button id="tool-decline" style="background: #e74c3c; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px;">
-                    إلغاء
-                </button>
-            </div>
-        </div>
-    `;
-    createOverlay(termsHTML);
-    document.getElementById('tool-accept').onclick = () => { removeOverlay(); startExtraction(); };
-    document.getElementById('tool-decline').onclick = () => { removeOverlay(); };
-})();
+    const coursesData = [];
+
+    courseRows.forEach(row => {
+        const code = getCourseData(row, 'رمز المقرر');
+        const name = getCourseData(row, 'اسم المقرر');
+        const section = getCourseData(row, 'الشعبة&nbsp;');
+        
+        // استخراج البيانات المخفية
+        const details = getHiddenData(row, ':section'); // مثال للقيمة: " 4 @t 10:00 ص - 11:40 ص @r "
+        const instructor = getHiddenData(row, ':instructor');
+        
+        // تنظيف ومعالجة بيانات الأيام والوقت
+        let days = 'غير محدد';
+        let time = 'غير محدد';
+        if (details) {
+            // سنقوم بتقسيم النص بناءً على الرمز "@t"
+            const parts = details.split('@t');
+            if (parts.length > 1) {
+                // الجزء الأول للأيام، والثاني للوقت
+                days = parts[0].trim();
+                time = parts[1].replace('@r', '').trim();
+            }
+        }
+
+        // تأكد من وجود بيانات أساسية قبل إضافتها
+        if (name && code && section) {
+            coursesData.push({
+                code,
+                name,
+                section,
+                days,
+                time,
+                instructor: instructor ? instructor.trim() : 'غير محدد'
+            });
+        }
+    });
+
+    if (coursesData.length > 0) {
+        console.log(`✅ تم استخراج ${coursesData.length} مقرر بنجاح.`);
+        console.log(coursesData);
+        
+        // حفظ البيانات في التخزين المؤقت للمتصفح لنقلها للصفحة التالية
+        localStorage.setItem('myUniversityCourses', JSON.stringify(coursesData));
+        
+        // افتح صفحة العرض في نافذة جديدة
+        window.open('ضع هنا رابط صفحة العرض بعد رفعها', '_blank');
+
+    } else {
+        alert("لم يتم استخراج أي بيانات. قد تكون هناك مشكلة في الصفحة.");
+    }
+}
+
+// ابدأ التنفيذ
+parseCourses();
