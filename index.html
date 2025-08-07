@@ -3,129 +3,239 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>أداة بناء الجداول</title>
+    <title>استوديو الجداول</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
+    <!-- مكتبة أيقونات احترافية -->
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <style>
         :root {
-            --bg-color: #f8fafc; --container-bg: #ffffff; --text-primary: #1e293b;
-            --text-secondary: #64748b; --border-color: #e2e8f0; --primary-color: #6366f1;
-            --secondary-color: #8b5cf6; --light-bg: #f1f5f9; --success-color: #10b981;
+            --bg-main: #f8fafc;
+            --bg-sidebar: #ffffff;
+            --bg-calendar: #ffffff;
+            --bg-calendar-header: #f1f5f9;
+            --primary: #6366f1;
+            --secondary: #94a3b8;
+            --text-dark: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
         }
-        body {
-            font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-color);
-            color: var(--text-primary); margin: 0; padding: 2rem;
-            display: flex; justify-content: center;
-        }
-        .main-container {
-            display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;
-            width: 100%; max-width: 1400px;
-        }
-        .calendar-section, .courses-section {
-            background-color: var(--container-bg); border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid var(--border-color);
-            overflow: hidden; display: flex; flex-direction: column;
-        }
-        .section-header {
-            padding: 1.5rem; border-bottom: 1px solid var(--border-color);
-            flex-shrink: 0; display: flex; justify-content: space-between; align-items: center;
-        }
-        .section-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; }
-        .section-content { padding: 1rem; height: 100%; overflow-y: auto; }
-        .section-content::-webkit-scrollbar { width: 6px; }
-        .section-content::-webkit-scrollbar-track { background: #f1f5f9; }
-        .section-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        #calendar { height: 100%; padding: 0.5rem; }
         
-        /* --- ✨ تصميم جديد تفاعلي --- */
+        /* الوضع المظلم (Dark Mode) */
+        .dark {
+            --bg-main: #111827;
+            --bg-sidebar: #1f2937;
+            --bg-calendar: #1f2937;
+            --bg-calendar-header: #374151;
+            --primary: #818cf8;
+            --secondary: #9ca3af;
+            --text-dark: #f9fafb;
+            --text-light: #d1d5db;
+            --border-color: #374151;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: 'IBM Plex Sans Arabic', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-dark);
+            margin: 0;
+            display: flex;
+        }
+
+        /* --- اللوحة الجانبية (Sidebar) --- */
+        .sidebar {
+            width: 380px;
+            height: 100vh;
+            background-color: var(--bg-sidebar);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+        .sidebar-header {
+            padding: 1.25rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .sidebar-content {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+        .sidebar-content::-webkit-scrollbar { width: 5px; }
+        .sidebar-content::-webkit-scrollbar-track { background: transparent; }
+        .sidebar-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+        /* --- تصميم بطاقات المقررات --- */
         .course-group {
-            border: 1px solid var(--border-color); border-radius: 12px;
-            margin-bottom: 1rem; overflow: hidden;
+            margin-bottom: 1.5rem;
         }
         .course-group-header {
-            background-color: var(--light-bg); padding: 1rem 1.25rem;
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
         }
-        .course-group-header h3 { margin: 0; font-size: 1.1rem; font-weight: 600; }
-        .badge {
-            background-color: var(--primary-color); color: white; padding: 0.25rem 0.75rem;
-            border-radius: 99px; font-size: 0.8rem; font-weight: 500;
+        .course-group-header .color-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .course-group-header h3 {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .course-group-header .badge {
+            margin-right: auto;
+            background-color: var(--bg-calendar-header);
+            color: var(--text-light);
+            padding: 2px 8px;
+            font-size: 0.75rem;
+            border-radius: 99px;
         }
         .sections-container {
-            padding: 0.5rem 1.25rem 1.25rem; display: grid; gap: 0.75rem;
+            display: grid;
+            gap: 0.5rem;
         }
         .section-card {
-            border: 1px solid var(--border-color); border-radius: 8px;
-            padding: 0.75rem; font-size: 0.9rem; cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-main);
+            border-radius: 8px;
+            cursor: pointer;
             transition: all 0.2s ease;
         }
-        .section-card:hover { background-color: var(--light-bg); }
+        .section-card:hover { border-color: var(--primary); background-color: #f1f5f9; }
+        .dark .section-card:hover { background-color: #374151; }
         .section-card.selected {
-            background-color: #e0f2f1; border-color: var(--success-color);
-            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.3);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px var(--primary);
         }
-        .section-info {
-            color: var(--text-secondary); display: flex; flex-direction: column; gap: 0.25rem;
-            pointer-events: none; /* لمنع تداخل الأحداث مع البطاقة الرئيسية */
-        }
-        .section-info strong { color: var(--text-primary); }
+        .section-card-info { font-size: 0.8rem; color: var(--text-light); }
+        .section-card-type { font-weight: 600; color: var(--text-dark); }
+        .section-card-time { direction: ltr; text-align: left; }
 
-        .fc-col-header-cell { background-color: #f1f5f9; border: none; padding: 1rem 0; }
-        .fc .fc-toolbar-title { font-size: 1.5rem; font-weight: 700; }
+        /* --- المحتوى الرئيسي والجدول --- */
+        .main-content {
+            flex-grow: 1;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-shrink: 0;
+        }
+        .main-header h1 {
+            margin: 0;
+            font-size: 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .header-actions button {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .header-actions button:hover { background-color: var(--bg-calendar-header); color: var(--text-dark); }
+        .calendar-container {
+            flex-grow: 1;
+            background-color: var(--bg-calendar);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+        }
+        #calendar { height: 100%; }
+
+        /* --- تخصيص FullCalendar --- */
+        .fc { --fc-border-color: var(--border-color); }
+        .fc-col-header-cell { background-color: var(--bg-calendar-header); border: none; padding: 0.75rem 0; font-weight: 600;}
+        .fc .fc-toolbar-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); }
         .fc-theme-standard .fc-scrollgrid { border: none; }
-        .fc-timegrid-slot { height: 60px !important; border-bottom: 1px solid #f1f5f9; }
-        .fc-event { border: none; border-radius: 6px; font-weight: 600; padding: 4px 8px; }
-        .fc-event.preview-event {
-             opacity: 0.5; border-style: dashed !important;
-        }
+        .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
+        .fc-event { border: none !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; }
+        .fc-event.preview-event { opacity: 0.5; border-style: dashed !important; }
 
-        .no-data { text-align: center; padding-top: 5rem; }
-        .no-data p { font-size: 1.2rem; color: var(--text-secondary); }
-        
-        @media (max-width: 1024px) {
-            body { padding: 1rem; }
-            .main-container { grid-template-columns: 1fr; }
-            .courses-section { order: -1; }
-            .section-content { height: auto; max-height: 50vh; }
-        }
+        .no-data { text-align: center; padding: 3rem 0; color: var(--text-light); }
+
+        .close-btn, .theme-toggle { cursor: pointer; color: var(--text-light); transition: color 0.2s ease; }
+        .close-btn:hover, .theme-toggle:hover { color: var(--text-dark); }
     </style>
 </head>
-<body>
+<body class="dark"> <!-- يمكنك تغييرها إلى "light" أو حذفها للوضع الفاتح -->
 
-    <div class="main-container">
-        <section class="calendar-section">
-            <div id='calendar'></div>
-        </section>
-
-        <section class="courses-section">
-            <header class="section-header">
-                <h2>قائمة المقررات</h2>
-            </header>
-            <div class="section-content" id="courses-list">
-                <div class="no-data" id="no-data-message"><p>جاري انتظار البيانات...</p></div>
+    <main class="main-content">
+        <header class="main-header">
+            <h1><i class="ri-calendar-event-line"></i> الجدول الأسبوعي</h1>
+            <div class="header-actions">
+                <button><i class="ri-settings-3-line"></i> إعدادات</button>
             </div>
-        </section>
-    </div>
+        </header>
+        <div class="calendar-container">
+            <div id='calendar'></div>
+        </div>
+    </main>
+    
+    <aside class="sidebar">
+        <header class="sidebar-header">
+            <h2><i class="ri-function-line"></i> شعب المقررات</h2>
+            <i class="ri-sun-line theme-toggle" title="تغيير المظهر"></i>
+        </header>
+        <div class="sidebar-content" id="courses-list">
+            <div class="no-data" id="no-data-message"><p>شغل الأداة من موقع الجامعة...</p></div>
+        </div>
+    </aside>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // كل متغيرات وكود الجافاسكريبت هنا
             const coursesListContainer = document.getElementById('courses-list');
             const noDataMessage = document.getElementById('no-data-message');
             const calendarEl = document.getElementById('calendar');
+            const themeToggle = document.querySelector('.theme-toggle');
             let calendar;
             let allCoursesData = [];
             const selectedSections = new Set();
-            const colorPalette = ['#6366f1', '#8b5cf6', '#ec4899', '#10b981', '#f59e0b', '#3b82f6', '#ef4444'];
+            const colorPalette = ['#818cf8', '#f472b6', '#4ade80', '#fbbf24', '#60a5fa', '#c084fc'];
             const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
 
-            // --- ✨ تهيئة الجدول الزمني فارغًا ---
             function initializeCalendar() {
                 calendar = new FullCalendar.Calendar(calendarEl, {
-                    initialView: 'timeGridWeek', locale: 'ar',
+                    initialView: 'timeGridWeek', locale: 'ar', initialDate: new Date(),
                     headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridWeek,timeGridDay' },
                     allDaySlot: false, slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
                     events: [], dir: 'rtl', hiddenDays: [5, 6],
@@ -137,7 +247,6 @@
             }
             initializeCalendar();
 
-            // --- ✨ عرض البيانات وتجميعها ---
             function displayData(courses) {
                 if (!courses || courses.length === 0) {
                     noDataMessage.innerHTML = "<p>لم يتم العثور على بيانات.</p>"; return;
@@ -166,39 +275,40 @@
                     group.sections.forEach((section, index) => {
                         const uniqueId = `${section.code}-${section.section}-${index}`;
                         section.uniqueId = uniqueId;
+                        const timeText = section.time.replace(/<br>/g, ', ').replace(/.*:\s*/, '');
                         sectionsHTML += `
                             <div class="section-card" data-section-id="${uniqueId}">
-                                <div class="section-info">
-                                    <span><strong>الشعبة:</strong> ${section.section}</span>
-                                    <span><strong>المحاضر:</strong> ${section.instructor}</span>
-                                    <span><strong>الوقت:</strong> ${section.time.replace(/<br>/g, ', ')}</span>
+                                <div>
+                                    <div class="section-card-type">${section.section}</div>
+                                    <div class="section-card-info">${section.instructor}</div>
                                 </div>
+                                <div class="section-card-info section-card-time">${timeText}</div>
                             </div>
                         `;
                     });
 
                     groupContainer.innerHTML = `
                         <div class="course-group-header">
+                            <span class="color-dot" style="background-color: ${courseColor};"></span>
                             <h3>${group.name} (${group.code})</h3>
-                            <span class="badge">${group.sections.length} شعبة</span>
+                            <span class="badge">${group.sections.length}</span>
                         </div>
                         <div class="sections-container">${sectionsHTML}</div>
                     `;
                     coursesListContainer.appendChild(groupContainer);
                     
-                    // --- ✨ إضافة الأحداث التفاعلية ---
                     groupContainer.addEventListener('mouseenter', () => handlePreview(group.code, courseColor));
                     groupContainer.addEventListener('mouseleave', () => clearPreview());
                 });
 
                 coursesListContainer.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('section-card')) {
-                        handleSectionClick(e.target);
+                    const card = e.target.closest('.section-card');
+                    if (card) {
+                        handleSectionClick(card);
                     }
                 });
             }
             
-            // --- ✨ دوال التفاعل ---
             function handleSectionClick(cardElement) {
                 const sectionId = cardElement.dataset.sectionId;
                 if (selectedSections.has(sectionId)) {
@@ -215,16 +325,12 @@
                 const previewEvents = generateEventsForCourse(courseCode, color, true);
                 const currentEvents = calendar.getEvents();
                 currentEvents.forEach(event => {
-                    if (!event.extendedProps.isPreview) event.remove();
+                    if (event.extendedProps.isPreview) event.remove();
                 });
                 calendar.addEventSource(previewEvents);
             }
 
             function clearPreview() {
-                const currentEvents = calendar.getEvents();
-                currentEvents.forEach(event => {
-                    if (event.extendedProps.isPreview) event.remove();
-                });
                 updateCalendar();
             }
 
@@ -249,13 +355,11 @@
             }
 
             function generateEventsForCourse(courseCode, color, isPreview = false) {
-                const course = allCoursesData.find(c => c.code === courseCode);
-                if (!course) return [];
                 const courseSections = allCoursesData.filter(c => c.code === courseCode);
                 const events = [];
                 courseSections.forEach(section => {
                     events.push(...generateEventsForSection(section, color, isPreview));
-                });
+});
                 return events;
             }
 
@@ -272,8 +376,8 @@
                         daysArray.forEach(dayName => {
                             if (dayMapping.hasOwnProperty(dayName)) {
                                 events.push({
-                                    id: isPreview ? `preview-${section.uniqueId}` : section.uniqueId,
-                                    title: `${section.name} (${section.code})`,
+                                    id: section.uniqueId + (isPreview ? '-preview' : ''),
+                                    title: `${section.name}`,
                                     daysOfWeek: [dayMapping[dayName]],
                                     startTime: startTime, endTime: endTime,
                                     backgroundColor: color, borderColor: color,
@@ -294,6 +398,19 @@
                 if (period === 'ص' && hours === 12) hours = 0;
                 return `${String(hours).padStart(2, '0')}:${minutes}:00`;
             }
+            
+            // تبديل المظهر (فاتح/داكن)
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark');
+                if (document.body.classList.contains('dark')) {
+                    themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
+                } else {
+                    themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
+                }
+                // إعادة رسم الجدول ليتكيف مع المظهر الجديد
+                calendar.render();
+            });
+            if(document.body.classList.contains('dark')) themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
 
             // استلام البيانات
             window.addEventListener('message', function(event) {
