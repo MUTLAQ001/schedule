@@ -1,10 +1,9 @@
 <!DOCTYPE html>
-
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>استوديو الجداول المتقدم</title>
+    <title>استوديو الجداول الذكي</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,13 +15,13 @@
         :root {
             --bg-main: #f8fafc; --bg-sidebar: #ffffff; --bg-calendar: #ffffff;
             --bg-calendar-header: #f1f5f9; --bg-item-hover: #f1f5f9;
-            --primary: #6366f1; --secondary: #94a3b8; --danger: #ef4444;
+            --primary: #6366f1; --secondary: #94a3b8; --danger: #ef4444; --danger-bg: #fee2e2;
             --text-dark: #1e293b; --text-light: #64748b; --border-color: #e2e8f0;
         }
         .dark {
             --bg-main: #111827; --bg-sidebar: #1f2937; --bg-calendar: #1f2937;
             --bg-calendar-header: #374151; --bg-item-hover: #374151;
-            --primary: #818cf8; --secondary: #9ca3af; --danger: #f87171;
+            --primary: #818cf8; --secondary: #9ca3af; --danger: #f87171; --danger-bg: #452b2b;
             --text-dark: #f9fafb; --text-light: #d1d5db; --border-color: #374151;
         }
         *, *::before, *::after { box-sizing: border-box; }
@@ -48,10 +47,19 @@
         .sections-wrapper { padding: 0 1rem 1rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; }
         .course-item.open .sections-wrapper { max-height: 600px; }
         .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
-        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; background-color: var(--bg-sidebar); transition: all 0.2s; }
+        
+        .section-btn {
+            padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;
+            text-align: center; cursor: pointer; background-color: var(--bg-sidebar);
+            transition: all 0.2s; position: relative;
+        }
         .section-btn:hover { border-color: var(--primary); }
         .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
         .section-btn.selected .section-type { color: white !important; }
+        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.7; }
+        .section-btn.conflicted:hover { border-color: var(--danger); }
+        .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--danger); background: var(--bg-sidebar); border-radius: 50%; font-size: 1.2em; }
+        
         .section-btn-number { font-weight: 700; font-size: 1rem; }
         .section-type { font-size: 0.75rem; color: var(--text-light); }
         
@@ -68,11 +76,7 @@
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
         .fc-event { border: 2px solid transparent !important; border-radius: 6px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
-        /* --- ✨ تصميم المعاينة والتعارض --- */
-        .fc-event.preview-event { opacity: 0.6; border-style: dashed !important; }
-        .fc-event.conflict-preview { border-color: var(--danger) !important; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-
+        
         .no-data { text-align: center; padding: 3rem 0; color: var(--text-light); }
         .theme-toggle { cursor: pointer; color: var(--text-light); transition: color 0.2s ease; }
         .theme-toggle:hover { color: var(--text-dark); }
@@ -121,20 +125,44 @@
                         const uniqueId = info.event.extendedProps.uniqueId;
                         if (selectedSections.has(uniqueId)) {
                             selectedSections.delete(uniqueId);
-                            document.querySelector(`.section-btn[data-unique-id='${uniqueId}']`)?.classList.remove('selected');
-                            updateCalendar();
+                            const btn = document.querySelector(`.section-btn[data-unique-id='${uniqueId}']`);
+                            if(btn) btn.classList.remove('selected');
+                            updateCalendarAndConflicts();
                         }
                     },
-                    eventContent: (arg) => ({
-                        html: `<b>${arg.event.title.split('(')[0]}</b><br><small>${arg.event.extendedProps.instructor}</small><br><small>شعبة: ${arg.event.extendedProps.section}</small>`
-                    })
+                    // --- ✨ التحسين هنا: تصميم أكثر احترافية لمحتوى الحدث ---
+                    eventContent: (arg) => {
+                        const wrapper = document.createElement('div');
+                        wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden;';
+                        
+                        const title = document.createElement('b');
+                        title.innerText = arg.event.title.split('(')[0];
+                        
+                        const instructor = document.createElement('small');
+                        instructor.innerText = arg.event.extendedProps.instructor;
+                        instructor.style.opacity = '0.9';
+
+                        const section = document.createElement('small');
+                        section.innerText = `شعبة: ${arg.event.extendedProps.section}`;
+                        section.style.opacity = '0.8';
+
+                        wrapper.appendChild(title);
+                        wrapper.appendChild(instructor);
+                        wrapper.appendChild(section);
+
+                        return { domNodes: [wrapper] };
+                    }
                 });
                 calendar.render();
             }
 
             function displayData(courses) {
-                allCoursesData = courses;
-                groupedCourses = courses.reduce((acc, course) => {
+                allCoursesData = courses.map((section, index) => {
+                    const uniqueId = `${section.code}-${section.section}-${index}`;
+                    return { ...section, uniqueId, timeSlots: parseTimeEntries(section.time) };
+                });
+                
+                groupedCourses = allCoursesData.reduce((acc, course) => {
                     if (!acc[course.code]) acc[course.code] = { name: course.name, code: course.code, sections: [] };
                     acc[course.code].sections.push(course); return acc;
                 }, {});
@@ -152,19 +180,13 @@
                     courseItem.className = 'course-item';
                     let sectionsHTML = '';
 
-                    group.sections.forEach((section, index) => {
-                        const uniqueId = `${section.code}-${section.section}-${index}`;
-                        section.uniqueId = uniqueId;
+                    group.sections.forEach(section => {
                         const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'تدريب' : 'نظري';
-                        sectionsHTML += `<div class="section-btn" data-unique-id="${uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div></div>`;
+                        sectionsHTML += `<div class="section-btn" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div></div>`;
                     });
 
                     courseItem.innerHTML = `
-                        <div class="course-item-header">
-                            <span class="color-dot" style="background-color: ${courseColor};"></span>
-                            <div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعبة</p></div>
-                            <i class="ri-arrow-down-s-line toggle-icon"></i>
-                        </div>
+                        <div class="course-item-header"><span class="color-dot" style="background-color: ${courseColor};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعبة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div>
                         <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
                     coursesListContainer.appendChild(courseItem);
                 });
@@ -175,16 +197,6 @@
                     if (header) header.parentElement.classList.toggle('open');
                     if (sectionBtn) handleSectionClick(sectionBtn);
                 });
-
-                // --- ✨ إضافة أحداث المعاينة عند الحوم ---
-                coursesListContainer.addEventListener('mouseover', (e) => {
-                    const sectionBtn = e.target.closest('.section-btn');
-                    if (sectionBtn) handlePreview(sectionBtn);
-                });
-                coursesListContainer.addEventListener('mouseout', (e) => {
-                    const sectionBtn = e.target.closest('.section-btn');
-                    if (sectionBtn) clearPreview();
-                });
             }
 
             function handleSectionClick(btnElement) {
@@ -192,82 +204,76 @@
                 if (selectedSections.has(uniqueId)) {
                     selectedSections.delete(uniqueId);
                     btnElement.classList.remove('selected');
-                } else {
+                } else if (!btnElement.classList.contains('conflicted')) {
                     selectedSections.add(uniqueId);
                     btnElement.classList.add('selected');
                 }
-                updateCalendar();
-            }
-
-            // --- ✨ دالة المعاينة الجديدة ---
-            function handlePreview(btnElement) {
-                clearPreview(); // امسح أي معاينة سابقة
-                const uniqueId = btnElement.dataset.uniqueId;
-                const section = allCoursesData.find(c => c.uniqueId === uniqueId);
-                if (!section) return;
-
-                const group = groupedCourses[section.code];
-                const previewEvents = createEventsForSection(section, group.color, true);
-                
-                // كشف التعارضات
-                const existingEvents = calendar.getEvents();
-                previewEvents.forEach(previewEvent => {
-                    const isConflict = existingEvents.some(existingEvent => {
-                        return (previewEvent.daysOfWeek[0] === existingEvent.extendedProps.dayOfWeek &&
-                                previewEvent.startTime < existingEvent.endStr &&
-                                previewEvent.endTime > existingEvent.startStr);
-                    });
-                    if (isConflict) {
-                        previewEvent.className += ' conflict-preview'; // أضف كلاس التعارض
-                    }
-                });
-                
-                calendar.addEventSource({ id: 'preview-source', events: previewEvents });
+                updateCalendarAndConflicts();
             }
             
-            function clearPreview() {
-                const previewSource = calendar.getEventSourceById('preview-source');
-                if (previewSource) previewSource.remove();
-            }
-
-            function updateCalendar() {
+            function updateCalendarAndConflicts() {
                 calendar.removeAllEvents();
-                const finalEvents = [];
+                const currentScheduleSlots = [];
                 selectedSections.forEach(id => {
                     const section = allCoursesData.find(c => c.uniqueId === id);
                     if (section) {
                         const group = groupedCourses[section.code];
-                        finalEvents.push(...createEventsForSection(section, group.color));
+                        const events = createEventsForSection(section, group.color);
+                        calendar.addEventSource(events);
+                        currentScheduleSlots.push(...section.timeSlots);
                     }
                 });
-                calendar.addEventSource(finalEvents);
+
+                allCoursesData.forEach(section => {
+                    const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
+                    if (!btn || selectedSections.has(section.uniqueId)) return;
+                    
+                    const isConflicted = section.timeSlots.some(slot =>
+                        currentScheduleSlots.some(scheduleSlot =>
+                            slot.day === scheduleSlot.day && slot.start < scheduleSlot.end && slot.end > scheduleSlot.start
+                        )
+                    );
+                    
+                    btn.querySelector('.conflict-icon')?.remove();
+                    
+                    if (isConflicted) {
+                        btn.classList.add('conflicted');
+                        const icon = document.createElement('i');
+                        icon.className = 'ri-error-warning-fill conflict-icon';
+                        btn.appendChild(icon);
+                    } else {
+                        btn.classList.remove('conflicted');
+                    }
+                });
             }
 
-            function createEventsForSection(section, color, isPreview = false) {
-                const events = [];
-                const timeEntries = section.time.split('<br>');
-                timeEntries.forEach(entry => {
-                    const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
-                    if (parts) {
-                        const daysString = parts[1];
-                        const startTime = convertTo24Hour(parts[2], parts[3]);
-                        const endTime = convertTo24Hour(parts[4], parts[5]);
-                        const daysArray = daysString.trim().split(/\s+/);
-                        daysArray.forEach(dayName => {
-                            if (dayMapping.hasOwnProperty(dayName)) {
-                                events.push({
-                                    title: `${section.name}`,
-                                    daysOfWeek: [dayMapping[dayName]],
-                                    startTime: startTime, endTime: endTime,
-                                    backgroundColor: color, borderColor: color,
-                                    className: isPreview ? 'preview-event' : '',
-                                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, dayOfWeek: dayMapping[dayName] }
-                                });
-                            }
-                        });
+            // --- ✨ الإصلاح هنا: إضافة instructor إلى بيانات الحدث ---
+            function createEventsForSection(section, color) {
+                return section.timeSlots.map(slot => ({
+                    title: `${section.name}`,
+                    daysOfWeek: [slot.day],
+                    startTime: slot.start,
+                    endTime: slot.end,
+                    backgroundColor: color,
+                    borderColor: color,
+                    extendedProps: {
+                        instructor: section.instructor, // تمت إضافته من جديد
+                        section: section.section,
+                        uniqueId: section.uniqueId
                     }
-                });
-                return events;
+                }));
+            }
+            
+            function parseTimeEntries(timeString) {
+                if (!timeString) return [];
+                return timeString.split('<br>').map(entry => {
+                    const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
+                    if (!parts) return null;
+                    const daysArray = parts[1].trim().split(/\s+/);
+                    const startTime = convertTo24Hour(parts[2], parts[3]);
+                    const endTime = convertTo24Hour(parts[4], parts[5]);
+                    return daysArray.map(dayName => dayMapping.hasOwnProperty(dayName) ? { day: dayMapping[dayName], start: startTime, end: endTime } : null);
+                }).flat().filter(Boolean);
             }
 
             function convertTo24Hour(time, period) {
