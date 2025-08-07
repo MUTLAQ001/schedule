@@ -28,7 +28,6 @@
             --rgb-primary:94,156,255; --rgb-danger:255,82,82;
             --primary-hue:217; --secondary-hue:257;
 
-            /* Variables mapped from AI Studio for compatibility */
             --bg-main: var(--color-bg); --bg-sidebar: var(--color-card);
             --bg-calendar: var(--color-card); --bg-calendar-header: rgba(255, 255, 255, 0.05);
             --bg-item-hover: rgba(255, 255, 255, 0.08); --primary: var(--color-primary);
@@ -62,14 +61,12 @@
             transition: background-color var(--transition-smooth), color var(--transition-smooth);
         }
 
-        /* --- ✨ Cosmic Background from Absence Calculator --- */
         .cosmic-bg-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;overflow:hidden}
 		#starfield-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
 		.nebula-glow{position:absolute;top:50%;left:50%;width:80vmax;height:80vmax;margin-top:-40vmax;margin-left:-40vmax;background:radial-gradient(circle,hsl(var(--primary-hue),90%,60%,.15) 0%,hsl(var(--secondary-hue),80%,50%,.1) 40%,transparent 70%);filter:blur(100px);border-radius:50%;animation:move-nebula 90s infinite alternate ease-in-out;transition:opacity .5s ease,background .5s ease}
         .light .nebula-glow{opacity:.5;filter:blur(120px)}
         @keyframes move-nebula{0%{transform:translate(0,0) rotate(0deg) scale(1.2)}50%{transform:translate(10vw,5vh) rotate(180deg) scale(1.5)}100%{transform:translate(0,0) rotate(360deg) scale(1.2)}}
 
-        /* --- ✨ Styled Install Section --- */
         #install-section {
             position: fixed; top: 1.5rem; left: 50%;
             transform: translateX(-50%); z-index: 1000;
@@ -92,7 +89,6 @@
         .bookmarklet-button:hover{transform:translateY(-3px);box-shadow:0 4px 15px rgba(var(--rgb-primary),0.25); filter: brightness(1.1);}
         @keyframes scaleIn{from{opacity:0;transform:scale(.95) translateX(-50%);}to{opacity:1;transform:scale(1) translateX(-50%)}}
 
-        /* --- Layout --- */
         .sidebar { width: 400px; height: 100vh; background-color: transparent; display: flex; flex-direction: column; flex-shrink: 0; padding: 1.5rem 1rem 1.5rem 1.5rem; }
         .sidebar-inner {
             display: flex; flex-direction: column; height: 100%;
@@ -104,6 +100,9 @@
         .sidebar-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: #fff}
         .light .sidebar-header h2 { color: var(--text-dark); }
         .sidebar-content { flex-grow: 1; overflow-y: auto; padding: 1rem; }
+        .sidebar-footer { padding: 1rem 1.5rem; border-top: 1px solid var(--border-color); text-align: center; }
+        .sidebar-footer a { color: var(--text-light); text-decoration: none; font-size: 1.2rem; transition: color 0.2s; display: inline-flex; align-items: center; gap: 0.5rem; }
+        .sidebar-footer a:hover { color: var(--primary); }
 
         .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
         .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
@@ -128,13 +127,9 @@
         }
         #calendar { height: 100%; }
 
-        /* --- Sidebar Items --- */
         .course-item { 
-            background: rgba(255,255,255,0.03);
-            border: 1px solid transparent; 
-            border-radius: var(--radius-md); 
-            margin-bottom: 0.75rem; 
-            transition: all 0.3s ease; 
+            background: rgba(255,255,255,0.03); border: 1px solid transparent; 
+            border-radius: var(--radius-md); margin-bottom: 0.75rem; transition: all 0.3s ease; 
         }
         .course-item:hover { background: var(--bg-item-hover); border-color: var(--border-color); }
         .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; cursor: pointer; }
@@ -143,19 +138,27 @@
         .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: #fff; }
         .light .course-info h3 { color: var(--text-dark); }
         .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--text-light); }
-        .course-item-header .toggle-icon { transition: transform 0.3s; font-size: 1.2rem; }
+        .course-controls { display: flex; align-items: center; gap: 0.5rem; }
+        .course-controls i { transition: transform 0.3s, color 0.2s; font-size: 1.2rem; padding: 0.25rem; border-radius: 50%; }
+        .course-controls i:hover { color: var(--primary); background-color: rgba(var(--rgb-primary), 0.1); }
         .course-item.open .toggle-icon { transform: rotate(180deg); }
         
-        .sections-wrapper { padding: 0 1rem 1rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; }
-        .course-item.open { background-color: transparent; border-color: var(--border-color); }
-        .course-item.open .sections-wrapper { max-height: 600px; }
+        .sections-wrapper { padding: 0 1rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding-bottom 0.4s ease-out; }
+        .course-item.open .sections-wrapper { max-height: 600px; padding-bottom: 1rem; }
         .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 0.75rem; }
+
+        .color-picker-wrapper { max-height: 0; overflow: hidden; transition: all 0.4s ease-out; padding: 0 1rem; }
+        .course-item.settings-open .color-picker-wrapper { max-height: 60px; padding-bottom: 1rem; }
+        .color-picker-wrapper label { display: flex; align-items: center; justify-content: space-between; font-size: 0.9rem; }
+        .course-color-input { -webkit-appearance: none; -moz-appearance: none; appearance: none; width: 40px; height: 28px; background-color: transparent; border: none; cursor: pointer; padding: 0; }
+        .course-color-input::-webkit-color-swatch-wrapper { padding: 0; }
+        .course-color-input::-webkit-color-swatch { border-radius: 6px; border: 1px solid var(--border-color); }
         
         .section-btn { 
             padding: 0.6rem; border: 1px solid var(--border-color); 
             border-radius: var(--radius-md); text-align: center; 
             cursor: pointer; background-color: var(--bg-sidebar); 
-            transition: all 0.2s; position: relative;
+            transition: all 0.2s; position: relative; display: flex; flex-direction: column; gap: 0.25rem;
         }
         .section-btn:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .section-btn.selected { 
@@ -163,18 +166,18 @@
             border-color: var(--primary); transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(var(--rgb-primary),0.25);
         }
-        .section-btn.selected .section-type { color: rgba(255,255,255,0.8) !important; }
+        .section-btn.selected .section-type, .section-btn.selected .section-exam-info { color: rgba(255,255,255,0.8) !important; }
         .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.8; }
         .section-btn.conflicted:hover { transform: none; box-shadow: none; }
-        .section-btn.conflicted .conflict-icon { 
+        .conflict-icon { 
             position: absolute; top: -6px; right: -6px; 
             color: var(--danger); background: var(--bg-main); 
-            border-radius: 50%; font-size: 1.3em; line-height: 1;
+            border-radius: 50%; font-size: 1.3em; line-height: 1; cursor: help;
         }
         .section-btn-number { font-weight: 700; font-size: 1.1rem; }
         .section-type { font-size: 0.75rem; color: var(--text-light); transition: color 0.2s; }
+        .section-exam-info { font-size: 0.7rem; color: var(--text-light); transition: color 0.2s; font-weight: 500; }
 
-        /* --- Calendar Styling --- */
         .fc { --fc-border-color: var(--border-color); --fc-today-bg-color: rgba(var(--rgb-primary), 0.05); }
         .fc-col-header-cell { background-color: var(--bg-calendar-header); border: none; padding: 1rem 0; font-weight: 600; font-size: 0.9rem;}
         .fc-theme-standard .fc-scrollgrid { border: none; }
@@ -183,8 +186,7 @@
         .fc .fc-timegrid-axis-cushion { padding: 0 1rem; }
         .fc-direction-rtl .fc-timegrid-slot-label { border: none; }
         .fc-event { 
-            border: none !important; 
-            border-radius: var(--radius-md) !important; 
+            border: none !important; border-radius: var(--radius-md) !important; 
             font-weight: 600; padding: 6px 10px !important; cursor: pointer; 
             box-shadow: 0 4px 15px -5px rgba(0,0,0, 0.4);
             transition: all 0.2s ease;
@@ -203,17 +205,16 @@
     </style>
 </head>
 <body class="dark">
-    <!-- --- ✨ Cosmic Background --- -->
     <div class="cosmic-bg-container">
         <div class="nebula-glow"></div>
         <canvas id="starfield-canvas"></canvas>
     </div>
     
-    <!-- --- ✨ Styled Install Section --- -->
     <div id="install-section">
-        <p>لتثبيت الأداة، اسحب هذا الزر إلى شريط الإشارات المرجعية:</p>
-        <a class="bookmarklet-button" href="javascript:(function(){var s=document.createElement('script');s.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now();document.head.appendChild(s);})();" 
-           onclick="alert('لا تضغط على الزر، بل اسحبه إلى شريط الإشارات!'); return false;">
+        <p>لاستخراج موادك ومواعيد اختباراتها، اسحب هذا الزر إلى شريط الإشارات المرجعية:</p>
+        <a class="bookmarklet-button" 
+           href="javascript:(function(){var s=document.createElement('script');s.src='https://mutlaq001.github.io/schedule/extractor_v2.js?v='+Date.now();document.head.appendChild(s);})();" 
+           onclick="alert('لا تضغط على الزر، بل اسحبه إلى شريط الإشارات! إذا كانت لديك نسخة قديمة، احذفها أولاً.'); return false;">
             🎓 استخراج جدولي
         </a>
     </div>
@@ -236,28 +237,41 @@
             <div class="sidebar-content" id="courses-list">
                 <div class="no-data" id="no-data-message"><p>في انتظار البيانات...<br>الرجاء تشغيل أداة "استخراج جدولي" من صفحة المقررات المطروحة في موقع الجامعة.</p></div>
             </div>
+            <footer class="sidebar-footer">
+                <a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer">
+                    <i class="ri-telegram-line"></i>
+                    <span>mutlaq1</span>
+                </a>
+            </footer>
         </div>
     </aside>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // --- AI Studio Logic (unchanged) ---
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
             const clearCalendarBtn = document.getElementById('clear-calendar-btn');
             const installSection = document.getElementById('install-section');
             
-            let calendar, allCoursesData = [], groupedCourses;
+            let calendar, allCoursesData = [], groupedCourses, customColors = {};
             const selectedSections = new Set();
             const colorPalette = ['#5e9cff', '#f472b6', '#4ade80', '#fbbf24', '#a777ff', '#c084fc', '#f87171', '#fb923c'];
             const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
+
+            function loadCustomColors() {
+                const storedColors = localStorage.getItem('courseCustomColors');
+                customColors = storedColors ? JSON.parse(storedColors) : {};
+            }
+            function saveCustomColors() {
+                localStorage.setItem('courseCustomColors', JSON.stringify(customColors));
+            }
 
             function initializeCalendar() {
                 calendar = new FullCalendar.Calendar(calendarEl, {
                     initialView: 'timeGridWeek', locale: 'ar',
                     headerToolbar: false, allDaySlot: false,
-                    slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
+                    slotMinTime: '08:00:00', slotMaxTime: '20:00:00',
                     events: [], dir: 'rtl', hiddenDays: [5, 6],
                     dayHeaderFormat: { weekday: 'long' },
                     slotLabelFormat: { hour: 'numeric', minute: '2-digit', omitZeroMinute: false, meridiem: 'short' },
@@ -290,11 +304,36 @@
                 calendar.render();
             }
 
+            function convertTo24Hour(time, period) {
+                if (!time || !period) return null;
+                let [hours, minutes] = time.split(':');
+                hours = parseInt(hours);
+                if (period === 'م' && hours !== 12) hours += 12;
+                if (period === 'ص' && hours === 12) hours = 0;
+                return `${String(hours).padStart(2, '0')}:${minutes}:00`;
+            }
+
+            function parseFinalExamTime(examString) {
+                if (!examString || examString.trim() === 'غير محدد') return null;
+                const match = examString.match(/(\d{4}\/\d{2}\/\d{2}).*?(\d{2}:\d{2})(ص|م).*?(\d{2}:\d{2})(ص|م)/);
+                if (!match) return null;
+                return {
+                    date: match[1].replace(/\//g, '-'),
+                    start: convertTo24Hour(match[2], match[3]),
+                    end: convertTo24Hour(match[4], match[5])
+                };
+            }
+
             function displayData(courses) {
                 installSection.style.display = 'none';
                 allCoursesData = courses.map((section, index) => {
                     const uniqueId = `${section.code}-${section.section}-${index}`;
-                    return { ...section, uniqueId, timeSlots: parseTimeEntries(section.time) };
+                    return { 
+                        ...section, 
+                        uniqueId, 
+                        timeSlots: parseTimeEntries(section.time),
+                        finalExamInfo: parseFinalExamTime(section.finalExam)
+                    };
                 });
                 
                 groupedCourses = allCoursesData.reduce((acc, course) => {
@@ -307,32 +346,84 @@
                 let colorIndex = 0;
 
                 Object.values(groupedCourses).forEach(group => {
-                    const courseColor = colorPalette[colorIndex % colorPalette.length];
+                    const customColor = customColors[group.code];
+                    const courseColor = customColor || colorPalette[colorIndex % colorPalette.length];
                     colorIndex++;
                     group.color = courseColor;
                     
                     const courseItem = document.createElement('div');
                     courseItem.className = 'course-item';
+                    courseItem.dataset.courseCode = group.code;
                     let sectionsHTML = '';
 
                     group.sections.forEach(section => {
                         const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'عملي' : 'نظري';
-                        sectionsHTML += `<div class="section-btn" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div></div>`;
+                        let examInfoHTML = '<div class="section-exam-info">لا يوجد اختبار</div>';
+                        if(section.finalExamInfo) {
+                            const date = new Date(section.finalExamInfo.date);
+                            const day = date.getDate();
+                            const month = date.getMonth() + 1;
+                            examInfoHTML = `<div class="section-exam-info" title="${section.finalExam}">اختبار: ${day}/${month}</div>`;
+                        }
+
+                        sectionsHTML += `
+                          <div class="section-btn" data-unique-id="${section.uniqueId}">
+                            <div class="section-btn-number">${section.section}</div>
+                            <div class="section-type">${type}</div>
+                            ${examInfoHTML}
+                          </div>`;
                     });
 
                     courseItem.innerHTML = `
-                        <div class="course-item-header"><span class="color-dot" style="background-color: ${courseColor};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div>
+                        <div class="course-item-header">
+                            <span class="color-dot" style="background-color: ${courseColor};"></span>
+                            <div class="course-info">
+                                <h3>${group.name} (${group.code})</h3>
+                                <p>${group.sections.length} شعب متاحة</p>
+                            </div>
+                            <div class="course-controls">
+                                <i class="ri-settings-3-line course-settings-btn" title="تغيير اللون"></i>
+                                <i class="ri-arrow-down-s-line toggle-icon"></i>
+                            </div>
+                        </div>
+                        <div class="color-picker-wrapper">
+                            <label><span>لون المقرر:</span><input type="color" class="course-color-input" value="${courseColor}"></label>
+                        </div>
                         <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
                     coursesListContainer.appendChild(courseItem);
                 });
-                
-                coursesListContainer.addEventListener('click', function(e) {
-                    const header = e.target.closest('.course-item-header');
-                    const sectionBtn = e.target.closest('.section-btn');
-                    if (header) header.parentElement.classList.toggle('open');
-                    if (sectionBtn) handleSectionClick(sectionBtn);
-                });
             }
+
+            coursesListContainer.addEventListener('click', function(e) {
+                const settingsBtn = e.target.closest('.course-settings-btn');
+                const toggleBtn = e.target.closest('.toggle-icon');
+                const header = e.target.closest('.course-item-header');
+                const sectionBtn = e.target.closest('.section-btn');
+                
+                if (settingsBtn) {
+                    e.stopPropagation();
+                    settingsBtn.closest('.course-item').classList.toggle('settings-open');
+                } else if (toggleBtn || header) {
+                    const courseItem = (toggleBtn || header).closest('.course-item');
+                    if(courseItem) courseItem.classList.toggle('open');
+                }
+                
+                if (sectionBtn) handleSectionClick(sectionBtn);
+            });
+            
+            coursesListContainer.addEventListener('input', function(e) {
+                const colorInput = e.target.closest('.course-color-input');
+                if (colorInput) {
+                    const newColor = colorInput.value;
+                    const courseItem = colorInput.closest('.course-item');
+                    const courseCode = courseItem.dataset.courseCode;
+                    customColors[courseCode] = newColor;
+                    groupedCourses[courseCode].color = newColor;
+                    saveCustomColors();
+                    courseItem.querySelector('.color-dot').style.backgroundColor = newColor;
+                    updateCalendarAndConflicts();
+                }
+            });
 
             function handleSectionClick(btnElement) {
                 const uniqueId = btnElement.dataset.uniqueId;
@@ -349,6 +440,8 @@
             function updateCalendarAndConflicts() {
                 calendar.removeAllEvents();
                 const currentScheduleSlots = [];
+                const currentFinalExams = [];
+
                 selectedSections.forEach(id => {
                     const section = allCoursesData.find(c => c.uniqueId === id);
                     if (section) {
@@ -356,6 +449,7 @@
                         const events = createEventsForSection(section, group.color);
                         calendar.addEventSource(events);
                         currentScheduleSlots.push(...section.timeSlots);
+                        if(section.finalExamInfo) currentFinalExams.push(section.finalExamInfo);
                     }
                 });
 
@@ -367,18 +461,29 @@
                         return;
                     }
                     
-                    const isConflicted = section.timeSlots.some(slot =>
+                    const classConflict = section.timeSlots.some(slot =>
                         currentScheduleSlots.some(scheduleSlot =>
                             slot.day === scheduleSlot.day && slot.start < scheduleSlot.end && slot.end > scheduleSlot.start
                         )
                     );
                     
+                    const examConflict = section.finalExamInfo && currentFinalExams.some(exam =>
+                        section.finalExamInfo.date === exam.date &&
+                        section.finalExamInfo.start < exam.end &&
+                        section.finalExamInfo.end > exam.start
+                    );
+
                     btn.querySelector('.conflict-icon')?.remove();
                     
-                    if (isConflicted) {
+                    if (classConflict || examConflict) {
                         btn.classList.add('conflicted');
                         const icon = document.createElement('i');
                         icon.className = 'ri-error-warning-fill conflict-icon';
+                        if (examConflict) {
+                            icon.title = 'تعارض في وقت الاختبار النهائي';
+                        } else { // Class conflict
+                            icon.title = 'تعارض في وقت المحاضرة';
+                        }
                         btn.appendChild(icon);
                     } else {
                         btn.classList.remove('conflicted');
@@ -406,14 +511,6 @@
                     return daysArray.map(dayName => dayMapping.hasOwnProperty(dayName) ? { day: dayMapping[dayName], start: startTime, end: endTime } : null);
                 }).flat().filter(Boolean);
             }
-
-            function convertTo24Hour(time, period) {
-                let [hours, minutes] = time.split(':');
-                hours = parseInt(hours);
-                if (period === 'م' && hours !== 12) hours += 12;
-                if (period === 'ص' && hours === 12) hours = 0;
-                return `${String(hours).padStart(2, '0')}:${minutes}:00`;
-            }
             
             clearCalendarBtn.addEventListener('click', () => {
                 if (confirm('هل أنت متأكد من أنك تريد مسح جميع المقررات من الجدول؟')) {
@@ -432,21 +529,22 @@
                 } else {
                     themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
                 }
-                calendar.render(); // Re-render to apply theme
+                calendar.render();
             });
-            // Initial theme setup
+            
             document.body.classList.add('dark');
             document.body.classList.remove('light');
             themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
 
             window.addEventListener('message', function(event) {
-                if (event.data && event.data.type === 'universityCoursesData') {
-                    localStorage.setItem('myUniversityCourses', JSON.stringify(event.data.data));
+                if (event.data && event.data.type === 'universityCoursesData_v2') {
+                    localStorage.setItem('myUniversityCourses_v2', JSON.stringify(event.data.data));
                     displayData(event.data.data);
                 }
             });
 
-            const storedCourses = localStorage.getItem('myUniversityCourses');
+            loadCustomColors();
+            const storedCourses = localStorage.getItem('myUniversityCourses_v2');
             if (storedCourses) {
                 displayData(JSON.parse(storedCourses));
             }
@@ -455,101 +553,28 @@
         });
     </script>
     <script>
-    // --- Absence Calculator's Cosmic Background Logic ---
     document.addEventListener('DOMContentLoaded', () => {
         const initCosmicEffects = () => {
             const canvas = document.getElementById('starfield-canvas'); if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            let stars = [], shootingStars = [], scrollSpeed = 0, lastScrollY = window.scrollY;
-            let mouseX = 0, mouseY = 0;
+            let stars = [], shootingStars = [], mouseX = 0, mouseY = 0;
 
-            function resizeCanvas() { 
-                canvas.width = window.innerWidth; 
-                canvas.height = window.innerHeight; 
-            }
-
-            window.addEventListener('mousemove', e => {
-                mouseX = e.clientX - canvas.width / 2;
-                mouseY = e.clientY - canvas.height / 2;
-            });
+            function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            window.addEventListener('mousemove', e => { mouseX = e.clientX - canvas.width / 2; mouseY = e.clientY - canvas.height / 2; });
             
             class Star { 
-                constructor() {
-                    this.depth = Math.random() * 0.9 + 0.1;
-                    this.reset();
-                    this.pulsate = Math.random() > 0.98;
-                    this.alpha = 0;
-                    this.alphaChange = (Math.random() * 0.02) + 0.005;
-					this.vx = (Math.random() - 0.5) * 0.1 * this.depth;
-                    this.vy = (Math.random() - 0.5) * 0.1 * this.depth;
-                }
-                reset() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.radius = (Math.random() * 1.2 + 0.3) * this.depth;
-                    this.maxAlpha = (Math.random() * 0.5 + 0.3) * this.depth;
-                }
-                draw() {
-                    const parallaxX = (mouseX / (canvas.width / 2)) * -25 * this.depth;
-                    const parallaxY = (mouseY / (canvas.height / 2)) * -25 * this.depth;
-
-                    if (this.pulsate) { 
-                        this.alpha += this.alphaChange; 
-                        if (this.alpha >= this.maxAlpha || this.alpha <= 0) this.alphaChange *= -1; 
-                    } else { 
-                        this.alpha = this.maxAlpha; 
-                    }
-                    ctx.globalAlpha = this.alpha;
-                    ctx.beginPath();
-                    ctx.arc(this.x + parallaxX, this.y + parallaxY, this.radius, 0, Math.PI * 2);
-                    ctx.fillStyle = `hsl(220, 80%, 95%)`;
-                    ctx.fill();
-                    ctx.globalAlpha = 1;
-                }
-                update() {
-                    this.y += (scrollSpeed * this.depth) + this.vy; 
-					this.x += this.vx;
-
-					if (this.x > canvas.width + this.radius) this.x = -this.radius;
-					if (this.x < -this.radius) this.x = canvas.width + this.radius;
-                    if (this.y > canvas.height + this.radius) this.y = -this.radius;
-                    if (this.y < -this.radius) this.y = canvas.height + this.radius;
-
-                    this.draw();
-                }
+                constructor() { this.depth = Math.random() * 0.9 + 0.1; this.reset(); this.pulsate = Math.random() > 0.98; this.alpha = 0; this.alphaChange = (Math.random() * 0.02) + 0.005; this.vx = (Math.random() - 0.5) * 0.1 * this.depth; this.vy = (Math.random() - 0.5) * 0.1 * this.depth; }
+                reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.radius = (Math.random() * 1.2 + 0.3) * this.depth; this.maxAlpha = (Math.random() * 0.5 + 0.3) * this.depth; }
+                draw() { const parallaxX = (mouseX / (canvas.width / 2)) * -25 * this.depth; const parallaxY = (mouseY / (canvas.height / 2)) * -25 * this.depth; if (this.pulsate) { this.alpha += this.alphaChange; if (this.alpha >= this.maxAlpha || this.alpha <= 0) this.alphaChange *= -1; } else { this.alpha = this.maxAlpha; } ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x + parallaxX, this.y + parallaxY, this.radius, 0, Math.PI * 2); ctx.fillStyle = `hsl(220, 80%, 95%)`; ctx.fill(); ctx.globalAlpha = 1; }
+                update() { this.y += this.vy; this.x += this.vx; if (this.x > canvas.width + this.radius) this.x = -this.radius; if (this.x < -this.radius) this.x = canvas.width + this.radius; if (this.y > canvas.height + this.radius) this.y = -this.radius; if (this.y < -this.radius) this.y = canvas.height + this.radius; this.draw(); }
             }
             class ShootingStar { constructor() { this.reset(); } reset() { this.x = Math.random() * canvas.width; this.y = 0; this.len = Math.random() * 80 + 10; this.speed = Math.random() * 10 + 6; this.size = Math.random() * 1 + 0.1; this.waitTime = new Date().getTime() + Math.random() * 3000 + 500; this.active = false; } update() { if (this.active) { this.x -= this.speed; this.y += this.speed; if (this.x < 0 || this.y >= canvas.height) this.reset(); } else if (this.waitTime < new Date().getTime()) this.active = true; } draw() { if (this.active) { ctx.strokeStyle = `hsla(220, 100%, 80%, ${Math.random() * 0.5 + 0.5})`; ctx.lineWidth = this.size; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + this.len, this.y - this.len); ctx.stroke(); } } }
             
-            function initStars() { 
-                stars = []; 
-                shootingStars = []; 
-                const starCount = Math.floor(canvas.width * canvas.height / 8000); 
-                for (let i = 0; i < starCount; i++) { stars.push(new Star()); } 
-                for (let i = 0; i < 3; i++) { shootingStars.push(new ShootingStar()); } 
-            }
+            function initStars() { stars = []; shootingStars = []; const starCount = Math.floor(canvas.width * canvas.height / 8000); for (let i = 0; i < starCount; i++) { stars.push(new Star()); } for (let i = 0; i < 3; i++) { shootingStars.push(new ShootingStar()); } }
+            function animate() { requestAnimationFrame(animate); ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => s.update()); shootingStars.forEach(s => { s.update(); s.draw(); }); }
 
-            function animate() { 
-                requestAnimationFrame(animate); 
-                ctx.clearRect(0, 0, canvas.width, canvas.height); 
-                stars.forEach(s => s.update()); 
-                shootingStars.forEach(s => { s.update(); s.draw(); }); 
-                scrollSpeed *= 0.9; 
-            }
-
-            window.addEventListener('scroll', () => { 
-                const delta = window.scrollY - lastScrollY; 
-                scrollSpeed += delta * 0.03;
-                lastScrollY = window.scrollY; 
-            });
-
-            window.addEventListener('resize', () => { 
-                resizeCanvas(); 
-                initStars(); 
-            });
-            
-            resizeCanvas(); 
-            initStars(); 
-            animate();
+            window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
+            resizeCanvas(); initStars(); animate();
         };
         initCosmicEffects();
     });
