@@ -228,7 +228,7 @@
         <h3>طريقة التثبيت</h3>
         <div class="desktop-only-drag">
             <p>اسحب هذا الزر إلى شريط الإشارات المرجعية لتثبيت الأداة:</p>
-            <a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();"
+            <a class="bookmarklet-button" href="javascript:(function()%7B'use strict';console.clear();console.log('%F0%9F%9A%80%20QU%20Schedule%20Extractor%20v16%20Initialized...');const%20e=%7Bdesktop:%7Bcontainer:'div.data-table-container',courseRow:'tr%5Bclass%5E=%22ROW%22%5D',code:'td%5Bdata-th=%22%D8%B1%D9%85%D8%B2%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D',name:'td%5Bdata-th=%22%D8%A7%D8%B3%D9%85%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D',section:'td%5Bdata-th%5E=%22%D8%A7%D9%84%D8%B4%D8%B9%D8%A8%D8%A9%22%5D',instructor:'input%5Btype=%22hidden%22%5D%5Bid$=%22:instructor%22%5D',details:'input%5Btype=%22hidden%22%5D%5Bid$=%22:section%22%5D',examPeriod:'input%5Btype=%22hidden%22%5D%5Bid$=%22:examPeriod%22%5D'%7D,mobile:%7Bcontainer:'div.ui-content',courseCard:'div.row-xs',code:'div%5Bdata-th=%22%D8%B1%D9%85%D8%B2%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D%20span.value',name:'div%5Bdata-th=%22%D8%A7%D8%B3%D9%85%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D%20span.value',section:'div%5Bdata-th%5E=%22%D8%A7%D9%84%D8%B4%D8%B9%D8%A8%D8%A9%22%5D%20span.value',instructor:'input%5Btype=%22hidden%22%5D%5Bid$=%22:instructor%22%5D',details:'input%5Btype=%22hidden%22%5D%5Bid$=%22:section%22%5D',examPeriod:'input%5Btype=%22hidden%22%5D%5Bid$=%22:examPeriod%22%5D'%7D%7D;function%20t(e)%7Bif(!e%7C%7C''===e.trim())return'%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AD%D8%AF%D8%AF';if(e.includes('@t'))%7Bconst%20t=%7B1:'%D8%A7%D9%84%D8%A3%D8%AD%D8%AF',2:'%D8%A7%D9%84%D8%A7%D8%AB%D9%86%D9%8A%D9%86',3:'%D8%A7%D9%84%D8%AB%D9%84%D8%A7%D8%AB%D8%A7%D8%A1',4:'%D8%A7%D9%84%D8%A3%D8%B1%D8%A8%D8%B9%D8%A7%D8%A1',5:'%D8%A7%D9%84%D8%AE%D9%85%D9%8A%D8%B3',6:'%D8%A7%D9%84%D8%AC%D9%85%D8%B9%D8%A9',7:'%D8%A7%D9%84%D8%B3%D8%A8%D8%AA'%7D,o=e.split(/@n%5Cs*/).map(e=%3E%7Bconst%20o=e.split('@t');if(o.length%3C2)return%20null;const%20r=o%5B0%5D.trim().split(/%5Cs+/).map(e=%3Et%5Be%5D%7C%7Ce).join(' ');return%60%24%7Br%7D:%20%24%7Bo%5B1%5D.replace(/@r.*%24/,'').trim()%7D%60%7D).filter(Boolean);return%20o.length%3E0?o.join('%3Cbr%3E'):'%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AD%D8%AF%D8%AF'%7Dreturn%20e.trim()%7Dfunction%20o(e,o)%7Bconst%20r=%5B%5D;return%20o.forEach(o=%3E%7Bconst%20n=o.querySelector(e.code)?.textContent.trim(),a=o.querySelector(e.name)?.textContent.trim(),c=o.querySelector(e.section)?.textContent.trim(),i=o.querySelector(e.instructor)?.value.trim(),l=o.querySelector(e.details)?.value.trim(),d=o.querySelector(e.examPeriod)?.value.trim();a%26%26n%26%26c%26%26r.push(%7Bcode:n,name:a,section:c,time:t(l),instructor:i%7C%7C'%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AD%D8%AF%D8%AF',examPeriod:d%7C%7Cnull%7D)%7D),r%7D;setTimeout(()=%3E%7Blet%20t=%5B%5D;if(document.querySelector(e.desktop.container))%7Bconsole.log('%F0%9F%96%A5%EF%B8%8F%20Desktop%20view%20detected.%20Extracting...');t=o(e.desktop,document.querySelectorAll(e.desktop.courseRow))%7Delse%20if(document.querySelector(e.mobile.container))%7Bconsole.log('%F0%9F%93%B1%20Mobile%20view%20detected.%20Extracting...');t=o(e.mobile,document.querySelectorAll(e.mobile.courseCard))%7Delse%7Bconsole.log('%F0%9F%95%B5%EF%B8%8F%20No%20specific%20view%20detected.%20Trying%20desktop%20then%20mobile...');t=o(e.desktop,document.querySelectorAll(e.desktop.courseRow));0===t.length%26%26(t=o(e.mobile,document.querySelectorAll(e.mobile.courseCard)))%7Dif(t.length%3E0)%7Bconsole.log%60%F0%9F%8E%89%20Success!%20Extracted%20%24%7Bt.length%7D%20sections.%60;const%20e=JSON.stringify(%7Btimestamp:Date.now(),data:t%7D);localStorage.setItem('temp_qu_schedule_data',e);const%20o=window.open('https://mutlaq001.github.io/schedule/','QU_Schedule_Viewer');window.addEventListener('message',function(e)%7Bif(e.source===o%26%26'request_schedule_data'===e.data)%7Bconsole.log('Viewer%20is%20ready,%20sending%20data...');const%20t=localStorage.getItem('temp_qu_schedule_data');t%26%26(o.postMessage(%7Btype:'universityCoursesData',data:JSON.parse(t).data%7D,'https://mutlaq001.github.io'),localStorage.removeItem('temp_qu_schedule_data'))%7D%7D,%7Bonce:!0%7D)%7Delse%20alert('Extraction%20failed.%20No%20courses%20found.%20Please%20make%20sure%20the%20courses%20page%20is%20fully%20loaded.')%7D,1500)%7D)();"
                onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">
                 🎓 استخراج QU Schedule
             </a>
@@ -240,7 +240,7 @@
                 <li>اذهب إلى أي صفحة وأضفها للمفضلة (Bookmarks).</li>
                 <li>حرّر المفضلة الجديدة، غيّر الاسم إلى "استخراج QU Schedule"، وفي حقل الرابط (URL) الصق الكود المنسوخ.</li>
             </ol>
-            <code>javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();</code>
+            <code>javascript:(function()%7B'use strict';console.clear();console.log('%F0%9F%9A%80%20QU%20Schedule%20Extractor%20v16%20Initialized...');const%20e=%7Bdesktop:%7Bcontainer:'div.data-table-container',courseRow:'tr%5Bclass%5E=%22ROW%22%5D',code:'td%5Bdata-th=%22%D8%B1%D9%85%D8%B2%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D',name:'td%5Bdata-th=%22%D8%A7%D8%B3%D9%85%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D',section:'td%5Bdata-th%5E=%22%D8%A7%D9%84%D8%B4%D8%B9%D8%A8%D8%A9%22%5D',instructor:'input%5Btype=%22hidden%22%5D%5Bid$=%22:instructor%22%5D',details:'input%5Btype=%22hidden%22%5D%5Bid$=%22:section%22%5D',examPeriod:'input%5Btype=%22hidden%22%5D%5Bid$=%22:examPeriod%22%5D'%7D,mobile:%7Bcontainer:'div.ui-content',courseCard:'div.row-xs',code:'div%5Bdata-th=%22%D8%B1%D9%85%D8%B2%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D%20span.value',name:'div%5Bdata-th=%22%D8%A7%D8%B3%D9%85%20%D8%A7%D9%84%D9%85%D9%82%D8%B1%D8%B1%22%5D%20span.value',section:'div%5Bdata-th%5E=%22%D8%A7%D9%84%D8%B4%D8%B9%D8%A8%D8%A9%22%5D%20span.value',instructor:'input%5Btype=%22hidden%22%5D%5Bid$=%22:instructor%22%5D',details:'input%5Btype=%22hidden%22%5D%5Bid$=%22:section%22%5D',examPeriod:'input%5Btype=%22hidden%22%5D%5Bid$=%22:examPeriod%22%5D'%7D%7D;function%20t(e)%7Bif(!e%7C%7C''===e.trim())return'%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AD%D8%AF%D8%AF';if(e.includes('@t'))%7Bconst%20t=%7B1:'%D8%A7%D9%84%D8%A3%D8%AD%D8%AF',2:'%D8%A7%D9%84%D8%A7%D8%AB%D9%8A%D9%86',3:'%D8%A7%D9%84%D8%AB%D9%84%D8%A7%D8%AB%D8%A7%D8%A1',4:'%D8%A7%D9%84%D8%A3%D8%B1%D8%A8%D8%B9%D8%A7%D8%A1',5:'%D8%A7%D9%84%D8%AE%D9%85%D9%8A%D8%B3',6:'%D8%A7%D9%84%D8%AC%D9%85%D8%B9%D8%A9',7:'%D8%A7%D9%84%D8%B3%D8%A8%D8%AA'%7D,o=e.split(/@n%5Cs*/).map(e=%3E%7Bconst%20o=e.split('@t');if(o.length%3C2)return%20null;const%20r=o%5B0%5D.trim().split(/%5Cs+/).map(e=%3Et%5Be%5D%7C%7Ce).join(' ');return%60%24%7Br%7D:%20%24%7Bo%5B1%5D.replace(/@r.*%24/,'').trim()%7D%60%7D).filter(Boolean);return%20o.length%3E0?o.join('%3Cbr%3E'):'%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AD%D8%AF%D8%AF'%7Dreturn%20e.trim()%7Dfunction%20o(e,o)%7Bconst%20r=%5B%5D;return%20o.forEach(o=%3E%7Bconst%20n=o.querySelector(e.code)?.textContent.trim(),a=o.querySelector(e.name)?.textContent.trim(),c=o.querySelector(e.section)?.textContent.trim(),i=o.querySelector(e.instructor)?.value.trim(),l=o.querySelector(e.details)?.value.trim(),d=o.querySelector(e.examPeriod)?.value.trim();a%26%26n%26%26c%26%26r.push(%7Bcode:n,name:a,section:c,time:t(l),instructor:i%7C%7C'%D8%BA%D9%8A%D8%B1%20%D9%85%D8%AD%D8%AF%D8%AF',examPeriod:d%7C%7Cnull%7D)%7D),r%7D;setTimeout(()=%3E%7Blet%20t=%5B%5D;if(document.querySelector(e.desktop.container))%7Bconsole.log('%F0%9F%96%A5%EF%B8%8F%20Desktop%20view%20detected.%20Extracting...');t=o(e.desktop,document.querySelectorAll(e.desktop.courseRow))%7Delse%20if(document.querySelector(e.mobile.container))%7Bconsole.log('%F0%9F%93%B1%20Mobile%20view%20detected.%20Extracting...');t=o(e.mobile,document.querySelectorAll(e.mobile.courseCard))%7Delse%7Bconsole.log('%F0%9F%95%B5%EF%B8%8F%20No%20specific%20view%20detected.%20Trying%20desktop%20then%20mobile...');t=o(e.desktop,document.querySelectorAll(e.desktop.courseRow));0===t.length%26%26(t=o(e.mobile,document.querySelectorAll(e.mobile.courseCard)))%7Dif(t.length%3E0)%7Bconsole.log%60%F0%9F%8E%89%20Success!%20Extracted%20%24%7Bt.length%7D%20sections.%60;const%20e=JSON.stringify(%7Btimestamp:Date.now(),data:t%7D);localStorage.setItem('temp_qu_schedule_data',e);const%20o=window.open('https://mutlaq001.github.io/schedule/','QU_Schedule_Viewer');window.addEventListener('message',function(e)%7Bif(e.source===o%26%26'request_schedule_data'===e.data)%7Bconsole.log('Viewer%20is%20ready,%20sending%20data...');const%20t=localStorage.getItem('temp_qu_schedule_data');t%26%26(o.postMessage(%7Btype:'universityCoursesData',data:JSON.parse(t).data%7D,'https://mutlaq001.github.io'),localStorage.removeItem('temp_qu_schedule_data'))%7D%7D,%7Bonce:!0%7D)%7Delse%20alert('Extraction%20failed.%20No%20courses%20found.%20Please%20make%20sure%20the%20courses%20page%20is%20fully%20loaded.')%7D,1500)%7D)();</code>
         </div>
     </div>
 
@@ -379,7 +379,6 @@
             const summarySection = document.getElementById('summary-section');
             const summaryList = document.getElementById('summary-list');
             const totalHoursEl = document.getElementById('total-hours');
-            // Settings Modal Elements
             const modeToggleContainer = document.querySelector('.mode-toggle');
             const accentColorPicker = document.getElementById('accent-color-picker');
             const showWeekendToggle = document.getElementById('show-weekend-toggle');
@@ -601,7 +600,7 @@
                     coursesListContainer.addEventListener('click', function(e) {
                         const header = e.target.closest('.course-item-header');
                         const sectionBtn = e.target.closest('.section-btn');
-                        if (header) header.parentElement.classList.toggle('open');
+                        if (header && header.parentElement) header.parentElement.classList.toggle('open');
                         if (sectionBtn) handleSectionClick(sectionBtn);
                     });
                 }
@@ -827,7 +826,7 @@
                 URL.revokeObjectURL(url);
             });
 
-            if(importBtn) importBtn.addEventListener('click', () => importFileInput.click());
+            if(importBtn) importBtn.addEventListener('click', () => importFileInput?.click());
             if(importFileInput) importFileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (!file) return;
@@ -862,31 +861,18 @@
             if(overlay) overlay.addEventListener('click', toggleSidebar);
             if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', toggleSidebar);
             
-             window.addEventListener('message', (event) => {
+            window.addEventListener('message', (event) => {
+                // For security, check the origin of the message
+                // if (event.origin !== 'https://expected-university-domain.com') return;
+                
                 if (event.data && event.data.type === 'universityCoursesData') {
+                    console.log("Received data from opener.");
                     localStorage.setItem('quScheduleCourses', JSON.stringify(event.data.data));
                     displayData(event.data.data);
                 }
             }, false);
 
-            window.addEventListener('load', () => {
-                const urlParams = new URLSearchParams(window.location.search);
-                const compressedData = urlParams.get('data');
-                if(compressedData) {
-                    try {
-                        const lzScript = document.createElement('script');
-                        lzScript.src = "https://cdn.jsdelivr.net/npm/lz-string@1.4.4/libs/lz-string.min.js";
-                        lzScript.onload = () => {
-                            const jsonString = LZString.decompressFromEncodedURIComponent(compressedData);
-                            const courses = JSON.parse(jsonString);
-                            localStorage.setItem('quScheduleCourses', JSON.stringify(courses));
-                            displayData(courses);
-                            window.history.replaceState({}, document.title, window.location.pathname);
-                        };
-                        document.head.appendChild(lzScript);
-                    } catch(e) { console.error("Failed to decompress data from URL", e); }
-                }
-            });
+            
             // --- END: Event Listeners ---
             
             // --- START: Initializations ---
@@ -916,6 +902,11 @@
                 }
             } else {
                 if(installSection) installSection.style.display = 'block';
+                // If this window was opened by our script, ask for data
+                if (window.opener) {
+                    console.log("Requesting data from opener window...");
+                    window.opener.postMessage('request_schedule_data', '*'); // Use a specific origin in production
+                }
             }
             initializeCalendar();
             if(selectedSections.size > 0) updateCalendarAndConflicts();
