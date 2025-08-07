@@ -1,33 +1,36 @@
 (function() {
     'use strict';
-    // --- النسخة v2.1 (أكثر استقرارًا وأمانًا) ---
     console.clear();
-    console.log("🚀 أداة الاستخراج v2.1 (نسخة مستقرة) بدأت...");
+    console.log('🚀 أداة الاستخراج v2.3 (نسخة محسنة) بدأت...');
 
-    let viewerWindow = window.open('', 'scheduleViewer'); // محاولة الحصول على نافذة موجودة أو فتح نافذة فارغة
+    // محاولة الحصول على نافذة موجودة أو فتح نافذة فارغة بشكل آمن
+    let viewerWindow = window.open('', 'scheduleViewer'); 
 
     setTimeout(function() {
-        const courseRowSelector = 'tr[class^="ROW"]';
-        const courseRows = document.querySelectorAll(courseRowSelector);
+        const rowNodeList = document.querySelectorAll('tr[class^="ROW"]');
         
-        if (courseRows.length === 0) {
+        if (rowNodeList.length === 0) {
             alert("لم يتم العثور على أي مقررات. تأكد من أن الجدول محمل بالكامل قبل تشغيل الأداة.");
             if (viewerWindow) viewerWindow.close(); // إغلاق النافذة الفارغة إذا لم يتم العثور على بيانات
             return;
         }
 
-        console.log(`🔍 تم العثور على ${courseRows.length} صفًا. جارِ استخراج البيانات...`);
+        console.log(`🔍 تم العثور على ${rowNodeList.length} صفًا. جارِ استخراج البيانات...`);
         const coursesData = [];
         
-        courseRows.forEach(row => {
-            const code = row.querySelector('td[data-th="رمز المقرر"]')?.textContent.trim();
-            const name = row.querySelector('td[data-th="اسم المقرر"]')?.textContent.trim();
-            const section = row.querySelector('td[data-th^="الشعبة"]')?.textContent.trim();
-            const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
-            const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
+        // استخدام اسم متغير واضح (rowElement) لتجنب التعارض
+        rowNodeList.forEach(rowElement => {
+            const code = rowElement.querySelector('td[data-th="رمز المقرر"]')?.textContent.trim();
+            const name = rowElement.querySelector('td[data-th="اسم المقرر"]')?.textContent.trim();
+            const section = rowElement.querySelector('td[data-th^="الشعبة"]')?.textContent.trim();
+            const instructor = rowElement.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
+            const detailsRaw = rowElement.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
             
-            // التعامل مع الاختبار النهائي بأمان (قد لا يكون موجودًا)
-            const finalExam = row.querySelector('td[data-th="الاختبار النهائي"]')?.textContent.trim();
+            // استخراج الحالة (مفتوحة/مغلقة)
+            const status = rowElement.querySelector('td[data-th*="الحالة"]')?.textContent.trim() || '';
+
+            // استخراج الاختبار النهائي بأمان
+            const finalExam = rowElement.querySelector('td[data-th="الاختبار النهائي"]')?.textContent.trim() || 'غير محدد';
 
             if (name && code && section) {
                 let time = 'غير محدد';
@@ -36,7 +39,7 @@
                         const subParts = part.split('@t');
                         if (subParts.length > 1) {
                             let dayPart = subParts[0].trim();
-                            let timePart = subParts[1].replace(/@r.*$/, '').trim();
+                            let timePart = subParts[1].replace(/@r.*/, '').trim();
                             const dayMapping = {'1': 'الأحد', '2': 'الاثنين', '3': 'الثلاثاء', '4': 'الأربعاء', '5': 'الخميس'};
                             const translatedDays = dayPart.split(/\s+/).map(d => dayMapping[d] || d).join(' ');
                             return `${translatedDays}: ${timePart}`;
@@ -53,8 +56,9 @@
                     name, 
                     section, 
                     time, 
+                    status, // إضافة الحالة
                     instructor: instructor || 'غير محدد',
-                    finalExam: finalExam || 'غير محدد'
+                    finalExam 
                 });
             }
         });
@@ -62,19 +66,17 @@
         if (coursesData.length > 0) {
             console.log(`🎉 نجاح! تم استخراج بيانات ${coursesData.length} مقررًا.`);
             
-            // الآن فقط نقوم بتوجيه النافذة إلى الرابط الصحيح
             if (viewerWindow) {
                 viewerWindow.location.href = 'https://mutlaq001.github.io/schedule/';
 
-                // الانتظار حتى يتم تحميل الصفحة الجديدة بالكامل قبل إرسال البيانات
                 viewerWindow.onload = function() {
                     setTimeout(() => {
                         viewerWindow.postMessage({
-                            type: 'universityCoursesData_v2',
+                            type: 'universityCoursesData_v3', // تم تحديث الإصدار
                             data: coursesData
                         }, 'https://mutlaq001.github.io');
                         console.log("📨 تم إرسال البيانات إلى صفحة العرض بنجاح.");
-                    }, 500); // وقت انتظار قصير بعد تحميل الصفحة
+                    }, 500);
                 };
             } else {
                  alert("فشل فتح نافذة العرض. يرجى التأكد من أن المتصفح لا يمنع النوافذ المنبثقة.");
@@ -85,5 +87,5 @@
             if (viewerWindow) viewerWindow.close();
         }
 
-    }, 1500); // تقليل وقت الانتظار الأولي قليلاً
+    }, 1500);
 })();
