@@ -35,36 +35,19 @@
         .sidebar-content::-webkit-scrollbar-track { background: transparent; }
         .sidebar-content::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
 
-        /* --- ✨ تصميم القائمة المنسدلة المتداخلة --- */
-        .course-item {
-            border: 1px solid transparent; border-radius: 10px; margin-bottom: 0.5rem;
-            transition: background-color 0.2s;
-        }
+        .course-item { border: 1px solid transparent; border-radius: 10px; margin-bottom: 0.5rem; transition: background-color 0.2s; }
         .course-item:hover { background-color: var(--bg-item-hover); }
-        .course-header {
-            display: flex; align-items: center; gap: 0.75rem; padding: 1rem;
-            cursor: pointer;
-        }
+        .course-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; cursor: pointer; }
         .course-header .color-dot { width: 10px; height: 10px; border-radius: 50%; }
         .course-info { flex-grow: 1; }
         .course-info h3 { margin: 0; font-size: 0.9rem; font-weight: 600; }
         .course-info p { margin: 2px 0 0; font-size: 0.8rem; color: var(--text-light); }
         .course-header .toggle-icon { transition: transform 0.3s; }
         .course-item.open .toggle-icon { transform: rotate(180deg); }
-        .sections-wrapper {
-            padding: 0 1rem 1rem; max-height: 0; overflow: hidden;
-            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
-        }
+        .sections-wrapper { padding: 0 1rem 1rem; max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out, padding 0.4s ease-out; }
         .course-item.open .sections-wrapper { max-height: 600px; }
-        .sections-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-            gap: 0.5rem;
-        }
-        .section-btn {
-            padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;
-            text-align: center; cursor: pointer; background-color: var(--bg-sidebar);
-            transition: all 0.2s;
-        }
+        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
+        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; background-color: var(--bg-sidebar); transition: all 0.2s; }
         .section-btn:hover { border-color: var(--primary); }
         .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
         .section-btn.selected .section-type { color: white !important; }
@@ -112,6 +95,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // --- كل المتغيرات هنا ---
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
@@ -128,6 +112,8 @@
                     headerToolbar: false, allDaySlot: false,
                     slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
                     events: [], dir: 'rtl', hiddenDays: [5, 6],
+                    // --- ✨ التعديل هنا: إظهار اسم اليوم فقط بدون تاريخ ---
+                    dayHeaderFormat: { weekday: 'long' },
                     eventClick: (info) => {
                         const uniqueId = info.event.extendedProps.uniqueId;
                         if (selectedSections.has(uniqueId)) {
@@ -142,7 +128,6 @@
                 });
                 calendar.render();
             }
-            initializeCalendar();
 
             function displayData(courses) {
                 allCoursesData = courses;
@@ -185,8 +170,7 @@
                             </div>
                             <i class="ri-arrow-down-s-line toggle-icon"></i>
                         </div>
-                        <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>
-                    `;
+                        <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
                     coursesListContainer.appendChild(courseItem);
                 });
                 
@@ -271,18 +255,23 @@
                 if (document.body.classList.contains('dark')) themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
                 else themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
             });
-            if(document.body.classList.contains('dark')) themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
 
+            // --- استقبال البيانات ---
             window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'universityCoursesData') {
                     displayData(event.data.data);
+                    // حفظ البيانات في localStorage كنسخة احتياطية عند تحديث الصفحة
+                    localStorage.setItem('myUniversityCourses', JSON.stringify(event.data.data));
                 }
             });
 
+            // استعادة البيانات من localStorage عند فتح الصفحة مباشرة
             const storedCourses = localStorage.getItem('myUniversityCourses');
             if (storedCourses) {
                 displayData(JSON.parse(storedCourses));
             }
+
+            initializeCalendar();
         });
     </script>
 </body>
