@@ -16,12 +16,14 @@
             --bg-main: #f8fafc; --bg-sidebar: #ffffff; --bg-calendar: #ffffff;
             --bg-calendar-header: #f1f5f9; --bg-item-hover: #f1f5f9;
             --primary: #6366f1; --secondary: #94a3b8; --danger: #ef4444; --danger-bg: #fee2e2;
+            --warning: #f59e0b; --warning-bg: #fef3c7;
             --text-dark: #1e293b; --text-light: #64748b; --border-color: #e2e8f0;
         }
         .dark {
             --bg-main: #111827; --bg-sidebar: #1f2937; --bg-calendar: #1f2937;
             --bg-calendar-header: #374151; --bg-item-hover: #374151;
             --primary: #818cf8; --secondary: #9ca3af; --danger: #f87171; --danger-bg: #452b2b;
+            --warning: #fcd34d; --warning-bg: #423b23;
             --text-dark: #f9fafb; --text-light: #d1d5db; --border-color: #374151;
         }
         *, *::before, *::after { box-sizing: border-box; }
@@ -72,6 +74,26 @@
         .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.7; }
         .section-btn.conflicted:hover { border-color: var(--danger); }
         .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--danger); background: var(--bg-sidebar); border-radius: 50%; font-size: 1.2em; }
+        
+        /* --- START: التحسين --- */
+        .section-btn.no-time {
+            border-color: var(--warning);
+            background-color: var(--warning-bg);
+        }
+        .section-btn.no-time:hover {
+            border-color: var(--warning);
+            box-shadow: 0 0 5px var(--warning);
+        }
+        .section-btn.no-time.selected {
+            background-color: var(--warning);
+            border-color: var(--warning);
+            color: var(--text-dark);
+        }
+        .section-btn.no-time.selected .section-type {
+            color: var(--text-dark) !important;
+        }
+        /* --- END: التحسين --- */
+
         .section-btn-number { font-weight: 700; font-size: 1rem; }
         .section-type { font-size: 0.75rem; color: var(--text-light); }
         .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; }
@@ -452,18 +474,14 @@
                 eventClick: handleEventClick,
                 eventContent: renderCustomEventContent,
                 views: { listWeek: { buttonText: 'قائمة' } },
-                // --- START: الحل النهائي لمشكلة الاختفاء ---
                 eventDidMount: function(info) {
                     const isExam = info.event.extendedProps.isExam;
                     if (isExamView) {
-                        // في عرض الاختبارات، أظهر الاختبارات فقط
                         info.el.style.display = isExam ? '' : 'none';
                     } else {
-                        // في عرض الجدول، أظهر المحاضرات فقط
                         info.el.style.display = isExam ? 'none' : '';
                     }
                 }
-                // --- END: الحل النهائي لمشكلة الاختفاء ---
             });
             calendar.render();
         }
@@ -542,6 +560,15 @@
                     const sectionBtn = document.createElement('div');
                     sectionBtn.className = 'section-btn';
                     sectionBtn.dataset.uniqueId = section.uniqueId;
+                    
+                    // --- START: التحسين ---
+                    // التحقق إذا كانت الشعبة بدون توقيت
+                    if (section.timeSlots.length === 0) {
+                        sectionBtn.classList.add('no-time');
+                        sectionBtn.title = 'شعبة بدون توقيت محدد (قد تكون مسجلة)';
+                    }
+                    // --- END: التحسين ---
+
                     sectionBtn.innerHTML = `<div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div>`;
                     sectionsGrid.appendChild(sectionBtn);
                 });
@@ -576,7 +603,6 @@
         }
         
         function updateCalendarAndConflicts() {
-            // حساب التعارضات
             const currentScheduleSlots = [];
             selectedSections.forEach(id => {
                 const section = allCoursesData.find(c => c.uniqueId === id);
@@ -586,11 +612,14 @@
             allCoursesData.forEach(section => {
                 const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
                 if (!btn || selectedSections.has(section.uniqueId)) return;
-                const isConflicted = section.timeSlots.some(slot => 
+                
+                // الشعب بدون توقيت لا تتعارض أبدًا
+                const isConflicted = section.timeSlots.length > 0 && section.timeSlots.some(slot => 
                     currentScheduleSlots.some(scheduleSlot => 
                         slot.day === scheduleSlot.day && slot.start < scheduleSlot.end && slot.end > scheduleSlot.start
                     )
                 );
+
                 btn.classList.toggle('conflicted', isConflicted);
                 btn.querySelector('.conflict-icon')?.remove();
                 if (isConflicted) {
@@ -600,7 +629,6 @@
                 }
             });
 
-            // إضافة جميع الأحداث (محاضرات واختبارات) إلى التقويم
             calendar.removeAllEvents();
             const allEvents = [];
             selectedSections.forEach(id => {
@@ -707,7 +735,6 @@
                 toggleViewBtn.innerHTML = `<i class="ri-calendar-check-line"></i> عرض الاختبارات`;
                 calendar.changeView('timeGridWeek');
             }
-            // لا حاجة لإعادة رسم الأحداث يدويًا، خاصية eventDidMount ستقوم بالعمل
         }
 
         function populateSettingsModal() { /* ... (الكود هنا بدون تغيير) ... */ }
