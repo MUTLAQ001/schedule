@@ -27,6 +27,29 @@
         *, *::before, *::after { box-sizing: border-box; }
         body { font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main); color: var(--text-dark); margin: 0; display: flex; overflow: hidden; }
 
+        /* --- ✨ قسم التثبيت الجديد --- */
+        #install-section {
+            position: fixed;
+            top: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background-color: var(--bg-sidebar);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        #install-section p { margin: 0; font-size: 0.9rem; font-weight: 500; }
+        .bookmarklet-button {
+            display: inline-block; background: var(--primary); color: white;
+            padding: 0.5rem 1rem; border-radius: 8px; font-weight: 600;
+            text-decoration: none; cursor: grab;
+        }
+
         .sidebar { width: 380px; height: 100vh; background-color: var(--bg-sidebar); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; }
         .sidebar-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
         .sidebar-header h2 { margin: 0; font-size: 1.25rem; font-weight: 700; display: flex; align-items: center; gap: 0.5rem; }
@@ -48,18 +71,13 @@
         .course-item.open .sections-wrapper { max-height: 600px; }
         .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.5rem; }
         
-        .section-btn {
-            padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px;
-            text-align: center; cursor: pointer; background-color: var(--bg-sidebar);
-            transition: all 0.2s; position: relative;
-        }
+        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px; text-align: center; cursor: pointer; background-color: var(--bg-sidebar); transition: all 0.2s; position: relative; }
         .section-btn:hover { border-color: var(--primary); }
         .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
         .section-btn.selected .section-type { color: white !important; }
         .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.7; }
         .section-btn.conflicted:hover { border-color: var(--danger); }
         .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--danger); background: var(--bg-sidebar); border-radius: 50%; font-size: 1.2em; }
-        
         .section-btn-number { font-weight: 700; font-size: 1rem; }
         .section-type { font-size: 0.75rem; color: var(--text-light); }
         
@@ -83,6 +101,15 @@
     </style>
 </head>
 <body class="dark">
+    <!-- --- ✨ قسم التثبيت الذي تمت إعادته --- -->
+    <div id="install-section">
+        <p>لتثبيت الأداة، اسحب هذا الزر إلى شريط الإشارات المرجعية:</p>
+        <a class="bookmarklet-button" href="javascript:(function(){var s=document.createElement('script');s.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now();document.head.appendChild(s);})();" 
+           onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">
+            🎓 استخراج جدولي
+        </a>
+    </div>
+
     <main class="main-content">
         <header class="main-header">
             <h1><i class="ri-calendar-event-line"></i> الجدول الأسبوعي</h1>
@@ -104,10 +131,12 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // كل كود الجافاسكريبت هنا (لم يتغير عن النسخة السابقة)
             const coursesListContainer = document.getElementById('courses-list');
             const calendarEl = document.getElementById('calendar');
             const themeToggle = document.querySelector('.theme-toggle');
             const clearCalendarBtn = document.getElementById('clear-calendar-btn');
+            const installSection = document.getElementById('install-section');
             
             let calendar, allCoursesData = [], groupedCourses;
             const selectedSections = new Set();
@@ -130,26 +159,20 @@
                             updateCalendarAndConflicts();
                         }
                     },
-                    // --- ✨ التحسين هنا: تصميم أكثر احترافية لمحتوى الحدث ---
                     eventContent: (arg) => {
                         const wrapper = document.createElement('div');
                         wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden;';
-                        
                         const title = document.createElement('b');
                         title.innerText = arg.event.title.split('(')[0];
-                        
                         const instructor = document.createElement('small');
                         instructor.innerText = arg.event.extendedProps.instructor;
                         instructor.style.opacity = '0.9';
-
                         const section = document.createElement('small');
                         section.innerText = `شعبة: ${arg.event.extendedProps.section}`;
                         section.style.opacity = '0.8';
-
                         wrapper.appendChild(title);
                         wrapper.appendChild(instructor);
                         wrapper.appendChild(section);
-
                         return { domNodes: [wrapper] };
                     }
                 });
@@ -157,6 +180,7 @@
             }
 
             function displayData(courses) {
+                installSection.style.display = 'none'; // إخفاء شريط التثبيت عند وجود بيانات
                 allCoursesData = courses.map((section, index) => {
                     const uniqueId = `${section.code}-${section.section}-${index}`;
                     return { ...section, uniqueId, timeSlots: parseTimeEntries(section.time) };
@@ -247,20 +271,12 @@
                 });
             }
 
-            // --- ✨ الإصلاح هنا: إضافة instructor إلى بيانات الحدث ---
             function createEventsForSection(section, color) {
                 return section.timeSlots.map(slot => ({
-                    title: `${section.name}`,
-                    daysOfWeek: [slot.day],
-                    startTime: slot.start,
-                    endTime: slot.end,
-                    backgroundColor: color,
-                    borderColor: color,
-                    extendedProps: {
-                        instructor: section.instructor, // تمت إضافته من جديد
-                        section: section.section,
-                        uniqueId: section.uniqueId
-                    }
+                    title: `${section.name}`, daysOfWeek: [slot.day],
+                    startTime: slot.start, endTime: slot.end,
+                    backgroundColor: color, borderColor: color,
+                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId }
                 }));
             }
             
@@ -284,9 +300,21 @@
                 return `${String(hours).padStart(2, '0')}:${minutes}:00`;
             }
             
-            clearCalendarBtn.addEventListener('click', () => { /* ... الكود كما هو ... */ });
-            themeToggle.addEventListener('click', () => { /* ... الكود كما هو ... */ });
+            clearCalendarBtn.addEventListener('click', () => {
+                if (confirm('هل أنت متأكد من أنك تريد مسح جميع المقررات من الجدول؟')) {
+                    calendar.removeAllEvents();
+                    selectedSections.clear();
+                    document.querySelectorAll('.section-btn.selected').forEach(btn => btn.classList.remove('selected'));
+                    updateCalendarAndConflicts(); // إعادة فحص التعارضات بعد المسح
+                }
+            });
             
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark');
+                if (document.body.classList.contains('dark')) themeToggle.classList.replace('ri-sun-line', 'ri-moon-line');
+                else themeToggle.classList.replace('ri-moon-line', 'ri-sun-line');
+            });
+
             window.addEventListener('message', function(event) {
                 if (event.data && event.data.type === 'universityCoursesData') {
                     localStorage.setItem('myUniversityCourses', JSON.stringify(event.data.data));
