@@ -1,8 +1,10 @@
 (function() {
     'use strict';
-    // --- النسخة v2 مع استخراج بيانات الاختبار النهائي ---
+    // --- النسخة v2.1 (أكثر استقرارًا وأمانًا) ---
     console.clear();
-    console.log("🚀 أداة الاستخراج v2 (مع دعم الاختبارات النهائية) بدأت...");
+    console.log("🚀 أداة الاستخراج v2.1 (نسخة مستقرة) بدأت...");
+
+    let viewerWindow = window.open('', 'scheduleViewer'); // محاولة الحصول على نافذة موجودة أو فتح نافذة فارغة
 
     setTimeout(function() {
         const courseRowSelector = 'tr[class^="ROW"]';
@@ -10,6 +12,7 @@
         
         if (courseRows.length === 0) {
             alert("لم يتم العثور على أي مقررات. تأكد من أن الجدول محمل بالكامل قبل تشغيل الأداة.");
+            if (viewerWindow) viewerWindow.close(); // إغلاق النافذة الفارغة إذا لم يتم العثور على بيانات
             return;
         }
 
@@ -17,19 +20,17 @@
         const coursesData = [];
         
         courseRows.forEach(row => {
-            // استخراج البيانات الأساسية (نفس الكود السابق)
             const code = row.querySelector('td[data-th="رمز المقرر"]')?.textContent.trim();
             const name = row.querySelector('td[data-th="اسم المقرر"]')?.textContent.trim();
             const section = row.querySelector('td[data-th^="الشعبة"]')?.textContent.trim();
             const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
             const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
-
-            // --- ✨ الإضافة الجديدة: استخراج بيانات الاختبار النهائي ---
+            
+            // التعامل مع الاختبار النهائي بأمان (قد لا يكون موجودًا)
             const finalExam = row.querySelector('td[data-th="الاختبار النهائي"]')?.textContent.trim();
 
             if (name && code && section) {
                 let time = 'غير محدد';
-                // نفس منطق تحليل الوقت السابق
                 if (detailsRaw && detailsRaw.includes('@t')) {
                     const timeParts = detailsRaw.split(/@n\s*/).map(part => {
                         const subParts = part.split('@t');
@@ -47,37 +48,42 @@
                     time = detailsRaw;
                 }
                 
-                // إضافة البيانات الجديدة إلى الكائن
                 coursesData.push({ 
                     code, 
                     name, 
                     section, 
                     time, 
                     instructor: instructor || 'غير محدد',
-                    finalExam: finalExam || 'غير محدد' // إضافة الاختبار النهائي هنا
+                    finalExam: finalExam || 'غير محدد'
                 });
             }
         });
         
         if (coursesData.length > 0) {
-            console.log(`🎉 نجاح! تم استخراج بيانات ${coursesData.length} مقررًا (بما في ذلك مواعيد الاختبارات).`);
+            console.log(`🎉 نجاح! تم استخراج بيانات ${coursesData.length} مقررًا.`);
             
-            // استخدم نفس رابط العرض الذي يدعم الميزة الجديدة
-            const viewerWindow = window.open('https://mutlaq001.github.io/schedule/', '_blank');
-            
-            // الانتظار للتأكد من أن الصفحة الجديدة جاهزة
-            setTimeout(() => {
-                // إرسال البيانات بالنوع الجديد v2
-                viewerWindow.postMessage({
-                    type: 'universityCoursesData_v2', // مهم جداً: النوع المحدث
-                    data: coursesData
-                }, 'https://mutlaq001.github.io');
-                console.log("📨 تم إرسال البيانات (مع معلومات الاختبار) إلى صفحة العرض بنجاح.");
-            }, 2000);
+            // الآن فقط نقوم بتوجيه النافذة إلى الرابط الصحيح
+            if (viewerWindow) {
+                viewerWindow.location.href = 'https://mutlaq001.github.io/schedule/';
+
+                // الانتظار حتى يتم تحميل الصفحة الجديدة بالكامل قبل إرسال البيانات
+                viewerWindow.onload = function() {
+                    setTimeout(() => {
+                        viewerWindow.postMessage({
+                            type: 'universityCoursesData_v2',
+                            data: coursesData
+                        }, 'https://mutlaq001.github.io');
+                        console.log("📨 تم إرسال البيانات إلى صفحة العرض بنجاح.");
+                    }, 500); // وقت انتظار قصير بعد تحميل الصفحة
+                };
+            } else {
+                 alert("فشل فتح نافذة العرض. يرجى التأكد من أن المتصفح لا يمنع النوافذ المنبثقة.");
+            }
             
         } else {
             alert("تم العثور على الصفوف، لكن لم يتم استخراج البيانات بنجاح. حاول تحديث الصفحة وإعادة المحاولة.");
+            if (viewerWindow) viewerWindow.close();
         }
 
-    }, 2000);
+    }, 1500); // تقليل وقت الانتظار الأولي قليلاً
 })();
