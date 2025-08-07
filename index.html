@@ -7,15 +7,12 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- START: DESIGN MERGE - New Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap" rel="stylesheet">
-    <!-- END: DESIGN MERGE -->
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.9/index.global.min.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
 
     <style>
-        /* --- START: DESIGN MERGE - New CSS Variables and Base Styles --- */
         :root {
             --color-primary: #5e9cff;
             --color-primary-dark: #4b7dcc;
@@ -54,15 +51,14 @@
             -moz-osx-font-smoothing: grayscale;
         }
         
-        @keyframes gradient-animation { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
         @keyframes scaleIn { from { opacity: 0; transform: scale(.95) } to { opacity: 1; transform: scale(1) } }
+        @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
         @keyframes move-nebula { 0% { transform: translate(0, 0) rotate(0deg) scale(1.2) } 50% { transform: translate(10vw, 5vh) rotate(180deg) scale(1.5) } 100% { transform: translate(0, 0) rotate(360deg) scale(1.2) } }
         
         .cosmic-bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden; }
         #starfield-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
         .nebula-glow { position: absolute; top: 50%; left: 50%; width: 80vmax; height: 80vmax; margin-top: -40vmax; margin-left: -40vmax; background: radial-gradient(circle, hsl(var(--primary-hue), 90%, 60%, .15) 0%, hsl(var(--secondary-hue), 80%, 50%, .1) 40%, transparent 70%); filter: blur(100px); border-radius: 50%; animation: move-nebula 90s infinite alternate ease-in-out; }
-        /* --- END: DESIGN MERGE --- */
 
         #install-section {
             position: fixed; top: 1rem; left: 50%; transform: translateX(-50%); z-index: 1000;
@@ -91,7 +87,6 @@
         .sidebar-footer a:hover { color: var(--color-primary); }
         .sidebar-footer a i { vertical-align: middle; margin-left: 4px; }
 
-        /* --- START: DESIGN MERGE - New Course Item Style --- */
         .course-item {
             display: flex; flex-direction: column; gap: 0.75rem; padding: 1.25rem;
             background: rgba(0,0,0,0.2); border: 1px solid var(--color-border);
@@ -117,7 +112,6 @@
         .course-info p { margin: 2px 0 0; font-size: 0.8rem; color: var(--color-text-muted); }
         .course-item-header .toggle-icon { transition: transform 0.3s; font-size: 1.5rem; }
         .course-item.open .toggle-icon { transform: rotate(180deg); }
-        /* --- END: DESIGN MERGE --- */
 
         .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
         .course-item.open .sections-wrapper { max-height: 600px; }
@@ -273,12 +267,9 @@
     </div>
 
     <script>
-    // ... (نفس كود مكتبة LZString) ...
-    var LZString=function(){var f=String.fromCharCode;var h="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";var i="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";var d={};function c(a,b){if(!d[a]){d[a]={};for(var c=0;c<a.length;c++){d[a][a.charAt(c)]=c}}return d[a][b]}var g={decompressFromEncodedURIComponent:function(a){if(a==null){return""}if(a==""){return null}a=a.replace(/ /g,"+");return g._decompress(a.length,32,function(b){return c(h,a.charAt(b))})},_decompress:function(a,d,e){var g=[],h=4,i=4,j=3,k="",l=[],m,o,p,q,r,s,t,u={val:e(0),position:d,index:1};for(m=0;m<3;m+=1){g[m]=m}p=0;r=Math.pow(2,2);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}switch(p){case 0:p=0;r=Math.pow(2,8);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}t=f(p);break;case 1:p=0;r=Math.pow(2,16);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}t=f(p);break;case 2:return""}g.push(t);k=t;while(true){if(u.index>a){return""}p=0;r=Math.pow(2,j);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}switch(t=p){case 0:p=0;r=Math.pow(2,8);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}g.push(f(p));t=g.length-1;i--;break;case 1:p=0;r=Math.pow(2,16);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}g.push(f(p));t=g.length-1;i--;break;case 2:return l.join("")}if(i==0){i=Math.pow(2,j);j++}if(g[t]){o=g[t]}else{if(t===h){o=k+k.charAt(0)}else{return null}}l.push(o);g.push(k+o.charAt(0));h++;k=o;i--}}}};return g}();
+    var LZString=function(){var f=String.fromCharCode;var h="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";var d={};function c(a,b){if(!d[a]){d[a]={};for(var c=0;c<a.length;c++){d[a][a.charAt(c)]=c}}return d[a][b]}var g={decompressFromEncodedURIComponent:function(a){if(a==null){return""}if(a==""){return null}a=a.replace(/ /g,"+");return g._decompress(a.length,32,function(b){return c(h,a.charAt(b))})},_decompress:function(a,d,e){var g=[],h=4,i=4,j=3,k="",l=[],m,o,p,q,r,s,t,u={val:e(0),position:d,index:1};for(m=0;m<3;m+=1){g[m]=m}p=0;r=Math.pow(2,2);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}switch(p){case 0:p=0;r=Math.pow(2,8);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}t=f(p);break;case 1:p=0;r=Math.pow(2,16);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}t=f(p);break;case 2:return""}g.push(t);k=t;while(true){if(u.index>a){return""}p=0;r=Math.pow(2,j);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}switch(t=p){case 0:p=0;r=Math.pow(2,8);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}g.push(f(p));t=g.length-1;i--;break;case 1:p=0;r=Math.pow(2,16);s=1;while(s!=r){q=u.val&u.position;u.position>>=1;if(u.position==0){u.position=d;u.val=e(u.index++)}p|=(q>0?1:0)*s;s<<=1}g.push(f(p));t=g.length-1;i--;break;case 2:return l.join("")}if(i==0){i=Math.pow(2,j);j++}if(g[t]){o=g[t]}else{if(t===h){o=k+k.charAt(0)}else{return null}}l.push(o);g.push(k+o.charAt(0));h++;k=o;i--}}}};return g}();
 
     document.addEventListener('DOMContentLoaded', function() {
-        // ... (نفس كود JavaScript من الإصدار السابق، مع تعديل دالة renderCoursesList) ...
-        // --- تعريف العناصر الأساسية ---
         const calendarEl = document.getElementById('calendar');
         const coursesListContainer = document.getElementById('courses-list');
         const noDataMessage = document.getElementById('no-data-message');
@@ -297,14 +288,12 @@
         const toggleViewBtn = document.getElementById('toggle-view-btn');
         const mainTitle = document.getElementById('main-title');
 
-        // --- متغيرات الحالة والبيانات ---
         let calendar;
         let allCoursesData = [];
         let groupedCourses = {};
         const selectedSections = new Set();
         let isExamView = false;
         
-        // --- ثوابت وإعدادات ---
         const colorPalette = ['#5e9cff', '#a777ff', '#00c853', '#ffc400', '#ff5252', '#f87171', '#fb923c'];
         const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
 
@@ -325,12 +314,8 @@
                     processAndDisplayData(courses);
                     installSection.style.display = 'none';
                     window.history.replaceState({}, document.title, window.location.pathname);
-                } catch (error) {
-                    loadFromStorage();
-                }
-            } else {
-                loadFromStorage();
-            }
+                } catch (error) { loadFromStorage(); }
+            } else { loadFromStorage(); }
         }
 
         function loadFromStorage() {
@@ -360,11 +345,7 @@
                 eventContent: renderCustomEventContent,
                 eventDidMount: function(info) {
                     const isExam = info.event.extendedProps.isExam;
-                    if (isExamView) {
-                        info.el.style.display = isExam ? '' : 'none';
-                    } else {
-                        info.el.style.display = isExam ? 'none' : '';
-                    }
+                    info.el.style.display = isExamView ? (isExam ? '' : 'none') : (isExam ? 'none' : '');
                 }
             });
             calendar.render();
@@ -373,9 +354,7 @@
         function handleEventClick(info) {
             if (info.event.extendedProps.isExam) return;
             const uniqueId = info.event.extendedProps.uniqueId;
-            if (selectedSections.has(uniqueId)) {
-                deselectSection(uniqueId);
-            }
+            if (selectedSections.has(uniqueId)) deselectSection(uniqueId);
             updateCalendarAndConflicts();
         }
         
@@ -406,16 +385,14 @@
                 examSlot: section.finalExam ? parseFinalExam(section.finalExam) : null
             }));
             groupedCourses = allCoursesData.reduce((acc, course) => {
-                if (!acc[course.code]) {
-                    acc[course.code] = { name: course.name, code: course.code, sections: [] };
-                }
+                if (!acc[course.code]) acc[course.code] = { name: course.name, code: course.code, sections: [] };
                 acc[course.code].sections.push(course);
                 return acc;
             }, {});
             renderCoursesList();
+            populateSettingsModal(); // --- FIX: Re-added this function call ---
         }
         
-        // --- START: DESIGN MERGE - Updated renderCoursesList to match new style ---
         function renderCoursesList() {
             coursesListContainer.innerHTML = '';
             if (Object.keys(groupedCourses).length === 0) {
@@ -424,31 +401,19 @@
                 return;
             }
             noDataMessage.style.display = 'none';
-
             let colorIndex = 0;
             Object.values(groupedCourses).forEach(group => {
                 const courseColor = colorPalette[colorIndex % colorPalette.length];
                 colorIndex++;
-
                 const courseItem = document.createElement('div');
                 courseItem.className = 'course-item';
-                
                 const header = document.createElement('div');
                 header.className = 'course-item-header';
-                header.innerHTML = `
-                    <span class="color-dot" style="background-color: ${courseColor};"></span>
-                    <div class="course-info">
-                        <h3>${group.name} (${group.code})</h3>
-                        <p>${group.sections.length} شعبة متاحة</p>
-                    </div>
-                    <i class="ri-arrow-down-s-line toggle-icon"></i>`;
-                
+                header.innerHTML = `<span class="color-dot" style="background-color: ${courseColor};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعبة متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i>`;
                 const sectionsWrapper = document.createElement('div');
                 sectionsWrapper.className = 'sections-wrapper';
-                
                 const sectionsGrid = document.createElement('div');
                 sectionsGrid.className = 'sections-grid';
-
                 group.sections.forEach(section => {
                     const type = section.time.includes('تدريب') || section.name.includes('عملي') ? 'تدريب' : 'نظري';
                     const sectionBtn = document.createElement('div');
@@ -458,26 +423,19 @@
                         sectionBtn.classList.add('no-time');
                         sectionBtn.title = 'شعبة بدون توقيت محدد (قد تكون مسجلة)';
                     }
-                    sectionBtn.innerHTML = `
-                        <div class="section-btn-number">${section.section}</div>
-                        <div class="section-type">${type}</div>`;
+                    sectionBtn.innerHTML = `<div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div>`;
                     sectionsGrid.appendChild(sectionBtn);
                 });
-                
                 sectionsWrapper.appendChild(sectionsGrid);
                 courseItem.append(header, sectionsWrapper);
                 coursesListContainer.appendChild(courseItem);
             });
         }
-        // --- END: DESIGN MERGE ---
 
         function handleSectionClick(btnElement) {
             const uniqueId = btnElement.dataset.uniqueId;
-            if (selectedSections.has(uniqueId)) {
-                deselectSection(uniqueId);
-            } else if (!btnElement.classList.contains('conflicted')) {
-                selectSection(uniqueId);
-            }
+            if (selectedSections.has(uniqueId)) deselectSection(uniqueId);
+            else if (!btnElement.classList.contains('conflicted')) selectSection(uniqueId);
             updateCalendarAndConflicts();
         }
 
@@ -498,16 +456,14 @@
                 const section = allCoursesData.find(c => c.uniqueId === id);
                 if (section) {
                     currentScheduleSlots.push(...section.timeSlots);
-                    if (section.examPeriod && section.examPeriod !== "0" && section.examPeriod !== null) {
-                        selectedExamPeriods.add(section.examPeriod);
-                    }
+                    if (section.examPeriod && section.examPeriod !== "0") selectedExamPeriods.add(section.examPeriod);
                 }
             });
 
             allCoursesData.forEach(section => {
                 const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
                 if (!btn || selectedSections.has(section.uniqueId)) return;
-                const isTimeConflicted = section.timeSlots.length > 0 && section.timeSlots.some(slot => currentScheduleSlots.some(scheduleSlot => slot.day === scheduleSlot.day && slot.start < scheduleSlot.end && slot.end > scheduleSlot.start));
+                const isTimeConflicted = section.timeSlots.length > 0 && section.timeSlots.some(slot => currentScheduleSlots.some(s => s.day === slot.day && s.start < slot.end && s.end > slot.start));
                 const isExamConflicted = section.examPeriod && section.examPeriod !== "0" && selectedExamPeriods.has(section.examPeriod);
                 const isConflicted = isTimeConflicted || isExamConflicted;
                 btn.classList.toggle('conflicted', isConflicted);
@@ -531,38 +487,18 @@
                     const group = groupedCourses[section.code];
                     const color = colorPalette[Object.keys(groupedCourses).indexOf(group.code) % colorPalette.length];
                     allEvents.push(...createEventsForSection(section, color));
-                    if (section.examSlot) {
-                        allEvents.push(createExamEventForSection(section));
-                    }
+                    if (section.examSlot) allEvents.push(createExamEventForSection(section));
                 }
             });
             calendar.addEventSource(allEvents);
         }
         
         function createEventsForSection(section, color) {
-            return section.timeSlots.map(slot => ({
-                title: `${section.name} (${section.code})`,
-                daysOfWeek: [slot.day],
-                startTime: slot.start,
-                endTime: slot.end,
-                backgroundColor: color,
-                borderColor: color,
-                extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: false }
-            }));
+            return section.timeSlots.map(slot => ({ title: `${section.name} (${section.code})`, daysOfWeek: [slot.day], startTime: slot.start, endTime: slot.end, backgroundColor: color, borderColor: color, extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: false } }));
         }
 
         function createExamEventForSection(section) {
-            return {
-                title: `اختبار: ${section.name}`,
-                start: section.examSlot.start,
-                end: section.examSlot.end,
-                allDay: false,
-                backgroundColor: 'var(--color-danger-red)',
-                borderColor: 'var(--color-danger-red)',
-                textColor: 'white',
-                classNames: ['fc-event-exam'],
-                extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: true }
-            };
+            return { title: `اختبار: ${section.name}`, start: section.examSlot.start, end: section.examSlot.end, allDay: false, backgroundColor: 'var(--color-danger-red)', borderColor: 'var(--color-danger-red)', textColor: 'white', classNames: ['fc-event-exam'], extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: true } };
         }
 
         function parseTimeEntries(timeString) {
@@ -618,15 +554,20 @@
                 calendar.setOption('headerToolbar', { start: 'title', center: '', end: 'today prev,next' });
                 calendar.changeView('dayGridMonth');
                 const firstExam = calendar.getEvents().find(e => e.extendedProps.isExam);
-                if (firstExam) {
-                    calendar.gotoDate(firstExam.start);
-                }
+                if (firstExam) calendar.gotoDate(firstExam.start);
             } else {
                 mainTitle.innerHTML = `<i class="ri-calendar-event-line"></i> الجدول الأسبوعي`;
                 toggleViewBtn.innerHTML = `<i class="ri-calendar-check-line"></i> عرض الاختبارات`;
                 calendar.setOption('headerToolbar', false);
                 calendar.changeView('timeGridWeek');
             }
+        }
+
+        // --- FIX: Added function to populate settings modal content ---
+        function populateSettingsModal() {
+            visibilitySettingsContainer.innerHTML = '';
+            colorSettingsContainer.innerHTML = '';
+            // This part can be expanded later if needed
         }
 
         function setupEventListeners() {
@@ -654,7 +595,6 @@
         initializeApp();
     });
 
-    // --- START: DESIGN MERGE - Starfield Animation Script ---
     document.addEventListener('DOMContentLoaded', () => {
         const initCosmicEffects = () => {
             const canvas = document.getElementById('starfield-canvas'); if (!canvas) return;
@@ -672,7 +612,6 @@
         };
         initCosmicEffects();
     });
-    // --- END: DESIGN MERGE ---
     </script>
 </body>
 </html>
