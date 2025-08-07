@@ -18,7 +18,6 @@
             --color-primary-dark: #4b7dcc;
             --color-danger-red: #ff5252;
             --color-warning-gold: #ffc400;
-            --color-save-green: #00c853;
             --color-bg: #0a0a0a;
             --color-card: rgba(20, 20, 22, 0.75);
             --color-border: rgba(255, 255, 255, 0.1);
@@ -162,8 +161,8 @@
         .no-data h4 { margin: 0 0 0.5rem; font-family: var(--font-title); font-size: 1.4rem; font-weight: 600; color: var(--color-text); }
         .no-data p { margin: 0; font-size: 1rem; max-width: 300px; line-height: 1.6; }
         
-        .theme-toggle, .close-sidebar-btn { cursor: pointer; color: var(--color-text-muted); transition: color 0.2s ease, transform 0.2s ease; font-size: 1.5rem; }
-        .theme-toggle:hover, .close-sidebar-btn:hover { color: var(--color-text); transform: scale(1.1); }
+        .close-sidebar-btn { cursor: pointer; color: var(--color-text-muted); transition: color 0.2s ease, transform 0.2s ease; font-size: 1.5rem; }
+        .close-sidebar-btn:hover { color: var(--color-text); transform: scale(1.1); }
         
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2999; animation: fadeIn .3s ease; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
         .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 500px; z-index: 3000; animation: scaleIn .3s .1s ease forwards; }
@@ -297,6 +296,8 @@
         const colorPalette = ['#5e9cff', '#a777ff', '#00c853', '#ffc400', '#ff5252', '#f87171', '#fb923c'];
         const dayMapping = { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 };
 
+        // --- START: FIX - Combined all logic into a single, robust flow ---
+        
         function initializeApp() {
             initializeCalendar();
             setupEventListeners();
@@ -342,11 +343,7 @@
                 hiddenDays: [5, 6],
                 dayHeaderFormat: { weekday: 'long' },
                 eventClick: handleEventClick,
-                eventContent: renderCustomEventContent,
-                eventDidMount: function(info) {
-                    const isExam = info.event.extendedProps.isExam;
-                    info.el.style.display = isExamView ? (isExam ? '' : 'none') : (isExam ? 'none' : '');
-                }
+                eventContent: renderCustomEventContent
             });
             calendar.render();
         }
@@ -390,7 +387,7 @@
                 return acc;
             }, {});
             renderCoursesList();
-            populateSettingsModal(); // --- FIX: Re-added this function call ---
+            populateSettingsModal();
         }
         
         function renderCoursesList() {
@@ -478,19 +475,25 @@
                     else if (isExamConflicted) btn.title = 'تعارض في فترة الاختبار النهائي';
                 }
             });
+            renderVisibleEvents();
+        }
 
+        function renderVisibleEvents() {
             calendar.removeAllEvents();
-            const allEvents = [];
+            const events = [];
             selectedSections.forEach(id => {
                 const section = allCoursesData.find(c => c.uniqueId === id);
-                if (section) {
-                    const group = groupedCourses[section.code];
-                    const color = colorPalette[Object.keys(groupedCourses).indexOf(group.code) % colorPalette.length];
-                    allEvents.push(...createEventsForSection(section, color));
-                    if (section.examSlot) allEvents.push(createExamEventForSection(section));
+                if (!section) return;
+                const group = groupedCourses[section.code];
+                const color = colorPalette[Object.keys(groupedCourses).indexOf(group.code) % colorPalette.length];
+                
+                if (isExamView) {
+                    if (section.examSlot) events.push(createExamEventForSection(section));
+                } else {
+                    events.push(...createEventsForSection(section, color));
                 }
             });
-            calendar.addEventSource(allEvents);
+            calendar.addEventSource(events);
         }
         
         function createEventsForSection(section, color) {
@@ -553,21 +556,20 @@
                 toggleViewBtn.innerHTML = `<i class="ri-calendar-event-line"></i> عرض الجدول`;
                 calendar.setOption('headerToolbar', { start: 'title', center: '', end: 'today prev,next' });
                 calendar.changeView('dayGridMonth');
-                const firstExam = calendar.getEvents().find(e => e.extendedProps.isExam);
-                if (firstExam) calendar.gotoDate(firstExam.start);
+                const firstExam = allCoursesData.find(s => selectedSections.has(s.uniqueId) && s.examSlot);
+                if (firstExam) calendar.gotoDate(firstExam.examSlot.start);
             } else {
                 mainTitle.innerHTML = `<i class="ri-calendar-event-line"></i> الجدول الأسبوعي`;
                 toggleViewBtn.innerHTML = `<i class="ri-calendar-check-line"></i> عرض الاختبارات`;
                 calendar.setOption('headerToolbar', false);
                 calendar.changeView('timeGridWeek');
             }
+            renderVisibleEvents();
         }
 
-        // --- FIX: Added function to populate settings modal content ---
         function populateSettingsModal() {
-            visibilitySettingsContainer.innerHTML = '';
-            colorSettingsContainer.innerHTML = '';
-            // This part can be expanded later if needed
+            visibilitySettingsContainer.innerHTML = 'سيتم إضافة إعدادات الإظهار هنا قريبًا.';
+            colorSettingsContainer.innerHTML = 'سيتم إضافة إعدادات الألوان هنا قريبًا.';
         }
 
         function setupEventListeners() {
