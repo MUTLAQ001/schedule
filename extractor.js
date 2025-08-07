@@ -1,62 +1,44 @@
 (function() {
     'use strict';
-    // --- النسخة النهائية والمضمونة v8 (مع إصلاح الترميز) ---
     console.clear();
-    console.log("🚀 أداة الاستخراج v8 (النهائية) بدأت...");
+    console.log("🚀 أداة الاستخراج الذكية v9 (مزدوجة المنطق) بدأت...");
+
+    function extractFromDesktop() {
+        console.log("🖥️ تم اكتشاف وضع الكمبيوتر. بدء الاستخراج...");
+        // هنا نضع الكود الحالي الخاص بك بالكامل كما هو
+        const courseRows = document.querySelectorAll('tr[class^="ROW"]');
+        // ... باقي منطق الاستخراج للكمبيوتر
+        return coursesData; 
+    }
+
+    function extractFromMobile() {
+        console.log("📱 تم اكتشاف وضع الجوال. بدء الاستخراج...");
+        // !!! هذا الجزء الذي سأقوم بكتابته بعد أن تزودني بكود الجوال !!!
+        // سيبحث عن بطاقات <div> بدلاً من صفوف <tr>
+        const courseCards = document.querySelectorAll('.mobile-course-card-selector'); // مثال
+        // ... منطق استخراج مخصص لبطاقات الجوال
+        return coursesData;
+    }
 
     setTimeout(function() {
-        const courseRowSelector = 'tr[class^="ROW"]';
-        const courseRows = document.querySelectorAll(courseRowSelector);
+        let extractedData = [];
         
-        if (courseRows.length === 0) {
-            alert("لم يتم العثور على أي صفوف للمقررات. تأكد من أن الجدول محمل بالكامل.");
-            return;
+        // التحقق الذكي: هل نحن في وضع الكمبيوتر؟
+        if (document.querySelector('tr[class^="ROW"]')) {
+            extractedData = extractFromDesktop();
+        } 
+        // إذا لم نكن في وضع الكمبيوتر، فغالباً نحن في وضع الجوال
+        else if (document.querySelector('.some-mobile-container-selector')) { // سنحدد هذا بعد تحليل الكود
+            extractedData = extractFromMobile();
         }
 
-        const coursesData = [];
-        courseRows.forEach(row => {
-            const code = row.querySelector('td[data-th="رمز المقرر"]')?.textContent.trim();
-            const name = row.querySelector('td[data-th="اسم المقرر"]')?.textContent.trim();
-            const section = row.querySelector('td[data-th^="الشعبة"]')?.textContent.trim();
-            const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
-            const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
-
-            if (name && code && section) {
-                let time = 'غير محدد';
-                if (detailsRaw && detailsRaw.includes('@t')) {
-                    const timeParts = detailsRaw.split(/@n\s*/).map(part => {
-                        const subParts = part.split('@t');
-                        if (subParts.length > 1) {
-                            let dayPart = subParts[0].trim();
-                            let timePart = subParts[1].replace(/@r.*$/, '').trim();
-                            const dayMapping = {'1': 'الأحد', '2': 'الاثنين', '3': 'الثلاثاء', '4': 'الأربعاء', '5': 'الخميس'};
-                            const translatedDays = dayPart.split(/\s+/).map(d => dayMapping[d] || d).join(' ');
-                            return `${translatedDays}: ${timePart}`;
-                        }
-                        return null;
-                    }).filter(Boolean);
-                    if (timeParts.length > 0) time = timeParts.join('<br>');
-                } else if (detailsRaw && detailsRaw.trim() !== '') {
-                    time = detailsRaw;
-                }
-                coursesData.push({ code, name, section, time, instructor: instructor || 'غير محدد' });
-            }
-        });
-        
-        if (coursesData.length > 0) {
-            console.log(`🎉 نجاح! تم استخراج بيانات ${coursesData.length} مقررًا.`);
-            
+        if (extractedData.length > 0) {
+            console.log(`🎉 نجاح! تم استخراج بيانات ${extractedData.length} مقررًا.`);
+            // ... باقي منطق إرسال البيانات إلى صفحة العرض
             const viewerWindow = window.open('https://mutlaq001.github.io/schedule/', '_blank');
-            setTimeout(() => {
-                viewerWindow.postMessage({
-                    type: 'universityCoursesData',
-                    data: coursesData
-                }, 'https://mutlaq001.github.io');
-                console.log("📨 تم إرسال البيانات إلى صفحة العرض بنجاح.");
-            }, 2000);
-            
+            // ... إلخ
         } else {
-            alert("تم العثور على الصفوف، لكن لم يتم استخراج البيانات بنجاح.");
+            alert("فشل الاستخراج. لم يتم العثور على أي مقررات في وضع الكمبيوتر أو الجوال. تأكد من أن الصفحة محملة بالكامل.");
         }
 
     }, 2000);
