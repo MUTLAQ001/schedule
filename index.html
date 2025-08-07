@@ -5,158 +5,71 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>أداة جدولي الدراسي</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background-color: #f4f7f9;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-        .install-container {
-            background-color: #ffffff;
-            border: 1px dashed #667eea;
-            border-radius: 12px;
-            padding: 25px;
-            text-align: center;
-            margin-bottom: 25px;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .install-container h2 {
-            margin-top: 0;
-            color: #667eea;
-        }
-        .bookmarklet-button {
-            display: inline-block;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 16px;
-            text-decoration: none;
-            cursor: grab;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-        .bookmarklet-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
-        }
-        .container {
-            width: 100%;
-            max-width: 900px;
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-            margin: 0 auto;
-        }
-        header {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f4f7f9; color: #333; margin: 0; padding: 20px; }
+        .install-container { background-color: #ffffff; border: 1px dashed #667eea; border-radius: 12px; padding: 25px; text-align: center; margin-bottom: 25px; max-width: 900px; margin-left: auto; margin-right: auto; }
+        .install-container h2 { margin-top: 0; color: #667eea; }
+        .bookmarklet-button { display: inline-block; background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 12px 25px; border-radius: 8px; font-weight: 600; font-size: 16px; text-decoration: none; cursor: grab; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .bookmarklet-button:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); }
+        .container { width: 100%; max-width: 900px; background-color: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); overflow: hidden; margin: 0 auto; }
+        header { background: linear-gradient(45deg, #667eea, #764ba2); color: white; padding: 20px; text-align: center; }
+        header h1 { margin: 0; font-size: 24px; }
         .content { padding: 20px; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: right;
-            border-bottom: 1px solid #e0e0e0;
-            vertical-align: middle;
-        }
-        th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
+        th { background-color: #f8f9fa; font-weight: 600; }
         tr:last-child td { border-bottom: none; }
         tr:hover { background-color: #f1f3f5; }
-        .no-data {
-            text-align: center;
-            padding: 40px;
-            font-size: 18px;
-            color: #888;
-        }
+        .no-data { text-align: center; padding: 40px; font-size: 18px; color: #888; }
     </style>
 </head>
 <body>
-
-    <!-- === القسم الجديد للتثبيت === -->
     <div class="install-container">
         <h2>طريقة التثبيت</h2>
         <p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك لتثبيت الأداة:</p>
-        <a 
-            class="bookmarklet-button" 
-            href="javascript:(function(){var s=document.createElement('script');s.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now();document.head.appendChild(s);})();"
-            onclick="alert('لا تضغط على الزر، بل اسحبه إلى شريط الإشارات المرجعية!'); return false;">
-            🎓 استخراج جدولي
-        </a>
+        <a class="bookmarklet-button" href="javascript:(function(){var s=document.createElement('script');s.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now();document.head.appendChild(s);})();" onclick="alert('لا تضغط على الزر، بل اسحبه إلى شريط الإشارات المرجعية!'); return false;">🎓 استخراج جدولي</a>
     </div>
-    <!-- ============================= -->
-
-
     <div class="container">
-        <header>
-            <h1>🎓 جدولي الدراسي</h1>
-        </header>
+        <header><h1>🎓 جدولي الدراسي</h1></header>
         <div class="content">
-            <div id="table-container">
-                <!-- سيتم ملء الجدول هنا بواسطة الجافاسكريبت -->
-            </div>
+            <div id="table-container"></div>
             <div id="no-data-message" class="no-data" style="display: none;">
-                <p>لم يتم العثور على بيانات. الرجاء الذهاب لصفحة الجامعة وتشغيل الأداة أولاً.</p>
+                <p>لم يتم العثور على بيانات. يمكنك تثبيت الأداة من الأعلى، ثم الذهاب لصفحة الجامعة وتشغيلها.</p>
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const coursesDataString = localStorage.getItem('myUniversityCourses');
             const tableContainer = document.getElementById('table-container');
             const noDataMessage = document.getElementById('no-data-message');
 
-            if (coursesDataString) {
-                const courses = JSON.parse(coursesDataString);
+            // --- ✨ تحديث مهم: قراءة البيانات من الرابط ---
+            const params = new URLSearchParams(window.location.search);
+            const dataParam = params.get('data');
 
-                let tableHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>رمز المقرر</th>
-                                <th>اسم المقرر</th>
-                                <th>الشعبة</th>
-                                <th style="width: 35%;">الوقت والمكان</th>
-                                <th>المحاضر</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                `;
+            if (dataParam) {
+                try {
+                    // 1. فك ضغط البيانات من الرابط
+                    const decodedString = decodeURIComponent(dataParam);
+                    // 2. تحويل النص إلى بيانات قابلة للاستخدام
+                    const courses = JSON.parse(decodedString);
 
-                courses.forEach(course => {
-                    tableHTML += `
-                        <tr>
+                    let tableHTML = `<table><thead><tr><th>رمز المقرر</th><th>اسم المقرر</th><th>الشعبة</th><th style="width: 35%;">الوقت والمكان</th><th>المحاضر</th></tr></thead><tbody>`;
+                    courses.forEach(course => {
+                        tableHTML += `<tr>
                             <td>${course.code || ''}</td>
                             <td>${course.name || ''}</td>
                             <td>${course.section || ''}</td>
-                            <td>${course.time.replace(/<br>/g, '<br>') || ''}</td>
+                            <td>${course.time || ''}</td>
                             <td>${course.instructor || ''}</td>
-                        </tr>
-                    `;
-                });
-
-                tableHTML += `</tbody></table>`;
-                tableContainer.innerHTML = tableHTML;
-                
+                        </tr>`;
+                    });
+                    tableHTML += `</tbody></table>`;
+                    tableContainer.innerHTML = tableHTML;
+                } catch (e) {
+                    console.error("خطأ في قراءة البيانات من الرابط:", e);
+                    noDataMessage.innerHTML = "<p>حدث خطأ أثناء معالجة البيانات من الرابط.</p>";
+                    noDataMessage.style.display = 'block';
+                }
             } else {
                 noDataMessage.style.display = 'block';
             }
