@@ -215,8 +215,125 @@
     </div>
 
     <script>
-    // مكتبة فك الضغط مدمجة
-    var LZString = (function() {var f = String.fromCharCode;var h = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";var i = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+-$";var d = {};function c(a, b) {if (!d[a]) {d[a] = {};for (var c = 0; c < a.length; c++) {d[a][a.charAt(c)] = c}}return d[a][b]}var g = {decompressFromEncodedURIComponent: function(a) {if (a == null) {return ""}if (a == "") {return null}a = a.replace(/ /g, "+");return g._decompress(a.length, 32, function(b) {return c(h, a.charAt(b))})},_decompress: function(a, d, e) {var g = [],h = 4,i = 4,j = 3,k = "",l = [],m,o,p,q,r,s,t,u = {val: e(0),position: d,index: 1};for (m = 0; m < 3; m += 1) {g[m] = m}p = 0;r = Math.pow(2, 2);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}switch (p) {case 0:p = 0;r = Math.pow(2, 8);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}t = f(p);break;case 1:p = 0;r = Math.pow(2, 16);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}t = f(p);break;case 2:return ""}g.push(t);k = t;while (true) {if (u.index > a) {return ""}p = 0;r = Math.pow(2, j);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}switch (t = p) {case 0:p = 0;r = Math.pow(2, 8);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}g.push(f(p));t = g.length - 1;i--;break;case 1:p = 0;r = Math.pow(2, 16);s = 1;while (s != r) {q = u.val & u.position;u.position >>= 1;if (u.position == 0) {u.position = d;u.val = e(u.index++)}p |= (q > 0 ? 1 : 0) * s;s <<= 1}g.push(f(p));t = g.length - 1;i--;break;case 2:return l.join("")}if (i == 0) {i = Math.pow(2, j);j++}if (g[t]) {o = g[t]} else {if (t === h) {o = k + k.charAt(0)} else {return null}}l.push(o);g.push(k + o.charAt(0));h++;k = o;i--}}}};return g})();
+    // مكتبة فك الضغط مدمجة - نسخة مصححة
+    var LZString = function() {
+        var f = String.fromCharCode;
+        var keyStrBase64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        var base64_decode_map = {};
+        function get_base64_decode_map() {
+            if (Object.keys(base64_decode_map).length === 0) {
+                for (var i = 0; i < keyStrBase64.length; i++) {
+                    base64_decode_map[keyStrBase64.charAt(i)] = i;
+                }
+            }
+            return base64_decode_map;
+        }
+        var _decompress = function(length, resetValue, getNextValue) {
+            var dictionary = [],
+                next,
+                enlargeIn = 4,
+                dictSize = 4,
+                numBits = 3,
+                entry = "",
+                result = [],
+                i,
+                w,
+                bits, resb, maxpower, power,
+                c,
+                data = { val: getNextValue(0), position: resetValue, index: 1 };
+            for (i = 0; i < 3; i += 1) { dictionary[i] = i; }
+            bits = 0; maxpower = Math.pow(2, 2); power = 1;
+            while (power != maxpower) {
+                resb = data.val & data.position;
+                data.position >>= 1;
+                if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+                bits |= (resb > 0 ? 1 : 0) * power;
+                power <<= 1;
+            }
+            switch (next = bits) {
+                case 0: bits = 0; maxpower = Math.pow(2, 8); power = 1;
+                    while (power != maxpower) {
+                        resb = data.val & data.position;
+                        data.position >>= 1;
+                        if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+                        bits |= (resb > 0 ? 1 : 0) * power;
+                        power <<= 1;
+                    }
+                    c = f(bits);
+                    break;
+                case 1: bits = 0; maxpower = Math.pow(2, 16); power = 1;
+                    while (power != maxpower) {
+                        resb = data.val & data.position;
+                        data.position >>= 1;
+                        if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+                        bits |= (resb > 0 ? 1 : 0) * power;
+                        power <<= 1;
+                    }
+                    c = f(bits);
+                    break;
+                case 2: return "";
+            }
+            dictionary[3] = c;
+            w = c;
+            result.push(c);
+            while (true) {
+                if (data.index > length) { return ""; }
+                bits = 0; maxpower = Math.pow(2, numBits); power = 1;
+                while (power != maxpower) {
+                    resb = data.val & data.position;
+                    data.position >>= 1;
+                    if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+                    bits |= (resb > 0 ? 1 : 0) * power;
+                    power <<= 1;
+                }
+                switch (c = bits) {
+                    case 0: bits = 0; maxpower = Math.pow(2, 8); power = 1;
+                        while (power != maxpower) {
+                            resb = data.val & data.position;
+                            data.position >>= 1;
+                            if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+                            bits |= (resb > 0 ? 1 : 0) * power;
+                            power <<= 1;
+                        }
+                        dictionary[dictSize++] = f(bits);
+                        c = dictSize - 1;
+                        enlargeIn--;
+                        break;
+                    case 1: bits = 0; maxpower = Math.pow(2, 16); power = 1;
+                        while (power != maxpower) {
+                            resb = data.val & data.position;
+                            data.position >>= 1;
+                            if (data.position == 0) { data.position = resetValue; data.val = getNextValue(data.index++); }
+                            bits |= (resb > 0 ? 1 : 0) * power;
+                            power <<= 1;
+                        }
+                        dictionary[dictSize++] = f(bits);
+                        c = dictSize - 1;
+                        enlargeIn--;
+                        break;
+                    case 2: return result.join('');
+                }
+                if (enlargeIn == 0) { enlargeIn = Math.pow(2, numBits); numBits++; }
+                if (dictionary[c]) { entry = dictionary[c]; } else {
+                    if (c === dictSize) { entry = w + w.charAt(0); } else { return null; }
+                }
+                result.push(entry);
+                dictionary[dictSize++] = w + entry.charAt(0);
+                enlargeIn--;
+                w = entry;
+                if (enlargeIn == 0) { enlargeIn = Math.pow(2, numBits); numBits++; }
+            }
+        };
+        return {
+            decompressFromEncodedURIComponent: function(input) {
+                if (input == null) return "";
+                if (input == "") return null;
+                input = input.replace(/ /g, "+");
+                get_base64_decode_map();
+                return _decompress(input.length, 32, function(index) { return base64_decode_map[input.charAt(index)]; });
+            }
+        };
+    }();
 
     document.addEventListener('DOMContentLoaded', function() {
         // --- تعريف العناصر الأساسية ---
@@ -317,7 +434,7 @@
         }
 
         // =================================================================
-        // تهيئة وإدارة التقويم (FullCalendar)
+        // تهيئة وإدارة التقويم (FullCalendar) - مع الإصلاح
         // =================================================================
 
         function initializeCalendar() {
@@ -334,7 +451,19 @@
                 dayHeaderFormat: { weekday: 'long' },
                 eventClick: handleEventClick,
                 eventContent: renderCustomEventContent,
-                views: { listWeek: { buttonText: 'قائمة' } }
+                views: { listWeek: { buttonText: 'قائمة' } },
+                // --- START: الحل النهائي لمشكلة الاختفاء ---
+                eventDidMount: function(info) {
+                    const isExam = info.event.extendedProps.isExam;
+                    if (isExamView) {
+                        // في عرض الاختبارات، أظهر الاختبارات فقط
+                        info.el.style.display = isExam ? '' : 'none';
+                    } else {
+                        // في عرض الجدول، أظهر المحاضرات فقط
+                        info.el.style.display = isExam ? 'none' : '';
+                    }
+                }
+                // --- END: الحل النهائي لمشكلة الاختفاء ---
             });
             calendar.render();
         }
@@ -423,7 +552,7 @@
         }
 
         // =================================================================
-        // منطق اختيار الشعب والتعارضات (تم إعادة كتابته بالكامل)
+        // منطق اختيار الشعب والتعارضات
         // =================================================================
 
         function handleSectionClick(btnElement) {
@@ -447,13 +576,11 @@
         }
         
         function updateCalendarAndConflicts() {
-            // أولاً: حساب التعارضات
+            // حساب التعارضات
             const currentScheduleSlots = [];
             selectedSections.forEach(id => {
                 const section = allCoursesData.find(c => c.uniqueId === id);
-                if (section) {
-                    currentScheduleSlots.push(...section.timeSlots);
-                }
+                if (section) currentScheduleSlots.push(...section.timeSlots);
             });
 
             allCoursesData.forEach(section => {
@@ -473,31 +600,22 @@
                 }
             });
 
-            // ثانياً: عرض الأحداث الصحيحة في التقويم
-            renderVisibleEvents();
-        }
-        
-        function renderVisibleEvents() {
+            // إضافة جميع الأحداث (محاضرات واختبارات) إلى التقويم
             calendar.removeAllEvents();
-            const events = [];
-
+            const allEvents = [];
             selectedSections.forEach(id => {
                 const section = allCoursesData.find(c => c.uniqueId === id);
-                if (!section) return;
-
-                if (isExamView) {
-                    if (section.examSlot) {
-                        events.push(createExamEventForSection(section));
-                    }
-                } else { // is Schedule View
+                if (section) {
                     const group = groupedCourses[section.code];
-                    events.push(...createEventsForSection(section, group.color));
+                    allEvents.push(...createEventsForSection(section, group.color));
+                    if (section.examSlot) {
+                        allEvents.push(createExamEventForSection(section));
+                    }
                 }
             });
-
-            calendar.addEventSource(events);
+            calendar.addEventSource(allEvents);
         }
-
+        
         function createEventsForSection(section, color) {
             return section.timeSlots.map(slot => ({
                 title: `${section.name} (${section.code})`,
@@ -589,7 +707,7 @@
                 toggleViewBtn.innerHTML = `<i class="ri-calendar-check-line"></i> عرض الاختبارات`;
                 calendar.changeView('timeGridWeek');
             }
-            renderVisibleEvents(); // إعادة رسم الأحداث بعد تغيير العرض
+            // لا حاجة لإعادة رسم الأحداث يدويًا، خاصية eventDidMount ستقوم بالعمل
         }
 
         function populateSettingsModal() { /* ... (الكود هنا بدون تغيير) ... */ }
