@@ -1,20 +1,36 @@
-// extractor.js - QU Schedule v16 (localStorage Method)
+// extractor.js - QU Schedule v17 (Accurate Hours & Type Extraction)
 (function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v16 Initialized...");
+    console.log("🚀 QU Schedule Extractor v17 Initialized...");
 
     const SELECTORS = {
         desktop: {
-            container: 'div.data-table-container', courseRow: 'tr[class^="ROW"]', code: 'td[data-th="رمز المقرر"]',
-            name: 'td[data-th="اسم المقرر"]', section: 'td[data-th^="الشعبة"]',
-            instructor: 'input[type="hidden"][id$=":instructor"]', details: 'input[type="hidden"][id$=":section"]',
+            container: 'div.data-table-container',
+            courseRow: 'tr[class^="ROW"]',
+            code: 'td[data-th="رمز المقرر"]',
+            name: 'td[data-th="اسم المقرر"]',
+            section: 'td[data-th^="الشعبة"]',
+            // --- NEW ---
+            hours: 'td[data-th^="الساعات"]',
+            type: 'td[data-th^="النشاط"]',
+            // -----------
+            instructor: 'input[type="hidden"][id$=":instructor"]',
+            details: 'input[type="hidden"][id$=":section"]',
             examPeriod: 'input[type="hidden"][id$=":examPeriod"]'
         },
         mobile: {
-            container: 'div.ui-content', courseCard: 'div.row-xs', code: 'div[data-th="رمز المقرر"] span.value',
-            name: 'div[data-th="اسم المقرر"] span.value', section: 'div[data-th^="الشعبة"] span.value',
-            instructor: 'input[type="hidden"][id$=":instructor"]', details: 'input[type="hidden"][id$=":section"]',
+            container: 'div.ui-content',
+            courseCard: 'div.row-xs',
+            code: 'div[data-th="رمز المقرر"] span.value',
+            name: 'div[data-th="اسم المقرر"] span.value',
+            section: 'div[data-th^="الشعبة"] span.value',
+             // --- NEW ---
+            hours: 'div[data-th^="الساعات"] span.value',
+            type: 'div[data-th^="النشاط"] span.value',
+            // -----------
+            instructor: 'input[type="hidden"][id$=":instructor"]',
+            details: 'input[type="hidden"][id$=":section"]',
             examPeriod: 'input[type="hidden"][id$=":examPeriod"]'
         }
     };
@@ -43,12 +59,24 @@
             const instructor = row.querySelector(s.instructor)?.value.trim();
             const detailsRaw = row.querySelector(s.details)?.value.trim();
             const examPeriod = row.querySelector(s.examPeriod)?.value.trim();
+            
+            // --- NEW: Extract hours and type from their specific columns ---
+            const hours = row.querySelector(s.hours)?.textContent.trim() || '0';
+            const type = row.querySelector(s.type)?.textContent.trim() || 'غير محدد';
+            // -----------------------------------------------------------------
+
             if (name && code && section) {
                 coursesData.push({ 
-                    code, name, section, 
+                    code, 
+                    name, 
+                    section, 
                     time: parseTimeDetails(detailsRaw), 
                     instructor: instructor || 'غير محدد', 
-                    examPeriod: examPeriod || null 
+                    examPeriod: examPeriod || null,
+                    // --- NEW: Add the new properties ---
+                    hours,
+                    type
+                    // ------------------------------------
                 });
             }
         });
@@ -78,7 +106,6 @@
                 data: courses
             });
             
-            // Store data in localStorage on the university domain
             localStorage.setItem('temp_qu_schedule_data', dataToStore);
             
             const viewerURL = `https://mutlaq001.github.io/schedule/`;
@@ -86,7 +113,6 @@
             console.log("📨 Opening QU Schedule. It will request data automatically.");
             const viewerWindow = window.open(viewerURL, 'QU_Schedule_Viewer');
 
-            // Listen for a request from the viewer app
             window.addEventListener('message', function(event) {
                 if (event.source === viewerWindow && event.data === 'request_schedule_data') {
                     console.log("Viewer is ready, sending data...");
@@ -96,7 +122,7 @@
                             type: 'universityCoursesData',
                             data: JSON.parse(storedData).data
                         }, 'https://mutlaq001.github.io');
-                        localStorage.removeItem('temp_qu_schedule_data'); // Clean up
+                        localStorage.removeItem('temp_qu_schedule_data');
                     }
                 }
             }, { once: true });
