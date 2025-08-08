@@ -521,6 +521,11 @@
                             updateCalendarAndConflicts();
                         }
                     },
+                    eventDidMount: (info) => {
+                        if (!info.event.extendedProps.isExam && !info.event.id.startsWith('preview-event')) {
+                            info.el.style.background = info.event.extendedProps.background;
+                        }
+                    },
                     eventContent: (arg) => {
                         const wrapper = document.createElement('div');
                         wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem;';
@@ -668,17 +673,15 @@
                         id: isPreview ? `preview-event-${slot.day}` : undefined,
                         title: `${section.name}`, daysOfWeek: [slot.day],
                         startTime: slot.start, endTime: slot.end,
-                        backgroundColor: isPreview ? 'transparent' : color,
+                        backgroundColor: color,
                         borderColor: color,
                         display: 'block',
                         className: isPreview ? 'fc-event-preview' : '',
                         extendedProps: { 
                             instructor: section.instructor, section: section.section, 
-                            uniqueId: section.uniqueId, isExam: false
+                            uniqueId: section.uniqueId, isExam: false, background: background 
                         }
-                    })),
-                    color: color,
-                    customBackground: background
+                    }))
                 };
             }
 
@@ -767,7 +770,7 @@
             }
 
             function addInteractionListeners() {
-                const showPreview = (btn) => {
+                 const showPreview = (btn) => {
                     if (!btn || btn.classList.contains('selected') || btn.classList.contains('conflicted')) return;
                     hidePreview(); 
                     const uniqueId = btn.dataset.uniqueId;
@@ -798,8 +801,8 @@
                     }
                 });
 
-                const sectionsGrid = coursesListContainer.querySelectorAll('.sections-grid');
-                sectionsGrid.forEach(grid => {
+                const sectionsGrids = coursesListContainer.querySelectorAll('.sections-grid');
+                sectionsGrids.forEach(grid => {
                     grid.addEventListener('mouseover', e => showPreview(e.target.closest('.section-btn')));
                     grid.addEventListener('mouseout', hidePreview);
                     grid.addEventListener('touchstart', e => { const btn = e.target.closest('.section-btn'); if (btn) { e.preventDefault(); showPreview(btn); } }, { passive: false });
@@ -825,7 +828,7 @@
             }
 
             function parseTimeEntries(timeString) {
-                if (!timeString || timeString.includes('م يحدد') || timeString.includes('بعد')) return [];
+                if (!timeString || timeString.includes('م يحدد') || timeString.includes('بعد') || timeString.includes('غير محدد')) return [];
                 return timeString.split('<br>').map(entry => {
                     const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{2}:\d{2})\s*(ص|م)\s*-\s*(\d{2}:\d{2})\s*(ص|م)/);
                     if (!parts) return null;
