@@ -1,35 +1,35 @@
-// extractor.js - QU Schedule v20 (Professional & Robust Extraction)
+// extractor.js - QU Schedule v18 (Professional Data Inheritance)
 (function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v20 Initialized...");
+    console.log("🚀 QU Schedule Extractor v18 Initialized...");
 
-    // More flexible selectors using attribute "contains" to avoid issues with non-breaking spaces (&nbsp;)
     const SELECTORS = {
         desktop: {
+            container: 'div.data-table-container',
             courseRow: 'tr[class^="ROW"]',
             code: 'td[data-th="رمز المقرر"]',
             name: 'td[data-th="اسم المقرر"]',
-            section: 'td[data-th*="الشعبة"]',
-            hours: 'td[data-th*="الساعات"]',
-            type: 'td[data-th*="النشاط"]',
-            detailsCell: 'td[data-th="التفاصيل"]'
+            section: 'td[data-th^="الشعبة"]',
+            hours: 'td[data-th^="الساعات"]',
+            type: 'td[data-th^="النشاط"]',
+            instructor: 'input[type="hidden"][id$=":instructor"]',
+            details: 'input[type="hidden"][id$=":section"]',
+            examPeriod: 'input[type="hidden"][id$=":examPeriod"]'
         },
         mobile: {
+            container: 'div.ui-content',
             courseCard: 'div.row-xs',
             code: 'div[data-th="رمز المقرر"] span.value',
             name: 'div[data-th="اسم المقرر"] span.value',
-            section: 'div[data-th*="الشعبة"] span.value',
-            hours: 'div[data-th*="الساعات"] span.value',
-            type: 'div[data-th*="النشاط"] span.value',
-            detailsCell: 'div[data-th="التفاصيل"]'
+            section: 'div[data-th^="الشعبة"] span.value',
+            hours: 'div[data-th^="الساعات"] span.value',
+            type: 'div[data-th^="النشاط"] span.value',
+            instructor: 'input[type="hidden"][id$=":instructor"]',
+            details: 'input[type="hidden"][id$=":section"]',
+            examPeriod: 'input[type="hidden"][id$=":examPeriod"]'
         }
     };
-    
-    function findDetailInput(row, selector, attributeSuffix) {
-        const detailsContainer = row.querySelector(selector);
-        return detailsContainer ? detailsContainer.querySelector(`input[type="hidden"][id$=":${attributeSuffix}"]`) : null;
-    }
 
     function parseTimeDetails(detailsRaw) {
         if (!detailsRaw || detailsRaw.trim() === '') return 'غير محدد';
@@ -48,36 +48,45 @@
 
     function extractCourses(s, rows) {
         const coursesData = [];
+        let lastTheoreticalCourse = null; // Variable to store the last seen theoretical course
+
         rows.forEach(row => {
-            try {
-                const code = row.querySelector(s.code)?.textContent.trim();
-                const name = row.querySelector(s.name)?.textContent.trim();
-                const section = row.querySelector(s.section)?.textContent.trim();
-                const hours = row.querySelector(s.hours)?.textContent.trim();
-                const type = row.querySelector(s.type)?.textContent.trim();
+            const code = row.querySelector(s.code)?.textContent.trim();
+            const name = row.querySelector(s.name)?.textContent.trim();
+            const section = row.querySelector(s.section)?.textContent.trim();
+            const instructor = row.querySelector(s.instructor)?.value.trim();
+            const detailsRaw = row.querySelector(s.details)?.value.trim();
+            
+            let hours = row.querySelector(s.hours)?.textContent.trim();
+            let type = row.querySelector(s.type)?.textContent.trim();
+            let examPeriod = row.querySelector(s.examPeriod)?.value.trim();
 
-                const instructorInput = findDetailInput(row, s.detailsCell, 'instructor');
-                const detailsInput = findDetailInput(row, s.detailsCell, 'section');
-                const examPeriodInput = findDetailInput(row, s.detailsCell, 'examPeriod');
-
-                const instructor = instructorInput?.value.trim();
-                const detailsRaw = detailsInput?.value.trim();
-                const examPeriod = examPeriodInput?.value.trim();
-
-                if (name && code && section) {
-                    coursesData.push({ 
-                        code, 
-                        name, 
-                        section, 
-                        hours: hours || '0',
-                        type: type || 'غير محدد',
-                        time: parseTimeDetails(detailsRaw || ''), 
-                        instructor: instructor || 'غير محدد', 
-                        examPeriod: examPeriod || null,
-                    });
+            if (name && code && section) {
+                const isPractical = type && (type.includes('عملي') || type.includes('تدريب') || type.includes('تمارين'));
+                
+                // If it's a practical/lab section and hours are missing, inherit from the last theoretical course
+                if (isPractical && (!hours || hours === '') && lastTheoreticalCourse && lastTheoreticalCourse.code === code) {
+                    hours = lastTheoreticalCourse.hours;
+                    examPeriod = lastTheoreticalCourse.examPeriod;
                 }
-            } catch (e) {
-                console.error("Error processing a row, skipping. Error:", e);
+                
+                const courseInfo = { 
+                    code, 
+                    name, 
+                    section, 
+                    time: parseTimeDetails(detailsRaw), 
+                    instructor: instructor || 'غير محدد', 
+                    examPeriod: examPeriod || null,
+                    hours: hours || '0',
+                    type: type || 'نظري'
+                };
+
+                coursesData.push(courseInfo);
+
+                // If this course is theoretical, save it as the last one seen
+                if (!isPractical) {
+                    lastTheoreticalCourse = courseInfo;
+                }
             }
         });
         return coursesData;
@@ -94,6 +103,8 @@
         } else if (mobileRows.length > 0) {
             console.log("📱 Mobile view detected. Extracting...");
             courses = extractCourses(SELECTORS.mobile, mobileRows);
+        } else {
+             console.log("🕵️ No specific view detected.");
         }
         
         if (courses.length > 0) {
@@ -125,7 +136,7 @@
             }, { once: true });
 
         } else {
-            alert("فشل الاستخراج. لم يتم العثور على مقررات. الرجاء التأكد من أن صفحة المقررات المطروحة قد تم تحميلها بالكامل.");
+            alert("Extraction failed. No courses found. Please make sure the courses page is fully loaded.");
         }
 
     }, 1500);
