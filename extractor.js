@@ -1,10 +1,9 @@
-// extractor.js - QU Schedule v19 (Optimized & Refactored)
+// extractor.js - QU Schedule v20 (Robust Data Transfer)
 (function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v19 Initialized...");
+    console.log("🚀 QU Schedule Extractor v20 Initialized...");
 
-    // --- Configuration ---
     const SELECTORS = {
         desktop: {
             courseRow: 'tr[class^="ROW"]',
@@ -30,8 +29,8 @@
         }
     };
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
+    const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
 
-    // --- Helper Functions ---
     function parseTimeDetails(detailsRaw) {
         if (!detailsRaw || detailsRaw.trim() === '') return 'غير محدد';
         if (detailsRaw.includes('@t')) {
@@ -82,45 +81,20 @@
         return coursesData;
     }
 
-    function openViewerWithData(courses) {
-        if (typeof LZString === 'undefined') {
-            const script = document.createElement('script');
-            script.src = "https://cdnjs.cloudflare.com/ajax/libs/lz-string/1.4.4/lz-string.min.js";
-            script.onload = () => compressAndOpen(courses);
-            document.head.appendChild(script);
-        } else {
-            compressAndOpen(courses);
-        }
-    }
-
-    function compressAndOpen(courses) {
-        console.log("Compressing data...");
-        const jsonString = JSON.stringify(courses);
-        const compressedData = LZString.compressToEncodedURIComponent(jsonString);
-        const url = `${VIEWER_URL}?data=${compressedData}`;
-        console.log(`Opening viewer with compressed data. URL length: ${url.length}`);
-        window.open(url, 'QU_Schedule_Viewer');
-    }
-
     // --- Main Execution ---
     setTimeout(() => {
         let courses = [];
         const desktopRows = document.querySelectorAll(SELECTORS.desktop.courseRow);
         const mobileRows = document.querySelectorAll(SELECTORS.mobile.courseCard);
+
         if (desktopRows.length > 0 && desktopRows[0].offsetParent !== null) {
             console.log("🖥️ Desktop view detected. Extracting...");
             courses = extractCourses(SELECTORS.desktop, desktopRows);
         } else if (mobileRows.length > 0 && mobileRows[0].offsetParent !== null) {
             console.log("📱 Mobile view detected. Extracting...");
             courses = extractCourses(SELECTORS.mobile, mobileRows);
-        } else {
-            console.log("🕵️ Could not find any visible course data rows/cards.");
         }
+        
         if (courses.length > 0) {
             console.log(`🎉 Success! Extracted ${courses.length} sections.`);
-            openViewerWithData(courses);
-        } else {
-            alert("فشل استخراج البيانات. لم يتم العثور على مقررات. تأكد من أن صفحة المقررات المطروحة ظاهرة ومحملة بالكامل.");
-        }
-    }, 1000);
-})();
+       
