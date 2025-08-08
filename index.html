@@ -611,7 +611,9 @@
                         const group = groupedCourses[section.code];
                         if (section.time !== 'غير محدد') {
                             const lectureEvents = createLectureEventsForSection(section, false, group.color);
-                            calendar.addEventSource(lectureEvents);
+                            lectureEvents.events.forEach(event => {
+                                calendar.addEvent(event);
+                            });
                             currentScheduleSlots.push(...section.timeSlots);
                         }
                         if (section.examPeriod) {
@@ -666,16 +668,17 @@
                         id: isPreview ? `preview-event-${slot.day}` : undefined,
                         title: `${section.name}`, daysOfWeek: [slot.day],
                         startTime: slot.start, endTime: slot.end,
-                        backgroundColor: color, // Used for border in preview
+                        backgroundColor: isPreview ? 'transparent' : color,
                         borderColor: color,
-                        display: 'block', // Default display
+                        display: 'block',
                         className: isPreview ? 'fc-event-preview' : '',
                         extendedProps: { 
                             instructor: section.instructor, section: section.section, 
-                            uniqueId: section.uniqueId, isExam: false, background: background 
+                            uniqueId: section.uniqueId, isExam: false
                         }
                     })),
-                    color: color
+                    color: color,
+                    customBackground: background
                 };
             }
 
@@ -685,7 +688,6 @@
                 const dayIndex = dayMapping[periodData.day];
 
                 if (dayIndex === undefined) return null;
-
                 const placeholderYear = new Date().getFullYear() + 5;
                 const hijriMonth = parseInt(periodData.hijriDate.split('/')[1]);
                 const hijriDay = parseInt(periodData.hijriDate.split('/')[2]);
@@ -767,7 +769,7 @@
             function addInteractionListeners() {
                 const showPreview = (btn) => {
                     if (!btn || btn.classList.contains('selected') || btn.classList.contains('conflicted')) return;
-                    hidePreview();
+                    hidePreview(); 
                     const uniqueId = btn.dataset.uniqueId;
                     const section = allCoursesData.find(c => c.uniqueId === uniqueId);
                     const group = groupedCourses[section.code];
@@ -782,23 +784,10 @@
                         if (previewEvent) previewEvent.remove();
                     }
                 };
-
+                
                 coursesListContainer.addEventListener('click', (e) => {
                     const header = e.target.closest('.course-item-header');
-                    const btn = e.target.closest('.section-btn');
-                    if (btn) {
-                        e.preventDefault();
-                        hidePreview();
-                        const uniqueId = btn.dataset.uniqueId;
-                        if (selectedSections.has(uniqueId)) {
-                            selectedSections.delete(uniqueId);
-                            btn.classList.remove('selected');
-                        } else if (!btn.classList.contains('conflicted')) {
-                            selectedSections.add(uniqueId);
-                            btn.classList.add('selected');
-                        }
-                        updateCalendarAndConflicts();
-                    } else if (header) {
+                    if (header) {
                         const courseItem = header.parentElement;
                         courseItem.classList.toggle('open');
                         const icon = header.querySelector('.toggle-icon');
@@ -808,11 +797,31 @@
                         }
                     }
                 });
-                
-                coursesListContainer.addEventListener('mouseover', (e) => { showPreview(e.target.closest('.section-btn')); });
-                coursesListContainer.addEventListener('mouseout', (e) => { hidePreview(); });
-                coursesListContainer.addEventListener('touchstart', (e) => { const btn = e.target.closest('.section-btn'); if (btn) { e.preventDefault(); showPreview(btn); } }, { passive: false });
-                coursesListContainer.addEventListener('touchend', (e) => { hidePreview(); });
+
+                const sectionsGrid = coursesListContainer.querySelectorAll('.sections-grid');
+                sectionsGrid.forEach(grid => {
+                    grid.addEventListener('mouseover', e => showPreview(e.target.closest('.section-btn')));
+                    grid.addEventListener('mouseout', hidePreview);
+                    grid.addEventListener('touchstart', e => { const btn = e.target.closest('.section-btn'); if (btn) { e.preventDefault(); showPreview(btn); } }, { passive: false });
+                    grid.addEventListener('touchend', hidePreview);
+                    grid.addEventListener('touchcancel', hidePreview);
+                    grid.addEventListener('click', e => {
+                        const btn = e.target.closest('.section-btn');
+                        if (btn) {
+                            e.preventDefault();
+                            hidePreview();
+                            const uniqueId = btn.dataset.uniqueId;
+                            if (selectedSections.has(uniqueId)) {
+                                selectedSections.delete(uniqueId);
+                                btn.classList.remove('selected');
+                            } else if (!btn.classList.contains('conflicted')) {
+                                selectedSections.add(uniqueId);
+                                btn.classList.add('selected');
+                            }
+                            updateCalendarAndConflicts();
+                        }
+                    });
+                });
             }
 
             function parseTimeEntries(timeString) {
