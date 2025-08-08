@@ -684,7 +684,7 @@
                         swatch.className = 'color-swatch';
                         swatch.style.backgroundColor = color;
                         if (this.state.groupedCourses[courseCode]?.color === color) swatch.classList.add('active');
-                        swatch.onclick = () => { this.state.customColors[courseCode] = color; this._saveCustomColors(); this._processAndDisplayData(this.state.allCoursesData).then(() => this.updateCalendarAndConflicts()); this._removeColorPicker(); };
+                        swatch.onclick = () => { this.state.customColors[courseCode] = color; this._saveCustomColors(); this._processAndDisplayData(this.state.allCoursesData).then(()=>this.updateCalendarAndConflicts()); this._removeColorPicker(); };
                         picker.appendChild(swatch);
                     });
                     picker.style.top = `${rect.top - 8}px`; picker.style.right = `${window.innerWidth - rect.left}px`;
