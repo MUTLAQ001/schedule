@@ -439,74 +439,16 @@
 
     <!-- START: JAVASCRIPT LOGIC -->
     <script>
-        // Data that was previously in exam-schedule.json is now a constant here
-        const examScheduleJSON = {
-            "1": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠١", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "2": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠١", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "3": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠١", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "4": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٢", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "5": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٢", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "6": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٢", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "7": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/٠٣", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "8": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/٠٣", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "9": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/٠٣", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "10": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/٠٤", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "11": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/٠٤", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "12": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/٠٤", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "13": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/٠٥", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "14": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/٠٥", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "15": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/٠٥", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "16": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "17": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "18": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "19": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٩", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "20": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٩", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "21": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٩", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "22": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/١٠", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "23": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/١٠", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "24": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/١٠", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "25": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/١١", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "26": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/١١", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "27": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/١١", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "28": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/١٢", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "29": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/١٢", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "30": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/١٢", "startTime": "13:00:00", "endTime": "15:00:00" },
-            "31": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٩", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "35": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/١١", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "37": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/١٢", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "40": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "41": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "47": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/١٠", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "50": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٦/٢٣", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "51": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٦/٢٣", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "52": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٦/٢٤", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "53": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٦/٢٤", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "54": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٦/٢٥", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "55": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٦/٢٥", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "56": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٦/٢٦", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "57": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٦/٢٦", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "58": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٦/٢٧", "startTime": "08:00:00", "endTime": "10:00:00" },
-            "59": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٦/٢٧", "startTime": "10:30:00", "endTime": "12:30:00" },
-            "60": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٦/٢٧", "startTime": "10:30:00", "endTime": "12:30:00" }
-        };
-
         document.addEventListener('DOMContentLoaded', () => {
             const QU_ScheduleApp = {
                 // --- 1. STATE & CONSTANTS ---
                 state: {
-                    calendar: null,
-                    allCoursesData: [],
-                    groupedCourses: {},
-                    selectedSections: new Set(),
-                    hiddenCourseCodes: new Set(),
+                    calendar: null, allCoursesData: [], groupedCourses: {},
+                    selectedSections: new Set(), hiddenCourseCodes: new Set(),
                     examSchedule: {},
                     userSettings: {
-                        theme: 'dark',
-                        accentColor: '#6366f1',
-                        showWeekends: false,
-                        minTime: '08:00:00',
-                        maxTime: '22:00:00',
-                        hiddenCourseCodes: [],
+                        theme: 'dark', accentColor: '#6366f1', showWeekends: false,
+                        minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [],
                     },
                 },
                 constants: {
@@ -515,9 +457,7 @@
                     DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
                     DAY_NAMES: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'],
                     STORAGE_KEYS: {
-                        SETTINGS: 'quScheduleSettings_v2',
-                        COURSES: 'quScheduleCourses_v2',
-                        SELECTED: 'quScheduleSelected_v2',
+                        SETTINGS: 'quScheduleSettings_v2', COURSES: 'quScheduleCourses_v2', SELECTED: 'quScheduleSelected_v2',
                     },
                 },
                 dom: {},
@@ -529,13 +469,20 @@
                     this._initCosmicEffects();
                     this._populateTimeSelects();
                     this._loadSettings();
+
+                    // *** FIX: Initialize the calendar immediately on page load ***
+                    // This ensures the user always sees the calendar grid.
+                    this._initializeCalendar();
+
+                    // Now, try to load data and populate the calendar.
                     this._loadData().then(() => {
-                        this._initializeCalendar();
+                        // Data loaded successfully, now update the calendar with events
                         if (this.state.selectedSections.size > 0) {
                             this.updateCalendarAndConflicts();
                         }
                     }).catch(error => {
-                        console.error("Initialization failed:", error);
+                        // No data found, show the install guide. The calendar remains visible but empty.
+                        console.warn(error); // Use warn for expected failures like no data
                         this.dom.installSection.style.display = 'block';
                         this._updateBookmarkletCode();
                     });
@@ -557,14 +504,12 @@
                             this.showToast("فشل في قراءة البيانات من الرابط", "danger");
                         }
                     }
-
                     const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
                     if (storedCourses) {
                         return this._processAndDisplayData(JSON.parse(storedCourses));
                     }
-                    
-                    await this._fetchExamSchedule();
-                    return Promise.reject("No course data found.");
+                    this._fetchExamSchedule(); // Load exam data even if no courses are present
+                    return Promise.reject("No course data found. Displaying install guide.");
                 },
                 
                 async _processAndDisplayData(courses) {
@@ -577,8 +522,9 @@
                 },
 
                 async _fetchExamSchedule() {
-                    // Replaced fetch with direct assignment from the constant
-                    this.state.examSchedule = examScheduleJSON;
+                    this.state.examSchedule = {
+                        "1": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠١", "startTime": "08:00:00", "endTime": "10:00:00" }, "2": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠١", "startTime": "10:30:00", "endTime": "12:30:00" }, "3": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠١", "startTime": "13:00:00", "endTime": "15:00:00" }, "4": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٢", "startTime": "08:00:00", "endTime": "10:00:00" }, "5": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٢", "startTime": "10:30:00", "endTime": "12:30:00" }, "6": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٢", "startTime": "13:00:00", "endTime": "15:00:00" }, "7": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/٠٣", "startTime": "08:00:00", "endTime": "10:00:00" }, "8": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/٠٣", "startTime": "10:30:00", "endTime": "12:30:00" }, "9": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/٠٣", "startTime": "13:00:00", "endTime": "15:00:00" }, "10": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/٠٤", "startTime": "08:00:00", "endTime": "10:00:00" }, "11": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/٠٤", "startTime": "10:30:00", "endTime": "12:30:00" }, "12": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/٠٤", "startTime": "13:00:00", "endTime": "15:00:00" }, "13": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/٠٥", "startTime": "08:00:00", "endTime": "10:00:00" }, "14": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/٠٥", "startTime": "10:30:00", "endTime": "12:30:00" }, "15": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/٠٥", "startTime": "13:00:00", "endTime": "15:00:00" }, "16": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "08:00:00", "endTime": "10:00:00" }, "17": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "10:30:00", "endTime": "12:30:00" }, "18": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "13:00:00", "endTime": "15:00:00" }, "19": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٩", "startTime": "08:00:00", "endTime": "10:00:00" }, "20": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٩", "startTime": "10:30:00", "endTime": "12:30:00" }, "21": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٩", "startTime": "13:00:00", "endTime": "15:00:00" }, "22": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/١٠", "startTime": "08:00:00", "endTime": "10:00:00" }, "23": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/١٠", "startTime": "10:30:00", "endTime": "12:30:00" }, "24": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/١٠", "startTime": "13:00:00", "endTime": "15:00:00" }, "25": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/١١", "startTime": "08:00:00", "endTime": "10:00:00" }, "26": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/١١", "startTime": "10:30:00", "endTime": "12:30:00" }, "27": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/١١", "startTime": "13:00:00", "endTime": "15:00:00" }, "28": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/١٢", "startTime": "08:00:00", "endTime": "10:00:00" }, "29": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/١٢", "startTime": "10:30:00", "endTime": "12:30:00" }, "30": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/١٢", "startTime": "13:00:00", "endTime": "15:00:00" }, "31": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٧/٠٩", "startTime": "08:00:00", "endTime": "10:00:00" }, "35": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٧/١١", "startTime": "08:00:00", "endTime": "10:00:00" }, "37": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٧/١٢", "startTime": "08:00:00", "endTime": "10:00:00" }, "40": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "08:00:00", "endTime": "10:00:00" }, "41": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٧/٠٨", "startTime": "10:30:00", "endTime": "12:30:00" }, "47": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٧/١٠", "startTime": "08:00:00", "endTime": "10:00:00" }, "50": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٦/٢٣", "startTime": "08:00:00", "endTime": "10:00:00" }, "51": { "day": "الأحد", "hijriDate": "١٤٤٧/٠٦/٢٣", "startTime": "10:30:00", "endTime": "12:30:00" }, "52": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٦/٢٤", "startTime": "08:00:00", "endTime": "10:00:00" }, "53": { "day": "الاثنين", "hijriDate": "١٤٤٧/٠٦/٢٤", "startTime": "10:30:00", "endTime": "12:30:00" }, "54": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٦/٢٥", "startTime": "08:00:00", "endTime": "10:00:00" }, "55": { "day": "الثلاثاء", "hijriDate": "١٤٤٧/٠٦/٢٥", "startTime": "10:30:00", "endTime": "12:30:00" }, "56": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٦/٢٦", "startTime": "08:00:00", "endTime": "10:00:00" }, "57": { "day": "الأربعاء", "hijriDate": "١٤٤٧/٠٦/٢٦", "startTime": "10:30:00", "endTime": "12:30:00" }, "58": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٦/٢٧", "startTime": "08:00:00", "endTime": "10:00:00" }, "59": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٦/٢٧", "startTime": "10:30:00", "endTime": "12:30:00" }, "60": { "day": "الخميس", "hijriDate": "١٤٤٧/٠٦/٢٧", "startTime": "10:30:00", "endTime": "12:30:00" }
+                    };
                     return Promise.resolve();
                 },
 
