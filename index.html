@@ -449,31 +449,18 @@
                 
                 _listenForDataFromOpener() {
                     window.addEventListener('message', (event) => {
-                        // ** خطوة تشخيصية 1: هل تصل أي رسائل؟ **
-                        console.log(`[DEBUG] Message received from origin: ${event.origin}`);
-
                         if (event.origin !== this.constants.EXPECTED_UNIVERSITY_ORIGIN) {
-                            // هذه الرسالة ستظهر إذا كان النطاق خاطئاً
-                            console.warn(`[DEBUG] Message from unexpected origin ignored. Expected: "${this.constants.EXPECTED_UNIVERSITY_ORIGIN}"`);
+                            console.warn(`Message from unexpected origin ignored: ${event.origin}`);
                             return;
                         }
-
                         if (event.data && event.data.type === 'universityCoursesData') {
-                            console.log("[DEBUG] Data received from opener. Processing...");
+                            console.log("Data received from opener.");
                             const courses = event.data.data;
-                            
-                            // ** خطوة تشخيصية 2: هل البيانات سليمة؟ **
-                            console.log(`[DEBUG] Number of courses received: ${courses.length}`, courses);
-
                             localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
                             this.state.selectedSections.clear();
                             localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED);
-                            
                             this._processAndDisplayData(courses);
                             this.updateCalendarAndConflicts();
-                            
-                            // ** خطوة تشخيصية 3: هل تمت المعالجة؟ **
-                            console.log("[DEBUG] Data processing complete.");
                         }
                     }, false);
                 },
@@ -955,9 +942,14 @@
                 _initializeCalendar() {
                     if (this.state.calendar) this.state.calendar.destroy();
                     const calendarOptions = {
-                        initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
-                        events: [], dayHeaderFormat: { weekday: 'long' },
-                        slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
+                        initialView: 'timeGridWeek',
+                        locale: 'ar',
+                        headerToolbar: false,
+                        allDaySlot: false,
+                        events: [],
+                        dayHeaderFormat: { weekday: 'long' },
+                        slotMinTime: this.state.userSettings.minTime,
+                        slotMaxTime: this.state.userSettings.maxTime,
                         hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6],
                         eventClick: (info) => {
                             if (info.event.id.startsWith('preview-event')) return;
