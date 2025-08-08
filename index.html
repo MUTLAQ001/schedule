@@ -448,6 +448,11 @@
                 },
                 
                 _listenForDataFromOpener() {
+                    // ** FIX: Send a request to the opener window to ask for data **
+                    if (window.opener) {
+                        window.opener.postMessage('request_schedule_data', this.constants.EXPECTED_UNIVERSITY_ORIGIN);
+                    }
+
                     window.addEventListener('message', (event) => {
                         if (event.origin !== this.constants.EXPECTED_UNIVERSITY_ORIGIN) {
                             console.warn(`Message from unexpected origin ignored: ${event.origin}`);
