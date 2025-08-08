@@ -116,7 +116,8 @@
         .course-info { flex-grow: 1; }
         .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-dark); }
         .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--text-light); }
-        .toggle-icon { transition: transform 0.3s, opacity 0.3s; font-size: 1.5rem; }
+        .toggle-icon { transition: transform 0.3s !important; font-size: 1.5rem; }
+        .course-item.open .toggle-icon { transform: rotate(45deg); }
         .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
         .course-item.open .sections-wrapper { max-height: 600px; }
         .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 0 1.25rem 1.25rem; }
@@ -358,6 +359,10 @@
     </div>
 
     <script>
+        // --- START: LZString Library ---
+        var LZString=function(){var f={_keyStr:"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=",compressToEncodedURIComponent:function(a){return null==a?"":f._compress(a,6,function(a){return f._keyStr.charAt(a)})},decompressFromEncodedURIComponent:function(a){return null==a?"":""==a?null:f._decompress(a.length,32,function(c){return"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=".indexOf(a.charAt(c))})},_compress:function(a,g,b){if(null==a)return"";var h,d,c,e={},k={},l="",m="",n="",p=2,q=3,r=2,s=[],t=0,u=0;for(c=0;c<a.length;c+=1)if(l=a.charAt(c),!Object.prototype.hasOwnProperty.call(e,l)&&(e[l]=q++,k[l]=!0),m=n+l,Object.prototype.hasOwnProperty.call(e,m))n=m;else{if(Object.prototype.hasOwnProperty.call(k,n)){if(n.charCodeAt(0)<256){for(h=0;h<r;h++)t<<=1,u==g-1?(u=0,s.push(b(t)),t=0):u++;for(d=n.charCodeAt(0),h=0;h<8;h++)t=t<<1|1&d,u==g-1?(u=0,s.push(b(t)),t=0):u++,d>>=1}else{for(d=1,h=0;h<r;h++)t=t<<1|d,u==g-1?(u=0,s.push(b(t)),t=0):u++,d=0;for(d=n.charCodeAt(0),h=0;h<16;h++)t=t<<1|1&d,u==g-1?(u=0,s.push(b(t)),t=0):u++,d>>=1}p--,0==p&&(p=Math.pow(2,r),r++),delete k[n]}else for(d=e[n],h=0;h<r;h++)t=t<<1|1&d,u==g-1?(u=0,s.push(b(t)),t=0):u++,d>>=1;p--,0==p&&(p=Math.pow(2,r),r++),e[m]=q++,n=String(l)}if(""!==n){if(Object.prototype.hasOwnProperty.call(k,n)){if(n.charCodeAt(0)<256){for(h=0;h<r;h++)t<<=1,u==g-1?(u=0,s.push(b(t)),t=0):u++;for(d=n.charCodeAt(0),h=0;h<8;h++)t=t<<1|1&d,u==g-1?(u=0,s.push(b(t)),t=0):u++,d>>=1}else{for(d=1,h=0;h<r;h++)t=t<<1|d,u==g-1?(u=0,s.push(b(t)),t=0):u++,d=0;for(d=n.charCodeAt(0),h=0;h<16;h++)t=t<<1|1&d,u==g-1?(u=0,s.push(b(t)),t=0):u++,d>>=1}p--,0==p&&(p=Math.pow(2,r),r++),delete k[n]}else for(d=e[n],h=0;h<r;h++)t=t<<1|1&d,u==g-1?(u=0,s.push(b(t)),t=0):u++,d>>=1;p--,0==p&&(p=Math.pow(2,r),r++)}for(d=2,h=0;h<r;h++)t=t<<1|1&d,u==g-1?(u=0,s.push(b(t)),t=0):u++,d>>=1;for(;;){if(t<<=1,u==g-1){s.push(b(t));break}u++}return s.join("")},_decompress:function(a,g,b){var h,d,c,e,k,l,m=[],n=4,p=4,q=3,r="",s=[],t={val:b(0),position:g,index:1};for(h=0;h<3;h+=1)m[h]=h;c=0;e=Math.pow(2,2);for(k=1;k!=e;)d=t.val&t.position,t.position>>=1,0==t.position&&(t.position=g,t.val=b(t.index++)),c|=(d>0?1:0)*k,k<<=1;switch(c){case 0:c=0;e=Math.pow(2,8);for(k=1;k!=e;)d=t.val&t.position,t.position>>=1,0==t.position&&(t.position=g,t.val=b(t.index++)),c|=(d>0?1:0)*k,k<<=1;l=String.fromCharCode(c);break;case 1:c=0;e=Math.pow(2,16);for(k=1;k!=e;)d=t.val&t.position,t.position>>=1,0==t.position&&(t.position=g,t.val=b(t.index++)),c|=(d>0?1:0)*k,k<<=1;l=String.fromCharCode(c);break;case 2:return""}for(m[3]=l,s.push(l);;){if(t.index>a)return"";c=0;e=Math.pow(2,q);for(k=1;k!=e;)d=t.val&t.position,t.position>>=1,0==t.position&&(t.position=g,t.val=b(t.index++)),c|=(d>0?1:0)*k,k<<=1;switch(l=m[c]){case 0:c=0;e=Math.pow(2,8);for(k=1;k!=e;)d=t.val&t.position,t.position>>=1,0==t.position&&(t.position=g,t.val=b(t.index++)),c|=(d>0?1:0)*k,k<<=1;m[p++]=String.fromCharCode(c);l=p-1;n--;break;case 1:c=0;e=Math.pow(2,16);for(k=1;k!=e;)d=t.val&t.position,t.position>>=1,0==t.position&&(t.position=g,t.val=b(t.index++)),c|=(d>0?1:0)*k,k<<=1;m[p++]=String.fromCharCode(c);l=p-1;n--;break;case 2:return s.join("")}if(0==n&&(n=Math.pow(2,q),q++),m[l])r=m[l];else{if(l!==p)return null;r=m[p-1]+m[p-1].charAt(0)}s.push(r);m[p++]=m[p-1]+r.charAt(0);n--;0==n&&(n=Math.pow(2,q),q++)}}};return f}();
+        // --- END: LZString Library ---
+
         document.addEventListener('DOMContentLoaded', function() {
             // --- START: DOM Element Selection ---
             const coursesListContainer = document.getElementById('courses-list');
@@ -609,11 +614,8 @@
                             calendar.addEventSource(lectureEvents);
                             currentScheduleSlots.push(...section.timeSlots);
                         }
-                        
                         if (section.examPeriod) {
-                             if (!examPeriodMap.has(section.examPeriod)) {
-                                examPeriodMap.set(section.examPeriod, []);
-                            }
+                             if (!examPeriodMap.has(section.examPeriod)) examPeriodMap.set(section.examPeriod, []);
                             examPeriodMap.get(section.examPeriod).push(section);
                         }
                     }
@@ -621,9 +623,7 @@
                 
                 const conflictingExamCourseCodes = new Set();
                 examPeriodMap.forEach((sectionsInPeriod) => {
-                    if (sectionsInPeriod.length > 1) {
-                        sectionsInPeriod.forEach(s => conflictingExamCourseCodes.add(s.code));
-                    }
+                    if (sectionsInPeriod.length > 1) sectionsInPeriod.forEach(s => conflictingExamCourseCodes.add(s.code));
                     if(sectionsInPeriod.length > 0) {
                         const examEvent = createExamEvent(sectionsInPeriod[0]);
                         if(examEvent) calendar.addEvent(examEvent);
@@ -659,16 +659,24 @@
             }
             
             function createLectureEventsForSection(section, isPreview = false, color = 'var(--primary)') {
-                 const events = section.timeSlots.map(slot => ({
-                    id: isPreview ? `preview-event-${slot.day}`: undefined,
-                    title: `${section.name}`, daysOfWeek: [slot.day],
-                    startTime: slot.start, endTime: slot.end,
-                    backgroundColor: isPreview ? 'transparent' : color,
-                    borderColor: color,
-                    className: isPreview ? 'fc-event-preview' : '',
-                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: false }
-                }));
-                return isPreview ? events : { events };
+                const darkenedColor = adjustColorBrightness(color, -20);
+                const background = `linear-gradient(95deg, ${color} 0%, ${darkenedColor} 100%)`;
+                return {
+                    events: section.timeSlots.map(slot => ({
+                        id: isPreview ? `preview-event-${slot.day}` : undefined,
+                        title: `${section.name}`, daysOfWeek: [slot.day],
+                        startTime: slot.start, endTime: slot.end,
+                        backgroundColor: color, // Used for border in preview
+                        borderColor: color,
+                        display: 'block', // Default display
+                        className: isPreview ? 'fc-event-preview' : '',
+                        extendedProps: { 
+                            instructor: section.instructor, section: section.section, 
+                            uniqueId: section.uniqueId, isExam: false, background: background 
+                        }
+                    })),
+                    color: color
+                };
             }
 
             function createExamEvent(section) {
@@ -759,13 +767,13 @@
             function addInteractionListeners() {
                 const showPreview = (btn) => {
                     if (!btn || btn.classList.contains('selected') || btn.classList.contains('conflicted')) return;
-                    hidePreview(); 
+                    hidePreview();
                     const uniqueId = btn.dataset.uniqueId;
                     const section = allCoursesData.find(c => c.uniqueId === uniqueId);
                     const group = groupedCourses[section.code];
                     if (section && group && section.time !== 'غير محدد') {
-                        const previewEvents = createLectureEventsForSection(section, true, group.color);
-                        previewEvents.forEach(ev => calendar.addEvent(ev));
+                        const previewEventSource = createLectureEventsForSection(section, true, group.color);
+                        previewEventSource.events.forEach(ev => calendar.addEvent(ev));
                     }
                 };
                 const hidePreview = () => {
@@ -775,19 +783,21 @@
                     }
                 };
 
-                coursesListContainer.addEventListener('mouseover', (e) => { showPreview(e.target.closest('.section-btn')); });
-                coursesListContainer.addEventListener('mouseout', (e) => { hidePreview(); });
-                coursesListContainer.addEventListener('touchstart', (e) => { const btn = e.target.closest('.section-btn'); if (btn) { e.preventDefault(); showPreview(btn); } }, { passive: false });
-                coursesListContainer.addEventListener('touchend', hidePreview);
-                coursesListContainer.addEventListener('touchcancel', hidePreview);
-
                 coursesListContainer.addEventListener('click', (e) => {
                     const header = e.target.closest('.course-item-header');
                     const btn = e.target.closest('.section-btn');
-                    if(btn) {
+                    if (btn) {
                         e.preventDefault();
                         hidePreview();
-                        handleSectionClick(btn);
+                        const uniqueId = btn.dataset.uniqueId;
+                        if (selectedSections.has(uniqueId)) {
+                            selectedSections.delete(uniqueId);
+                            btn.classList.remove('selected');
+                        } else if (!btn.classList.contains('conflicted')) {
+                            selectedSections.add(uniqueId);
+                            btn.classList.add('selected');
+                        }
+                        updateCalendarAndConflicts();
                     } else if (header) {
                         const courseItem = header.parentElement;
                         courseItem.classList.toggle('open');
@@ -798,6 +808,11 @@
                         }
                     }
                 });
+                
+                coursesListContainer.addEventListener('mouseover', (e) => { showPreview(e.target.closest('.section-btn')); });
+                coursesListContainer.addEventListener('mouseout', (e) => { hidePreview(); });
+                coursesListContainer.addEventListener('touchstart', (e) => { const btn = e.target.closest('.section-btn'); if (btn) { e.preventDefault(); showPreview(btn); } }, { passive: false });
+                coursesListContainer.addEventListener('touchend', (e) => { hidePreview(); });
             }
 
             function parseTimeEntries(timeString) {
@@ -892,7 +907,6 @@
                     if(storedSchedule) {
                         const parsedSchedule = JSON.parse(storedSchedule);
                         parsedSchedule.forEach(id => selectedSections.add(id));
-                        document.querySelectorAll('.section-btn').forEach(btn => btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId)));
                         updateCalendarAndConflicts();
                     }
                 }
