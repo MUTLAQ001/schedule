@@ -3,229 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QU Schedule</title>
+    <title>QU Schedule Builder</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
     <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
-    <meta name="theme-color" content="#0a0a0a">
+    <meta name="theme-color" content="#1a1b1e">
 
     <style>
         :root {
             --primary: #8b5cf6; --primary-dark: #7c3aed;
-            --danger: #f43f5e; --danger-bg: rgba(244, 63, 94, 0.1);
-            --warning: #f59e0b; --warning-bg: rgba(245, 158, 11, 0.1);
-            --success: #22c55e;
-            --bg-main: #0a0a0a; --bg-sidebar: rgba(20, 20, 22, 0.75);
-            --bg-calendar: rgba(20, 20, 22, 0.75); --bg-item-hover: rgba(255, 255, 255, 0.05);
-            --text-dark: #f9fafb; --text-light: #a1a1aa;
-            --border-color: rgba(255, 255, 255, 0.1); --radius-md: 16px;
-            --radius-lg: 20px; --transition: 0.3s cubic-bezier(0.25,0.8,0.25,1);
+            --danger: #ef4444; --danger-bg: rgba(239, 68, 68, 0.1); --danger-border: rgba(239, 68, 68, 0.3);
+            --bg-main: #1a1b1e; --bg-content: #25262b;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --text-primary: #f8f9fa; --text-secondary: #adb5bd; --text-muted: #868e96;
+            --radius-md: 12px; --radius-lg: 16px;
+            --transition: 0.2s ease-in-out;
             --rgb-primary: 139, 92, 246;
         }
-        .light {
-            --primary: #7c3aed; --primary-dark: #6d28d9;
-            --danger: #ef4444; --danger-bg: #fee2e2;
-            --warning: #d97706; --warning-bg: #fef3c7;
-            --success: #16a34a;
-            --bg-main: #f4f4f5; --bg-sidebar: rgba(255, 255, 255, 0.75);
-            --bg-calendar: rgba(255, 255, 255, 0.75); --bg-item-hover: rgba(0, 0, 0, 0.04);
-            --text-dark: #18181b; --text-light: #71717a;
-            --border-color: rgba(0, 0, 0, 0.09);
-        }
-        
-        @keyframes gradient-animation{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-		@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
-		@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-        @keyframes move-nebula{0%{transform:translate(0,0) rotate(0deg) scale(1.2)}50%{transform:translate(10vw,5vh) rotate(180deg) scale(1.5)}100%{transform:translate(0,0) rotate(360deg) scale(1.2)}}
         
         *, *::before, *::after { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main);
-            color: var(--text-dark); margin: 0; height: 100vh; width: 100vw; overflow: hidden;
+            color: var(--text-primary); margin: 0; height: 100vh; width: 100vw; overflow: hidden;
             -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
-        
-        .cosmic-bg-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;overflow:hidden}
-		#starfield-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
-		.nebula-glow{position:absolute;top:50%;left:50%;width:80vmax;height:80vmax;margin-top:-40vmax;margin-left:-40vmax;background:radial-gradient(circle,hsla(var(--rgb-primary),.15) 0%,hsla(var(--rgb-primary),.1) 40%,transparent 70%);filter:blur(100px);border-radius:50%;animation:move-nebula 90s infinite alternate ease-in-out;transition:opacity .5s ease,background .5s ease}
-		.light .nebula-glow{opacity:.5;filter:blur(120px); background:radial-gradient(circle,hsla(var(--rgb-primary),.25) 0%,hsla(var(--rgb-primary),.15) 40%,transparent 70%)}
-
-        #install-section { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 1000; background-color: var(--bg-sidebar); padding: 1.5rem 2rem; border-radius: var(--radius-lg); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); border: 1px solid var(--border-color); width: 90%; max-width: 600px; text-align: center; display: none; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); animation: scaleIn .5s var(--transition) both; }
-        .bookmarklet-button { display: inline-block; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); color: white; padding: 0.7rem 1.5rem; border-radius: 999px; font-weight: 600; text-decoration: none; cursor: grab; transition: all .2s ease-in-out; }
-        
-        #mobile-unsupported { display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100vh; padding: 2rem; }
-        #mobile-unsupported i { font-size: 4rem; color: var(--primary); margin-bottom: 1.5rem; }
-        #mobile-unsupported h2 { font-size: 1.5rem; color: var(--text-dark); margin: 0 0 0.5rem 0; }
-        #mobile-unsupported p { color: var(--text-light); max-width: 350px; line-height: 1.8; margin-bottom: 2rem; }
-        .mobile-view .page-wrapper, .mobile-view #install-section { display: none !important; }
-        .mobile-view #mobile-unsupported { display: flex; }
-
-        .designer-credit { font-size: 0.9rem; font-weight: 600; color: var(--text-light); text-decoration: none; transition: color 0.2s ease; }
-        .designer-credit:hover { color: var(--primary); }
-        .designer-credit i { vertical-align: middle; margin-left: 4px; font-size: 1.2em; }
-
-        .toast-notification { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background-color: var(--success); color: white; padding: 0.8rem 1.5rem; border-radius: var(--radius-md); box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 9999; font-weight: 600; opacity: 0; transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); }
-        .toast-notification.show { bottom: 20px; opacity: 1; }
         
         .custom-scrollbar::-webkit-scrollbar { display: none; }
         .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        .page-wrapper { display: flex; height: 100vh; }
-        .sidebar { width: 420px; height: 100%; background-color: var(--bg-sidebar); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-        .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-        .sidebar-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--text-dark); }
-        
-        .sidebar-content-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-        .top-section { flex-grow: 1; min-height: 0; display: flex; flex-direction: column; }
-        .tabs-container { flex-shrink: 0; }
-        .sidebar-tabs { display: flex; padding: 0.75rem 1rem 0; border-bottom: 1px solid var(--border-color); }
-        .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--text-light); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; position: relative; border-bottom: 2px solid transparent; }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-        .tab-content { padding: 1rem; display: none; overflow-y: auto; flex-grow: 1; }
-        .tab-content.active { display: block; }
-        
-        .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border-color); text-align: center; flex-shrink: 0; }
+        #app-container {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            grid-template-rows: auto 1fr auto;
+            grid-template-areas:
+                "header header"
+                "sidebar main"
+                "footer footer";
+            height: 100vh;
+            width: 100vw;
+        }
 
-        .course-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: rgba(0,0,0,0.1); animation: fadeInUp .5s ease both; position: relative; overflow: hidden; }
-        .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; transition: background-color var(--transition); }
-        .course-item-header:hover { background-color: var(--bg-item-hover); }
-        .course-item-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
-        .course-info { flex-grow: 1; }
-        .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-dark); }
-        .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--text-light); }
-        .course-item-header .toggle-icon { transition: transform 0.3s; font-size: 1.5rem; }
-        .course-item.open .toggle-icon { transform: rotate(180deg); }
-        .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
-        .course-item.open .sections-wrapper { max-height: 600px; }
-        .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 0 1.25rem 1.25rem; }
-        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 999px; text-align: center; cursor: pointer; background-color: transparent; transition: all 0.2s; position: relative; -webkit-user-select: none; user-select: none; }
-        .section-btn:hover { border-color: var(--primary); background-color: rgba(var(--rgb-primary), 0.1); }
-        .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
-        .section-btn.selected .section-type { color: rgba(255,255,255,0.8) !important; }
-        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); opacity: 0.8; }
-        .section-btn.conflicted:hover { filter: brightness(1.2); }
-        .section-btn-number { font-weight: 700; font-size: 1rem; }
-        .section-type { font-size: 0.75rem; color: var(--text-light); }
-
-        .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; overflow-y: auto; padding: 1.5rem; }
-        .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-shrink: 0; }
-        .header-actions { display: flex; gap: 0.75rem; }
-        .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
-        .header-actions button:hover { background-color: rgba(var(--rgb-primary), 0.2); border-color: var(--primary); transform: translateY(-2px); }
+        #app-header {
+            grid-area: header;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--bg-content);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 10;
+        }
         
-        .calendar-wrapper { flex-grow: 1; min-height: 500px; display: flex; flex-direction: column; }
-        .calendar-container { flex-grow: 1; background-color: var(--bg-calendar); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); animation: scaleIn .5s var(--transition) both; }
-        #calendar { height: 100%; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--text-primary); }
+        .logo-icon { font-size: 1.8rem; color: var(--primary); }
+        .logo-text { font-size: 1.2rem; font-weight: 600; }
+        
+        .header-actions { display: flex; align-items: center; gap: 0.5rem; }
+        .action-btn { background: transparent; border: 1px solid var(--border-color); color: var(--text-secondary); padding: 0.5rem 1rem; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all var(--transition); }
+        .action-btn:hover { border-color: var(--primary); color: var(--primary); background-color: rgba(var(--rgb-primary), 0.1); }
+        .action-btn i { font-size: 1.2em; }
+
+        #sidebar {
+            grid-area: sidebar;
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-content);
+            border-left: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+        .sidebar-header { padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-title { font-size: 1.1rem; font-weight: 600; margin: 0; }
+        .sidebar-controls { display: flex; gap: 0.5rem; }
+        .sidebar-controls button { background: none; border: none; color: var(--text-muted); font-size: 0.8rem; cursor: pointer; padding: 0.25rem 0.5rem; transition: color var(--transition); }
+        .sidebar-controls button:hover { color: var(--text-primary); }
+        .sidebar-content { flex-grow: 1; overflow-y: auto; padding: 1rem; }
+
+        .course-group { margin-bottom: 0.5rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; animation: fadeInUp .5s ease both; }
+        .course-group-header { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; cursor: pointer; transition: background-color var(--transition); }
+        .course-group-header:hover { background-color: rgba(255,255,255,0.03); }
+        .course-group-header h3 { font-size: 0.9rem; font-weight: 500; margin: 0; flex-grow: 1; }
+        .course-group-header .badge { font-size: 0.75rem; background-color: var(--border-color); color: var(--text-secondary); padding: 0.2rem 0.6rem; border-radius: 99px; }
+        .course-group-header .toggle-icon { font-size: 1.2rem; transition: transform var(--transition); }
+        .course-group.open .toggle-icon { transform: rotate(180deg); }
+        
+        .sections-list { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; background-color: rgba(0,0,0,0.1); }
+        .course-group.open .sections-list { max-height: 400px; overflow-y: auto; }
+        .section-item { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; border-top: 1px solid var(--border-color); }
+        .section-info { flex-grow: 1; font-size: 0.85rem; color: var(--text-secondary); }
+        .section-info strong { color: var(--text-primary); }
+        .favorite-btn { background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer; transition: color 0.2s, transform 0.2s; }
+        .favorite-btn:hover { transform: scale(1.2); }
+        .favorite-btn.selected { color: var(--primary); }
+
+        #main-content { grid-area: main; display: flex; flex-direction: column; overflow-y: auto; padding: 1.5rem; gap: 1.5rem; }
+        .calendar-container { flex-grow: 1; background-color: var(--bg-content); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 8px 30px rgba(0,0,0,0.2); }
+        #calendar { height: 100%; min-height: 400px; }
         .fc { --fc-border-color: var(--border-color); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; }
-        .fc-col-header-cell { background-color: transparent; border: none; padding: 0.75rem 0; font-weight: 600; color: var(--text-light); border-bottom: 1px solid var(--border-color); }
+        .fc-col-header-cell { background-color: transparent; border: none; padding: 0.75rem 0; font-weight: 600; color: var(--text-muted); }
         .fc .fc-day-today { background-color: rgba(var(--rgb-primary), 0.05) !important; }
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
-        .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s; background: linear-gradient(135deg, var(--event-color-light), var(--event-color-dark)); }
-        .fc-event:hover { transform: scale(1.03); box-shadow: 0 4px 15px rgba(0,0,0,0.3); filter: brightness(1.1);}
-        .fc-event.fc-event-preview { background: transparent !important; opacity: 0.7; box-shadow: none; pointer-events: none; border-style: dashed !important; border-width: 2px !important; }
-        .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
-        .light .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
+        .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); transition: all 0.2s; background: linear-gradient(135deg, var(--event-color-light), var(--event-color-dark)); }
         
-        .my-schedule-section { flex-shrink: 0; border-top: 1px solid var(--border-color); padding: 1rem; }
-        .my-schedule-section h3 { margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); }
-        .my-schedule-list { max-height: 25vh; overflow-y: auto; padding-right: 0.5rem; margin-right: -0.5rem; }
-        
-        .my-schedule-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: .75rem; background: rgba(var(--rgb-primary), 0.05); animation: scaleIn .4s var(--transition) both; position: relative; }
-        .my-schedule-item.has-conflict { border-left: 4px solid var(--warning); background: var(--warning-bg); }
-        .conflict-badge { position: absolute; top: .75rem; left: .75rem; color: var(--warning); font-size: 1.2rem; cursor: help; }
-        .my-schedule-item-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: .75rem; }
-        .my-schedule-item-header .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; cursor: pointer; transition: transform .2s ease; border: 2px solid rgba(255,255,255,0.5); }
-        .my-schedule-item-header .color-dot:hover { transform: scale(1.2); }
-        .my-schedule-item-header h4 { font-size: .9rem; margin: 0; flex-grow: 1; }
-        .my-schedule-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: .5rem .75rem; font-size: .8rem; color: var(--text-light); padding-top: .75rem; border-top: 1px solid var(--border-color); }
-        .my-schedule-details div { display: flex; align-items: center; gap: .5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .my-schedule-details span { font-weight: 600; color: var(--text-dark); }
-        .my-schedule-details .full-width { grid-column: 1 / -1; }
-        
-        .total-credits-summary { margin-top: 1rem; padding: .75rem; text-align: center; font-weight: 600; background: var(--bg-item-hover); border-radius: var(--radius-md); }
-        .total-credits-summary span { color: var(--primary); font-weight: 700; font-size: 1.1em; }
-        
-        .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--text-light); }
-        .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--primary); opacity: 0.5; }
-        .no-data h4 { margin: 0 0 0.5rem; font-size: 1.2rem; font-weight: 600; color: var(--text-dark); }
-        .no-data p { margin: 0; font-size: 0.9rem; max-width: 250px; line-height: 1.7; }
+        .conflict-section { background-color: var(--bg-content); border: 1px solid var(--danger-border); border-radius: var(--radius-lg); padding: 1rem 1.5rem; display: none; }
+        .conflict-section h3 { font-size: 1rem; color: var(--danger); margin: 0 0 0.75rem 0; display: flex; align-items: center; gap: 0.5rem; }
+        .conflict-list { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.85rem; }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
-        .modal-overlay.open { opacity: 1; visibility: visible; }
-        .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--bg-sidebar); border-radius: var(--radius-lg); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--border-color); }
-        .settings-modal.open { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h3 { margin: 0; font-size: 1.3rem; color: var(--text-dark); }
-        .modal-header i { cursor: pointer; font-size: 1.5rem; color: var(--text-light); transition: all 0.2s; }
-        .modal-header i:hover { color: var(--text-dark); transform: rotate(90deg); }
-        .modal-content { padding: 1.5rem; max-height: 70vh; overflow-y: auto; }
-        .settings-group { margin-bottom: 2rem; }
-        .settings-group-title { font-size: 1.2rem; font-weight: 600; color: var(--primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
-        .settings-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
-        .settings-item-label { display: flex; flex-direction: column; gap: 0.25rem; }
-        .settings-item-label span { font-size: 1rem; font-weight: 500; }
-        .settings-item-label small { font-size: 0.8rem; color: var(--text-light); }
+        #footer-section {
+            grid-area: footer;
+            background-color: var(--bg-content);
+            border-top: 1px solid var(--border-color);
+            padding: 1rem;
+            max-height: 35vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .footer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem; }
+        .footer-title { margin: 0; font-size: 1.1rem; }
+        .footer-summary { font-size: 0.9rem; color: var(--text-secondary); }
+        .details-table-container { flex-grow: 1; overflow-y: auto; }
+        .details-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .details-table th, .details-table td { padding: 0.75rem; text-align: right; border-bottom: 1px solid var(--border-color); }
+        .details-table thead { position: sticky; top: 0; background-color: var(--bg-content); }
+        .details-table th { color: var(--text-muted); font-weight: 500; }
+        .details-table tbody tr:last-child td { border-bottom: none; }
+        .details-table .color-cell { width: 40px; }
+        .details-table .color-dot { width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 10px 1px; cursor: pointer; transition: transform .2s ease; }
+        .details-table .color-dot:hover { transform: scale(1.2); }
 
-        .mode-toggle { display: flex; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 999px; padding: 4px; gap: 4px; }
-        .mode-btn { padding: 0.4rem 1rem; border: none; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); transition: all 0.2s ease; user-select: none; }
-        .mode-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 5px rgba(var(--rgb-primary), 0.2); }
-        .light .mode-toggle { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
+        #mobile-unsupported { display: none; }
+        @media (max-width: 1200px) { #app-container { grid-template-columns: 350px 1fr; } }
+        @media (max-width: 900px) { body { overflow: auto; } #app-container { display: none; } #mobile-unsupported { display: flex; } }
 
-        .theme-picker { display:flex; gap:.5rem; align-items:center; }
-        .theme-dot { width:24px; height:24px; border-radius:50%; cursor:pointer; transition:all .2s ease; border:2px solid transparent }
-        .theme-dot:hover { transform:scale(1.2) }
-        .theme-dot.active { border-color:#fff; transform: scale(1.1); }
-        .light .theme-dot.active { border-color: var(--text-dark); }
-        .color-picker-label { position: relative; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid var(--border-color); overflow: hidden; }
-        .color-picker-label:hover { transform: scale(1.2); }
-        .color-picker-label.active { border-color: #fff; transform: scale(1.1); }
-        .light .color-picker-label.active { border-color: var(--text-dark); }
-        .color-picker-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; padding: 0; cursor: pointer; }
+        .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--text-secondary); }
+        .no-data i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.5; }
 
-        .time-range-selects { display: flex; gap: 0.5rem; }
-        .time-range-selects select { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-dark); border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.9rem; }
-        .light .time-range-selects select { background: rgba(0,0,0,0.04); }
-
-        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
-
-        #course-visibility-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
-        .visibility-course-item { padding: 0.75rem 1rem; border: 2px solid var(--primary); border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); background-color: rgba(var(--rgb-primary), 0.1); box-shadow: 0 0 12px -2px rgba(var(--rgb-primary), 0.4); text-align: center; font-weight: 600; font-size: 0.9rem; }
-        .visibility-course-item.hidden { opacity: 0.5; border-color: var(--border-color); box-shadow: none; background-color: transparent; }
-        .visibility-course-item .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-left: 8px; vertical-align: middle; }
-
-        .data-management-zone { border: 1px solid rgba(var(--rgb-warning), 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-top: 1rem; background: rgba(var(--rgb-warning), 0.05); }
-        .data-btn { width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
-        .data-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(var(--rgb-primary), 0.1); }
-        .data-btn.danger { border-color: rgba(var(--rgb-danger), 0.5); color: var(--danger); }
-        .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.1); color: var(--danger); }
-        
-        .color-picker-popover { position: absolute; z-index: 10; background-color: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: .75rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: .5rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); animation: scaleIn .2s ease; transform-origin: top left; }
+        .color-picker-popover { position: absolute; z-index: 1000; background-color: #1e1f22; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: .75rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: .5rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); animation: scaleIn .2s ease; transform-origin: top left; }
         .color-picker-popover .color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; transition: transform .2s ease; border: 2px solid transparent; }
         .color-picker-popover .color-swatch:hover { transform: scale(1.1); }
-        .color-picker-popover .color-swatch.active { border-color: var(--text-dark); }
+        .color-picker-popover .color-swatch.active { border-color: var(--text-primary); }
     </style>
 </head>
 <body>
+    <div id="app-container">
+        <header id="app-header">
+            <a href="#" class="logo">
+                <i class="ri-calendar-event-line logo-icon"></i>
+                <span class="logo-text">QU Schedule Builder</span>
+            </a>
+            <div class="header-actions">
+                <button class="action-btn" id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button>
+                <a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="action-btn">
+                    <i class="ri-telegram-line"></i> MUTLAQ1
+                </a>
+            </div>
+        </header>
 
-    <div class="cosmic-bg-container">
-        <div class="nebula-glow"></div>
-        <canvas id="starfield-canvas"></canvas>
-    </div>
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">شعب المقررات</h2>
+                <div class="sidebar-controls">
+                    <button id="expand-all-btn">توسيع الكل</button>
+                    <button id="collapse-all-btn">طي الكل</button>
+                </div>
+            </div>
+            <div class="sidebar-content custom-scrollbar" id="courses-list-container">
+                <div id="no-data-message" class="no-data" style="display: none;">
+                    <i class="ri-time-line"></i>
+                    <h4>في انتظار البيانات...</h4>
+                    <p>شغّل أداة "QU Schedule" من صفحة المقررات.</p>
+                </div>
+            </div>
+        </aside>
 
-    <div id="install-section">
-        <h3>طريقة التثبيت</h3>
-        <p>اسحب هذا الزر إلى شريط الإشارات المرجعية لتثبيت الأداة:</p>
-        <a id="bookmarklet-btn" class="bookmarklet-button" href="#" onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">QU Schedule</a>
+        <main id="main-content" class="custom-scrollbar">
+            <div class="calendar-container">
+                <div id="calendar"></div>
+            </div>
+            <div class="conflict-section" id="conflict-section">
+                <h3><i class="ri-alert-line"></i> تم اكتشاف تعارض في الجدول</h3>
+                <div class="conflict-list" id="conflict-list"></div>
+            </div>
+        </main>
+
+        <footer id="footer-section">
+            <div class="footer-header">
+                <h2 class="footer-title">تفاصيل الشعب المختارة</h2>
+                <span class="footer-summary" id="footer-summary"></span>
+            </div>
+            <div class="details-table-container custom-scrollbar">
+                <table class="details-table">
+                    <thead id="details-table-head">
+                        <tr>
+                            <th class="color-cell"></th>
+                            <th>المقرر</th>
+                            <th>الشعبة</th>
+                            <th>المحاضر</th>
+                            <th>المواعيد</th>
+                            <th>الساعات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="details-table-body">
+                        <!-- Selected courses details are rendered here -->
+                    </tbody>
+                </table>
+            </div>
+        </footer>
     </div>
     
     <div id="mobile-unsupported">
@@ -238,75 +226,8 @@
         </a>
     </div>
 
-    <div id="toast" class="toast-notification"></div>
-
-    <div class="page-wrapper">
-        <main class="main-content custom-scrollbar">
-            <header class="main-header">
-                <h1><i class="ri-calendar-event-line"></i> QU Schedule</h1>
-                <div class="header-actions">
-                    <button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button>
-                    <button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول</button>
-                </div>
-            </header>
-            <div class="calendar-wrapper">
-                <div class="calendar-container"><div id='calendar'></div></div>
-            </div>
-        </main>
-        
-        <aside class="sidebar" id="sidebar">
-            <header class="sidebar-header">
-                <h2><i class="ri-stack-line"></i> المقررات</h2>
-            </header>
-            
-            <div class="sidebar-content-wrapper">
-                <div class="top-section">
-                    <div class="tabs-container">
-                        <div class="sidebar-tabs">
-                            <button class="tab-btn active" data-tab="courses-tab"><i class="ri-layout-grid-line"></i> المقررات</button>
-                            <button class="tab-btn" data-tab="exams-tab"><i class="ri-file-list-3-line"></i> الاختبارات</button>
-                        </div>
-                    </div>
-                    <div id="courses-tab" class="tab-content active custom-scrollbar">
-                        <div id="courses-list">
-                            <div class="no-data" id="no-data-message">
-                                <i class="ri-time-line"></i>
-                                <h4>في انتظار البيانات...</h4>
-                                <p>شغّل أداة "QU Schedule" من صفحة المقررات المطروحة.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="exams-tab" class="tab-content custom-scrollbar">
-                        <div id="exams-list"></div>
-                    </div>
-                </div>
-                
-                <div class="my-schedule-section" id="my-schedule-summary" style="display: none;">
-                    <h3><i class="ri-calendar-2-line"></i> جدولـي</h3>
-                    <div class="my-schedule-list custom-scrollbar" id="my-schedule-list"></div>
-                    <div class="total-credits-summary" id="total-credits-summary"></div>
-                </div>
-            </div>
-
-            <footer class="sidebar-footer">
-                <a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit">
-                    <i class="ri-telegram-line"></i>
-                    MUTLAQ1
-                </a>
-            </footer>
-        </aside>
-
-        <div class="modal-overlay" id="modal-overlay"></div>
-        <div class="settings-modal" id="settings-modal">
-            <div class="modal-header">
-                <h3><i class="ri-settings-3-line"></i> الإعدادات</h3>
-                <i class="ri-close-line" id="close-modal-btn"></i>
-            </div>
-            <div class="modal-content custom-scrollbar" id="settings-modal-content">
-                <!-- Content is built dynamically by JS -->
-            </div>
-        </div>
-    </div>
+    <!-- Modals and other elements will be added by JS -->
+    <div id="modal-root"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -318,14 +239,12 @@
             const QU_ScheduleApp = {
                 state: {
                     calendar: null, allCoursesData: [], groupedCourses: {}, selectedSections: new Set(),
-                    hiddenCourseCodes: new Set(), examSchedule: {}, customColors: {},
-                    userSettings: { theme: 'dark', accentColor: '#8b5cf6', showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [] }
+                    customColors: {}, openCourseGroups: new Set()
                 },
                 constants: {
-                    PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316' },
                     COLOR_PALETTE: ['#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f97316', '#ef4444', '#06b6d4', '#d946ef'],
-                    DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
-                    STORAGE_KEYS: { SETTINGS: 'quScheduleSettings_v9', COURSES: 'quScheduleCourses_v9', SELECTED: 'quScheduleSelected_v9', COLORS: 'quScheduleColors_v9' },
+                    DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 },
+                    STORAGE_KEYS: { COURSES: 'quScheduleCourses_v10', SELECTED: 'quScheduleSelected_v10', COLORS: 'quScheduleColors_v10' },
                     EXPECTED_UNIVERSITY_ORIGIN: "https://edu-gate.qu.edu.sa",
                     EXAM_SCHEDULE_URL: './exams.json'
                 },
@@ -333,344 +252,165 @@
 
                 init() {
                     this._populateDOMElements();
-                    this._buildSettingsModal();
                     this._setupEventListeners();
-                    this._initCosmicEffects();
-                    this._populateTimeSelects();
-                    this._loadSettings();
-                    this._loadCustomColors();
+                    // this._initCosmicEffects(); // Optional: uncomment for background effects
                     this._initializeCalendar();
+                    this._loadCustomColors();
                     this._loadDataFromStorage();
                     this._listenForDataFromOpener();
-                    this._updateBookmarkletCode();
                 },
-                
+
                 _loadDataFromStorage() {
                     const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
                     if (storedCourses) {
-                        try {
-                            const courses = JSON.parse(storedCourses);
-                            this._processAndDisplayData(courses).then(() => {
-                                this._loadSelectedSections();
-                                this.updateCalendarAndConflicts();
-                            });
-                        } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES); this.dom.installSection.style.display = 'block'; }
-                    } else { this.dom.installSection.style.display = 'block'; }
+                        try { this._processAndDisplayData(JSON.parse(storedCourses)); }
+                        catch (e) { this._showDemoData(); }
+                    } else {
+                        this._showDemoData();
+                    }
                 },
                 
                 _listenForDataFromOpener() {
                     window.addEventListener('message', (event) => {
                         if (event.origin !== this.constants.EXPECTED_UNIVERSITY_ORIGIN) return;
                         if (event.data && event.data.type === 'universityCoursesData') {
-                            const courses = event.data.data;
-                            localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
+                            localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(event.data.data));
                             this.state.selectedSections.clear();
                             localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED);
-                            this._processAndDisplayData(courses).then(() => this.updateCalendarAndConflicts());
+                            this._processAndDisplayData(event.data.data);
                         }
                     }, false);
                 },
 
                 async _processAndDisplayData(courses) {
-                    this.dom.installSection.style.display = 'none';
                     await this._fetchExamSchedule();
-                    this.state.allCoursesData = courses.map((section, index) => ({ ...section, uniqueId: `${section.code}-${section.section}-${index}`, timeSlots: this._parseTimeEntries(section.time) }));
+                    this.state.allCoursesData = courses.map((section, index) => ({ ...section, uniqueId: `${section.code}-${section.section}-${index}` }));
                     this.state.groupedCourses = this.state.allCoursesData.reduce((acc, course) => {
                         if (!acc[course.code]) acc[course.code] = { name: course.name, code: course.code, sections: [] };
                         acc[course.code].sections.push(course); return acc;
                     }, {});
                     let colorIndex = 0;
                     Object.values(this.state.groupedCourses).forEach(group => { group.color = this.state.customColors[group.code] || this.constants.COLOR_PALETTE[colorIndex++ % this.constants.COLOR_PALETTE.length]; });
-                    document.getElementById('no-data-message').style.display = 'none';
-                    this._renderCoursesList();
-                    this._populateCourseVisibilityList();
+                    const storedSelected = localStorage.getItem(this.constants.STORAGE_KEYS.SELECTED);
+                    if(storedSelected) try { this.state.selectedSections = new Set(JSON.parse(storedSelected)); } catch(e){}
+                    this.updateUI();
                 },
                 
-                _loadSelectedSections() { const stored = localStorage.getItem(this.constants.STORAGE_KEYS.SELECTED); if (stored) { try { const parsed = JSON.parse(stored); if (Array.isArray(parsed)) this.state.selectedSections = new Set(parsed); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED); } } },
-                _loadCustomColors() { const stored = localStorage.getItem(this.constants.STORAGE_KEYS.COLORS); if (stored) { try { this.state.customColors = JSON.parse(stored); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.COLORS); } } },
+                async _fetchExamSchedule() { try { const r = await fetch(this.constants.EXAM_SCHEDULE_URL); if (!r.ok) throw Error(); this.state.examSchedule = await r.json(); } catch (e) { this.state.examSchedule = {}; } },
+                _loadCustomColors() { const c = localStorage.getItem(this.constants.STORAGE_KEYS.COLORS); if (c) try { this.state.customColors = JSON.parse(c); } catch(e){} },
                 _saveCustomColors() { localStorage.setItem(this.constants.STORAGE_KEYS.COLORS, JSON.stringify(this.state.customColors)); },
 
-                async _fetchExamSchedule() {
-                    try {
-                        const response = await fetch(this.constants.EXAM_SCHEDULE_URL);
-                        if (!response.ok) throw new Error(`Network response: ${response.statusText}`);
-                        this.state.examSchedule = await response.json();
-                    } catch (error) { this.state.examSchedule = {}; this._showToast('فشل تحميل جدول الاختبارات.', 'warning'); }
-                },
-
-                updateCalendarAndConflicts() {
-                    if (!this.state.calendar) return;
-                    this.state.calendar.removeAllEvents();
+                updateUI() {
+                    this._renderCourseList();
                     const selectedCourseDetails = Array.from(this.state.selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-                    const conflictMap = this._calculateConflicts(selectedCourseDetails);
-                    selectedCourseDetails.forEach(section => {
+                    this._renderCalendar(selectedCourseDetails);
+                    this._renderDetailsTable(selectedCourseDetails);
+                    this._renderConflicts(selectedCourseDetails);
+                },
+
+                _renderCourseList() {
+                    this.dom.coursesListContainer.innerHTML = '';
+                    if (Object.keys(this.state.groupedCourses).length === 0) { this.dom.noDataMessage.style.display = 'flex'; return; }
+                    this.dom.noDataMessage.style.display = 'none';
+
+                    Object.values(this.state.groupedCourses).sort((a,b) => a.code.localeCompare(b.code)).forEach((group, i) => {
+                        const groupEl = document.createElement('div');
+                        groupEl.className = `course-group ${this.state.openCourseGroups.has(group.code) ? 'open' : ''}`;
+                        groupEl.style.animationDelay = `${i * 30}ms`;
+                        
+                        const selectedInSection = group.sections.filter(s => this.state.selectedSections.has(s.uniqueId)).length;
+                        
+                        groupEl.innerHTML = `
+                            <div class="course-group-header" data-course-code="${group.code}">
+                                <h3>${group.name} (${group.code})</h3>
+                                ${selectedInSection > 0 ? `<span class="badge">${selectedInSection}</span>` : ''}
+                                <i class="ri-arrow-down-s-line toggle-icon"></i>
+                            </div>
+                            <div class="sections-list custom-scrollbar">
+                                ${group.sections.map(s => `
+                                    <div class="section-item">
+                                        <div class="section-info"><strong>${s.section}</strong> (${s.type}) - ${s.instructor}</div>
+                                        <button class="favorite-btn ${this.state.selectedSections.has(s.uniqueId) ? 'selected' : ''}" data-unique-id="${s.uniqueId}">
+                                            <i class="ri-heart-${this.state.selectedSections.has(s.uniqueId) ? 'fill' : 'line'}"></i>
+                                        </button>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        `;
+                        this.dom.coursesListContainer.appendChild(groupEl);
+                    });
+                },
+
+                _renderCalendar(selectedCourses) {
+                    this.state.calendar.removeAllEvents();
+                    selectedCourses.forEach(section => {
                         const group = this.state.groupedCourses[section.code];
-                        if (group && !this.state.hiddenCourseCodes.has(section.code)) {
-                            const lectureEvents = this._createLectureEventsForSection(section, false, group.color);
-                            this.state.calendar.addEventSource(lectureEvents);
+                        if (group) {
+                            const events = this._createCalendarEvents(section, group.color);
+                            this.state.calendar.addEventSource(events);
                         }
-                    });
-                    this._renderFinalExams(selectedCourseDetails);
-                    this._renderMyScheduleSummary(selectedCourseDetails, conflictMap);
-                    this._updateAvailableSectionsUI(selectedCourseDetails);
-                    localStorage.setItem(this.constants.STORAGE_KEYS.SELECTED, JSON.stringify(Array.from(this.state.selectedSections)));
-                },
-
-                _renderCoursesList() {
-                    this.dom.coursesList.innerHTML = '';
-                    const visibleCourses = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code));
-                    if (visibleCourses.length === 0 && Object.keys(this.state.groupedCourses).length > 0) { this.dom.coursesList.innerHTML = `<div class="no-data"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`; return; }
-                    visibleCourses.forEach((group, i) => {
-                        const courseItem = document.createElement('div');
-                        courseItem.className = 'course-item';
-                        courseItem.style.animationDelay = `${i * 50}ms`;
-                        const sectionsHTML = group.sections.map(section => `<div class="section-btn ${this.state.selectedSections.has(section.uniqueId) ? 'selected' : ''}" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`).join('');
-                        courseItem.innerHTML = `<div class="course-item-header"><span class="color-dot" style="background-color: ${group.color}; box-shadow: 0 0 10px 1px ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
-                        this.dom.coursesList.appendChild(courseItem);
                     });
                 },
                 
-                _renderMyScheduleSummary(selectedCourses, conflictMap) {
-                    if (selectedCourses.length === 0) { this.dom.myScheduleSummary.style.display = 'none'; return; }
-                    this.dom.myScheduleSummary.style.display = 'block';
-                    this.dom.myScheduleList.innerHTML = '';
-                    let totalCredits = 0;
-                    const uniqueCourseCodes = new Set(selectedCourses.map(c => c.code));
-                    uniqueCourseCodes.forEach(code => { const course = this.state.allCoursesData.find(c => c.code === code); if (course) totalCredits += parseInt(course.hours, 10) || 0; });
-                    selectedCourses.forEach((course, index) => {
-                        const group = this.state.groupedCourses[course.code];
-                        const item = document.createElement('div');
-                        item.className = 'my-schedule-item';
-                        item.style.animationDelay = `${index * 50}ms`;
-                        const conflictMessages = conflictMap.get(course.uniqueId);
-                        if (conflictMessages) {
-                            item.classList.add('has-conflict');
-                            item.innerHTML += `<i class="ri-alert-line conflict-badge" title="${conflictMessages.join('\n')}"></i>`;
-                        }
-                        let examText = "غير محدد";
-                        if(course.examPeriod && this.state.examSchedule[course.examPeriod]) {
-                            const p = this.state.examSchedule[course.examPeriod];
-                            examText = `${p.day} ${p.hijriDate.replace(/\//g, '-')} | ${p.startTime.slice(0,5)}`;
-                        }
-                        item.innerHTML += `<div class="my-schedule-item-header"><span class="color-dot" data-course-code="${course.code}" style="background-color: ${group ? group.color : '#ccc'};"></span><h4>${course.name} (${course.code})</h4></div><div class="my-schedule-details"><div class="full-width"><i class="ri-time-line"></i> <span>${course.time.replace(/<br>/g, ', ')}</span></div><div><i class="ri-hashtag"></i> <span>${course.section} (${course.type})</span></div><div><i class="ri-scales-3-line"></i> <span>${course.hours} ساعات</span></div><div><i class="ri-building-4-line"></i> <span>${course.location}</span></div><div><i class="ri-check-line"></i> <span>${course.status}</span></div><div class="full-width"><i class="ri-file-list-3-line"></i> <span>${examText}</span></div></div>`;
-                        this.dom.myScheduleList.appendChild(item);
-                    });
-                    this.dom.totalCreditsSummary.innerHTML = `إجمالي الساعات المعتمدة: <span>${totalCredits}</span>`;
+                _renderDetailsTable(selectedCourses) {
+                    if (selectedCourses.length === 0) { this.dom.footerSection.style.display = 'none'; return; }
+                    this.dom.footerSection.style.display = 'flex';
+                    const totalHours = selectedCourses.reduce((sum, s) => sum + (parseInt(s.hours) || 0), 0);
+                    this.dom.footerSummary.textContent = `${selectedCourses.length} شعب مختارة • ${totalHours} ساعة معتمدة`;
+                    this.dom.detailsTableBody.innerHTML = selectedCourses.map(s => {
+                        const group = this.state.groupedCourses[s.code];
+                        return `
+                            <tr>
+                                <td class="color-cell"><div class="color-dot" data-course-code="${s.code}" style="background-color: ${group.color}; box-shadow: 0 0 10px 1px ${group.color};"></div></td>
+                                <td>${s.name}</td>
+                                <td>${s.section}</td>
+                                <td>${s.instructor}</td>
+                                <td>${s.time.replace(/<br>/g, ', ')}</td>
+                                <td>${s.hours}</td>
+                            </tr>
+                        `;
+                    }).join('');
                 },
 
-                _renderFinalExams(selectedCourses) {
-                    this.dom.examsList.innerHTML = '';
-                    const uniqueExams = [...new Map(selectedCourses.map(e => e.examPeriod ? [e.examPeriod, e] : [e.uniqueId, e])).values()];
-                    const validExams = uniqueExams.filter(e => e.examPeriod && this.state.examSchedule[e.examPeriod]);
-                    if (validExams.length === 0) { this.dom.examsList.innerHTML = `<div class="no-data"><i class="ri-file-text-line"></i><h4>لا توجد اختبارات</h4><p>لم يتم تحديد اختبارات نهائية للمقررات المختارة.</p></div>`; return; }
-                    validExams.sort((a, b) => parseInt(a.examPeriod, 10) - parseInt(b.examPeriod, 10)).forEach((exam, i) => {
-                        const periodData = this.state.examSchedule[exam.examPeriod];
-                        const examItem = document.createElement('div');
-                        examItem.className = 'exam-item';
-                        examItem.style.animationDelay = `${i * 100}ms`;
-                        examItem.innerHTML = `<i class="ri-file-text-line exam-icon"></i><div class="exam-details"><h4>${exam.name} (${exam.code})</h4><p><strong>${periodData.day} ${periodData.hijriDate}</strong><br>من ${periodData.startTime.slice(0,5)} إلى ${periodData.endTime.slice(0,5)}</p></div>`;
-                        this.dom.examsList.appendChild(examItem);
-                    });
-                },
-
-                _updateAvailableSectionsUI(selectedCourses) {
-                    this.state.allCoursesData.forEach(section => {
-                        const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
-                        if (btn && !this.state.selectedSections.has(section.uniqueId)) btn.classList.toggle('conflicted', this._isSectionConflicted(section, selectedCourses));
-                    });
+                _renderConflicts(selectedCourses) {
+                    const conflicts = this._calculateConflicts(selectedCourses);
+                    if (conflicts.length === 0) { this.dom.conflictSection.style.display = 'none'; return; }
+                    this.dom.conflictSection.style.display = 'block';
+                    this.dom.conflictList.innerHTML = conflicts.map(c => `<div>- تعارض بين <strong>${c.courseA} (${c.sectionA})</strong> و <strong>${c.courseB} (${c.sectionB})</strong> في ${c.type}.</div>`).join('');
                 },
                 
-                _populateCourseVisibilityList() {
-                    this.dom.courseVisibilityList.innerHTML = '';
-                    if (Object.keys(this.state.groupedCourses).length === 0) { this.dom.noCoursesForVisibility.style.display = 'block'; return; }
-                    this.dom.noCoursesForVisibility.style.display = 'none';
-                    Object.values(this.state.groupedCourses).forEach(group => {
-                        const item = document.createElement('div');
-                        item.className = 'visibility-course-item';
-                        if (this.state.hiddenCourseCodes.has(group.code)) item.classList.add('hidden');
-                        item.dataset.courseCode = group.code;
-                        item.innerHTML = `<span class="color-dot" style="background-color: ${group.color};"></span> ${group.name} (${group.code})`;
-                        this.dom.courseVisibilityList.appendChild(item);
-                    });
-                },
-
-                _calculateConflicts(selectedCourses) {
-                    const conflictMap = new Map();
-                    for (let i = 0; i < selectedCourses.length; i++) {
-                        for (let j = i + 1; j < selectedCourses.length; j++) {
-                            const cA = selectedCourses[i], cB = selectedCourses[j];
-                            const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || [];
-                            if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) { msgA.push(`تعارض وقت مع ${cB.code}`); msgB.push(`تعارض وقت مع ${cA.code}`); }
-                            if (cA.examPeriod && cB.examPeriod && cA.examPeriod !== "null" && cA.examPeriod === cB.examPeriod) { msgA.push(`تعارض اختبار مع ${cB.code}`); msgB.push(`تعارض اختبار مع ${cA.code}`); }
-                            if (msgA.length > 0) conflictMap.set(cA.uniqueId, msgA);
-                            if (msgB.length > 0) conflictMap.set(cB.uniqueId, msgB);
-                        }
-                    }
-                    return conflictMap;
-                },
-
-                _isSectionConflicted: (section, selectedCourses) => selectedCourses.some(sel => (section.timeSlots.some(sA => sel.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) || (section.examPeriod && sel.examPeriod && section.examPeriod !== "null" && section.examPeriod === sel.examPeriod)),
-                _createLectureEventsForSection: (section, isPreview = false, color = '#8b5cf6') => ({ events: section.timeSlots.map(slot => ({ id: isPreview ? `preview-event-${slot.day}`: undefined, title: `${section.name}`, daysOfWeek: [slot.day], startTime: slot.start, endTime: slot.end, backgroundColor: isPreview ? 'transparent' : color, borderColor: isPreview ? color : QU_ScheduleApp._adjustColorBrightness(color, -10), extendedProps: { ...section, style: { '--event-color-light': QU_ScheduleApp._adjustColorBrightness(color, 20), '--event-color-dark': QU_ScheduleApp._adjustColorBrightness(color, -10) } }, display: 'block', classNames: isPreview ? ['fc-event-preview'] : [] })) }),
+                _createCalendarEvents: (section, color) => ({ events: (section.time.split('<br>') || []).map(entry => { const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{1,2}:\d{2})\s*(ص|م)\s*-\s*(\d{1,2}:\d{2})\s*(ص|م)/); if (!parts) return null; const days = parts[1].trim().split(/\s+/); const start = QU_ScheduleApp._convertTo24Hour(parts[2], parts[3]); const end = QU_ScheduleApp._convertTo24Hour(parts[4], parts[5]); return days.map(day => QU_ScheduleApp.constants.DAY_MAPPING[day] !== undefined ? { title: `${section.name}`, daysOfWeek: [QU_ScheduleApp.constants.DAY_MAPPING[day]], startTime: start, endTime: end, extendedProps: { ...section, style: { '--event-color-light': QU_ScheduleApp._adjustColorBrightness(color, 20), '--event-color-dark': QU_ScheduleApp._adjustColorBrightness(color, -10) } } } : null); }).flat().filter(Boolean) }),
+                _calculateConflicts(selectedCourses) { const conflicts = []; for (let i = 0; i < selectedCourses.length; i++) for (let j = i + 1; j < selectedCourses.length; j++) { const cA = selectedCourses[i], cB = selectedCourses[j]; if (this._timeOverlap(cA.time, cB.time)) conflicts.push({ courseA: cA.name, sectionA: cA.section, courseB: cB.name, sectionB: cB.section, type: 'الوقت' }); if (cA.examPeriod && cB.examPeriod && cA.examPeriod !== "null" && cA.examPeriod === cB.examPeriod) conflicts.push({ courseA: cA.name, sectionA: cA.section, courseB: cB.name, sectionB: cB.section, type: 'الاختبار النهائي' }); } return conflicts; },
+                _timeOverlap(timeA, timeB) { const slotsA = this._parseTimeEntries(timeA), slotsB = this._parseTimeEntries(timeB); return slotsA.some(sA => slotsB.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start)); },
                 _parseTimeEntries(timeString) { if (!timeString || typeof timeString !== 'string' || timeString === 'غير محدد') return []; return timeString.split('<br>').map(entry => { const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{1,2}:\d{2})\s*(ص|م)\s*-\s*(\d{1,2}:\d{2})\s*(ص|م)/); if (!parts) return null; const days = parts[1].trim().split(/\s+/); const start = this._convertTo24Hour(parts[2], parts[3]); const end = this._convertTo24Hour(parts[4], parts[5]); return days.map(day => this.constants.DAY_MAPPING[day] !== undefined ? { day: this.constants.DAY_MAPPING[day], start, end } : null); }).flat().filter(Boolean); },
                 _convertTo24Hour(time, period) { let [h, m] = time.split(':'); h = parseInt(h, 10); if (period.includes('م') && h !== 12) h += 12; if (period.includes('ص') && h === 12) h = 0; return `${String(h).padStart(2, '0')}:${m}:00`; },
 
                 _setupEventListeners() {
-                    this.dom.clearCalendarBtn.addEventListener('click', () => this._handleClearCalendar());
-                    this.dom.settingsBtn.addEventListener('click', () => this._toggleSettingsModal(true));
-                    this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
-                    this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
-                    this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
-                    this.dom.coursesList.addEventListener('click', e => this._handleCourseListClick(e));
-                    this.dom.coursesList.addEventListener('mouseover', e => this._handleCoursePreview(e, 'show'));
-                    this.dom.coursesList.addEventListener('mouseout', e => this._handleCoursePreview(e, 'hide'));
-                    this.dom.coursesList.addEventListener('touchstart', e => { e.preventDefault(); this._handleCoursePreview(e, 'show'); }, { passive: false });
-                    this.dom.coursesList.addEventListener('touchend', e => this._handleCoursePreview(e, 'hide'));
-                    this.dom.myScheduleList.addEventListener('click', e => this._handleColorDotClick(e));
+                    this.dom.coursesListContainer.addEventListener('click', e => this._handleSidebarClick(e));
+                    this.dom.detailsTableBody.addEventListener('click', e => this._handleColorDotClick(e));
+                    this.dom.expandAllBtn.addEventListener('click', () => this._toggleAllCourses(true));
+                    this.dom.collapseAllBtn.addEventListener('click', () => this._toggleAllCourses(false));
                 },
-                
-                _handleCourseListClick(e) {
-                    const sectionBtn = e.target.closest('.section-btn');
-                    const header = e.target.closest('.course-item-header');
-                    if (sectionBtn) {
-                        this._hidePreview();
-                        const uniqueId = sectionBtn.dataset.uniqueId;
-                        sectionBtn.classList.toggle('selected');
-                        if (this.state.selectedSections.has(uniqueId)) this.state.selectedSections.delete(uniqueId);
-                        else this.state.selectedSections.add(uniqueId);
-                        this.updateCalendarAndConflicts();
-                    } else if (header) {
+
+                _handleSidebarClick(e) {
+                    const header = e.target.closest('.course-group-header');
+                    const favBtn = e.target.closest('.favorite-btn');
+                    if(header) {
+                        const code = header.dataset.courseCode;
+                        if(this.state.openCourseGroups.has(code)) this.state.openCourseGroups.delete(code);
+                        else this.state.openCourseGroups.add(code);
                         header.parentElement.classList.toggle('open');
+                    }
+                    if(favBtn) {
+                        const id = favBtn.dataset.uniqueId;
+                        if(this.state.selectedSections.has(id)) this.state.selectedSections.delete(id);
+                        else this.state.selectedSections.add(id);
+                        localStorage.setItem(this.constants.STORAGE_KEYS.SELECTED, JSON.stringify(Array.from(this.state.selectedSections)));
+                        this.updateUI();
                     }
                 },
                 
-                _handleCoursePreview(e, action) {
-                    const btn = e.target.closest('.section-btn');
-                    if (!btn || btn.classList.contains('selected')) return;
-                    if (action === 'show') {
-                        this._hidePreview();
-                        const section = this.state.allCoursesData.find(c => c.uniqueId === btn.dataset.uniqueId);
-                        if (section) {
-                            const group = this.state.groupedCourses[section.code];
-                            const previewEvents = this._createLectureEventsForSection(section, true, group.color);
-                            this.state.calendar.addEventSource(previewEvents);
-                        }
-                    } else this._hidePreview();
-                },
-                
                 _handleColorDotClick(e) { const colorDot = e.target.closest('.color-dot'); if (colorDot) this._showColorPicker(colorDot, colorDot.dataset.courseCode); },
-                _hidePreview() { this.state.calendar.getEvents().filter(ev => ev.id.startsWith('preview-event')).forEach(ev => ev.remove()); },
-                _handleClearCalendar() { if (confirm('هل أنت متأكد من مسح الجدول المحدد؟')) { this.state.selectedSections.clear(); this.updateCalendarAndConflicts(); this._renderCoursesList(); this._showToast('تم مسح الجدول بنجاح.'); } },
-                _handleTabClick(button) { this.dom.tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); this.dom.tabContents.forEach(content => content.classList.remove('active')); document.getElementById(button.dataset.tab).classList.add('active'); },
-                
-                _loadSettings() {
-                    const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
-                    if (saved) { try { const parsed = JSON.parse(saved); this.state.userSettings = { ...this.state.userSettings, ...parsed }; this.state.hiddenCourseCodes = new Set(this.state.userSettings.hiddenCourseCodes || []); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.SETTINGS); } }
-                    this._applySettings();
-                },
-
-                _saveSettings() { const settingsToSave = { ...this.state.userSettings, hiddenCourseCodes: Array.from(this.state.hiddenCourseCodes) }; localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS, JSON.stringify(settingsToSave)); },
-                _applySettings() {
-                    document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
-                    document.querySelector('meta[name="theme-color"]').setAttribute('content', this.state.userSettings.theme === 'light' ? '#f4f4f5' : '#0a0a0a');
-                    const primaryColor = this.state.userSettings.accentColor;
-                    const darkColor = this._adjustColorBrightness(primaryColor, -20);
-                    const rgbColor = this._hexToRgb(primaryColor);
-                    document.documentElement.style.setProperty('--primary', primaryColor);
-                    document.documentElement.style.setProperty('--primary-dark', darkColor);
-                    if (rgbColor) document.documentElement.style.setProperty('--rgb-primary', rgbColor);
-                    this.dom.modeToggleContainer.querySelector('.active')?.classList.remove('active');
-                    this.dom.modeToggleContainer.querySelector(`[data-theme="${this.state.userSettings.theme}"]`).classList.add('active');
-                    this._populateAccentColorPicker();
-                    this.dom.showWeekendToggle.checked = this.state.userSettings.showWeekends;
-                    this.dom.minTimeSelect.value = this.state.userSettings.minTime;
-                    this.dom.maxTimeSelect.value = this.state.userSettings.maxTime;
-                },
-
-                _exportData() {
-                    if (this.state.selectedSections.size === 0) { this._showToast('الجدول فارغ.', 'warning'); return; }
-                    const dataToExport = { version: 9, createdAt: new Date().toISOString(), schedule: Array.from(this.state.selectedSections), settings: this.state.userSettings, customColors: this.state.customColors };
-                    const dataStr = JSON.stringify(dataToExport, null, 2);
-                    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                    const url = URL.createObjectURL(dataBlob);
-                    const a = document.createElement('a');
-                    a.href = url; a.download = `qu_schedule_${new Date().toISOString().slice(0, 10)}.json`;
-                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                },
-
-                _importData(e) {
-                    const file = e.target.files[0];
-                    if (!file) return;
-                    const reader = new FileReader();
-                    reader.onload = (event) => {
-                        try {
-                            const data = JSON.parse(event.target.result);
-                            if (data && data.version && Array.isArray(data.schedule)) {
-                                this.state.selectedSections = new Set(data.schedule);
-                                if (data.settings) { this.state.userSettings = { ...this.state.userSettings, ...data.settings }; this._saveSettings(); this._applySettings(); }
-                                if (data.customColors) { this.state.customColors = data.customColors; this._saveCustomColors(); }
-                                this._renderCoursesList(); this.updateCalendarAndConflicts();
-                                this._showToast('✅ تم استيراد الجدول بنجاح!'); this._toggleSettingsModal(false);
-                            } else { throw new Error('Invalid format'); }
-                        } catch (error) { this._showToast('خطأ في استيراد الملف.', 'danger'); }
-                    };
-                    reader.readAsText(file); e.target.value = '';
-                },
-                
-                _resetApp() { if (confirm('تحذير! سيؤدي هذا إلى مسح جميع البيانات. هل أنت متأكد؟')) { Object.values(this.constants.STORAGE_KEYS).forEach(key => localStorage.removeItem(key)); location.reload(); } },
-                _toggleSettingsModal: function(forceOpen) { this.dom.settingsModal.classList.toggle('open', forceOpen); this.dom.modalOverlay.classList.toggle('open', forceOpen); },
-                
-                _populateDOMElements() {
-                    const ids = ['courses-list', 'exams-list', 'my-schedule-summary', 'my-schedule-list', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'close-modal-btn', 'install-section', 'toast', 'no-data-message', 'bookmarklet-btn', 'starfield-canvas', 'settings-modal-content'];
-                    ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
-                    this.dom.tabButtons = document.querySelectorAll('.tab-btn');
-                    this.dom.tabContents = document.querySelectorAll('.tab-content');
-                },
-
-                _populateTimeSelects() { for (let i = 0; i < 24; i++) { const t = `${String(i).padStart(2, '0')}:00:00`, l = `${String(i).padStart(2, '0')}:00`; this.dom.minTimeSelect.add(new Option(l, t)); this.dom.maxTimeSelect.add(new Option(l, t)); } },
-                _populateAccentColorPicker() {
-                    this.dom.accentColorPicker.innerHTML = '';
-                    Object.values(this.constants.PRESET_COLORS).forEach(color => {
-                        const dot = document.createElement('div');
-                        dot.className = `theme-dot ${this.state.userSettings.accentColor === color ? 'active' : ''}`;
-                        dot.style.backgroundColor = color;
-                        dot.onclick = () => { this.state.userSettings.accentColor = color; this._saveSettings(); this._applySettings(); };
-                        this.dom.accentColorPicker.appendChild(dot);
-                    });
-                    const isCustom = !Object.values(this.constants.PRESET_COLORS).includes(this.state.userSettings.accentColor);
-                    const customPickerLabel = document.createElement('label');
-                    customPickerLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
-                    customPickerLabel.style.backgroundColor = isCustom ? this.state.userSettings.accentColor : 'transparent';
-                    customPickerLabel.innerHTML = `<input type="color" class="color-picker-input" value="${this.state.userSettings.accentColor}">`;
-                    customPickerLabel.querySelector('input').onchange = (e) => { this.state.userSettings.accentColor = e.target.value; this._saveSettings(); this._applySettings(); };
-                    this.dom.accentColorPicker.appendChild(customPickerLabel);
-                },
-                _updateBookmarkletCode() { this.dom.bookmarkletBtn.href = `javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();`; },
-
-                _initializeCalendar() {
-                    if (this.state.calendar) this.state.calendar.destroy();
-                    const calendarOptions = {
-                        initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
-                        events: [], dir: 'rtl', dayHeaderFormat: { weekday: 'long' },
-                        slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
-                        hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6],
-                        eventClick: ({ event }) => { if (event.id.startsWith('preview-event')) return; if (this.state.selectedSections.has(event.extendedProps.uniqueId)) { this.state.selectedSections.delete(event.extendedProps.uniqueId); this.updateCalendarAndConflicts(); this._renderCoursesList(); } },
-                        eventContent: (arg) => {
-                            const props = arg.event.extendedProps;
-                            const wrapper = document.createElement('div');
-                            wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem;';
-                            wrapper.innerHTML = `<b>${arg.event.title.split('(')[0]}</b><small style="opacity:0.9">${props.location}</small><small style="opacity:0.8">(${props.hours} ساعات)</small>`;
-                            return { domNodes: [wrapper] };
-                        },
-                        eventDidMount: (info) => {
-                            const { style } = info.event.extendedProps;
-                            if(style) { info.el.style.setProperty('--event-color-light', style['--event-color-light']); info.el.style.setProperty('--event-color-dark', style['--event-color-dark']); }
-                        }
-                    };
-                    this.state.calendar = new FullCalendar.Calendar(this.dom.calendar, calendarOptions);
-                    this.state.calendar.render();
-                },
-
                 _showColorPicker(target, courseCode) {
                     this._removeColorPicker();
                     const rect = target.getBoundingClientRect();
@@ -682,49 +422,60 @@
                         swatch.className = 'color-swatch';
                         swatch.style.backgroundColor = color;
                         if (this.state.groupedCourses[courseCode]?.color === color) swatch.classList.add('active');
-                        swatch.onclick = () => { this.state.customColors[courseCode] = color; this._saveCustomColors(); this._processAndDisplayData(this.state.allCoursesData).then(() => this.updateCalendarAndConflicts()); this._removeColorPicker(); };
+                        swatch.onclick = () => { this.state.customColors[courseCode] = color; this._saveCustomColors(); this._processAndDisplayData(this.state.allCoursesData); this._removeColorPicker(); };
                         picker.appendChild(swatch);
                     });
-                    picker.style.top = `${rect.top - 8}px`; // Adjust position
-                    picker.style.right = `${window.innerWidth - rect.left}px`;
+                    picker.style.top = `${rect.top - 8}px`; picker.style.right = `${window.innerWidth - rect.left}px`;
                     document.body.appendChild(picker);
                     setTimeout(() => document.addEventListener('click', this._handleOutsideClick, true), 0);
                 },
-
                 _removeColorPicker() { const picker = document.getElementById('color-picker-popover'); if (picker) picker.remove(); document.removeEventListener('click', this._handleOutsideClick, true); },
                 _handleOutsideClick: (e) => { if (!e.target.closest('#color-picker-popover') && !e.target.closest('.color-dot')) QU_ScheduleApp._removeColorPicker(); },
-
-                _rebuildCalendar() { this._initializeCalendar(); this.updateCalendarAndConflicts(); },
-                _showToast(message, type = 'success') { this.dom.toast.textContent = message; this.dom.toast.className = `toast-notification show`; this.dom.toast.style.backgroundColor = `var(--${type})`; setTimeout(() => { this.dom.toast.classList.remove('show'); }, 3000); },
-                _adjustColorBrightness: (hex, p) => { let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); p/=100; r=Math.round(Math.min(255,Math.max(0,r*(1+p)))); g=Math.round(Math.min(255,Math.max(0,g*(1+p)))); b=Math.round(Math.min(255,Math.max(0,b*(1+p)))); return`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`; },
-                _hexToRgb: (hex) => { let r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return r ? `${parseInt(r[1], 16)}, ${parseInt(r[2], 16)}, ${parseInt(r[3], 16)}` : null; },
                 
-                _initCosmicEffects() {
-                    const canvas = this.dom.starfieldCanvas; if (!canvas) return;
-                    const ctx = canvas.getContext('2d'); let stars = [], shootingStars = [];
-                    const resizeCanvas = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-                    class Star { constructor() { this.depth = Math.random() * 0.9 + 0.1; this.reset(); this.pulsate = Math.random() > 0.98; this.alpha = 0; this.alphaChange = (Math.random() * 0.02) + 0.005; this.vx = (Math.random() - 0.5) * 0.1 * this.depth; this.vy = (Math.random() - 0.5) * 0.1 * this.depth; } reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.radius = (Math.random() * 1.2 + 0.3) * this.depth; this.maxAlpha = (Math.random() * 0.5 + 0.3) * this.depth; } draw() { if (this.pulsate) { this.alpha += this.alphaChange; if (this.alpha >= this.maxAlpha || this.alpha <= 0) this.alphaChange *= -1; } else { this.alpha = this.maxAlpha; } ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `hsl(220, 80%, 95%)`; ctx.fill(); ctx.globalAlpha = 1; } update() { this.y += this.vy; this.x += this.vx; if (this.x > canvas.width + this.radius) this.x = -this.radius; if (this.x < -this.radius) this.x = canvas.width + this.radius; if (this.y > canvas.height + this.radius) this.y = -this.radius; if (this.y < -this.radius) this.y = canvas.height + this.radius; this.draw(); } }
-                    class ShootingStar { constructor() { this.reset(); } reset() { this.x = Math.random() * canvas.width; this.y = 0; this.len = Math.random() * 80 + 10; this.speed = Math.random() * 10 + 6; this.size = Math.random() * 1 + 0.1; this.waitTime = new Date().getTime() + Math.random() * 3000 + 500; this.active = false; } update() { if (this.active) { this.x -= this.speed; this.y += this.speed; if (this.x < 0 || this.y >= canvas.height) this.reset(); } else if (this.waitTime < new Date().getTime()) this.active = true; } draw() { if (this.active) { ctx.strokeStyle = `hsla(220, 100%, 80%, ${Math.random() * 0.5 + 0.5})`; ctx.lineWidth = this.size; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + this.len, this.y - this.len); ctx.stroke(); } } }
-                    const initStars = () => { stars = []; shootingStars = []; const starCount = Math.floor(canvas.width * canvas.height / 8000); for (let i = 0; i < starCount; i++) stars.push(new Star()); for (let i = 0; i < 3; i++) shootingStars.push(new ShootingStar()); };
-                    const animate = () => { requestAnimationFrame(animate); ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => s.update()); shootingStars.forEach(s => { s.update(); s.draw(); }); };
-                    window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
-                    resizeCanvas(); initStars(); animate();
+                _toggleAllCourses(expand) {
+                    if (expand) this.state.openCourseGroups = new Set(Object.keys(this.state.groupedCourses));
+                    else this.state.openCourseGroups.clear();
+                    this._renderCourseList();
+                },
+                
+                _populateDOMElements() {
+                    const ids = ['app-header', 'sidebar', 'main-content', 'footer-section', 'courses-list-container', 'no-data-message', 'expand-all-btn', 'collapse-all-btn', 'calendar', 'conflict-section', 'conflict-list', 'footer-summary', 'details-table-body', 'settings-btn'];
+                    ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
                 },
 
-                _buildSettingsModal() {
-                    this.dom.settingsModalContent.innerHTML = `<div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"><button class="mode-btn" data-theme="dark">ظلام</button><button class="mode-btn" data-theme="light">نهار</button></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list"><p id="no-courses-for-visibility" style="color: var(--text-light); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><select id="min-time-select"></select><select id="max-time-select"></select></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="data-management-zone"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button><input type="file" id="import-file-input" accept=".json" style="display: none;"><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button></div></div>`;
-                    const modalIds = ['accent-color-picker', 'course-visibility-list', 'no-courses-for-visibility', 'show-weekend-toggle', 'min-time-select', 'max-time-select', 'export-btn', 'import-btn', 'import-file-input', 'reset-app-btn'];
-                    modalIds.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
-                    this.dom.modeToggleContainer = this.dom.settingsModalContent.querySelector('.mode-toggle');
-                    this.dom.modeToggleContainer.addEventListener('click', e => { const btn = e.target.closest('.mode-btn'); if (btn) { this.state.userSettings.theme = btn.dataset.theme; this._saveSettings(); this._applySettings(); }});
-                    this.dom.showWeekendToggle.addEventListener('change', e => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); this._rebuildCalendar(); });
-                    this.dom.minTimeSelect.addEventListener('change', e => { this.state.userSettings.minTime = e.target.value; this._saveSettings(); this._rebuildCalendar(); });
-                    this.dom.maxTimeSelect.addEventListener('change', e => { this.state.userSettings.maxTime = e.target.value; this._saveSettings(); this._rebuildCalendar(); });
-                    this.dom.courseVisibilityList.addEventListener('click', e => { const item = e.target.closest('.visibility-course-item'); if (item) { const code = item.dataset.courseCode; if (this.state.hiddenCourseCodes.has(code)) this.state.hiddenCourseCodes.delete(code); else this.state.hiddenCourseCodes.add(code); this._saveSettings(); this._renderCoursesList(); this.updateCalendarAndConflicts(); }});
-                    this.dom.exportBtn.addEventListener('click', () => this._exportData());
-                    this.dom.importBtn.addEventListener('click', () => this.dom.importFileInput.click());
-                    this.dom.importFileInput.addEventListener('change', e => this._importData(e));
-                    this.dom.resetAppBtn.addEventListener('click', () => this._resetApp());
+                _initializeCalendar() {
+                    if (this.state.calendar) this.state.calendar.destroy();
+                    const calendarOptions = {
+                        initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
+                        events: [], dir: 'rtl', dayHeaderFormat: { weekday: 'long' },
+                        slotMinTime: '07:30:00', slotMaxTime: '20:00:00', hiddenDays: [4, 5],
+                        eventContent: (arg) => {
+                            const props = arg.event.extendedProps;
+                            const wrapper = document.createElement('div');
+                            wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem;';
+                            wrapper.innerHTML = `<b>${arg.event.title.split('(')[0]}</b><small style="opacity:0.9">${props.location}</small><small style="opacity:0.8">(${props.hours} ساعات)</small>`;
+                            return { domNodes: [wrapper] };
+                        },
+                        eventDidMount: (info) => { const { style } = info.event.extendedProps; if(style) { info.el.style.setProperty('--event-color-light', style['--event-color-light']); info.el.style.setProperty('--event-color-dark', style['--event-color-dark']); } }
+                    };
+                    this.state.calendar = new FullCalendar.Calendar(this.dom.calendar, calendarOptions);
+                    this.state.calendar.render();
+                },
+
+                _adjustColorBrightness: (hex, p) => { let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); p/=100; r=Math.round(Math.min(255,Math.max(0,r*(1+p)))); g=Math.round(Math.min(255,Math.max(0,g*(1+p)))); b=Math.round(Math.min(255,Math.max(0,b*(1+p)))); return`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`; },
+                _initCosmicEffects() { const canvas = document.createElement('canvas'); document.body.insertAdjacentElement('afterbegin', canvas); canvas.style.cssText = "position:fixed; top:0; left:0; z-index:-1;"; const ctx = canvas.getContext('2d'); let stars = []; const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }; class Star { constructor() { this.reset(); } reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.radius = Math.random() * 1.2 + 0.3; this.alpha = Math.random() * 0.5 + 0.3; this.vx = (Math.random() - 0.5) * 0.1; this.vy = (Math.random() - 0.5) * 0.1; } draw() { ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `hsl(220, 80%, 95%)`; ctx.fill(); } update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > canvas.width) this.vx *= -1; if (this.y < 0 || this.y > canvas.height) this.vy *= -1; this.draw(); } } const init = () => { stars = []; for (let i = 0; i < Math.floor(canvas.width * canvas.height / 9000); i++) stars.push(new Star()); }; const animate = () => { requestAnimationFrame(animate); ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => s.update()); }; window.addEventListener('resize', () => { resize(); init(); }); resize(); init(); animate(); },
+                _createDemoData() {
+                    return [
+                        { code: "STAT101", name: "مقدمة في الإحصاء والاحتمالات", section: "488", type: "نظري", instructor: "أنمول ناصر علي شاة", hours: "3", time: "الأحد: 08:00 ص - 09:40 ص<br>الثلاثاء: 08:00 ص - 08:50 ص", location: "20A-A040", examPeriod: "10" },
+                        { code: "STAT101", name: "مقدمة في الإحصاء والاحتمالات", section: "494", type: "تدريب", instructor: "ريهام عبدالله ضيف الله العمرو", hours: "3", time: "الثلاثاء: 12:00 م - 01:40 م", location: "20A-A039", examPeriod: "10" },
+                        { code: "IC 104", name: "أسس النظام السياسي في الاسلام", section: "1031", type: "نظري", instructor: "لم يحدد من الكلية", hours: "2", time: "الإثنين: 01:00 م - 02:50 م", location: "20B-B126", examPeriod: "15" },
+                        { code: "CS 101", name: "مقدمة في الحاسب الآلي", section: "123", type: "نظري", instructor: "محمد عبدالله", hours: "3", time: "الإثنين: 10:00 ص - 11:50 ص", location: "30A-C210", examPeriod: "4" },
+                        { code: "ENG 203", name: "مصطلحات علمية", section: "45", type: "نظري", instructor: "جون سميث", hours: "2", time: "الأربعاء: 01:00 م - 02:50 م", location: "10A-F101", examPeriod: "22" }
+                    ];
+                },
+                _showDemoData() {
+                    const demoCourses = this._createDemoData();
+                    this._processAndDisplayData(demoCourses);
                 }
             };
             
