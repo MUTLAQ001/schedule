@@ -122,7 +122,7 @@
         #calendar { height: 100%; }
         .fc { --fc-border-color: var(--border-color); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; }
         .fc-col-header-cell { background-color: transparent; border: none; padding: 0.75rem 0; font-weight: 600; color: var(--text-light); border-bottom: 1px solid var(--border-color); }
-        .fc .fc-day-today { background-color: transparent !important; }
+        .fc .fc-day-today { background-color: rgba(var(--rgb-primary), 0.05) !important; }
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
         .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s; background: linear-gradient(135deg, var(--event-color-light), var(--event-color-dark)); }
@@ -510,24 +510,7 @@
                 },
 
                 _isSectionConflicted: (section, selectedCourses) => selectedCourses.some(sel => (section.timeSlots.some(sA => sel.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) || (section.examPeriod && sel.examPeriod && section.examPeriod !== "null" && section.examPeriod === sel.examPeriod)),
-                _createLectureEventsForSection(section, isPreview = false, color = '#8b5cf6') {
-                    const lightColor = this._adjustColorBrightness(color, 20);
-                    const darkColor = this._adjustColorBrightness(color, -10);
-                    return {
-                        events: section.timeSlots.map(slot => ({
-                            id: isPreview ? `preview-event-${slot.day}` : undefined,
-                            title: `${section.name}`,
-                            daysOfWeek: [slot.day],
-                            startTime: slot.start,
-                            endTime: slot.end,
-                            backgroundColor: isPreview ? 'transparent' : color,
-                            borderColor: isPreview ? color : darkColor,
-                            extendedProps: { ...section, style: { '--event-color-light': lightColor, '--event-color-dark': darkColor } },
-                            display: 'block',
-                            classNames: isPreview ? ['fc-event-preview'] : []
-                        }))
-                    };
-                },
+                _createLectureEventsForSection: (section, isPreview = false, color = '#8b5cf6') => ({ events: section.timeSlots.map(slot => ({ id: isPreview ? `preview-event-${slot.day}`: undefined, title: `${section.name}`, daysOfWeek: [slot.day], startTime: slot.start, endTime: slot.end, backgroundColor: isPreview ? 'transparent' : color, borderColor: isPreview ? color : QU_ScheduleApp._adjustColorBrightness(color, -10), extendedProps: { ...section, style: { '--event-color-light': QU_ScheduleApp._adjustColorBrightness(color, 20), '--event-color-dark': QU_ScheduleApp._adjustColorBrightness(color, -10) } }, display: 'block', classNames: isPreview ? ['fc-event-preview'] : [] })) }),
                 _parseTimeEntries(timeString) { if (!timeString || typeof timeString !== 'string' || timeString === 'غير محدد') return []; return timeString.split('<br>').map(entry => { const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{1,2}:\d{2})\s*(ص|م)\s*-\s*(\d{1,2}:\d{2})\s*(ص|م)/); if (!parts) return null; const days = parts[1].trim().split(/\s+/); const start = this._convertTo24Hour(parts[2], parts[3]); const end = this._convertTo24Hour(parts[4], parts[5]); return days.map(day => this.constants.DAY_MAPPING[day] !== undefined ? { day: this.constants.DAY_MAPPING[day], start, end } : null); }).flat().filter(Boolean); },
                 _convertTo24Hour(time, period) { let [h, m] = time.split(':'); h = parseInt(h, 10); if (period.includes('م') && h !== 12) h += 12; if (period.includes('ص') && h === 12) h = 0; return `${String(h).padStart(2, '0')}:${m}:00`; },
 
@@ -574,27 +557,14 @@
                     } else this._hidePreview();
                 },
                 
-                _handleColorDotClick(e) {
-                    const colorDot = e.target.closest('.color-dot');
-                    if (colorDot) {
-                        const courseCode = colorDot.dataset.courseCode;
-                        this._showColorPicker(colorDot, courseCode);
-                    }
-                },
-
+                _handleColorDotClick(e) { const colorDot = e.target.closest('.color-dot'); if (colorDot) this._showColorPicker(colorDot, colorDot.dataset.courseCode); },
                 _hidePreview() { this.state.calendar.getEvents().filter(ev => ev.id.startsWith('preview-event')).forEach(ev => ev.remove()); },
                 _handleClearCalendar() { if (confirm('هل أنت متأكد من مسح الجدول المحدد؟')) { this.state.selectedSections.clear(); this.updateCalendarAndConflicts(); this._renderCoursesList(); this._showToast('تم مسح الجدول بنجاح.'); } },
                 _handleTabClick(button) { this.dom.tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); this.dom.tabContents.forEach(content => content.classList.remove('active')); document.getElementById(button.dataset.tab).classList.add('active'); },
                 
                 _loadSettings() {
                     const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
-                    if (saved) {
-                        try {
-                            const parsed = JSON.parse(saved);
-                            this.state.userSettings = { ...this.state.userSettings, ...parsed };
-                            this.state.hiddenCourseCodes = new Set(this.state.userSettings.hiddenCourseCodes || []);
-                        } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.SETTINGS); }
-                    }
+                    if (saved) { try { const parsed = JSON.parse(saved); this.state.userSettings = { ...this.state.userSettings, ...parsed }; this.state.hiddenCourseCodes = new Set(this.state.userSettings.hiddenCourseCodes || []); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.SETTINGS); } }
                     this._applySettings();
                 },
 
@@ -694,19 +664,16 @@
                         },
                         eventDidMount: (info) => {
                             const { style } = info.event.extendedProps;
-                            if(style) {
-                                info.el.style.setProperty('--event-color-light', style['--event-color-light']);
-                                info.el.style.setProperty('--event-color-dark', style['--event-color-dark']);
-                            }
+                            if(style) { info.el.style.setProperty('--event-color-light', style['--event-color-light']); info.el.style.setProperty('--event-color-dark', style['--event-color-dark']); }
                         }
                     };
                     this.state.calendar = new FullCalendar.Calendar(this.dom.calendar, calendarOptions);
                     this.state.calendar.render();
                 },
 
-                _showColorPicker(targetElement, courseCode) {
+                _showColorPicker(target, courseCode) {
                     this._removeColorPicker();
-                    const rect = targetElement.getBoundingClientRect();
+                    const rect = target.getBoundingClientRect();
                     const picker = document.createElement('div');
                     picker.className = 'color-picker-popover';
                     picker.id = 'color-picker-popover';
@@ -715,27 +682,16 @@
                         swatch.className = 'color-swatch';
                         swatch.style.backgroundColor = color;
                         if (this.state.groupedCourses[courseCode]?.color === color) swatch.classList.add('active');
-                        swatch.onclick = () => {
-                            this.state.customColors[courseCode] = color;
-                            this.state.groupedCourses[courseCode].color = color;
-                            this._saveCustomColors();
-                            this.updateCalendarAndConflicts();
-                            this._removeColorPicker();
-                        };
+                        swatch.onclick = () => { this.state.customColors[courseCode] = color; this._saveCustomColors(); this._processAndDisplayData(this.state.allCoursesData).then(() => this.updateCalendarAndConflicts()); this._removeColorPicker(); };
                         picker.appendChild(swatch);
                     });
-                    picker.style.top = `${rect.bottom + 8}px`;
-                    picker.style.right = `${window.innerWidth - rect.right}px`;
+                    picker.style.top = `${rect.top - 8}px`; // Adjust position
+                    picker.style.right = `${window.innerWidth - rect.left}px`;
                     document.body.appendChild(picker);
                     setTimeout(() => document.addEventListener('click', this._handleOutsideClick, true), 0);
                 },
 
-                _removeColorPicker() {
-                    const picker = document.getElementById('color-picker-popover');
-                    if (picker) picker.remove();
-                    document.removeEventListener('click', this._handleOutsideClick, true);
-                },
-                
+                _removeColorPicker() { const picker = document.getElementById('color-picker-popover'); if (picker) picker.remove(); document.removeEventListener('click', this._handleOutsideClick, true); },
                 _handleOutsideClick: (e) => { if (!e.target.closest('#color-picker-popover') && !e.target.closest('.color-dot')) QU_ScheduleApp._removeColorPicker(); },
 
                 _rebuildCalendar() { this._initializeCalendar(); this.updateCalendarAndConflicts(); },
