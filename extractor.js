@@ -4,22 +4,22 @@
     console.clear();
     console.log("🚀 QU Schedule Extractor v19 Initialized...");
 
-    // More flexible selectors using attribute "starts with" to avoid issues with non-breaking spaces (&nbsp;)
+    // More flexible selectors using attribute "contains" to avoid issues with non-breaking spaces (&nbsp;)
     const SELECTORS = {
         desktop: {
             courseRow: 'tr[class^="ROW"]',
             code: 'td[data-th="رمز المقرر"]',
             name: 'td[data-th="اسم المقرر"]',
-            section: 'td[data-th^="الشعبة"]',
-            hours: 'td[data-th*="الساعات"]', // Use "contains" for max compatibility
-            type: 'td[data-th*="النشاط"]',   // Use "contains" for max compatibility
+            section: 'td[data-th*="الشعبة"]',
+            hours: 'td[data-th*="الساعات"]',
+            type: 'td[data-th*="النشاط"]',
             detailsCell: 'td[data-th="التفاصيل"]'
         },
         mobile: {
             courseCard: 'div.row-xs',
             code: 'div[data-th="رمز المقرر"] span.value',
             name: 'div[data-th="اسم المقرر"] span.value',
-            section: 'div[data-th^="الشعبة"] span.value',
+            section: 'div[data-th*="الشعبة"] span.value',
             hours: 'div[data-th*="الساعات"] span.value',
             type: 'div[data-th*="النشاط"] span.value',
             detailsCell: 'div[data-th="التفاصيل"]'
@@ -127,5 +127,6 @@
         } else {
             alert("فشل الاستخراج. لم يتم العثور على مقررات. الرجاء التأكد من أن صفحة المقررات المطروحة قد تم تحميلها بالكامل.");
         }
+
     }, 1500);
 })();
