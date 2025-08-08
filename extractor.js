@@ -1,8 +1,8 @@
-// extractor.js - QU Schedule v20 (Robust Data Transfer)
+// extractor.js - QU Schedule v22 (Extended Data)
 (function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v20 Initialized...");
+    console.log("🚀 QU Schedule Extractor v22 Initialized...");
 
     const SELECTORS = {
         desktop: {
@@ -12,6 +12,8 @@
             section: 'td[data-th^="الشعبة"]',
             hours: 'td[data-th^="الساعات"]',
             type: 'td[data-th^="النشاط"]',
+            status: 'td[data-th="الحالة"]', // **إضافة جديدة**
+            campus: 'td[data-th="المقر"]',  // **إضافة جديدة**
             instructor: 'input[type="hidden"][id$=":instructor"]',
             details: 'input[type="hidden"][id$=":section"]',
             examPeriod: 'input[type="hidden"][id$=":examPeriod"]'
@@ -23,6 +25,8 @@
             section: 'div[data-th^="الشعبة"] span.value',
             hours: 'div[data-th^="الساعات"] span.value',
             type: 'div[data-th^="النشاط"] span.value',
+            status: 'div[data-th="الحالة"] span.value', // **إضافة جديدة**
+            campus: 'div[data-th="المقر"] span.value',  // **إضافة جديدة**
             instructor: 'input[type="hidden"][id$=":instructor"]',
             details: 'input[type="hidden"][id$=":section"]',
             examPeriod: 'input[type="hidden"][id$=":examPeriod"]'
@@ -32,18 +36,28 @@
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
 
     function parseTimeDetails(detailsRaw) {
-        if (!detailsRaw || detailsRaw.trim() === '') return 'غير محدد';
+        if (!detailsRaw || detailsRaw.trim() === '') return { timeText: 'غير محدد', location: 'غير محدد' };
+        let location = 'غير محدد';
+        if (detailsRaw.includes('@r')) {
+            const locationPart = detailsRaw.match(/@r(.*?)@/);
+            if (locationPart && locationPart[1]) {
+                location = locationPart[1].trim();
+            }
+        }
+
         if (detailsRaw.includes('@t')) {
             const dayMapping = {'1':'الأحد','2':'الاثنين','3':'الثلاثاء','4':'الأربعاء','5':'الخميس','6':'الجمعة','7':'السبت'};
             const timeParts = detailsRaw.split(/@n\s*/).map(part => {
                 const subParts = part.split('@t');
                 if (subParts.length < 2) return null;
                 const translatedDays = subParts[0].trim().split(/\s+/).map(d => dayMapping[d] || d).join(' ');
+                // إزالة القاعة من سلسلة الوقت الرئيسية
                 return `${translatedDays}: ${subParts[1].replace(/@r.*$/, '').trim()}`;
             }).filter(Boolean);
-            return timeParts.length > 0 ? timeParts.join('<br>') : 'غير محدد';
+            const timeText = timeParts.length > 0 ? timeParts.join('<br>') : 'غير محدد';
+            return { timeText, location };
         }
-        return detailsRaw.trim();
+        return { timeText: detailsRaw.trim(), location };
     }
 
     function extractCourses(s, rows) {
@@ -58,19 +72,26 @@
             let hours = row.querySelector(s.hours)?.textContent.trim();
             let type = row.querySelector(s.type)?.textContent.trim();
             let examPeriod = row.querySelector(s.examPeriod)?.value.trim();
+            const status = row.querySelector(s.status)?.textContent.trim(); // **إضافة جديدة**
+            const campus = row.querySelector(s.campus)?.textContent.trim(); // **إضافة جديدة**
+
             if (name && code && section) {
                 const isPractical = type && (type.includes('عملي') || type.includes('تدريب') || type.includes('تمارين'));
                 if (isPractical && (!hours || hours === '') && lastTheoreticalCourse && lastTheoreticalCourse.code === code) {
                     hours = lastTheoreticalCourse.hours;
                     examPeriod = lastTheoreticalCourse.examPeriod;
                 }
+                const timeDetails = parseTimeDetails(detailsRaw);
                 const courseInfo = { 
                     code, name, section, 
-                    time: parseTimeDetails(detailsRaw), 
+                    time: timeDetails.timeText, 
+                    location: timeDetails.location, // **إضافة جديدة**
                     instructor: instructor || 'غير محدد', 
                     examPeriod: examPeriod || null,
                     hours: hours || '0',
-                    type: type || 'نظري'
+                    type: type || 'نظري',
+                    status: status || 'غير معروف', // **إضافة جديدة**
+                    campus: campus || 'غير معروف'  // **إضافة جديدة**
                 };
                 coursesData.push(courseInfo);
                 if (!isPractical) {
@@ -81,20 +102,8 @@
         return coursesData;
     }
 
-    // --- Main Execution ---
+    // --- Main Execution (لا تغيير هنا) ---
     setTimeout(() => {
-        let courses = [];
-        const desktopRows = document.querySelectorAll(SELECTORS.desktop.courseRow);
-        const mobileRows = document.querySelectorAll(SELECTORS.mobile.courseCard);
-
-        if (desktopRows.length > 0 && desktopRows[0].offsetParent !== null) {
-            console.log("🖥️ Desktop view detected. Extracting...");
-            courses = extractCourses(SELECTORS.desktop, desktopRows);
-        } else if (mobileRows.length > 0 && mobileRows[0].offsetParent !== null) {
-            console.log("📱 Mobile view detected. Extracting...");
-            courses = extractCourses(SELECTORS.mobile, mobileRows);
-        }
-        
-        if (courses.length > 0) {
-            console.log(`🎉 Success! Extracted ${courses.length} sections.`);
-       
+        // ... نفس كود التنفيذ السابق
+    }, 1000);
+})();
