@@ -1,8 +1,8 @@
-// extractor.js - QU Schedule v19 (Final & Robust Extraction)
+// extractor.js - QU Schedule v20 (Professional & Robust Extraction)
 (function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v19 Initialized...");
+    console.log("🚀 QU Schedule Extractor v20 Initialized...");
 
     // More flexible selectors using attribute "contains" to avoid issues with non-breaking spaces (&nbsp;)
     const SELECTORS = {
