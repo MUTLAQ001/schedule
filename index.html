@@ -155,13 +155,11 @@
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
         .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s; }
-        .fc-event.fc-event-exam { background: linear-gradient(95deg, #f59e0b 0%, #d97706 100%) !important; }
         .fc-event:hover { transform: scale(1.03); box-shadow: 0 4px 15px rgba(0,0,0,0.3); filter: brightness(1.1);}
         .fc-event.fc-event-preview { background: transparent !important; opacity: 0.7; box-shadow: none; pointer-events: none; border-style: dashed !important; border-width: 2px !important; }
         .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
         .light .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
         
-        /* --- NEW: Sidebar My Schedule Section --- */
         .my-schedule-section { flex-shrink: 0; border-top: 1px solid var(--border-color); padding: 1rem; }
         .my-schedule-section h3 { margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); }
         .my-schedule-list { max-height: 25vh; overflow-y: auto; padding-right: 0.5rem; margin-right: -0.5rem; }
@@ -307,7 +305,6 @@
             <div class="calendar-wrapper">
                 <div class="calendar-container"><div id='calendar'></div></div>
             </div>
-            <!-- Summary section below calendar is now removed -->
         </main>
         
         <aside class="sidebar" id="sidebar">
@@ -334,20 +331,13 @@
                     </div>
                 </div>
                 <div id="exams-tab" class="tab-content">
-                    <div id="exams-list">
-                        <!-- Exam items will be populated here -->
-                    </div>
+                    <div id="exams-list"></div>
                 </div>
                 
-                <!-- NEW: My Schedule Summary Section -->
                 <div class="my-schedule-section" id="my-schedule-summary" style="display: none;">
                     <h3><i class="ri-stack-line"></i> جدولـي</h3>
-                    <div class="my-schedule-list" id="my-schedule-list">
-                        <!-- Selected courses will be populated here -->
-                    </div>
-                    <div class="total-credits-summary" id="total-credits-summary">
-                        <!-- Total credits will be shown here -->
-                    </div>
+                    <div class="my-schedule-list" id="my-schedule-list"></div>
+                    <div class="total-credits-summary" id="total-credits-summary"></div>
                 </div>
             </div>
 
@@ -366,7 +356,6 @@
                 <i class="ri-close-line" id="close-modal-btn"></i>
             </div>
             <div class="modal-content">
-                <!-- Appearance Settings -->
                 <div class="settings-group">
                     <h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4>
                     <div class="settings-item">
@@ -381,16 +370,12 @@
                         <div class="theme-picker" id="accent-color-picker"></div>
                     </div>
                 </div>
-
-                <!-- Course Visibility Settings -->
                 <div class="settings-group">
                     <h4 class="settings-group-title"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4>
                     <div id="course-visibility-list">
                          <p id="no-courses-for-visibility" style="color: var(--text-light); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>
                     </div>
                 </div>
-
-                <!-- Calendar Settings -->
                 <div class="settings-group">
                     <h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4>
                     <div class="settings-item">
@@ -411,8 +396,6 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Data Management Settings -->
                 <div class="settings-group">
                     <h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4>
                     <div class="data-management-zone">
@@ -422,7 +405,6 @@
                         <button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -590,7 +572,7 @@
                     slotMaxTime: userSettings.maxTime,
                     hiddenDays: userSettings.showWeekends ? [] : [5, 6],
                     eventClick: (info) => {
-                        if (info.event.extendedProps.isExam || info.event.id.startsWith('preview-event')) return;
+                        if (info.event.id.startsWith('preview-event')) return;
                         const uniqueId = info.event.extendedProps.uniqueId;
                         if (selectedSections.has(uniqueId)) {
                             selectedSections.delete(uniqueId);
@@ -603,19 +585,14 @@
                         const wrapper = document.createElement('div');
                         wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem;';
                         const title = document.createElement('b');
+                        title.innerText = arg.event.title.split('(')[0];
                         const instructor = document.createElement('small');
-                        if(arg.event.extendedProps.isExam) {
-                            title.innerHTML = `<i class="ri-file-text-line"></i> ${arg.event.title}`;
-                            instructor.innerText = `التاريخ: ${arg.event.extendedProps.date}`;
-                        } else {
-                            title.innerText = arg.event.title.split('(')[0];
-                            instructor.innerText = arg.event.extendedProps.instructor;
-                            instructor.style.opacity = '0.9';
-                            const section = document.createElement('small');
-                            section.innerText = `شعبة: ${arg.event.extendedProps.section}`;
-                            section.style.opacity = '0.8';
-                            wrapper.appendChild(section);
-                        }
+                        instructor.innerText = arg.event.extendedProps.instructor;
+                        instructor.style.opacity = '0.9';
+                        const section = document.createElement('small');
+                        section.innerText = `شعبة: ${arg.event.extendedProps.section}`;
+                        section.style.opacity = '0.8';
+                        wrapper.appendChild(section);
                         wrapper.prepend(instructor);
                         wrapper.prepend(title);
                         return { domNodes: [wrapper] };
@@ -667,8 +644,7 @@
                     
                     let sectionsHTML = '';
                     group.sections.forEach(section => {
-                        const type = getSectionType(section);
-                        sectionsHTML += `<div class="section-btn" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${type}</div></div>`;
+                        sectionsHTML += `<div class="section-btn" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type}</div></div>`;
                     });
 
                     courseItem.innerHTML = `
@@ -727,13 +703,9 @@
                 });
                 
                 const conflictingCourseCodes = new Set();
-                examPeriodMap.forEach((sectionsInPeriod, period) => {
+                examPeriodMap.forEach((sectionsInPeriod) => {
                     if (sectionsInPeriod.length > 1) {
                         sectionsInPeriod.forEach(s => conflictingCourseCodes.add(s.code));
-                    }
-                    if(sectionsInPeriod.length > 0) {
-                        const examEvent = createExamEvent(sectionsInPeriod[0]);
-                        if(examEvent) calendar.addEvent(examEvent);
                     }
                 });
 
@@ -771,27 +743,9 @@
                     backgroundColor: isPreview ? 'transparent' : color,
                     borderColor: color,
                     className: isPreview ? 'fc-event-preview' : '',
-                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, isExam: false }
+                    extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId }
                 }));
                 return isPreview ? events : { events };
-            }
-
-            function createExamEvent(section) {
-                if (!section.examPeriod || !examSchedule[section.examPeriod]) return null;
-                const periodData = examSchedule[section.examPeriod];
-                const dayIndex = dayMapping[periodData.day];
-
-                if (dayIndex === undefined) return null;
-
-                return {
-                    title: `اختبار ${section.code}`,
-                    daysOfWeek: [dayIndex],
-                    startTime: periodData.startTime,
-                    endTime: periodData.endTime,
-                    allDay: false,
-                    className: 'fc-event-exam',
-                    extendedProps: { isExam: true, examPeriod: section.examPeriod, courseName: section.name, date: periodData.hijriDate }
-                };
             }
             
             function displayFinalExams(exams) {
@@ -802,16 +756,13 @@
                 }
                 exams.sort((a,b) => a.examPeriod - b.examPeriod).forEach((exam, i) => {
                     const periodData = examSchedule[exam.examPeriod];
+                    if(!periodData) return;
                     const examItem = document.createElement('div');
                     examItem.className = 'exam-item';
                     examItem.style.animationDelay = `${i * 100}ms`;
                     examItem.innerHTML = `<i class="ri-file-text-line exam-icon"></i><div class="exam-details"><h4>${exam.name} (${exam.code})</h4><p><strong>${periodData.day} ${periodData.hijriDate}</strong><br>من ${periodData.startTime.slice(0,5)} إلى ${periodData.endTime.slice(0,5)}</p></div>`;
                     examsListContainer.appendChild(examItem);
                 });
-            }
-            
-            function getSectionType(section) {
-                 return section.time.includes('تدريب') || section.name.includes('عملي') ? 'عملي' : 'نظري';
             }
             
             function renderMyScheduleSummary(selectedCourses) {
@@ -836,9 +787,8 @@
                     item.className = 'my-schedule-item';
                     item.style.animationDelay = `${index * 50}ms`;
                     
-                    const creditMatch = course.name.match(/\((\d+)\)/);
-                    const creditHours = creditMatch ? parseInt(creditMatch[1]) : 0;
-                    if (uniqueCourses.get(course.code) === course) { // Add credits only once per course code
+                    const creditHours = parseInt(course.hours) || 0;
+                    if (uniqueCourses.get(course.code) === course) {
                         totalCredits += creditHours;
                     }
 
@@ -851,10 +801,10 @@
                     item.innerHTML = `
                         <div class="my-schedule-item-header">
                             <span class="color-dot" style="background-color: ${group.color};"></span>
-                            <h4>${course.name.replace(/\(\d+\)/, '').trim()} (${course.code})</h4>
+                            <h4>${course.name} (${course.code})</h4>
                         </div>
                         <div class="my-schedule-details">
-                            <div><i class="ri-hashtag"></i> شعبة: <span>${course.section} (${getSectionType(course)})</span></div>
+                            <div><i class="ri-hashtag"></i> شعبة: <span>${course.section} (${course.type})</span></div>
                             <div><i class="ri-time-line"></i> الوقت: <span>${course.time.replace(/<br>/g, ', ')}</span></div>
                             <div><i class="ri-book-3-line"></i> الساعات: <span>${creditHours}</span></div>
                             <div><i class="ri-file-text-line"></i> النهائي: <span>${examText}</span></div>
