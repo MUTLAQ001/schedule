@@ -120,7 +120,7 @@
             padding: 1rem;
             max-height: 35vh;
             overflow: hidden;
-            display: flex;
+            display: none; /* Hidden by default */
             flex-direction: column;
         }
         .footer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0 0.5rem; }
@@ -129,7 +129,7 @@
         .details-table-container { flex-grow: 1; overflow-y: auto; }
         .details-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
         .details-table th, .details-table td { padding: 0.75rem; text-align: right; border-bottom: 1px solid var(--border-color); }
-        .details-table thead { position: sticky; top: 0; background-color: var(--bg-content); }
+        .details-table thead { position: sticky; top: 0; background-color: var(--bg-content); z-index: 1;}
         .details-table th { color: var(--text-muted); font-weight: 500; }
         .details-table tbody tr:last-child td { border-bottom: none; }
         .details-table .color-cell { width: 40px; }
@@ -173,7 +173,7 @@
                 </div>
             </div>
             <div class="sidebar-content custom-scrollbar" id="courses-list-container">
-                <div id="no-data-message" class="no-data" style="display: none;">
+                <div id="no-data-message" class="no-data" style="display: flex;">
                     <i class="ri-time-line"></i>
                     <h4>في انتظار البيانات...</h4>
                     <p>شغّل أداة "QU Schedule" من صفحة المقررات.</p>
@@ -244,7 +244,7 @@
                 constants: {
                     COLOR_PALETTE: ['#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f97316', '#ef4444', '#06b6d4', '#d946ef'],
                     DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4 },
-                    STORAGE_KEYS: { COURSES: 'quScheduleCourses_v10', SELECTED: 'quScheduleSelected_v10', COLORS: 'quScheduleColors_v10' },
+                    STORAGE_KEYS: { COURSES: 'quScheduleCourses_v11', SELECTED: 'quScheduleSelected_v11', COLORS: 'quScheduleColors_v11' },
                     EXPECTED_UNIVERSITY_ORIGIN: "https://edu-gate.qu.edu.sa",
                     EXAM_SCHEDULE_URL: './exams.json'
                 },
@@ -355,10 +355,15 @@
                 _renderDetailsTable(selectedCourses) {
                     if (selectedCourses.length === 0) { this.dom.footerSection.style.display = 'none'; return; }
                     this.dom.footerSection.style.display = 'flex';
-                    const totalHours = selectedCourses.reduce((sum, s) => sum + (parseInt(s.hours) || 0), 0);
+                    const totalHours = selectedCourses.reduce((sum, s) => {
+                        const baseCourse = this.state.allCoursesData.find(c => c.code === s.code);
+                        return sum + (parseInt(baseCourse.hours) || 0);
+                    }, 0);
+
                     this.dom.footerSummary.textContent = `${selectedCourses.length} شعب مختارة • ${totalHours} ساعة معتمدة`;
                     this.dom.detailsTableBody.innerHTML = selectedCourses.map(s => {
                         const group = this.state.groupedCourses[s.code];
+                        const baseCourse = this.state.allCoursesData.find(c => c.code === s.code);
                         return `
                             <tr>
                                 <td class="color-cell"><div class="color-dot" data-course-code="${s.code}" style="background-color: ${group.color}; box-shadow: 0 0 10px 1px ${group.color};"></div></td>
@@ -366,7 +371,7 @@
                                 <td>${s.section}</td>
                                 <td>${s.instructor}</td>
                                 <td>${s.time.replace(/<br>/g, ', ')}</td>
-                                <td>${s.hours}</td>
+                                <td>${baseCourse.hours}</td>
                             </tr>
                         `;
                     }).join('');
@@ -448,7 +453,7 @@
                     const calendarOptions = {
                         initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
                         events: [], dir: 'rtl', dayHeaderFormat: { weekday: 'long' },
-                        slotMinTime: '07:30:00', slotMaxTime: '20:00:00', hiddenDays: [4, 5],
+                        slotMinTime: '07:30:00', slotMaxTime: '20:00:00', hiddenDays: [5, 6], // Hide Friday and Saturday
                         eventContent: (arg) => {
                             const props = arg.event.extendedProps;
                             const wrapper = document.createElement('div');
@@ -463,7 +468,7 @@
                 },
 
                 _adjustColorBrightness: (hex, p) => { let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); p/=100; r=Math.round(Math.min(255,Math.max(0,r*(1+p)))); g=Math.round(Math.min(255,Math.max(0,g*(1+p)))); b=Math.round(Math.min(255,Math.max(0,b*(1+p)))); return`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`; },
-                _initCosmicEffects() { const canvas = document.createElement('canvas'); document.body.insertAdjacentElement('afterbegin', canvas); canvas.style.cssText = "position:fixed; top:0; left:0; z-index:-1;"; const ctx = canvas.getContext('2d'); let stars = []; const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }; class Star { constructor() { this.reset(); } reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.radius = Math.random() * 1.2 + 0.3; this.alpha = Math.random() * 0.5 + 0.3; this.vx = (Math.random() - 0.5) * 0.1; this.vy = (Math.random() - 0.5) * 0.1; } draw() { ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `hsl(220, 80%, 95%)`; ctx.fill(); } update() { this.x += this.vx; this.y += this.vy; if (this.x < 0 || this.x > canvas.width) this.vx *= -1; if (this.y < 0 || this.y > canvas.height) this.vy *= -1; this.draw(); } } const init = () => { stars = []; for (let i = 0; i < Math.floor(canvas.width * canvas.height / 9000); i++) stars.push(new Star()); }; const animate = () => { requestAnimationFrame(animate); ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => s.update()); }; window.addEventListener('resize', () => { resize(); init(); }); resize(); init(); animate(); },
+                
                 _createDemoData() {
                     return [
                         { code: "STAT101", name: "مقدمة في الإحصاء والاحتمالات", section: "488", type: "نظري", instructor: "أنمول ناصر علي شاة", hours: "3", time: "الأحد: 08:00 ص - 09:40 ص<br>الثلاثاء: 08:00 ص - 08:50 ص", location: "20A-A040", examPeriod: "10" },
