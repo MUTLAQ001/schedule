@@ -236,9 +236,10 @@
         .mobile-fab { display: none; }
         
         @media (max-width: 900px) {
-            /* --- FIX: Styles for MOBILE ONLY --- */
+            /* --- Styles for MOBILE ONLY --- */
             #install-section {
                 top: 50%;
+                left: 50%; /* This is crucial for centering with translate */
                 transform: translate(-50%, -50%);
                 width: 95%;
             }
@@ -271,7 +272,7 @@
             <p>اسحب هذا الزر إلى شريط الإشارات المرجعية لتثبيت الأداة:</p>
             <a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();"
                onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">
-                🎓 استخراج QU Schedule
+                QU Schedule
             </a>
         </div>
         <div class="mobile-only-instructions">
@@ -279,7 +280,7 @@
             <ol>
                 <li>اضغط على زر النسخ أدناه.</li>
                 <li>اذهب إلى أي صفحة وأضفها للمفضلة (Bookmarks).</li>
-                <li>حرّر المفضلة الجديدة، غيّر الاسم إلى "استخراج QU Schedule"، وفي حقل الرابط (URL) الصق الكود المنسوخ.</li>
+                <li>حرّر المفضلة الجديدة، غيّر الاسم إلى "QU Schedule"، وفي حقل الرابط (URL) الصق الكود المنسوخ.</li>
             </ol>
             <span id="bookmarklet-code-mobile">javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();</span>
             <button class="mobile-copy-button" id="copy-code-btn">📋 نسخ الكود</button>
@@ -322,7 +323,7 @@
                         <div class="no-data" id="no-data-message">
                             <i class="ri-time-line"></i>
                             <h4>في انتظار البيانات...</h4>
-                            <p>شغّل أداة "استخراج QU Schedule" من صفحة المقررات المطروحة.</p>
+                            <p>شغّل أداة "QU Schedule" من صفحة المقررات المطروحة.</p>
                         </div>
                     </div>
                 </div>
