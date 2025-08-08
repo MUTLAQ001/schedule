@@ -469,47 +469,67 @@
                     this._initCosmicEffects();
                     this._populateTimeSelects();
                     this._loadSettings();
-
-                    // *** FIX: Initialize the calendar immediately on page load ***
-                    // This ensures the user always sees the calendar grid.
                     this._initializeCalendar();
 
-                    // Now, try to load data and populate the calendar.
                     this._loadData().then(() => {
-                        // Data loaded successfully, now update the calendar with events
                         if (this.state.selectedSections.size > 0) {
                             this.updateCalendarAndConflicts();
                         }
                     }).catch(error => {
-                        // No data found, show the install guide. The calendar remains visible but empty.
-                        console.warn(error); // Use warn for expected failures like no data
-                        this.dom.installSection.style.display = 'block';
-                        this._updateBookmarkletCode();
+                        console.warn(error);
+                        this._requestDataFromOpener();
                     });
                 },
 
                 // --- 4. DATA HANDLING & LOADING ---
-                async _loadData() {
-                    const urlParams = new URLSearchParams(window.location.search);
-                    const compressedData = urlParams.get('data');
-                    if (compressedData) {
-                        try {
-                            const jsonString = LZString.decompressFromEncodedURIComponent(compressedData);
-                            const courses = JSON.parse(jsonString);
-                            localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
-                            window.history.replaceState({}, document.title, window.location.pathname);
-                            return this._processAndDisplayData(courses);
-                        } catch (e) {
-                            console.error("Failed to decompress data from URL", e);
-                            this.showToast("فشل في قراءة البيانات من الرابط", "danger");
+                _loadData() {
+                    return new Promise((resolve, reject) => {
+                        const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
+                        if (storedCourses) {
+                            this._processAndDisplayData(JSON.parse(storedCourses));
+                            resolve();
+                        } else {
+                            reject("No local course data found. Attempting to request from opener.");
                         }
+                    });
+                },
+
+                _requestDataFromOpener() {
+                    // If this window was opened by the extractor script
+                    if (window.opener) {
+                        console.log("Requesting data from opener window...");
+                        // Ask the opener for the data
+                        window.opener.postMessage('request_schedule_data', '*');
+
+                        // Listen for the response
+                        const messageListener = (event) => {
+                            if (event.data && event.data.type === 'universityCoursesData') {
+                                console.log("Data received from opener.");
+                                const courses = event.data.data;
+                                localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
+                                this._processAndDisplayData(courses);
+                                if (this.state.selectedSections.size > 0) {
+                                    this.updateCalendarAndConflicts();
+                                }
+                                window.removeEventListener('message', messageListener); // Clean up listener
+                            }
+                        };
+                        window.addEventListener('message', messageListener);
+
+                        // Failsafe: if no data is received after a few seconds, show install guide
+                        setTimeout(() => {
+                            window.removeEventListener('message', messageListener);
+                            if (this.state.allCoursesData.length === 0) {
+                                console.warn("Data request timed out.");
+                                this.dom.installSection.style.display = 'block';
+                                this._updateBookmarkletCode();
+                            }
+                        }, 5000);
+                    } else {
+                        // If there's no opener, it means the user opened the page directly
+                        this.dom.installSection.style.display = 'block';
+                        this._updateBookmarkletCode();
                     }
-                    const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
-                    if (storedCourses) {
-                        return this._processAndDisplayData(JSON.parse(storedCourses));
-                    }
-                    this._fetchExamSchedule(); // Load exam data even if no courses are present
-                    return Promise.reject("No course data found. Displaying install guide.");
                 },
                 
                 async _processAndDisplayData(courses) {
@@ -528,7 +548,6 @@
                     return Promise.resolve();
                 },
 
-                // --- 5. CORE LOGIC & STATE MANAGEMENT ---
                 _processRawCourseData(courses) {
                     this.dom.installSection.style.display = 'none';
                     this.state.allCoursesData = courses.map((section, index) => ({
@@ -595,7 +614,6 @@
                     return conflictMap;
                 },
 
-                // --- 6. RENDERING & UI UPDATES ---
                 _renderCoursesList() {
                     this.dom.coursesListContainer.innerHTML = '';
                     const visibleCourses = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code));
@@ -723,7 +741,6 @@
                     });
                 },
 
-                // --- 7. CALENDAR ---
                 _initializeCalendar() {
                     if (this.state.calendar) this.state.calendar.destroy();
                     const calendarOptions = this._getCalendarOptions();
@@ -777,7 +794,6 @@
                     return isPreview ? events : { events };
                 },
 
-                // --- 8. SETTINGS ---
                 _loadSettings() {
                     const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
                     if (saved) {
@@ -858,7 +874,6 @@
                     });
                 },
 
-                // --- 9. EVENT LISTENERS & HANDLERS ---
                 _setupEventListeners() {
                     this.dom.clearCalendarBtn.addEventListener('click', () => this._handleClearCalendar());
                     this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
@@ -985,7 +1000,6 @@
                     this._renderCoursesList();
                 },
 
-                // --- 10. UTILITY & HELPER FUNCTIONS ---
                 _populateDOMElements() {
                     const ids = [
                         'courses-list', 'exams-list', 'selected-courses-summary', 'selected-courses-list',
