@@ -1,36 +1,34 @@
-// extractor.js - QU Schedule v18 (Robust & Accurate Extraction)
+// extractor.js - QU Schedule v19 (Final & Robust Extraction)
 (function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v18 Initialized...");
+    console.log("🚀 QU Schedule Extractor v19 Initialized...");
 
-    // Simplified selectors, focused on the data attributes which are more reliable
+    // More flexible selectors using attribute "starts with" to avoid issues with non-breaking spaces (&nbsp;)
     const SELECTORS = {
         desktop: {
             courseRow: 'tr[class^="ROW"]',
             code: 'td[data-th="رمز المقرر"]',
             name: 'td[data-th="اسم المقرر"]',
             section: 'td[data-th^="الشعبة"]',
-            hours: 'td[data-th^="الساعات"]',
-            type: 'td[data-th^="النشاط"]',
-            detailsCell: 'td[data-th="التفاصيل"]' // Get the parent cell of hidden inputs
+            hours: 'td[data-th*="الساعات"]', // Use "contains" for max compatibility
+            type: 'td[data-th*="النشاط"]',   // Use "contains" for max compatibility
+            detailsCell: 'td[data-th="التفاصيل"]'
         },
         mobile: {
             courseCard: 'div.row-xs',
             code: 'div[data-th="رمز المقرر"] span.value',
             name: 'div[data-th="اسم المقرر"] span.value',
             section: 'div[data-th^="الشعبة"] span.value',
-            hours: 'div[data-th^="الساعات"] span.value',
-            type: 'div[data-th^="النشاط"] span.value',
-            detailsCell: 'div[data-th="التفاصيل"]' // Get the parent div of hidden inputs
+            hours: 'div[data-th*="الساعات"] span.value',
+            type: 'div[data-th*="النشاط"] span.value',
+            detailsCell: 'div[data-th="التفاصيل"]'
         }
     };
     
-    // --- Helper function to find hidden inputs within the details cell ---
     function findDetailInput(row, selector, attributeSuffix) {
         const detailsContainer = row.querySelector(selector);
-        if (!detailsContainer) return null;
-        return detailsContainer.querySelector(`input[type="hidden"][id$=":${attributeSuffix}"]`);
+        return detailsContainer ? detailsContainer.querySelector(`input[type="hidden"][id$=":${attributeSuffix}"]`) : null;
     }
 
     function parseTimeDetails(detailsRaw) {
@@ -48,19 +46,16 @@
         return detailsRaw.trim();
     }
 
-    // --- REWRITTEN & ROBUST extraction function ---
     function extractCourses(s, rows) {
         const coursesData = [];
         rows.forEach(row => {
             try {
-                // Extract visible data directly from the row
                 const code = row.querySelector(s.code)?.textContent.trim();
                 const name = row.querySelector(s.name)?.textContent.trim();
                 const section = row.querySelector(s.section)?.textContent.trim();
                 const hours = row.querySelector(s.hours)?.textContent.trim();
                 const type = row.querySelector(s.type)?.textContent.trim();
 
-                // Extract hidden data from within the "details" cell/div
                 const instructorInput = findDetailInput(row, s.detailsCell, 'instructor');
                 const detailsInput = findDetailInput(row, s.detailsCell, 'section');
                 const examPeriodInput = findDetailInput(row, s.detailsCell, 'examPeriod');
@@ -99,8 +94,6 @@
         } else if (mobileRows.length > 0) {
             console.log("📱 Mobile view detected. Extracting...");
             courses = extractCourses(SELECTORS.mobile, mobileRows);
-        } else {
-             console.log("🕵️ Could not detect a known layout. Extraction might fail.");
         }
         
         if (courses.length > 0) {
@@ -134,6 +127,5 @@
         } else {
             alert("فشل الاستخراج. لم يتم العثور على مقررات. الرجاء التأكد من أن صفحة المقررات المطروحة قد تم تحميلها بالكامل.");
         }
-
     }, 1500);
 })();
