@@ -158,7 +158,7 @@
         .my-schedule-item-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: .75rem; }
         .my-schedule-item-header .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
         .my-schedule-item-header h4 { font-size: .9rem; margin: 0; flex-grow: 1; }
-        .my-schedule-details { display: flex; flex-direction: column; gap: .5rem; font-size: .8rem; color: var(--text-light); padding-top: .75rem; border-top: 1px solid var(--border-color); }
+        .my-schedule-details { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; font-size: .8rem; color: var(--text-light); padding-top: .75rem; border-top: 1px solid var(--border-color); }
         .my-schedule-details div { display: flex; align-items: center; gap: .5rem; }
         .my-schedule-details span { font-weight: 600; color: var(--text-dark); }
         
@@ -414,9 +414,9 @@
                     COLOR_PALETTE: ['#818cf8', '#f472b6', '#4ade80', '#fbbf24', '#60a5fa', '#c084fc', '#f87171', '#fb923c', '#2dd4bf', '#a3e635', '#38bdf8', '#e879f9'],
                     DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
                     STORAGE_KEYS: {
-                        SETTINGS: 'quScheduleSettings_v4',
-                        COURSES: 'quScheduleCourses_v4',
-                        SELECTED: 'quScheduleSelected_v4',
+                        SETTINGS: 'quScheduleSettings_v5',
+                        COURSES: 'quScheduleCourses_v5',
+                        SELECTED: 'quScheduleSelected_v5',
                     },
                     EXPECTED_UNIVERSITY_ORIGIN: "https://edu-gate.qu.edu.sa", // ** مهم: يجب تحديث هذا ليعكس النطاق الفعلي لموقع الجامعة **
                     EXAM_SCHEDULE_URL: './exams.json', // ** مهم: يجب إنشاء هذا الملف ورفعه **
@@ -432,7 +432,8 @@
                     this._loadSettings();
                     this._initializeCalendar();
                     this._loadDataFromStorage();
-                    this._requestDataFromOpener();
+                    this._listenForDataFromOpener();
+                    this._updateBookmarkletCode();
                 },
 
                 // --- 3. DATA HANDLING & LOADING ---
@@ -440,24 +441,24 @@
                     const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
                     if (storedCourses) {
                         try {
-                            this._processAndDisplayData(JSON.parse(storedCourses));
+                            const courses = JSON.parse(storedCourses);
+                            this._processAndDisplayData(courses);
                             this._loadSelectedSections();
                             this.updateCalendarAndConflicts();
                         } catch (e) {
                             console.error("Failed to parse stored course data:", e);
                             localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
+                            this.dom.installSection.style.display = 'block';
                         }
                     } else {
                         this.dom.installSection.style.display = 'block';
                     }
                 },
                 
-                _requestDataFromOpener() {
-                    // This listener remains active to handle new data being sent at any time.
+                _listenForDataFromOpener() {
                     window.addEventListener('message', (event) => {
                         // **CRITICAL SECURITY FIX**: Always validate the origin of the message.
                         if (event.origin !== this.constants.EXPECTED_UNIVERSITY_ORIGIN) {
-                            // Silently ignore messages from other origins.
                             return;
                         }
 
@@ -466,7 +467,6 @@
                             const courses = event.data.data;
                             localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
                             
-                            // Reset selection when new data arrives to avoid conflicts with old course IDs
                             this.state.selectedSections.clear();
                             localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED);
 
@@ -510,9 +510,7 @@
                     if (stored) {
                         try {
                             const parsed = JSON.parse(stored);
-                            if (Array.isArray(parsed)) {
-                                this.state.selectedSections = new Set(parsed);
-                            }
+                            if (Array.isArray(parsed)) this.state.selectedSections = new Set(parsed);
                         } catch (e) {
                             console.error("Could not parse selected sections:", e);
                             localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED);
@@ -523,22 +521,24 @@
                 async _fetchExamSchedule() {
                     try {
                         const response = await fetch(this.constants.EXAM_SCHEDULE_URL);
-                        if (!response.ok) throw new Error(`Network response was not ok: ${response.statusText}`);
+                        if (!response.ok) throw new Error(`Network response: ${response.statusText}`);
                         this.state.examSchedule = await response.json();
-                        console.log("Exam schedule loaded successfully.");
+                        console.log("Exam schedule loaded.");
                     } catch (error) {
-                        console.error("Failed to fetch exam schedule. Final exam times may be incorrect.", error);
+                        console.error("Failed to fetch exam schedule.", error);
                         this.state.examSchedule = {};
-                        this._showToast('فشل تحميل جدول الاختبارات. قد لا تظهر مواعيد النهائي.', 'warning');
+                        this._showToast('فشل تحميل جدول الاختبارات.', 'warning');
                     }
                 },
 
                 // --- 4. UI RENDERING & UPDATES ---
                 updateCalendarAndConflicts() {
+                    if (!this.state.calendar) return;
                     this.state.calendar.removeAllEvents();
+                    
                     const selectedCourseDetails = Array.from(this.state.selectedSections)
                         .map(id => this.state.allCoursesData.find(c => c.uniqueId === id))
-                        .filter(Boolean); // Filter out any undefined if data changed
+                        .filter(Boolean);
 
                     const conflictMap = this._calculateConflicts(selectedCourseDetails);
 
@@ -564,7 +564,6 @@
                         if (Object.keys(this.state.groupedCourses).length > 0) {
                             this.dom.coursesList.innerHTML = `<div class="no-data"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من قائمة الإعدادات.</p></div>`;
                         }
-                        // If no courses are loaded at all, the default "waiting for data" message remains.
                         return;
                     }
 
@@ -573,14 +572,12 @@
                         courseItem.className = 'course-item';
                         courseItem.dataset.courseCode = group.code;
                         courseItem.style.animationDelay = `${i * 50}ms`;
-
                         const sectionsHTML = group.sections.map(section => `
                             <div class="section-btn ${this.state.selectedSections.has(section.uniqueId) ? 'selected' : ''}" data-unique-id="${section.uniqueId}">
                                 <div class="section-btn-number">${section.section}</div>
                                 <div class="section-type">${section.type || ''}</div>
                             </div>
                         `).join('');
-
                         courseItem.innerHTML = `
                             <div class="course-item-header">
                                 <span class="color-dot" style="background-color: ${group.color}; box-shadow: 0 0 10px 1px ${group.color};"></span>
@@ -635,8 +632,10 @@
                             </div>
                             <div class="my-schedule-details">
                                 <div><i class="ri-hashtag"></i> شعبة: <span>${course.section} (${course.type || 'نظري'})</span></div>
-                                <div><i class="ri-time-line"></i> الوقت: <span>${course.time.replace(/<br>/g, ', ')}</span></div>
                                 <div><i class="ri-book-3-line"></i> الساعات: <span>${course.hours || '0'}</span></div>
+                                <div><i class="ri-time-line"></i> الوقت: <span>${course.time.replace(/<br>/g, ', ')}</span></div>
+                                <div><i class="ri-map-pin-line"></i> القاعة: <span>${course.location || 'N/A'}</span></div>
+                                <div><i class="ri-question-answer-line"></i> الحالة: <span>${course.status || 'N/A'}</span></div>
                                 <div><i class="ri-file-text-line"></i> النهائي: <span>${examText}</span></div>
                             </div>
                         `;
@@ -679,16 +678,15 @@
                 _populateCourseVisibilityList() {
                     this.dom.courseVisibilityList.innerHTML = '';
                     if (!this.state.groupedCourses || Object.keys(this.state.groupedCourses).length === 0) {
-                        this.dom.courseVisibilityList.innerHTML = `<p id="no-courses-for-visibility" style="color: var(--text-light); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>`;
+                        this.dom.noCoursesForVisibility.style.display = 'block';
                         return;
                     }
+                    this.dom.noCoursesForVisibility.style.display = 'none';
                     Object.values(this.state.groupedCourses).forEach(group => {
                         const item = document.createElement('div');
                         item.className = 'visibility-course-item';
                         item.dataset.courseCode = group.code;
-                        if (this.state.hiddenCourseCodes.has(group.code)) {
-                            item.classList.add('hidden');
-                        }
+                        if (this.state.hiddenCourseCodes.has(group.code)) item.classList.add('hidden');
                         item.innerHTML = `<span class="color-dot" style="background-color: ${group.color};"></span> ${group.name} (${group.code})`;
                         this.dom.courseVisibilityList.appendChild(item);
                     });
@@ -701,55 +699,43 @@
                         for (let j = i + 1; j < selectedCourses.length; j++) {
                             const courseA = selectedCourses[i];
                             const courseB = selectedCourses[j];
-                            
                             const conflictMessagesA = conflictMap.get(courseA.uniqueId) || [];
                             const conflictMessagesB = conflictMap.get(courseB.uniqueId) || [];
 
-                            const timeConflict = courseA.timeSlots.some(slotA => 
-                                courseB.timeSlots.some(slotB => 
-                                    slotA.day === slotB.day && slotA.start < slotB.end && slotA.end > slotB.start
-                                )
-                            );
-                            if(timeConflict){
+                            if (courseA.timeSlots.some(sA => courseB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
                                 conflictMessagesA.push(`تعارض وقت مع ${courseB.code}`);
                                 conflictMessagesB.push(`تعارض وقت مع ${courseA.code}`);
                             }
-
                             if (courseA.examPeriod && courseB.examPeriod && courseA.examPeriod === courseB.examPeriod) {
                                 conflictMessagesA.push(`تعارض اختبار مع ${courseB.code}`);
                                 conflictMessagesB.push(`تعارض اختبار مع ${courseA.code}`);
                             }
-
-                            if(conflictMessagesA.length > (conflictMap.get(courseA.uniqueId) || []).length) conflictMap.set(courseA.uniqueId, conflictMessagesA);
-                            if(conflictMessagesB.length > (conflictMap.get(courseB.uniqueId) || []).length) conflictMap.set(courseB.uniqueId, conflictMessagesB);
+                            if (conflictMessagesA.length > 0) conflictMap.set(courseA.uniqueId, conflictMessagesA);
+                            if (conflictMessagesB.length > 0) conflictMap.set(courseB.uniqueId, conflictMessagesB);
                         }
                     }
                     return conflictMap;
                 },
 
                 _isSectionConflicted(section, selectedCourses) {
-                    return selectedCourses.some(selected => {
-                        const timeConflict = section.timeSlots.some(slotA =>
-                            selected.timeSlots.some(slotB =>
-                                slotA.day === slotB.day && slotA.start < slotB.end && slotA.end > slotB.start
-                            )
-                        );
-                        const examConflict = section.examPeriod && selected.examPeriod && section.examPeriod === selected.examPeriod;
-                        return timeConflict || examConflict;
-                    });
+                    return selectedCourses.some(selected => 
+                        (section.timeSlots.some(sA => selected.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) ||
+                        (section.examPeriod && selected.examPeriod && section.examPeriod === selected.examPeriod)
+                    );
                 },
 
                 _createLectureEventsForSection(section, isPreview = false, color = 'var(--primary)') {
-                    const events = section.timeSlots.map(slot => ({
-                       id: isPreview ? `preview-event-${slot.day}`: undefined,
-                       title: `${section.name}`, daysOfWeek: [slot.day],
-                       startTime: slot.start, endTime: slot.end,
-                       backgroundColor: isPreview ? 'transparent' : color,
-                       borderColor: color,
-                       className: isPreview ? 'fc-event-preview' : '',
-                       extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId }
-                   }));
-                   return isPreview ? events : { events };
+                    return {
+                        events: section.timeSlots.map(slot => ({
+                           id: isPreview ? `preview-event-${slot.day}`: undefined,
+                           title: `${section.name}`, daysOfWeek: [slot.day],
+                           startTime: slot.start, endTime: slot.end,
+                           backgroundColor: isPreview ? 'transparent' : color,
+                           borderColor: color,
+                           className: isPreview ? 'fc-event-preview' : '',
+                           extendedProps: { instructor: section.instructor, section: section.section, uniqueId: section.uniqueId, location: section.location }
+                        }))
+                    };
                 },
                 
                 _parseTimeEntries(timeString) {
@@ -760,7 +746,7 @@
                         const daysArray = parts[1].trim().split(/\s+/);
                         const startTime = this._convertTo24Hour(parts[2], parts[3]);
                         const endTime = this._convertTo24Hour(parts[4], parts[5]);
-                        return daysArray.map(dayName => this.constants.DAY_MAPPING.hasOwnProperty(dayName) ? { day: this.constants.DAY_MAPPING[dayName], start: startTime, end: endTime } : null);
+                        return daysArray.map(dayName => this.constants.DAY_MAPPING[dayName] !== undefined ? { day: this.constants.DAY_MAPPING[dayName], start: startTime, end: endTime } : null);
                     }).flat().filter(Boolean);
                 },
 
@@ -772,48 +758,30 @@
                     return `${String(hours).padStart(2, '0')}:${minutes}:00`;
                 },
 
-                _showToast(message, type = 'success') {
-                    this.dom.toast.textContent = message;
-                    this.dom.toast.style.backgroundColor = `var(--${type})`;
-                    this.dom.toast.classList.add('show');
-                    setTimeout(() => { this.dom.toast.classList.remove('show'); }, 3000);
-                },
-
                 // --- 6. EVENT LISTENERS & HANDLERS ---
                 _setupEventListeners() {
-                    // Main Actions
                     this.dom.clearCalendarBtn.addEventListener('click', () => this._handleClearCalendar());
                     this.dom.settingsBtn.addEventListener('click', () => this._toggleSettingsModal(true));
                     this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
                     this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
-                    
-                    // Sidebar & Mobile
                     this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
                     this.dom.mobileFab.addEventListener('click', () => this._toggleSidebar(true));
                     this.dom.overlay.addEventListener('click', () => this._toggleSidebar(false));
                     this.dom.closeSidebarBtn.addEventListener('click', () => this._toggleSidebar(false));
-
-                    // Course List Interaction
                     this.dom.coursesList.addEventListener('click', e => this._handleCourseListClick(e));
                     this.dom.coursesList.addEventListener('mouseover', e => this._handleCoursePreview(e, 'show'));
                     this.dom.coursesList.addEventListener('mouseout', e => this._handleCoursePreview(e, 'hide'));
                     this.dom.coursesList.addEventListener('touchstart', e => { e.preventDefault(); this._handleCoursePreview(e, 'show'); }, { passive: false });
                     this.dom.coursesList.addEventListener('touchend', e => this._handleCoursePreview(e, 'hide'));
-                    
-                    // Settings Handlers
                     this.dom.modeToggleContainer.addEventListener('click', e => this._handleThemeChange(e));
                     this.dom.showWeekendToggle.addEventListener('change', e => this._handleWeekendToggle(e));
                     this.dom.minTimeSelect.addEventListener('change', e => this._handleTimeRangeChange(e, 'min'));
                     this.dom.maxTimeSelect.addEventListener('change', e => this._handleTimeRangeChange(e, 'max'));
                     this.dom.courseVisibilityList.addEventListener('click', e => this._handleVisibilityToggle(e));
-                    
-                    // Data Management
                     this.dom.exportBtn.addEventListener('click', () => this._exportData());
                     this.dom.importBtn.addEventListener('click', () => this.dom.importFileInput.click());
                     this.dom.importFileInput.addEventListener('change', e => this._importData(e));
                     this.dom.resetAppBtn.addEventListener('click', () => this._resetApp());
-                    
-                    // Installation
                     if (this.dom.copyCodeBtn) this.dom.copyCodeBtn.addEventListener('click', () => this._copyBookmarkletCode());
                 },
                 
@@ -823,13 +791,9 @@
                     if (sectionBtn) {
                         this._hidePreview();
                         const uniqueId = sectionBtn.dataset.uniqueId;
-                        if (this.state.selectedSections.has(uniqueId)) {
-                            this.state.selectedSections.delete(uniqueId);
-                            sectionBtn.classList.remove('selected');
-                        } else {
-                            this.state.selectedSections.add(uniqueId);
-                            sectionBtn.classList.add('selected');
-                        }
+                        sectionBtn.classList.toggle('selected');
+                        if (this.state.selectedSections.has(uniqueId)) this.state.selectedSections.delete(uniqueId);
+                        else this.state.selectedSections.add(uniqueId);
                         this.updateCalendarAndConflicts();
                     } else if (header) {
                         header.parentElement.classList.toggle('open');
@@ -838,17 +802,14 @@
                 
                 _handleCoursePreview(e, action) {
                     const btn = e.target.closest('.section-btn');
-                    if (!btn) return;
+                    if (!btn || btn.classList.contains('selected')) return;
                     if (action === 'show') {
-                        if (btn.classList.contains('selected')) return;
                         this._hidePreview();
-                        const uniqueId = btn.dataset.uniqueId;
-                        const section = this.state.allCoursesData.find(c => c.uniqueId === uniqueId);
-                        if (!section) return;
-                        const group = this.state.groupedCourses[section.code];
-                        if (section && group) {
+                        const section = this.state.allCoursesData.find(c => c.uniqueId === btn.dataset.uniqueId);
+                        if (section) {
+                            const group = this.state.groupedCourses[section.code];
                             const previewEvents = this._createLectureEventsForSection(section, true, group.color);
-                            previewEvents.forEach(ev => this.state.calendar.addEvent(ev));
+                            this.state.calendar.addEventSource(previewEvents);
                         }
                     } else {
                         this._hidePreview();
@@ -856,17 +817,15 @@
                 },
                 
                 _hidePreview() {
-                    for (let i = 0; i < 7; i++) {
-                        const previewEvent = this.state.calendar.getEventById(`preview-event-${i}`);
-                        if (previewEvent) previewEvent.remove();
-                    }
+                    const previewEvents = this.state.calendar.getEvents().filter(ev => ev.id.startsWith('preview-event'));
+                    previewEvents.forEach(ev => ev.remove());
                 },
                 
                 _handleClearCalendar() {
-                    if (confirm('هل أنت متأكد من مسح الجدول المحدد؟ سيتم إلغاء تحديد جميع الشعب.')) {
+                    if (confirm('هل أنت متأكد من مسح الجدول المحدد؟')) {
                         this.state.selectedSections.clear();
-                        document.querySelectorAll('.section-btn.selected').forEach(btn => btn.classList.remove('selected'));
                         this.updateCalendarAndConflicts();
+                        this._renderCoursesList();
                         this._showToast('تم مسح الجدول بنجاح.');
                     }
                 },
@@ -880,42 +839,39 @@
                 
                 _handleThemeChange(e) {
                     const btn = e.target.closest('.mode-btn');
-                    if (!btn) return;
-                    this.state.userSettings.theme = btn.dataset.theme;
-                    this._saveSettings();
-                    this._applySettings();
+                    if (btn) {
+                        this.state.userSettings.theme = btn.dataset.theme;
+                        this._saveSettings(); this._applySettings();
+                    }
                 },
 
                 _handleWeekendToggle(e) {
                     this.state.userSettings.showWeekends = e.target.checked;
-                    this._saveSettings();
-                    this._rebuildCalendar();
+                    this._saveSettings(); this._rebuildCalendar();
                 },
                 
                 _handleTimeRangeChange(e, type) {
                     if (type === 'min') this.state.userSettings.minTime = e.target.value;
                     else this.state.userSettings.maxTime = e.target.value;
-                    this._saveSettings();
-                    this._rebuildCalendar();
+                    this._saveSettings(); this._rebuildCalendar();
                 },
 
                 _handleVisibilityToggle(e) {
                     const item = e.target.closest('.visibility-course-item');
-                    if (!item) return;
-                    const courseCode = item.dataset.courseCode;
-                    if (this.state.hiddenCourseCodes.has(courseCode)) {
-                        this.state.hiddenCourseCodes.delete(courseCode);
-                        item.classList.remove('hidden');
-                    } else {
-                        this.state.hiddenCourseCodes.add(courseCode);
-                        item.classList.add('hidden');
+                    if (item) {
+                        const courseCode = item.dataset.courseCode;
+                        if (this.state.hiddenCourseCodes.has(courseCode)) {
+                            this.state.hiddenCourseCodes.delete(courseCode);
+                            item.classList.remove('hidden');
+                        } else {
+                            this.state.hiddenCourseCodes.add(courseCode);
+                            item.classList.add('hidden');
+                        }
+                        this._saveSettings(); this._renderCoursesList(); this.updateCalendarAndConflicts();
                     }
-                    this._saveSettings();
-                    this._renderCoursesList();
-                    this.updateCalendarAndConflicts(); // Re-render calendar
                 },
 
-                // --- 7. SETTINGS & DATA MGMT ---
+                // --- 7. SETTINGS, DATA MGMT, & HELPERS ---
                 _loadSettings() {
                     const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
                     if (saved) {
@@ -939,17 +895,14 @@
                 _applySettings() {
                     document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
                     document.querySelector('meta[name="theme-color"]').setAttribute('content', this.state.userSettings.theme === 'light' ? '#f4f4f5' : '#0a0a0a');
-                    
                     const primaryColor = this.state.userSettings.accentColor;
                     const darkColor = this._adjustColorBrightness(primaryColor, -20);
                     const rgbColor = this._hexToRgb(primaryColor);
                     document.documentElement.style.setProperty('--primary', primaryColor);
                     document.documentElement.style.setProperty('--primary-dark', darkColor);
                     if (rgbColor) document.documentElement.style.setProperty('--rgb-primary', rgbColor);
-
                     this.dom.modeToggleContainer.querySelector('.active')?.classList.remove('active');
                     this.dom.modeToggleContainer.querySelector(`[data-theme="${this.state.userSettings.theme}"]`).classList.add('active');
-                    
                     this._populateAccentColorPicker();
                     this.dom.showWeekendToggle.checked = this.state.userSettings.showWeekends;
                     this.dom.minTimeSelect.value = this.state.userSettings.minTime;
@@ -958,14 +911,12 @@
 
                 _exportData() {
                     if (this.state.selectedSections.size === 0) {
-                        this._showToast('الجدول فارغ. الرجاء اختيار بعض الشعب أولاً.', 'warning');
-                        return;
+                        this._showToast('الجدول فارغ.', 'warning'); return;
                     }
                     const dataToExport = {
-                        version: 4,
-                        createdAt: new Date().toISOString(),
+                        version: 5, createdAt: new Date().toISOString(),
                         schedule: Array.from(this.state.selectedSections),
-                        settings: this.state.userSettings, // Export settings too
+                        settings: this.state.userSettings,
                     };
                     const dataStr = JSON.stringify(dataToExport, null, 2);
                     const dataBlob = new Blob([dataStr], { type: 'application/json' });
@@ -973,9 +924,7 @@
                     const a = document.createElement('a');
                     a.href = url;
                     a.download = `qu_schedule_${new Date().toISOString().slice(0, 10)}.json`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
                     URL.revokeObjectURL(url);
                 },
 
@@ -990,55 +939,33 @@
                                 this.state.selectedSections = new Set(data.schedule);
                                 if (data.settings) {
                                     this.state.userSettings = { ...this.state.userSettings, ...data.settings };
-                                    this.state.hiddenCourseCodes = new Set(this.state.userSettings.hiddenCourseCodes || []);
-                                    this._saveSettings();
-                                    this._applySettings();
+                                    this._saveSettings(); this._applySettings();
                                 }
-                                this._renderCoursesList();
-                                this.updateCalendarAndConflicts();
-                                this._showToast('✅ تم استيراد الجدول بنجاح!');
-                                this._toggleSettingsModal(false);
-                            } else { throw new Error('Invalid file format'); }
+                                this._renderCoursesList(); this.updateCalendarAndConflicts();
+                                this._showToast('✅ تم استيراد الجدول بنجاح!'); this._toggleSettingsModal(false);
+                            } else { throw new Error('Invalid format'); }
                         } catch (error) {
                             console.error("Import failed:", error);
-                            this._showToast('خطأ في استيراد الملف. تأكد من أنه ملف جدول صحيح.', 'danger');
+                            this._showToast('خطأ في استيراد الملف.', 'danger');
                         }
                     };
-                    reader.readAsText(file);
-                    e.target.value = ''; // Reset file input
+                    reader.readAsText(file); e.target.value = '';
                 },
                 
                 _resetApp() {
-                    if (confirm('تحذير! سيؤدي هذا إلى مسح جميع بيانات التطبيق المحفوظة (بما في ذلك المقررات والجدول والإعدادات). هل أنت متأكد؟')) {
+                    if (confirm('تحذير! سيؤدي هذا إلى مسح جميع البيانات. هل أنت متأكد؟')) {
                         Object.values(this.constants.STORAGE_KEYS).forEach(key => localStorage.removeItem(key));
                         location.reload();
                     }
                 },
-
-                // --- 8. UI TOGGLES & HELPERS ---
-                _toggleSidebar(forceOpen) {
-                    this.dom.sidebar.classList.toggle('open', forceOpen);
-                    this.dom.overlay.classList.toggle('open', forceOpen);
-                },
-
-                _toggleSettingsModal(forceOpen) {
-                    this.dom.settingsModal.classList.toggle('open', forceOpen);
-                    this.dom.modalOverlay.classList.toggle('open', forceOpen);
-                },
+                
+                _toggleSidebar: function(forceOpen) { this.dom.sidebar.classList.toggle('open', forceOpen); this.dom.overlay.classList.toggle('open', forceOpen); },
+                _toggleSettingsModal: function(forceOpen) { this.dom.settingsModal.classList.toggle('open', forceOpen); this.dom.modalOverlay.classList.toggle('open', forceOpen); },
                 
                 _populateDOMElements() {
-                    const ids = [
-                        'courses-list', 'exams-list', 'my-schedule-summary', 'my-schedule-list',
-                        'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'mobile-fab',
-                        'overlay', 'close-sidebar-btn', 'settings-btn', 'settings-modal', 'modal-overlay',
-                        'close-modal-btn', 'install-section', 'copy-code-btn', 'toast', 'no-data-message',
-                        'accent-color-picker', 'course-visibility-list', 'show-weekend-toggle',
-                        'min-time-select', 'max-time-select', 'export-btn', 'import-btn', 'import-file-input',
-                        'reset-app-btn', 'bookmarklet-btn', 'bookmarklet-code-mobile'
-                    ];
+                    const ids = ['courses-list', 'exams-list', 'my-schedule-summary', 'my-schedule-list', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'mobile-fab', 'overlay', 'close-sidebar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'close-modal-btn', 'install-section', 'copy-code-btn', 'toast', 'no-data-message', 'accent-color-picker', 'course-visibility-list', 'show-weekend-toggle', 'min-time-select', 'max-time-select', 'export-btn', 'import-btn', 'import-file-input', 'reset-app-btn', 'bookmarklet-btn', 'bookmarklet-code-mobile', 'starfield-canvas', 'no-courses-for-visibility'];
                     ids.forEach(id => {
-                        const camelCaseId = id.replace(/-(\w)/g, (_, c) => c.toUpperCase());
-                        this.dom[camelCaseId] = document.getElementById(id);
+                        this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
                     });
                     this.dom.modeToggleContainer = document.querySelector('.mode-toggle');
                     this.dom.tabButtons = document.querySelectorAll('.tab-btn');
@@ -1060,9 +987,7 @@
                         const dot = document.createElement('div');
                         dot.className = `theme-dot ${this.state.userSettings.accentColor === color ? 'active' : ''}`;
                         dot.style.backgroundColor = color;
-                        dot.onclick = () => {
-                            this.state.userSettings.accentColor = color; this._saveSettings(); this._applySettings();
-                        };
+                        dot.onclick = () => { this.state.userSettings.accentColor = color; this._saveSettings(); this._applySettings(); };
                         this.dom.accentColorPicker.appendChild(dot);
                     });
                     const isCustom = !Object.values(this.constants.PRESET_COLORS).includes(this.state.userSettings.accentColor);
@@ -1070,20 +995,13 @@
                     customPickerLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
                     customPickerLabel.style.backgroundColor = isCustom ? this.state.userSettings.accentColor : 'transparent';
                     customPickerLabel.innerHTML = `<input type="color" class="color-picker-input" value="${this.state.userSettings.accentColor}">`;
-                    customPickerLabel.querySelector('input').onchange = (e) => {
-                        this.state.userSettings.accentColor = e.target.value; this._saveSettings(); this._applySettings();
-                    };
+                    customPickerLabel.querySelector('input').onchange = (e) => { this.state.userSettings.accentColor = e.target.value; this._saveSettings(); this._applySettings(); };
                     this.dom.accentColorPicker.appendChild(customPickerLabel);
                 },
 
                 _copyBookmarkletCode() {
                     const code = this.dom.bookmarkletCodeMobile.textContent;
-                    if (!code) return;
-                    navigator.clipboard.writeText(code).then(() => {
-                        this._showToast('✅ تم نسخ الكود بنجاح!');
-                    }).catch(err => {
-                        this._showToast('فشل النسخ. الرجاء النسخ يدويًا.', 'danger');
-                    });
+                    if (code) navigator.clipboard.writeText(code).then(() => this._showToast('✅ تم نسخ الكود بنجاح!'), () => this._showToast('فشل النسخ.', 'danger'));
                 },
                 
                 _updateBookmarkletCode() {
@@ -1095,12 +1013,9 @@
                 _initializeCalendar() {
                     if (this.state.calendar) this.state.calendar.destroy();
                     const calendarOptions = {
-                        initialView: 'timeGridWeek', locale: 'ar',
-                        headerToolbar: false, allDaySlot: false,
-                        events: [], dir: 'rtl', 
-                        dayHeaderFormat: { weekday: 'long' },
-                        slotMinTime: this.state.userSettings.minTime,
-                        slotMaxTime: this.state.userSettings.maxTime,
+                        initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
+                        events: [], dir: 'rtl', dayHeaderFormat: { weekday: 'long' },
+                        slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
                         hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6],
                         eventClick: (info) => {
                             if (info.event.id.startsWith('preview-event')) return;
@@ -1108,6 +1023,7 @@
                             if (this.state.selectedSections.has(uniqueId)) {
                                 this.state.selectedSections.delete(uniqueId);
                                 this.updateCalendarAndConflicts();
+                                this._renderCoursesList();
                             }
                         },
                         eventContent: (arg) => {
@@ -1115,14 +1031,10 @@
                             wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem;';
                             const title = document.createElement('b');
                             title.innerText = arg.event.title.split('(')[0];
-                            const instructor = document.createElement('small');
-                            instructor.innerText = arg.event.extendedProps.instructor;
-                            instructor.style.opacity = '0.9';
-                            const section = document.createElement('small');
-                            section.innerText = `شعبة: ${arg.event.extendedProps.section}`;
-                            section.style.opacity = '0.8';
-                            wrapper.appendChild(section);
-                            wrapper.prepend(instructor);
+                            const location = document.createElement('small');
+                            location.innerText = arg.event.extendedProps.location;
+                            location.style.opacity = '0.9';
+                            wrapper.appendChild(location);
                             wrapper.prepend(title);
                             return { domNodes: [wrapper] };
                         }
@@ -1131,25 +1043,9 @@
                     this.state.calendar.render();
                 },
 
-                _rebuildCalendar() {
-                    this._initializeCalendar();
-                    this.updateCalendarAndConflicts();
-                },
-
-                _adjustColorBrightness(hex, percent) {
-                    let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
-                    const p = percent / 100;
-                    r = Math.min(255, Math.max(0, Math.round(r * (1 + p))));
-                    g = Math.min(255, Math.max(0, Math.round(g * (1 + p))));
-                    b = Math.min(255, Math.max(0, Math.round(b * (1 + p))));
-                    return `#${(r).toString(16).padStart(2, '0')}${(g).toString(16).padStart(2, '0')}${(b).toString(16).padStart(2, '0')}`;
-                },
-
-                _hexToRgb(hex) {
-                    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-                    return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : null;
-                },
-
+                _rebuildCalendar() { this._initializeCalendar(); this.updateCalendarAndConflicts(); },
+                _adjustColorBrightness: (hex, percent) => { let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16); const p = percent / 100; r = Math.min(255, Math.max(0, Math.round(r * (1 + p)))); g = Math.min(255, Math.max(0, Math.round(g * (1 + p)))); b = Math.min(255, Math.max(0, Math.round(b * (1 + p)))); return `#${(r).toString(16).padStart(2, '0')}${(g).toString(16).padStart(2, '0')}${(b).toString(16).padStart(2, '0')}`; },
+                _hexToRgb: (hex) => { let r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return r ? `${parseInt(r[1], 16)}, ${parseInt(r[2], 16)}, ${parseInt(r[3], 16)}` : null; },
                 _initCosmicEffects() {
                     const canvas = this.dom.starfieldCanvas; if (!canvas) return;
                     const ctx = canvas.getContext('2d'); let stars = [], shootingStars = [];
