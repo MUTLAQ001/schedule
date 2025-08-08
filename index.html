@@ -93,7 +93,6 @@
         }
         .toast-notification.show { bottom: 20px; opacity: 1; }
         
-        /* --- Universal Invisible Scrollbar --- */
         .custom-scrollbar::-webkit-scrollbar { display: none; }
         .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
@@ -108,7 +107,6 @@
         .sidebar-tabs { display: flex; padding: 0.75rem 1rem 0; border-bottom: 1px solid var(--border-color); }
         .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--text-light); font-size: 1rem; font-weight: 600; cursor: pointer; transition: all 0.2s; position: relative; border-bottom: 2px solid transparent; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
-        
         .tab-content { padding: 1rem; display: none; overflow-y: auto; flex-grow: 1; }
         .tab-content.active { display: block; }
         
@@ -191,7 +189,7 @@
         .modal-header h3 { margin: 0; font-size: 1.3rem; color: var(--text-dark); }
         .modal-header i { cursor: pointer; font-size: 1.5rem; color: var(--text-light); transition: all 0.2s; }
         .modal-header i:hover { color: var(--text-dark); transform: rotate(90deg); }
-        .modal-content { padding: 1.5rem; max-height: 70vh; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--primary) transparent; }
+        .modal-content { padding: 1.5rem; max-height: 70vh; overflow-y: auto; }
         .settings-group { margin-bottom: 2rem; }
         .settings-group-title { font-size: 1.2rem; font-weight: 600; color: var(--primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
         .settings-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
@@ -320,7 +318,6 @@
                             <button class="tab-btn" data-tab="exams-tab"><i class="ri-file-text-line"></i> مواعيد الاختبارات</button>
                         </div>
                     </div>
-                    
                     <div id="courses-tab" class="tab-content active custom-scrollbar">
                         <div id="courses-list">
                             <div class="no-data" id="no-data-message">
@@ -705,8 +702,8 @@
                             conflictMap.set(courseB.uniqueId, [...conflictMsgB, `تعارض وقت مع ${courseA.code}`]);
                         }
 
-                        if (courseA.examPeriod && courseA.examPeriod === courseB.examPeriod) {
-                             const conflictMsgA = conflictMap.get(courseA.uniqueId) || [];
+                        if (courseA.examPeriod && courseB.examPeriod && courseA.examPeriod === courseB.examPeriod) {
+                            const conflictMsgA = conflictMap.get(courseA.uniqueId) || [];
                             conflictMap.set(courseA.uniqueId, [...conflictMsgA, `تعارض اختبار مع ${courseB.code}`]);
                             const conflictMsgB = conflictMap.get(courseB.uniqueId) || [];
                             conflictMap.set(courseB.uniqueId, [...conflictMsgB, `تعارض اختبار مع ${courseA.code}`]);
@@ -737,7 +734,7 @@
                                 slotA.day === slotB.day && slotA.start < slotB.end && slotA.end > slotB.start
                             )
                         );
-                        const examConflict = section.examPeriod && selected.examPeriod === section.examPeriod;
+                        const examConflict = section.examPeriod && selected.examPeriod && section.examPeriod === selected.examPeriod;
                         return timeConflict || examConflict;
                     });
                     
