@@ -16,6 +16,7 @@
         :root {
             --primary: #6366f1; --primary-dark: #4f46e5;
             --danger: #f43f5e; --danger-bg: rgba(244, 63, 94, 0.1);
+            --warning: #f59e0b; --warning-bg: rgba(245, 158, 11, 0.1);
             --success: #22c55e;
             --bg-main: #0a0a0a; --bg-sidebar: rgba(20, 20, 22, 0.75);
             --bg-calendar: rgba(20, 20, 22, 0.75); --bg-item-hover: rgba(255, 255, 255, 0.05);
@@ -23,11 +24,12 @@
             --border-color: rgba(255, 255, 255, 0.1); --radius-md: 16px;
             --radius-lg: 20px; --transition: 0.3s cubic-bezier(0.25,0.8,0.25,1);
             --rgb-primary: 99, 102, 241; --rgb-danger: 244, 63, 94;
-            --rgb-warning: 251, 191, 36;
+            --rgb-warning: 245, 158, 11;
         }
         .light {
             --primary: #6366f1; --primary-dark: #4f46e5;
             --danger: #ef4444; --danger-bg: #fee2e2;
+            --warning: #d97706; --warning-bg: #fef3c7;
             --success: #16a34a;
             --bg-main: #f4f4f5; --bg-sidebar: rgba(255, 255, 255, 0.75);
             --bg-calendar: rgba(255, 255, 255, 0.75); --bg-item-hover: rgba(0, 0, 0, 0.04);
@@ -115,7 +117,6 @@
         .header-control-icon:hover { color: var(--text-dark); transform: scale(1.1); }
 
         .course-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: rgba(0,0,0,0.1); animation: fadeInUp .5s ease both; position: relative; overflow: hidden; }
-        .course-item.exam-conflict { border-color: var(--danger); box-shadow: 0 0 8px rgba(var(--rgb-danger), 0.5); animation: pulse-red 2s infinite, fadeInUp .5s ease both; }
         .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; transition: background-color var(--transition); }
         .course-item-header:hover { background-color: var(--bg-item-hover); }
         .course-item-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
@@ -131,8 +132,8 @@
         .section-btn:hover { border-color: var(--primary); background-color: rgba(var(--rgb-primary), 0.1); }
         .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
         .section-btn.selected .section-type { color: rgba(255,255,255,0.8) !important; }
-        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); cursor: not-allowed; opacity: 0.7; }
-        .section-btn.conflicted:hover { border-color: var(--danger); }
+        .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); }
+        .section-btn.conflicted:hover { filter: brightness(1.2); }
         .section-btn.conflicted .conflict-icon { position: absolute; top: -5px; right: -5px; color: var(--danger); background: var(--bg-sidebar); border-radius: 50%; font-size: 1.2em; }
         .section-btn-number { font-weight: 700; font-size: 1rem; }
         .section-type { font-size: 0.75rem; color: var(--text-light); }
@@ -160,19 +161,21 @@
         .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
         .light .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
         
-        .my-schedule-section { flex-shrink: 0; border-top: 1px solid var(--border-color); padding: 1rem; }
-        .my-schedule-section h3 { margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); }
-        .my-schedule-list { max-height: 25vh; overflow-y: auto; padding-right: 0.5rem; margin-right: -0.5rem; }
-        .my-schedule-list::-webkit-scrollbar { display: none; }
-        .my-schedule-list { -ms-overflow-style: none; scrollbar-width: none; }
+        .selected-courses-section { border-top: 1px solid var(--border-color); padding: 1rem; margin-top: 1rem; flex-shrink: 0; }
+        .selected-courses-section h3 { margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); }
+        .selected-courses-list { max-height: 25vh; overflow-y: auto; padding-right: 0.5rem; margin-right: -0.5rem; }
+        .selected-courses-list::-webkit-scrollbar { display: none; }
+        .selected-courses-list { -ms-overflow-style: none; scrollbar-width: none; }
         
-        .my-schedule-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: .75rem; background: rgba(var(--rgb-primary), 0.05); animation: scaleIn .4s var(--transition) both; }
-        .my-schedule-item-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: .75rem; }
-        .my-schedule-item-header .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-        .my-schedule-item-header h4 { font-size: .9rem; margin: 0; flex-grow: 1; }
-        .my-schedule-details { display: flex; flex-direction: column; gap: .5rem; font-size: .8rem; color: var(--text-light); padding-top: .75rem; border-top: 1px solid var(--border-color); }
-        .my-schedule-details div { display: flex; align-items: center; gap: .5rem; }
-        .my-schedule-details span { font-weight: 600; color: var(--text-dark); }
+        .selected-course-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: .75rem; background: rgba(var(--rgb-primary), 0.05); animation: scaleIn .4s var(--transition) both; position: relative; }
+        .selected-course-item.has-conflict { border-left: 4px solid var(--warning); }
+        .conflict-badge { position: absolute; top: .75rem; left: .75rem; color: var(--warning); font-size: 1.2rem; cursor: help; }
+        .selected-course-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: .75rem; }
+        .selected-course-header .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        .selected-course-header h4 { font-size: .9rem; margin: 0; flex-grow: 1; }
+        .selected-course-details { display: flex; flex-direction: column; gap: .5rem; font-size: .8rem; color: var(--text-light); padding-top: .75rem; border-top: 1px solid var(--border-color); }
+        .selected-course-details div { display: flex; align-items: center; gap: .5rem; }
+        .selected-course-details span { font-weight: 600; color: var(--text-dark); }
         
         .total-credits-summary { margin-top: 1rem; padding: .75rem; text-align: center; font-weight: 600; background: var(--bg-item-hover); border-radius: var(--radius-md); }
         .total-credits-summary span { color: var(--primary); font-weight: 700; font-size: 1.1em; }
@@ -329,15 +332,16 @@
                             <p>شغّل أداة "QU Schedule" من صفحة المقررات المطروحة.</p>
                         </div>
                     </div>
+                    <!-- My Schedule Summary Section, but inside the courses tab -->
+                    <div class="selected-courses-section" id="selected-courses-summary" style="display: none;">
+                        <h3><i class="ri-stack-line"></i> المقررات المختارة</h3>
+                        <div class="selected-courses-list" id="selected-courses-list"></div>
+                        <div class="total-credits-summary" id="total-credits-summary"></div>
+                    </div>
                 </div>
+
                 <div id="exams-tab" class="tab-content">
                     <div id="exams-list"></div>
-                </div>
-                
-                <div class="my-schedule-section" id="my-schedule-summary" style="display: none;">
-                    <h3><i class="ri-stack-line"></i> جدولـي</h3>
-                    <div class="my-schedule-list" id="my-schedule-list"></div>
-                    <div class="total-credits-summary" id="total-credits-summary"></div>
                 </div>
             </div>
 
@@ -417,8 +421,8 @@
             // --- START: DOM Element Selection ---
             const coursesListContainer = document.getElementById('courses-list');
             const examsListContainer = document.getElementById('exams-list');
-            const myScheduleSummarySection = document.getElementById('my-schedule-summary');
-            const myScheduleList = document.getElementById('my-schedule-list');
+            const selectedCoursesSummarySection = document.getElementById('selected-courses-summary');
+            const selectedCoursesList = document.getElementById('selected-courses-list');
             const totalCreditsSummaryEl = document.getElementById('total-credits-summary');
             const calendarEl = document.getElementById('calendar');
             const clearCalendarBtn = document.getElementById('clear-calendar-btn');
@@ -644,7 +648,7 @@
                     
                     let sectionsHTML = '';
                     group.sections.forEach(section => {
-                        sectionsHTML += `<div class="section-btn" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type}</div></div>`;
+                        sectionsHTML += `<div class="section-btn" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`;
                     });
 
                     courseItem.innerHTML = `
@@ -671,7 +675,7 @@
                 if (selectedSections.has(uniqueId)) {
                     selectedSections.delete(uniqueId);
                     btnElement.classList.remove('selected');
-                } else if (!btnElement.classList.contains('conflicted')) {
+                } else {
                     selectedSections.add(uniqueId);
                     btnElement.classList.add('selected');
                 }
@@ -680,59 +684,71 @@
 
             function updateCalendarAndConflicts() {
                 calendar.removeAllEvents();
-                const currentScheduleSlots = [];
-                const examPeriodMap = new Map();
-                const selectedCourseDetails = [];
-
+                let selectedCourseDetails = [];
                 selectedSections.forEach(id => {
                     const section = allCoursesData.find(c => c.uniqueId === id);
-                    if (section) {
-                        selectedCourseDetails.push(section);
-                        const group = groupedCourses[section.code];
-                        const lectureEvents = createLectureEventsForSection(section, false, group.color);
-                        calendar.addEventSource(lectureEvents);
-                        currentScheduleSlots.push(...section.timeSlots);
+                    if (section) selectedCourseDetails.push(section);
+                });
+
+                // --- NEW: Smart Conflict Detection ---
+                const conflictMap = new Map();
+                for (let i = 0; i < selectedCourseDetails.length; i++) {
+                    for (let j = i + 1; j < selectedCourseDetails.length; j++) {
+                        const courseA = selectedCourseDetails[i];
+                        const courseB = selectedCourseDetails[j];
                         
-                        if (section.examPeriod) {
-                             if (!examPeriodMap.has(section.examPeriod)) {
-                                examPeriodMap.set(section.examPeriod, []);
-                            }
-                            examPeriodMap.get(section.examPeriod).push(section);
+                        // Time conflict
+                        const timeConflict = courseA.timeSlots.some(slotA => 
+                            courseB.timeSlots.some(slotB => 
+                                slotA.day === slotB.day && slotA.start < slotB.end && slotA.end > slotB.start
+                            )
+                        );
+                        if(timeConflict){
+                            conflictMap.set(courseA.uniqueId, `تعارض في الوقت مع ${courseB.code}`);
+                            conflictMap.set(courseB.uniqueId, `تعارض في الوقت مع ${courseA.code}`);
+                        }
+
+                        // Exam conflict
+                        if (courseA.examPeriod && courseA.examPeriod === courseB.examPeriod) {
+                            conflictMap.set(courseA.uniqueId, `تعارض في الاختبار مع ${courseB.code}`);
+                            conflictMap.set(courseB.uniqueId, `تعارض في الاختبار مع ${courseA.code}`);
                         }
                     }
+                }
+
+                selectedCourseDetails.forEach(section => {
+                    const group = groupedCourses[section.code];
+                    const lectureEvents = createLectureEventsForSection(section, false, group.color);
+                    calendar.addEventSource(lectureEvents);
                 });
                 
-                const conflictingCourseCodes = new Set();
-                examPeriodMap.forEach((sectionsInPeriod) => {
-                    if (sectionsInPeriod.length > 1) {
-                        sectionsInPeriod.forEach(s => conflictingCourseCodes.add(s.code));
-                    }
-                });
+                displayFinalExams(selectedCourseDetails);
+                renderMyScheduleSummary(selectedCourseDetails, conflictMap);
+                updateAvailableSectionsUI(selectedCourseDetails);
+                localStorage.setItem('quScheduleSelected', JSON.stringify(Array.from(selectedSections)));
+            }
 
-                allCoursesData.forEach(section => {
+            function updateAvailableSectionsUI(selectedCourses) {
+                 const selectedExamPeriods = new Set(selectedCourses.map(c => c.examPeriod).filter(Boolean));
+
+                 allCoursesData.forEach(section => {
                     const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
                     if (!btn || selectedSections.has(section.uniqueId)) return;
-                    const isConflicted = section.timeSlots.some(slot => currentScheduleSlots.some(scheduleSlot => slot.day === scheduleSlot.day && slot.start < scheduleSlot.end && slot.end > scheduleSlot.start));
-                    const existingIcon = btn.querySelector('.conflict-icon');
-                    if(existingIcon) existingIcon.remove();
-                    if (isConflicted) {
-                        btn.classList.add('conflicted');
-                        const icon = document.createElement('i');
-                        icon.className = 'ri-error-warning-fill conflict-icon';
-                        btn.appendChild(icon);
-                    } else {
-                        btn.classList.remove('conflicted');
-                    }
-                });
-
-                document.querySelectorAll('.course-item').forEach(item => {
-                    const code = item.dataset.courseCode;
-                    item.classList.toggle('exam-conflict', conflictingCourseCodes.has(code));
-                });
-
-                displayFinalExams(Array.from(examPeriodMap.values()).flat());
-                renderMyScheduleSummary(selectedCourseDetails);
-                localStorage.setItem('quScheduleSelected', JSON.stringify(Array.from(selectedSections)));
+                    
+                    let isConflicted = selectedCourses.some(selected => {
+                         // Time conflict
+                        const timeConflict = section.timeSlots.some(slotA => 
+                            selected.timeSlots.some(slotB => 
+                                slotA.day === slotB.day && slotA.start < slotB.end && slotA.end > slotB.start
+                            )
+                        );
+                         // Exam conflict
+                        const examConflict = section.examPeriod && selected.examPeriod === section.examPeriod;
+                        return timeConflict || examConflict;
+                    });
+                    
+                    btn.classList.toggle('conflicted', isConflicted);
+                 });
             }
             
             function createLectureEventsForSection(section, isPreview = false, color = 'var(--primary)') {
@@ -750,11 +766,13 @@
             
             function displayFinalExams(exams) {
                 examsListContainer.innerHTML = '';
-                if (exams.length === 0) {
+                const uniqueExams = [...new Map(exams.map(e => [e.code, e])).values()];
+
+                if (uniqueExams.length === 0) {
                     examsListContainer.innerHTML = `<div class="no-data"><i class="ri-file-text-line"></i><h4>لا توجد اختبارات</h4><p>لم يتم تحديد اختبارات نهائية للمقررات المختارة.</p></div>`;
                     return;
                 }
-                exams.sort((a,b) => a.examPeriod - b.examPeriod).forEach((exam, i) => {
+                uniqueExams.sort((a,b) => a.examPeriod - b.examPeriod).forEach((exam, i) => {
                     const periodData = examSchedule[exam.examPeriod];
                     if(!periodData) return;
                     const examItem = document.createElement('div');
@@ -765,31 +783,33 @@
                 });
             }
             
-            function renderMyScheduleSummary(selectedCourses) {
+            function renderMyScheduleSummary(selectedCourses, conflictMap) {
                  if (selectedCourses.length === 0) {
-                    myScheduleSummarySection.style.display = 'none';
+                    selectedCoursesSummarySection.style.display = 'none';
                     return;
                 }
-                myScheduleSummarySection.style.display = 'block';
-                myScheduleList.innerHTML = '';
+                selectedCoursesSummarySection.style.display = 'block';
+                selectedCoursesList.innerHTML = '';
                 let totalCredits = 0;
 
-                const uniqueCourses = new Map();
-                selectedCourses.forEach(course => {
-                    if (!uniqueCourses.has(course.code)) {
-                        uniqueCourses.set(course.code, course);
-                    }
+                const uniqueCourseCodes = new Set();
+                selectedCourses.forEach(c => uniqueCourseCodes.add(c.code));
+                
+                uniqueCourseCodes.forEach(code => {
+                    const course = selectedCourses.find(c => c.code === code);
+                    totalCredits += parseInt(course.hours) || 0;
                 });
 
                 selectedCourses.forEach((course, index) => {
                     const group = groupedCourses[course.code];
                     const item = document.createElement('div');
-                    item.className = 'my-schedule-item';
+                    item.className = 'selected-course-item';
                     item.style.animationDelay = `${index * 50}ms`;
                     
-                    const creditHours = parseInt(course.hours) || 0;
-                    if (uniqueCourses.get(course.code) === course) {
-                        totalCredits += creditHours;
+                    const conflictMessage = conflictMap.get(course.uniqueId);
+                    if (conflictMessage) {
+                        item.classList.add('has-conflict');
+                        item.innerHTML += `<i class="ri-error-warning-fill conflict-badge" title="${conflictMessage}"></i>`;
                     }
 
                     let examText = "لا يوجد";
@@ -798,19 +818,19 @@
                         examText = `${p.day} ${p.hijriDate} | ${p.startTime.slice(0,5)}`;
                     }
 
-                    item.innerHTML = `
-                        <div class="my-schedule-item-header">
+                    item.innerHTML += `
+                        <div class="selected-course-header">
                             <span class="color-dot" style="background-color: ${group.color};"></span>
                             <h4>${course.name} (${course.code})</h4>
                         </div>
-                        <div class="my-schedule-details">
+                        <div class="selected-course-details">
                             <div><i class="ri-hashtag"></i> شعبة: <span>${course.section} (${course.type})</span></div>
                             <div><i class="ri-time-line"></i> الوقت: <span>${course.time.replace(/<br>/g, ', ')}</span></div>
-                            <div><i class="ri-book-3-line"></i> الساعات: <span>${creditHours}</span></div>
+                            <div><i class="ri-book-3-line"></i> الساعات: <span>${course.hours}</span></div>
                             <div><i class="ri-file-text-line"></i> النهائي: <span>${examText}</span></div>
                         </div>
                     `;
-                    myScheduleList.appendChild(item);
+                    selectedCoursesList.appendChild(item);
                 });
 
                 totalCreditsSummaryEl.innerHTML = `إجمالي الساعات المعتمدة: <span>${totalCredits}</span>`;
@@ -847,7 +867,7 @@
                 });
 
                 const showPreview = (btn) => {
-                    if (btn.classList.contains('selected') || btn.classList.contains('conflicted')) return;
+                    if (btn.classList.contains('selected')) return;
                     hidePreview();
                     const uniqueId = btn.dataset.uniqueId;
                     const section = allCoursesData.find(c => c.uniqueId === uniqueId);
