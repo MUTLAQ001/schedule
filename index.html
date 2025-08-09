@@ -211,7 +211,7 @@
         .action-picker-display { width: 100%; padding: .5rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text); background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all var(--transition); text-align: center; }
         .action-picker-display:hover { border-color: var(--primary); }
         .light .action-picker-display { background: rgba(0,0,0,0.04); }
-        .action-picker-panel { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; z-index: 3500; background-color: rgba(30,30,32,0.9); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: scaleIn 0.2s ease-out; transform-origin: bottom center; max-height: 200px; overflow-y: auto; }
+        .action-picker-panel { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; z-index: 3500; background-color: rgba(30,30,32,0.9); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: scaleIn 0.2s ease-out; transform-origin: bottom center; max-height: 200px; overflow-y: auto; }
         .light .action-picker-panel { background-color: rgba(250,250,250,0.9); }
         .action-picker-option { width: 100%; padding: 0.7rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text-muted); background-color: transparent; border-radius: var(--radius-full); border: none; cursor: pointer; transition: all var(--transition); text-align: center; }
         .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); }
@@ -297,7 +297,7 @@
                 document.body.classList.add('mobile-view');
                 return;
             }
-			
+
             const QU_ScheduleApp = {
                 state: {
                     calendar: null, allCoursesData: [], groupedCourses: {}, selectedSections: new Set(),
@@ -517,18 +517,6 @@
                     this.dom.coursesList.addEventListener('mouseover', e => this._handleSectionHover(e, true));
                     this.dom.coursesList.addEventListener('mouseout', e => this._handleSectionHover(e, false));
                 },
-                _handleCourseColorChange(event) {
-                    if (event.target.matches('.color-picker-input')) {
-                        const code = event.target.dataset.courseCode;
-                        const newColor = event.target.value;
-                        this.state.customColors[code] = newColor;
-                        if(this.state.groupedCourses[code]) this.state.groupedCourses[code].color = newColor;
-                        this._saveCustomColors();
-                        this.updateCalendarAndConflicts();
-                        this._renderCoursesList();
-                        this._buildSettingsModal();
-                    }
-                },
                 _handleSectionHover(event, isHovering) {
                     const sectionBtn = event.target.closest('.section-btn'); if (!sectionBtn) return;
                     if (isHovering) { const uniqueId = sectionBtn.dataset.uniqueId; const section = this.state.allCoursesData.find(c => c.uniqueId === uniqueId); if (section) this._showPreviewEvent(section); } else { this._removePreviewEvent(); }
@@ -541,8 +529,8 @@
                     const existingSource = this.state.calendar.getEventSourceById('preview-source'); if (existingSource) existingSource.remove();
                 },
                 _handleCourseListClick(e) {
-                    const sectionBtn = e.target.closest('.section-btn'); const header = e.target.closest('.course-item-header'); const colorPicker = e.target.closest('.color-picker-label');
-                    if (colorPicker) return; if (sectionBtn) { const uniqueId = sectionBtn.dataset.uniqueId; sectionBtn.classList.toggle('selected'); if (this.state.selectedSections.has(uniqueId)) { this.state.selectedSections.delete(uniqueId); } else { this.state.selectedSections.add(uniqueId); } this.updateCalendarAndConflicts(); } else if (header) { header.parentElement.classList.toggle('open'); }
+                    const sectionBtn = e.target.closest('.section-btn'); const header = e.target.closest('.course-item-header'); 
+                    if (sectionBtn) { const uniqueId = sectionBtn.dataset.uniqueId; sectionBtn.classList.toggle('selected'); if (this.state.selectedSections.has(uniqueId)) { this.state.selectedSections.delete(uniqueId); } else { this.state.selectedSections.add(uniqueId); } this.updateCalendarAndConflicts(); } else if (header) { header.parentElement.classList.toggle('open'); }
                 },
                 _handleClearCalendar() {
                     Swal.fire({ title: 'هل أنت متأكد؟', text: "سيتم مسح جميع المواد المختارة من الجدول.", icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، امسح الجدول!', cancelButtonText: 'إلغاء', customClass: { popup: 'swal-popup-animation-in' }, showClass: { popup: '' }, hideClass: { popup: 'swal-popup-animation-out' }, }).then((result) => { if (result.isConfirmed) { this.state.selectedSections.clear(); this.updateCalendarAndConflicts(); document.querySelectorAll('.section-btn.selected').forEach(b => b.classList.remove('selected')); Swal.fire({ toast: true, position: 'bottom', icon: 'success', title: 'تم مسح الجدول بنجاح', showConfirmButton: false, timer: 2000 }); } });
@@ -632,6 +620,10 @@
                     document.documentElement.style.setProperty('--primary', primaryColor);
                     document.documentElement.style.setProperty('--primary-dark', this._adjustColorBrightness(primaryColor, -10));
                     document.documentElement.style.setProperty('--rgb-primary', this._hexToRgb(primaryColor));
+                    const primaryHue = this._hexToHue(primaryColor);
+                    const secondaryHue = (primaryHue + 40) % 360;
+                    document.documentElement.style.setProperty('--primary-hue', String(primaryHue));
+                    document.documentElement.style.setProperty('--secondary-hue', String(secondaryHue));
                     
                     const modeToggle = this.dom.settingsModal.querySelector('.mode-toggle');
                     if(modeToggle) {
@@ -679,7 +671,14 @@
                     container.innerHTML = ''; let isOpen = false; const wrapper = document.createElement('div'); wrapper.className = 'action-picker-wrapper'; const selectedOption = options.find(opt => opt.value === initialValue) || options[0]; const display = document.createElement('button'); display.type = 'button'; display.className = 'action-picker-display'; display.textContent = selectedOption.label; const panel = document.createElement('div'); panel.className = 'action-picker-panel'; panel.style.display = 'none';
                     options.forEach(option => { const btn = document.createElement('button'); btn.type = 'button'; btn.className = `action-picker-option ${initialValue === option.value ? 'selected' : ''}`; btn.textContent = option.label; btn.onclick = () => { onChange(option.value); display.textContent = option.label; panel.querySelectorAll('.selected').forEach(el => el.classList.remove('selected')); btn.classList.add('selected'); closePanel(); }; panel.appendChild(btn); });
                     const openPanel = () => { isOpen = true; panel.style.display = 'block'; }; const closePanel = () => { isOpen = false; panel.style.display = 'none'; }; display.onclick = () => isOpen ? closePanel() : openPanel(); wrapper.appendChild(display); wrapper.appendChild(panel); container.appendChild(wrapper); document.addEventListener('click', (e) => { if (!wrapper.contains(e.target)) closePanel(); });
-                }
+                },
+
+                _hexToHue(H) {
+                    if (!H) return 257; let r=0,g=0,b=0; if(H.length==7){r="0x"+H[1]+H[2];g="0x"+H[3]+H[4];b="0x"+H[5]+H[6];}
+                    r/=255;g/=255;b/=255; let cmin=Math.min(r,g,b),cmax=Math.max(r,g,b),delta=cmax-cmin,h=0;
+                    if(delta==0)h=0; else if(cmax==r)h=((g-b)/delta)%6; else if(cmax==g)h=(b-r)/delta+2; else h=(r-g)/delta+4;
+                    h=Math.round(h*60); if(h<0)h+=360; return h;
+                },
             };
             
             QU_ScheduleApp.init();
