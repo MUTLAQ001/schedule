@@ -85,6 +85,7 @@
         .tab-btn.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
         .tab-content { padding: 1rem; display: none; overflow-y: auto; flex-grow: 1; }
         .tab-content.active { display: block; }
+        .sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
 
         .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition-smooth); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
         .course-item:hover { transform: translateY(-4px); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4); }
@@ -102,7 +103,6 @@
         .section-btn .section-type { font-size: 0.7rem; color: var(--color-text-muted); }
         .section-btn.selected .section-type { color: rgba(255,255,255,0.8); }
 
-        /* === "My Schedule" Table Redesign with Conflict Highlighting === */
         .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
         .my-schedule-container .card { animation-delay: 200ms; }
         .conflict-summary-banner { display: none; flex-shrink: 0; padding: .75rem 1.25rem; background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); border-bottom: 1px solid var(--color-border); align-items: center; gap: .75rem; font-weight: 600; border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); }
@@ -127,7 +127,7 @@
         .status-badge.status-open::before { background-color: var(--color-success); }
         .status-badge.status-closed { background-color: rgba(var(--rgb-danger), 0.1); color: var(--color-danger); }
         .status-badge.status-closed::before { background-color: var(--color-danger); }
-        .hours-badge { width: 36px; height: 36px; border-radius: 50%; background-color: rgba(var(--rgb-primary), 0.15); color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; }
+        .hours-value { font-size: 1.3rem; font-weight: 700; color: var(--color-primary); }
         .my-schedule-footer { display: flex; justify-content: flex-end; padding-top: 1.5rem; }
         .total-credits-summary { padding: 0.75rem 1.5rem; font-weight: 600; background: rgba(var(--rgb-primary), 0.1); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius-md); font-size: 1.1rem; color: var(--color-primary); }
         
@@ -391,21 +391,15 @@
                     this.dom.conflictBanner.style.display = conflictMap.size > 0 ? 'flex' : 'none';
                     
                     const tableContainer = this.dom.myScheduleTableContainer;
-                    tableContainer.innerHTML = ''; // Clear previous table
+                    tableContainer.innerHTML = '';
 
                     const table = document.createElement('table');
                     table.className = 'my-schedule-table';
                     table.innerHTML = `
                         <thead>
                             <tr>
-                                <th>المقرر</th>
-                                <th>الشعبة</th>
-                                <th>المحاضر</th>
-                                <th>المواعيد</th>
-                                <th>الحالة</th>
-                                <th>فترة الاختبار</th>
-                                <th>المكان</th>
-                                <th>الساعات</th>
+                                <th>المقرر</th> <th>الشعبة</th> <th>المحاضر</th> <th>المواعيد</th> <th>الحالة</th>
+                                <th>فترة الاختبار</th> <th>المكان</th> <th>الساعات</th>
                             </tr>
                         </thead>
                     `;
@@ -450,7 +444,7 @@
                             <td><span class="status-badge status-${statusClass}">${course.status}</span></td>
                             <td>${examText}</td>
                             <td>${course.location}</td>
-                            <td><div class="hours-badge">${course.hours}</div></td>
+                            <td><div class="hours-value">${course.hours}</div></td>
                         `;
                         tbody.appendChild(row);
                     });
@@ -660,7 +654,7 @@
                     this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
                 },
                 _toggleSettingsModal(show) { this.dom.modalOverlay.classList.toggle('open', show); this.dom.settingsModal.classList.toggle('open', show); },
-                _applySettings() {},
+                _applySettings() { /* can be expanded */ },
             };
             
             QU_ScheduleApp.init();
