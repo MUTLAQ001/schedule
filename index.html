@@ -102,27 +102,39 @@
         .section-btn .section-type { font-size: 0.7rem; color: var(--color-text-muted); }
         .section-btn.selected .section-type { color: rgba(255,255,255,0.8); }
 
+        /* === NEW "My Schedule" Table Redesign === */
         .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
         .my-schedule-container .card { animation-delay: 200ms; }
-        .conflict-summary-banner { display: none; flex-shrink: 0; padding: .75rem 1.25rem; background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); border-bottom: 1px solid var(--color-border); align-items: center; gap: .75rem; font-weight: 600; border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); }
-        .conflict-summary-banner i { font-size: 1.2rem; }
         .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
         .my-schedule-section h3 { margin: 0 0 1.5rem; font-size: 1.5rem; display: flex; align-items: center; gap: .75rem; color: var(--color-primary); flex-shrink: 0; font-family: var(--font-title); }
-        .my-schedule-list-wrapper { display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; }
-        .my-schedule-list { overflow-y: auto; max-height: 40vh; padding-right: .5rem; }
-        .my-schedule-item { border: 1px solid var(--color-border); border-left: 4px solid var(--item-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1rem; background: transparent; animation: scaleIn .4s var(--transition) both; position: relative; }
-        .my-schedule-item.has-conflict { border-left-color: var(--color-warning); background: rgba(var(--rgb-warning), 0.05); }
-        .my-schedule-item h4 { font-family: var(--font-title); font-size: 1.1rem; font-weight: 400; margin: 0 0 .75rem; color: var(--color-text-dark); }
-        .my-schedule-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem 1.25rem; font-size: 0.85rem; color: var(--color-text-muted); padding-top: .75rem; border-top: 1px solid var(--color-border); }
-        .my-schedule-details div { display: flex; align-items: center; gap: .6rem; }
-        .my-schedule-details span { font-weight: 600; color: var(--color-text-dark); }
-        .total-credits-summary { padding: 1rem; text-align: center; font-weight: 600; background: rgba(var(--rgb-primary), 0.1); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius-md); font-size: 1.1rem; color: var(--color-primary); }
+        .my-schedule-table-wrapper { overflow-x: auto; }
+        .my-schedule-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
+        .my-schedule-table thead th { padding: 1rem; text-align: right; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); font-size: 0.9rem; }
+        .my-schedule-table tbody td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+        .my-schedule-table tbody tr:last-child td { border-bottom: none; }
+        .my-schedule-table tbody tr.has-conflict { background-color: rgba(var(--rgb-warning), 0.05); }
+        .my-schedule-table tbody tr:hover { background-color: rgba(var(--rgb-primary), 0.05); }
+        
+        .my-schedule-table .course-cell .course-code { font-family: var(--font-title); font-size: 1.1rem; color: var(--color-text-dark); }
+        .my-schedule-table .course-cell .course-name { font-size: 0.8rem; color: var(--color-text-muted); }
+        .my-schedule-table .section-cell .section-number { font-size: 1.1rem; font-weight: 600; }
+        .my-schedule-table .section-cell .section-type { font-size: 0.8rem; color: var(--color-text-muted); }
+        
+        .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; }
+        .status-badge::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; }
+        .status-badge.status-open { background-color: rgba(var(--rgb-success), 0.1); color: var(--color-success); }
+        .status-badge.status-open::before { background-color: var(--color-success); }
+        .status-badge.status-closed { background-color: rgba(var(--rgb-danger), 0.1); color: var(--color-danger); }
+        .status-badge.status-closed::before { background-color: var(--color-danger); }
+        
+        .hours-badge { width: 36px; height: 36px; border-radius: 50%; background-color: rgba(var(--rgb-primary), 0.15); color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; }
+        .my-schedule-footer { display: flex; justify-content: flex-end; padding-top: 1.5rem; }
+        .total-credits-summary { padding: 0.75rem 1.5rem; font-weight: 600; background: rgba(var(--rgb-primary), 0.1); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius-md); font-size: 1.1rem; color: var(--color-primary); }
         
         .fc { --fc-border-color: var(--color-border); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; font-family: var(--font-body); }
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
         .fc-event.preview-event { border-style: dashed !important; border-width: 2px !important; }
-
         .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--color-text-muted); }
         .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--color-primary); opacity: 0.5; }
         
@@ -180,15 +192,15 @@
                  <div class="card">
                     <div class="conflict-summary-banner" id="conflict-banner">
                         <i class="ri-alert-fill"></i>
-                        <span>يوجد تعارض في جدولك! المواد المتعارضة محددة باللون الأصفر.</span>
+                        <span>يوجد تعارض في جدولك! المواد المتعارضة مظللة باللون الأصفر.</span>
                     </div>
                     <div class="my-schedule-section" id="my-schedule-summary">
                         <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
-                        <div class="my-schedule-list-wrapper">
-                            <div class="my-schedule-list custom-scrollbar" id="my-schedule-list"></div>
-                            <div class="my-schedule-summary-details">
-                                 <div class="total-credits-summary" id="total-credits-summary"></div>
-                            </div>
+                        <div id="my-schedule-table-container" class="my-schedule-table-wrapper">
+                            <!-- Table will be injected here by JavaScript -->
+                        </div>
+                         <div class="my-schedule-footer">
+                            <div class="total-credits-summary" id="total-credits-summary"></div>
                         </div>
                     </div>
                  </div>
@@ -377,37 +389,71 @@
                     container.style.display = 'flex';
                     
                     this.dom.conflictBanner.style.display = conflictMap.size > 0 ? 'flex' : 'none';
+                    
+                    const tableContainer = this.dom.myScheduleTableContainer;
+                    tableContainer.innerHTML = ''; // Clear previous table
 
-                    this.dom.myScheduleList.innerHTML = '';
+                    const table = document.createElement('table');
+                    table.className = 'my-schedule-table';
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>المقرر</th>
+                                <th>الشعبة</th>
+                                <th>المحاضر</th>
+                                <th>المواعيد</th>
+                                <th>الحالة</th>
+                                <th>فترة الاختبار</th>
+                                <th>المكان</th>
+                                <th>الساعات</th>
+                            </tr>
+                        </thead>
+                    `;
+                    
+                    const tbody = document.createElement('tbody');
                     let totalCredits = 0;
                     const uniqueCourseCodes = new Set();
 
-                    selectedCourses.forEach(course => {
+                    selectedCourses.sort((a,b) => a.code.localeCompare(b.code)).forEach(course => {
                         if (!uniqueCourseCodes.has(course.code)) {
                             totalCredits += parseInt(course.hours, 10) || 0;
                             uniqueCourseCodes.add(course.code);
                         }
-                    });
-                    
-                    selectedCourses.sort((a,b) => a.code.localeCompare(b.code)).forEach((course, index) => {
-                        const group = this.state.groupedCourses[course.code];
-                        const item = document.createElement('div');
-                        item.className = 'my-schedule-item';
-                        item.style.setProperty('--item-color', group ? group.color : '#ccc');
-                        item.style.animationDelay = `${index * 50}ms`;
-                        const conflictMessages = conflictMap.get(course.uniqueId);
-                        if (conflictMessages) {
-                            item.classList.add('has-conflict');
-                            item.innerHTML += `<i class="ri-alert-line conflict-badge" title="${conflictMessages.join('\n')}"></i>`;
-                        }
-                        let examText = "غير محدد";
+
+                        let examText = "لا يوجد";
                         if(course.examPeriodId && this.state.examSchedule[course.examPeriodId]) {
                             const p = this.state.examSchedule[course.examPeriodId];
-                            examText = `${p.day}, ${p.hijriDate} | ${p.startTime.slice(0,5)}`;
+                            examText = `${p.day}, ${p.hijriDate.split('/')[2]}/${p.hijriDate.split('/')[1]}`;
                         }
-                        item.innerHTML += `<h4>${course.name} (${course.code})</h4><div class="my-schedule-details"><div class="full-width"><i class="ri-time-line"></i> <span>${course.time.replace(/<br>/g, ', ')}</span></div><div><i class="ri-hashtag"></i> <span>${course.section} (${course.type})</span></div><div><i class="ri-scales-3-line"></i> <span>${course.hours} ساعات</span></div><div><i class="ri-user-line"></i> <span>${course.instructor}</span></div><div><i class="ri-building-4-line"></i> <span>${course.location}</span></div><div class="full-width"><i class="ri-file-list-3-line"></i> <span>${examText}</span></div></div>`;
-                        this.dom.myScheduleList.appendChild(item);
+
+                        const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
+                        const isConflicted = conflictMap.has(course.uniqueId);
+
+                        const row = document.createElement('tr');
+                        if(isConflicted) row.classList.add('has-conflict');
+                        
+                        row.innerHTML = `
+                            <td class="course-cell">
+                                <div class="course-code">${course.code}</div>
+                                <div class="course-name">${course.name}</div>
+                            </td>
+                            <td class="section-cell">
+                                <div class="section-number">${course.section}</div>
+                                <div class="section-type">${course.type}</div>
+                            </td>
+                            <td>${course.instructor}</td>
+                            <td>${course.time.replace(/<br>/g, ' ')}</td>
+                            <td><span class="status-badge status-${statusClass}">${course.status}</span></td>
+                            <td>${examText}</td>
+                            <td>${course.location}</td>
+                            <td><div class="hours-badge">${course.hours}</div></td>
+                        `;
+                        tbody.appendChild(row);
                     });
+                    
+                    table.appendChild(tbody);
+                    tableContainer.appendChild(table);
+
                     this.dom.totalCreditsSummary.innerHTML = `إجمالي الساعات: <span>${totalCredits}</span>`;
                 },
 
@@ -438,7 +484,7 @@
                 },
                 
                 _populateDOMElements() {
-                    const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-list', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 'conflict-banner', 'expand-all-btn', 'collapse-all-btn'];
+                    const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-table-container', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 'conflict-banner', 'expand-all-btn', 'collapse-all-btn'];
                     ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
                     this.dom.tabButtons = document.querySelectorAll('.tab-btn');
                     this.dom.tabContents = document.querySelectorAll('.tab-content');
@@ -450,7 +496,6 @@
                         for (let j = i + 1; j < selectedCourses.length; j++) {
                             const cA = selectedCourses[i], cB = selectedCourses[j];
                             if (cA.code === cB.code) continue;
-
                             const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || [];
                             if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
                                 msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`);
@@ -466,7 +511,7 @@
                     }
                     return conflictMap;
                 },
-
+                
                 _isSectionConflicted(section, selectedCourses) {
                     return selectedCourses.some(sel => {
                         if (section.code === sel.code) return false;
@@ -475,6 +520,7 @@
                         return lectureConflict || examConflict;
                     });
                 },
+
                 _createLectureEventsForSection(section, isPreview = false, color = '#8b5cf6') {
                     const sourceId = isPreview ? 'preview-source' : undefined;
                     return {
@@ -569,8 +615,8 @@
                 },
 
                 _handleTabClick(button) { this.dom.tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); this.dom.tabContents.forEach(content => content.classList.remove('active')); document.getElementById(button.dataset.tab).classList.add('active'); },
-                _loadSettings() { /* ... */ },
-                _saveSettings() { /* ... */ },
+                _loadSettings() {},
+                _saveSettings() {},
                 _updateBookmarkletCode() { document.getElementById('install-section').innerHTML = `<h3>طريقة التثبيت</h3><p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p><a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية في متصفحك.', icon:'error'}); return false;">QU Schedule</a>`; },
 
                 _initializeCalendar() {
