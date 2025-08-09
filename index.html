@@ -268,7 +268,7 @@
                     this._buildSettingsModal();
                     this._setupEventListeners();
                     this._initCosmicEffects();
-                    this._loadSettings(); // This now also populates time selects
+                    this._loadSettings();
                     this._loadCustomColors();
                     this._initializeCalendar();
                     this._loadDataFromStorage();
@@ -322,7 +322,7 @@
                     Object.values(this.state.groupedCourses).forEach(group => { group.color = this.state.customColors[group.code] || this.constants.COLOR_PALETTE[colorIndex++ % this.constants.COLOR_PALETTE.length]; });
                     document.getElementById('no-data-message').style.display = 'none';
                     this._renderCoursesList();
-                    this._populateCourseVisibilityList();
+                    if (this.dom.courseVisibilityList) this._populateCourseVisibilityList();
                 },
                 
                 _loadSelectedSections() { const stored = localStorage.getItem(this.constants.STORAGE_KEYS.SELECTED); if (stored) { try { const parsed = JSON.parse(stored); if (Array.isArray(parsed)) this.state.selectedSections = new Set(parsed); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED); } } },
@@ -534,7 +534,6 @@
                         } catch (e) { /* Use defaults */ }
                     }
                     this._applySettings();
-                    this._populateTimeSelects();
                 },
                 _saveSettings() { localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS, JSON.stringify(this.state.userSettings)); },
                 
@@ -586,19 +585,27 @@
                     
                     this.dom.modeToggleContainer = modal.querySelector('.mode-toggle');
                     this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
+                    this.dom.modeToggleContainer.addEventListener('click', e => { const btn = e.target.closest('.mode-btn'); if (btn) { this.state.userSettings.theme = btn.dataset.theme; this._saveSettings(); this._applySettings(); }});
+                    this.dom.showWeekendToggle.addEventListener('change', e => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); this._rebuildCalendar(); });
+                    this.dom.minTimeSelect.addEventListener('change', e => { this.state.userSettings.minTime = e.target.value; this._saveSettings(); this._rebuildCalendar(); });
+                    this.dom.maxTimeSelect.addEventListener('change', e => { this.state.userSettings.maxTime = e.target.value; this._saveSettings(); this._rebuildCalendar(); });
+                    this.dom.courseVisibilityList.addEventListener('click', e => { const item = e.target.closest('.visibility-course-item'); if (item) { const code = item.dataset.courseCode; if (this.state.hiddenCourseCodes.has(code)) { this.state.hiddenCourseCodes.delete(code); item.classList.remove('hidden'); } else { this.state.hiddenCourseCodes.add(code); item.classList.add('hidden'); } this._saveSettings(); this._renderCoursesList(); this.updateCalendarAndConflicts(); }});
+                    this.dom.exportBtn.addEventListener('click', () => this._exportData());
+                    this.dom.importBtn.addEventListener('click', () => this.dom.importFileInput.click());
+                    this.dom.importFileInput.addEventListener('change', e => this._importData(e));
+                    this.dom.resetAppBtn.addEventListener('click', () => this._resetApp());
                 },
-                _toggleSettingsModal(forceOpen) { this.dom.settingsModal.classList.toggle('open', forceOpen); this.dom.modalOverlay.classList.toggle('open', forceOpen); },
-                _initCosmicEffects() { /* ... unchanged ... */ },
-                _populateTimeSelects() {
+                 _initCosmicEffects() { /* ... unchanged ... */ },
+                 _populateTimeSelects() {
                     for (let i = 0; i < 24; i++) {
                         const t = `${String(i).padStart(2,'0')}:00:00`, l = `${String(i).padStart(2,'0')}:00`;
                         this.dom.minTimeSelect.add(new Option(l,t)); this.dom.maxTimeSelect.add(new Option(l,t));
                     }
                     this.dom.minTimeSelect.value = this.state.userSettings.minTime;
                     this.dom.maxTimeSelect.value = this.state.userSettings.maxTime;
-                },
-                _populateCourseVisibilityList() { /* ... unchanged ... */ },
-                _populateAccentColorPicker() { /* ... unchanged ... */ }
+                 },
+                 _populateCourseVisibilityList() { /* ... unchanged ... */ },
+                 _populateAccentColorPicker() { /* ... unchanged ... */ }
             };
             
             QU_ScheduleApp.init();
