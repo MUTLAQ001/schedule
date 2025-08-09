@@ -76,7 +76,7 @@
         .header-actions { display: flex; gap: 0.75rem; }
         .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
         
-        .calendar-wrapper { flex: 1; min-height: 50vh; }
+        .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
         .card { width: 100%; height: 100%; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .5s var(--transition) both; }
         .calendar-wrapper .card { padding: 1.5rem; }
         #calendar { height: 100%; }
@@ -113,33 +113,11 @@
         .my-schedule-list-wrapper { display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; }
         .my-schedule-list { overflow-y: auto; max-height: 40vh; padding-right: .5rem; }
         
-        /* --- CHANGE START: New "My Schedule Item" Styles --- */
-        .my-schedule-item { 
-            border: 1px solid var(--border-color); 
-            border-radius: var(--radius-md); 
-            margin-bottom: .75rem; 
-            background: linear-gradient(135deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
-            animation: scaleIn .4s var(--transition) both; 
-            position: relative;
-            transition: all 0.2s ease;
-        }
-        .my-schedule-item:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
+        .my-schedule-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: .75rem; background: rgba(var(--rgb-primary), 0.05); animation: scaleIn .4s var(--transition) both; position: relative; }
         .my-schedule-item.has-conflict { border-left: 4px solid var(--warning); background: var(--warning-bg); }
         .conflict-badge { position: absolute; top: .75rem; left: .75rem; color: var(--warning-dark); font-size: 1.2rem; cursor: help; }
-        .my-schedule-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1rem; }
-        .my-schedule-item-header .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; cursor: pointer; }
-        .my-schedule-item-header h4 { font-size: 1rem; margin: 0; flex-grow: 1; }
-        .my-schedule-item-header .course-code { font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
-        .my-schedule-details { display: grid; grid-template-columns: repeat(2, 1fr); gap: .75rem 1rem; font-size: .85rem; color: var(--text-light); padding: 0 1rem 1rem; }
-        .my-schedule-details div { display: flex; align-items: center; gap: .6rem; }
-        .my-schedule-details i { font-size: 1.1rem; color: var(--primary); }
-        .my-schedule-details span { font-weight: 500; color: var(--text-dark); }
-        .my-schedule-details .full-width { grid-column: 1 / -1; }
-        /* --- CHANGE END --- */
-        
+        .my-schedule-item-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: .75rem; }
+        .my-schedule-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .5rem 1rem; font-size: .8rem; color: var(--text-light); padding-top: .75rem; border-top: 1px solid var(--border-color); }
         .total-credits-summary { padding: 1rem; text-align: center; font-weight: 600; background: var(--bg-item-hover); border-radius: var(--radius-md); font-size: 1.1rem; }
         
         .fc { --fc-border-color: var(--border-color); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; }
@@ -279,7 +257,7 @@
                     PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316' },
                     COLOR_PALETTE: ['#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f97316', '#ef4444', '#06b6d4', '#d946ef'],
                     DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
-                    STORAGE_KEYS: { SETTINGS: 'quScheduleSettings_v14', COURSES: 'quScheduleCourses_v14', SELECTED: 'quScheduleSelected_v14', COLORS: 'quScheduleColors_v14' },
+                    STORAGE_KEYS: { SETTINGS: 'quScheduleSettings_v13', COURSES: 'quScheduleCourses_v13', SELECTED: 'quScheduleSelected_v13', COLORS: 'quScheduleColors_v13' },
                     EXTRACTOR_URL: 'https://mutlaq001.github.io/schedule/extractor.js',
                     EXAMS_DATA_URL: 'https://mutlaq001.github.io/schedule/exams.json'
                 },
@@ -300,7 +278,7 @@
                 
                 async _fetchExamSchedule() {
                     try {
-                        const response = await fetch(this.constants.EXAMS_DATA_URL + '?v=' + Date.now()); // Bust cache
+                        const response = await fetch(this.constants.EXAMS_DATA_URL);
                         if (!response.ok) throw new Error(`Network response: ${response.statusText}`);
                         this.state.examSchedule = await response.json();
                     } catch (error) { console.error('Failed to fetch exam schedule:', error); this.state.examSchedule = {}; this._showToast('فشل تحميل جدول الاختبارات.', 'warning'); }
@@ -421,20 +399,7 @@
                             const p = this.state.examSchedule[course.examPeriodId];
                             examText = `${p.day}, ${p.hijriDate} | ${p.startTime.slice(0,5)}`;
                         }
-                        item.innerHTML += `
-                            <div class="my-schedule-item-header">
-                                <span class="color-dot" data-course-code="${course.code}" style="background-color: ${group ? group.color : '#ccc'};"></span>
-                                <h4>${course.name}</h4>
-                                <span class="course-code">${course.code}</span>
-                            </div>
-                            <div class="my-schedule-details">
-                                <div><i class="ri-time-line"></i> <span>${course.time.replace(/<br>/g, ', ')}</span></div>
-                                <div><i class="ri-user-line"></i> <span>${course.instructor}</span></div>
-                                <div><i class="ri-hashtag"></i> <span>${course.section} (${course.type})</span></div>
-                                <div><i class="ri-scales-3-line"></i> <span>${course.hours} ساعات</span></div>
-                                <div><i class="ri-building-4-line"></i> <span>${course.location}</span></div>
-                                <div><i class="ri-file-list-3-line"></i> <span>${examText}</span></div>
-                            </div>`;
+                        item.innerHTML += `<div class="my-schedule-item-header"><span class="color-dot" data-course-code="${course.code}" style="background-color: ${group ? group.color : '#ccc'};"></span><h4>${course.name} (${course.code})</h4></div><div class="my-schedule-details"><div class="full-width"><i class="ri-time-line"></i> <span>${course.time.replace(/<br>/g, ', ')}</span></div><div><i class="ri-hashtag"></i> <span>${course.section} (${course.type})</span></div><div><i class="ri-scales-3-line"></i> <span>${course.hours} ساعات</span></div><div><i class="ri-user-line"></i> <span>${course.instructor}</span></div><div><i class="ri-building-4-line"></i> <span>${course.location}</span></div><div class="full-width"><i class="ri-file-list-3-line"></i> <span>${examText}</span></div></div>`;
                         this.dom.myScheduleList.appendChild(item);
                     });
                     this.dom.totalCreditsSummary.innerHTML = `إجمالي الساعات: <span>${totalCredits}</span>`;
