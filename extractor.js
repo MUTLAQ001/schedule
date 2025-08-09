@@ -1,7 +1,7 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v32 (Robust Targeting) Initialized...");
+    console.log("🚀 QU Schedule Extractor v33 (Final & Stable) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
@@ -43,7 +43,7 @@ javascript:(function() {
      * @returns {Array<Object>}
      */
     function extractCourses(rows) {
-        console.log("Extracting data with robust selectors...");
+        console.log("Extracting data with corrected robust selectors...");
         const coursesData = [];
         let lastTheoreticalCourse = null;
 
@@ -63,13 +63,10 @@ javascript:(function() {
                 const status = getVal(row, 'الحالة');
                 const campus = getVal(row, 'المقر');
 
-                const instructor = row.querySelector('input[name$=":instructor"]')?.value.trim();
-                const detailsRaw = row.querySelector('input[name$=":section"]')?.value.trim();
-                
-                // ===== START OF CORRECTION =====
-                // Target by the 'name' attribute which is more consistent than 'id'.
-                let examPeriodId = row.querySelector('input[name$=":examPeriod"]')?.value.trim();
-                // ===== END OF CORRECTION =====
+                // ===== CORRECTED SELECTORS (Reverted to using ID) =====
+                const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
+                const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
+                let examPeriodId = row.querySelector('input[type="hidden"][id$=":examPeriod"]')?.value.trim();
 
                 const timeDetails = parseTimeDetails(detailsRaw);
                 
@@ -113,35 +110,32 @@ javascript:(function() {
             courses = extractCourses(courseRows);
         }
 
-        if (courses && courses.length > 0) {
-            console.log(`🎉 Success! Found ${courses.length} sections.`);
-            // Log a sample that has an exam period to verify the fix
-            console.log("Sample extracted data with Exam Period:", courses.find(c => c.examPeriodId) || courses[0]);
-            
-            sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
-            const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
+        // Send data to the viewer window, even if it's an empty array.
+        // The viewer will handle the "no courses found" message.
+        console.log(`Extraction complete. Found ${courses.length} sections.`);
+        console.log("Sample extracted data:", courses.find(c => c.examPeriodId) || courses[0]);
+        
+        sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
+        const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
 
-            if (!viewerWindow || viewerWindow.closed || typeof viewerWindow.closed === 'undefined') {
-                alert("فشل فتح نافذة العارض.\n\nالرجاء السماح بالنوافذ المنبثقة (Pop-ups) لهذا الموقع والمحاولة مرة أخرى.");
-                sessionStorage.removeItem(TEMP_STORAGE_KEY);
-                return;
-            }
-
-            const messageHandler = (event) => {
-                if (event.source !== viewerWindow) return;
-                if (event.data === 'request_schedule_data') {
-                    const storedData = sessionStorage.getItem(TEMP_STORAGE_KEY);
-                    if (storedData) {
-                        viewerWindow.postMessage({ type: 'universityCoursesData', data: JSON.parse(storedData) }, new URL(VIEWER_URL).origin);
-                        sessionStorage.removeItem(TEMP_STORAGE_KEY);
-                        window.removeEventListener('message', messageHandler);
-                    }
-                }
-            };
-            window.addEventListener('message', messageHandler, false);
-
-        } else {
-            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' وأن المواد ظاهرة أمامك بالكامل، ثم حاول تحديث الصفحة وتشغيل الأداة مرة أخرى.");
+        if (!viewerWindow || viewerWindow.closed || typeof viewerWindow.closed === 'undefined') {
+            alert("فشل فتح نافذة العارض.\n\nالرجاء السماح بالنوافذ المنبثقة (Pop-ups) لهذا الموقع والمحاولة مرة أخرى.");
+            sessionStorage.removeItem(TEMP_STORAGE_KEY);
+            return;
         }
+
+        const messageHandler = (event) => {
+            if (event.source !== viewerWindow) return;
+            if (event.data === 'request_schedule_data') {
+                const storedData = sessionStorage.getItem(TEMP_STORAGE_KEY);
+                if (storedData) {
+                    viewerWindow.postMessage({ type: 'universityCoursesData', data: JSON.parse(storedData) }, new URL(VIEWER_URL).origin);
+                    sessionStorage.removeItem(TEMP_STORAGE_KEY);
+                    window.removeEventListener('message', messageHandler);
+                }
+            }
+        };
+        window.addEventListener('message', messageHandler, false);
+
     }, 1000);
 })();
