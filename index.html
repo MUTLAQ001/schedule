@@ -76,7 +76,7 @@
         .header-actions { display: flex; gap: 0.75rem; }
         .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
         
-        .calendar-wrapper { flex: 1; min-height: 50vh; }
+        .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
         .card { width: 100%; height: 100%; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .5s var(--transition) both; }
         .calendar-wrapper .card { padding: 1.5rem; }
         #calendar { height: 100%; }
@@ -268,7 +268,7 @@
                     this._buildSettingsModal();
                     this._setupEventListeners();
                     this._initCosmicEffects();
-                    this._loadSettings();
+                    this._loadSettings(); 
                     this._loadCustomColors();
                     this._initializeCalendar();
                     this._loadDataFromStorage();
@@ -585,27 +585,31 @@
                     
                     this.dom.modeToggleContainer = modal.querySelector('.mode-toggle');
                     this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
-                    this.dom.modeToggleContainer.addEventListener('click', e => { const btn = e.target.closest('.mode-btn'); if (btn) { this.state.userSettings.theme = btn.dataset.theme; this._saveSettings(); this._applySettings(); }});
-                    this.dom.showWeekendToggle.addEventListener('change', e => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); this._rebuildCalendar(); });
-                    this.dom.minTimeSelect.addEventListener('change', e => { this.state.userSettings.minTime = e.target.value; this._saveSettings(); this._rebuildCalendar(); });
-                    this.dom.maxTimeSelect.addEventListener('change', e => { this.state.userSettings.maxTime = e.target.value; this._saveSettings(); this._rebuildCalendar(); });
-                    this.dom.courseVisibilityList.addEventListener('click', e => { const item = e.target.closest('.visibility-course-item'); if (item) { const code = item.dataset.courseCode; if (this.state.hiddenCourseCodes.has(code)) { this.state.hiddenCourseCodes.delete(code); item.classList.remove('hidden'); } else { this.state.hiddenCourseCodes.add(code); item.classList.add('hidden'); } this._saveSettings(); this._renderCoursesList(); this.updateCalendarAndConflicts(); }});
-                    this.dom.exportBtn.addEventListener('click', () => this._exportData());
-                    this.dom.importBtn.addEventListener('click', () => this.dom.importFileInput.click());
-                    this.dom.importFileInput.addEventListener('change', e => this._importData(e));
-                    this.dom.resetAppBtn.addEventListener('click', () => this._resetApp());
                 },
-                 _initCosmicEffects() { /* ... unchanged ... */ },
-                 _populateTimeSelects() {
+                _applySettings() {
+                    document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
+                    document.querySelector('meta[name="theme-color"]').setAttribute('content', this.state.userSettings.theme === 'light' ? '#f4f4f5' : '#0a0a0a');
+                    const primaryColor = this.state.userSettings.accentColor;
+                    const darkColor = this._adjustColorBrightness(primaryColor, -20);
+                    document.documentElement.style.setProperty('--primary', primaryColor);
+                    document.documentElement.style.setProperty('--primary-dark', darkColor);
+                    
+                    this.dom.modeToggleContainer.querySelector('.active')?.classList.remove('active');
+                    this.dom.modeToggleContainer.querySelector(`[data-theme="${this.state.userSettings.theme}"]`).classList.add('active');
+                    this._populateAccentColorPicker();
+                    this.dom.showWeekendToggle.checked = this.state.userSettings.showWeekends;
+                },
+                _populateTimeSelects() {
                     for (let i = 0; i < 24; i++) {
                         const t = `${String(i).padStart(2,'0')}:00:00`, l = `${String(i).padStart(2,'0')}:00`;
                         this.dom.minTimeSelect.add(new Option(l,t)); this.dom.maxTimeSelect.add(new Option(l,t));
                     }
                     this.dom.minTimeSelect.value = this.state.userSettings.minTime;
                     this.dom.maxTimeSelect.value = this.state.userSettings.maxTime;
-                 },
-                 _populateCourseVisibilityList() { /* ... unchanged ... */ },
-                 _populateAccentColorPicker() { /* ... unchanged ... */ }
+                },
+                _populateCourseVisibilityList() { /* ... unchanged ... */ },
+                _populateAccentColorPicker() { /* ... unchanged ... */ },
+                 _initCosmicEffects() { /* ... unchanged ... */ }
             };
             
             QU_ScheduleApp.init();
