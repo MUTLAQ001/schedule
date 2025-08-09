@@ -1,7 +1,7 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v31 (Final & Corrected) Initialized...");
+    console.log("🚀 QU Schedule Extractor v32 (Robust Targeting) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
@@ -63,11 +63,13 @@ javascript:(function() {
                 const status = getVal(row, 'الحالة');
                 const campus = getVal(row, 'المقر');
 
-                const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
-                const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
+                const instructor = row.querySelector('input[name$=":instructor"]')?.value.trim();
+                const detailsRaw = row.querySelector('input[name$=":section"]')?.value.trim();
                 
-                // **CORRECTED LOGIC**: Directly target the dedicated input for exam period.
-                let examPeriodId = row.querySelector('input[type="hidden"][id$=":examPeriod"]')?.value.trim();
+                // ===== START OF CORRECTION =====
+                // Target by the 'name' attribute which is more consistent than 'id'.
+                let examPeriodId = row.querySelector('input[name$=":examPeriod"]')?.value.trim();
+                // ===== END OF CORRECTION =====
 
                 const timeDetails = parseTimeDetails(detailsRaw);
                 
@@ -96,7 +98,7 @@ javascript:(function() {
                 coursesData.push(courseInfo);
 
                 if (!isPractical) {
-                    lastTheoreticalCourse = { code: courseInfo.code, hours: courseInfo.hours, examPeriodId: examPeriodId };
+                    lastTheoreticalCourse = { code: courseInfo.code, hours: courseInfo.hours, examPeriodId: courseInfo.examPeriodId };
                 }
             }
         });
@@ -113,7 +115,8 @@ javascript:(function() {
 
         if (courses && courses.length > 0) {
             console.log(`🎉 Success! Found ${courses.length} sections.`);
-            console.log("Sample extracted data:", courses.find(c => c.examPeriodId) || courses[0]);
+            // Log a sample that has an exam period to verify the fix
+            console.log("Sample extracted data with Exam Period:", courses.find(c => c.examPeriodId) || courses[0]);
             
             sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
             const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
