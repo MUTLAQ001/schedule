@@ -102,9 +102,11 @@
         .section-btn .section-type { font-size: 0.7rem; color: var(--color-text-muted); }
         .section-btn.selected .section-type { color: rgba(255,255,255,0.8); }
 
-        /* === NEW "My Schedule" Table Redesign === */
+        /* === "My Schedule" Table Redesign with Conflict Highlighting === */
         .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
         .my-schedule-container .card { animation-delay: 200ms; }
+        .conflict-summary-banner { display: none; flex-shrink: 0; padding: .75rem 1.25rem; background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); border-bottom: 1px solid var(--color-border); align-items: center; gap: .75rem; font-weight: 600; border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); }
+        .conflict-summary-banner i { font-size: 1.2rem; }
         .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
         .my-schedule-section h3 { margin: 0 0 1.5rem; font-size: 1.5rem; display: flex; align-items: center; gap: .75rem; color: var(--color-primary); flex-shrink: 0; font-family: var(--font-title); }
         .my-schedule-table-wrapper { overflow-x: auto; }
@@ -112,21 +114,19 @@
         .my-schedule-table thead th { padding: 1rem; text-align: right; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); font-size: 0.9rem; }
         .my-schedule-table tbody td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
         .my-schedule-table tbody tr:last-child td { border-bottom: none; }
-        .my-schedule-table tbody tr.has-conflict { background-color: rgba(var(--rgb-warning), 0.05); }
-        .my-schedule-table tbody tr:hover { background-color: rgba(var(--rgb-primary), 0.05); }
-        
-        .my-schedule-table .course-cell .course-code { font-family: var(--font-title); font-size: 1.1rem; color: var(--color-text-dark); }
+        .my-schedule-table tbody tr.has-conflict { background-color: rgba(var(--rgb-warning), 0.08) !important; }
+        .my-schedule-table tbody tr:not(.has-conflict):hover { background-color: rgba(var(--rgb-primary), 0.05); }
+        .my-schedule-table .course-cell .course-code { font-family: var(--font-title); font-size: 1.1rem; color: var(--color-text-dark); display: inline-flex; align-items: center; gap: 0.5rem; }
+        .my-schedule-table .course-cell .conflict-icon { color: var(--color-warning); font-size: 1.2rem; cursor: help; }
         .my-schedule-table .course-cell .course-name { font-size: 0.8rem; color: var(--color-text-muted); }
         .my-schedule-table .section-cell .section-number { font-size: 1.1rem; font-weight: 600; }
         .my-schedule-table .section-cell .section-type { font-size: 0.8rem; color: var(--color-text-muted); }
-        
         .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; }
         .status-badge::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; }
         .status-badge.status-open { background-color: rgba(var(--rgb-success), 0.1); color: var(--color-success); }
         .status-badge.status-open::before { background-color: var(--color-success); }
         .status-badge.status-closed { background-color: rgba(var(--rgb-danger), 0.1); color: var(--color-danger); }
         .status-badge.status-closed::before { background-color: var(--color-danger); }
-        
         .hours-badge { width: 36px; height: 36px; border-radius: 50%; background-color: rgba(var(--rgb-primary), 0.15); color: var(--color-primary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; }
         .my-schedule-footer { display: flex; justify-content: flex-end; padding-top: 1.5rem; }
         .total-credits-summary { padding: 0.75rem 1.5rem; font-weight: 600; background: rgba(var(--rgb-primary), 0.1); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius-md); font-size: 1.1rem; color: var(--color-primary); }
@@ -427,14 +427,18 @@
                         }
 
                         const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
-                        const isConflicted = conflictMap.has(course.uniqueId);
+                        const conflictMessages = conflictMap.get(course.uniqueId);
+                        const isConflicted = !!conflictMessages;
 
                         const row = document.createElement('tr');
                         if(isConflicted) row.classList.add('has-conflict');
                         
                         row.innerHTML = `
                             <td class="course-cell">
-                                <div class="course-code">${course.code}</div>
+                                <div class="course-code">
+                                    ${isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMessages.join('\n')}"></i>` : ''}
+                                    ${course.code}
+                                </div>
                                 <div class="course-name">${course.name}</div>
                             </td>
                             <td class="section-cell">
@@ -656,7 +660,7 @@
                     this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
                 },
                 _toggleSettingsModal(show) { this.dom.modalOverlay.classList.toggle('open', show); this.dom.settingsModal.classList.toggle('open', show); },
-                _applySettings() { /* can be expanded */ },
+                _applySettings() {},
             };
             
             QU_ScheduleApp.init();
