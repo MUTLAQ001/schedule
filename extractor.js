@@ -1,26 +1,31 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v29 (Corrected & Improved) Initialized...");
+    console.log("🚀 QU Schedule Extractor v30 (Final & Corrected) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
 
     /**
-     * Parses the time and location details from the raw section string.
+     * Parses all details (time, location, exam period) from the raw section string.
      * @param {string} detailsRaw - The raw string from the hidden input.
-     * @returns {{timeText: string, location: string}}
+     * @returns {{timeText: string, location: string, examPeriodId: string|null}}
      */
-    function parseTimeDetails(detailsRaw) {
-        if (!detailsRaw || detailsRaw.trim() === '') return { timeText: 'غير محدد', location: 'غير محدد' };
-        let loc = 'غير محدد';
-        // Extract location first
-        if (detailsRaw.includes('@r')) {
-            const locMatch = detailsRaw.match(/@r(.*?)(?:@n|@t|$)/);
-            if (locMatch && locMatch[1] && locMatch[1].trim() !== '') {
-                loc = locMatch[1].trim();
-            }
+    function parseAllDetails(detailsRaw) {
+        if (!detailsRaw || detailsRaw.trim() === '') {
+            return { timeText: 'غير محدد', location: 'غير محدد', examPeriodId: null };
         }
+
+        let loc = 'غير محدد';
+        let examId = null;
+        let timeText = 'غير محدد';
+
+        // Extract location
+        const locMatch = detailsRaw.match(/@r(.*?)(?:@n|@t|$)/);
+        if (locMatch && locMatch[1] && locMatch[1].trim() !== '') {
+            loc = locMatch[1].trim();
+        }
+
         // Extract time details
         if (detailsRaw.includes('@t')) {
             const dayMap = { '1': 'الأحد', '2': 'الاثنين', '3': 'الثلاثاء', '4': 'الأربعاء', '5': 'الخميس', '6': 'الجمعة', '7': 'السبت' };
@@ -28,15 +33,24 @@ javascript:(function() {
                 const segments = part.split('@t');
                 if (segments.length < 2) return null;
                 const days = segments[0].trim().split(/\s+/).map(d => dayMap[d] || d).join(' ');
-                // Clean the time part by removing the location info
                 const timeStr = segments[1].replace(/@r.*$/, '').trim();
                 return `${days}: ${timeStr}`;
             }).filter(Boolean);
-            const timeText = timeParts.length > 0 ? timeParts.join('<br>') : 'غير محدد';
-            return { timeText, location: loc };
+
+            if (timeParts.length > 0) {
+                timeText = timeParts.join('<br>');
+            }
         }
-        // Fallback if no @t found
-        return { timeText: 'غير محدد', location: loc };
+        
+        // Extract Exam Period ID from the same raw string, as it's sometimes embedded.
+        // The value is often at the end after the location.
+        // Example: "1 @t 10:00 ص - 11:40 ص @r 40"
+        const examMatch = detailsRaw.match(/@r\s*.*?\s*(\d+)$/);
+        if (examMatch && examMatch[1]) {
+            examId = examMatch[1].trim();
+        }
+
+        return { timeText, location: loc, examPeriodId: examId };
     }
 
     /**
@@ -45,27 +59,12 @@ javascript:(function() {
      * @returns {Array<Object>}
      */
     function extractCourses(rows) {
-        console.log("Extracting data using robust selectors...");
+        console.log("Extracting data with robust selectors...");
         const coursesData = [];
         let lastTheoreticalCourse = null;
 
-        /**
-         * A robust function to get cell value by header text, trying multiple selectors.
-         * @param {Element} row - The table row element.
-         * @param {string} th - The header text (e.g., 'اسم المقرر').
-         * @returns {string} The trimmed text content of the cell.
-         */
         const getVal = (row, th) => {
-            // Most common case from observation: non-breaking spaces
-            let cell = row.querySelector(`td[data-th=" ${th} "]`); // Note: These are non-breaking spaces (Alt+0160)
-            if (!cell) {
-                // Try exact match
-                cell = row.querySelector(`td[data-th="${th}"]`);
-            }
-            if (!cell) {
-                // Fallback to contains selector, this is the most flexible
-                cell = row.querySelector(`td[data-th*="${th}"]`);
-            }
+            let cell = row.querySelector(`td[data-th=" ${th} "]`) || row.querySelector(`td[data-th="${th}"]`) || row.querySelector(`td[data-th*="${th}"]`);
             return cell ? cell.textContent.trim() : '';
         };
 
@@ -80,29 +79,36 @@ javascript:(function() {
                 const status = getVal(row, 'الحالة');
                 const campus = getVal(row, 'المقر');
 
-                // Extract data from hidden inputs
                 const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
                 const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
+                
+                // Primary method to get examPeriodId from its own hidden input
                 let examPeriodId = row.querySelector('input[type="hidden"][id$=":examPeriod"]')?.value.trim();
 
-                const isPractical = type && (type.includes('عملي') || type.includes('تدريب') || type.includes('تمارين'));
-                
-                // If the current section is a practical part and has no hours, inherit from the last theoretical course with the same code.
-                if (isPractical && (!hours || hours.trim() === '0' || hours.trim() === '') && lastTheoreticalCourse && lastTheoreticalCourse.code === code) {
-                    hours = lastTheoreticalCourse.hours;
-                    examPeriodId = lastTheoreticalCourse.examPeriodId; // Also inherit exam period
+                const parsedDetails = parseAllDetails(detailsRaw);
+
+                // If the primary method failed, try the secondary method from the parsed string
+                if (!examPeriodId && parsedDetails.examPeriodId) {
+                    examPeriodId = parsedDetails.examPeriodId;
                 }
                 
-                const timeDetails = parseTimeDetails(detailsRaw);
-
+                const isPractical = type && (type.includes('عملي') || type.includes('تدريب') || type.includes('تمارين'));
+                
+                if (isPractical && (!hours || hours.trim() === '0' || hours.trim() === '') && lastTheoreticalCourse && lastTheoreticalCourse.code === code) {
+                    hours = lastTheoreticalCourse.hours;
+                    if (!examPeriodId) { // Only inherit if not found
+                        examPeriodId = lastTheoreticalCourse.examPeriodId;
+                    }
+                }
+                
                 const courseInfo = {
                     code,
                     name,
                     section,
-                    time: timeDetails.timeText,
-                    location: timeDetails.location,
+                    time: parsedDetails.timeText,
+                    location: parsedDetails.location,
                     instructor: instructor || 'غير محدد',
-                    examPeriodId: examPeriodId || null, // Pass the ID directly
+                    examPeriodId: examPeriodId || null,
                     hours: hours || '0',
                     type: type || 'نظري',
                     status: status || 'غير معروف',
@@ -110,7 +116,6 @@ javascript:(function() {
                 };
                 coursesData.push(courseInfo);
 
-                // If this is a theoretical course, store it for potential practical sections that follow.
                 if (!isPractical) {
                     lastTheoreticalCourse = { code: courseInfo.code, hours: courseInfo.hours, examPeriodId: examPeriodId };
                 }
@@ -120,7 +125,6 @@ javascript:(function() {
     }
 
     setTimeout(() => {
-        // The most reliable selector for course rows in the university portal
         const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
         let courses = [];
 
@@ -132,7 +136,6 @@ javascript:(function() {
             console.log(`🎉 Success! Found ${courses.length} sections.`);
             console.log("Sample extracted data:", courses[0]);
             
-            // Use sessionStorage to avoid cluttering localStorage permanently
             sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
             const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
 
@@ -142,18 +145,13 @@ javascript:(function() {
                 return;
             }
 
-            // A listener to send data once the viewer is ready. This is more reliable.
             const messageHandler = (event) => {
-                // Ensure the message is from the viewer window we opened
                 if (event.source !== viewerWindow) return;
 
                 if (event.data === 'request_schedule_data') {
                     const storedData = sessionStorage.getItem(TEMP_STORAGE_KEY);
                     if (storedData) {
-                        // Send data to the viewer window
                         viewerWindow.postMessage({ type: 'universityCoursesData', data: JSON.parse(storedData) }, new URL(VIEWER_URL).origin);
-                        
-                        // Clean up
                         sessionStorage.removeItem(TEMP_STORAGE_KEY);
                         window.removeEventListener('message', messageHandler);
                     }
