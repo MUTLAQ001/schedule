@@ -68,15 +68,16 @@
         .custom-scrollbar::-webkit-scrollbar { display: none; }
         .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* --- FINAL LAYOUT: Table over My Schedule, Sidebar on Left --- */
         .page-wrapper { display: flex; height: 100vh; }
-        .main-content { flex-grow: 1; height: 100vh; display: flex; flex-direction: column; padding: 1.5rem; gap: 1.5rem; }
+        .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 1.5rem; gap: 1.5rem; overflow-y: auto; }
         .sidebar { width: 420px; height: 100%; background-color: var(--bg-sidebar); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
         
         .main-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .header-actions { display: flex; gap: 0.75rem; }
         .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
         
-        .calendar-wrapper { flex-grow: 1; min-height: 0; }
+        .calendar-wrapper { flex-shrink: 0; min-height: 70vh; /* Give calendar substantial height */ }
         .card { width: 100%; height: 100%; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .5s var(--transition) both; }
         .calendar-wrapper .card { padding: 1.5rem; }
         #calendar { height: 100%; }
@@ -105,12 +106,13 @@
         .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
         .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); opacity: 0.8; }
         
-        .my-schedule-container { flex-shrink: 0; max-height: 38vh; display: none; flex-direction: column; }
+        .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
+        .my-schedule-container .card { animation-delay: 200ms; }
         .conflict-summary-banner { display: none; flex-shrink: 0; padding: .75rem 1.25rem; background-color: var(--warning-bg); color: var(--warning-dark); font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); align-items: center; gap: .75rem; }
         .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
         .my-schedule-section h3 { margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); flex-shrink: 0;}
-        .my-schedule-list-wrapper { display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; height: 100%; min-height: 0; }
-        .my-schedule-list { overflow-y: auto; padding-right: .5rem; }
+        .my-schedule-list-wrapper { display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; }
+        .my-schedule-list { overflow-y: auto; max-height: 40vh; padding-right: .5rem; }
         
         .my-schedule-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: .75rem; background: rgba(var(--rgb-primary), 0.05); animation: scaleIn .4s var(--transition) both; position: relative; }
         .my-schedule-item.has-conflict { border-left: 4px solid var(--warning); background: var(--warning-bg); }
@@ -299,9 +301,7 @@
                             this._processAndDisplayData(courses).then(() => this.updateCalendarAndConflicts());
                         }
                     }, false);
-                    if (window.opener) {
-                        window.opener.postMessage('request_schedule_data', '*');
-                    }
+                    if (window.opener) { window.opener.postMessage('request_schedule_data', '*'); }
                 },
 
                 async _processAndDisplayData(courses) {
@@ -360,7 +360,7 @@
                         courseItem.className = 'course-item';
                         courseItem.style.animationDelay = `${i * 50}ms`;
                         const sectionsHTML = group.sections.map(section => `<div class="section-btn ${this.state.selectedSections.has(section.uniqueId) ? 'selected' : ''}" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`).join('');
-                        courseItem.innerHTML = `<div class="course-item-header"><span class="color-dot" style="background-color: ${group.color}; box-shadow: 0 0 10px 1px ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
+                        courseItem.innerHTML = `<div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
                         this.dom.coursesList.appendChild(courseItem);
                     });
                 },
@@ -416,7 +416,7 @@
                         const periodData = this.state.examSchedule[exam.examPeriodId];
                         const examItem = document.createElement('div');
                         examItem.className = 'exam-item';
-                        examItem.innerHTML = `<i class="ri-file-text-line exam-icon"></i><div class="exam-details"><h4>${exam.name} (${exam.code})</h4><p><strong>${periodData.day} ${periodData.hijriDate}</strong><br>من ${periodData.startTime.slice(0,5)} إلى ${periodData.endTime.slice(0,5)}</p></div>`;
+                        examItem.innerHTML = `<i class="ri-file-text-line"></i><div><h4>${exam.name} (${exam.code})</h4><p><strong>${periodData.day} ${periodData.hijriDate}</strong> | من ${periodData.startTime.slice(0,5)} إلى ${periodData.endTime.slice(0,5)}</p></div>`;
                         this.dom.examsList.appendChild(examItem);
                     });
                 },
