@@ -588,15 +588,8 @@
                 },
                 _applySettings() {
                     document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
-                    document.querySelector('meta[name="theme-color"]').setAttribute('content', this.state.userSettings.theme === 'light' ? '#f4f4f5' : '#0a0a0a');
-                    const primaryColor = this.state.userSettings.accentColor;
-                    const darkColor = this._adjustColorBrightness(primaryColor, -20);
-                    document.documentElement.style.setProperty('--primary', primaryColor);
-                    document.documentElement.style.setProperty('--primary-dark', darkColor);
-                    
                     this.dom.modeToggleContainer.querySelector('.active')?.classList.remove('active');
                     this.dom.modeToggleContainer.querySelector(`[data-theme="${this.state.userSettings.theme}"]`).classList.add('active');
-                    this._populateAccentColorPicker();
                     this.dom.showWeekendToggle.checked = this.state.userSettings.showWeekends;
                 },
                 _populateTimeSelects() {
