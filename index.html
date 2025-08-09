@@ -117,7 +117,7 @@
         .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
         .header-actions button:hover { background-color: rgba(var(--rgb-primary), 0.2); border-color: var(--primary); transform: translateY(-2px); }
         
-        .calendar-wrapper { flex-grow: 1; min-height: 500px; display: flex; flex-direction: column; }
+        .calendar-wrapper { flex-grow: 1; min-height: 400px; display: flex; flex-direction: column; }
         .calendar-container { flex-grow: 1; background-color: var(--bg-calendar); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); animation: scaleIn .5s var(--transition) both; }
         #calendar { height: 100%; }
         .fc { --fc-border-color: var(--border-color); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; }
@@ -131,8 +131,20 @@
         .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
         .light .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
         
-        .my-schedule-section { flex-shrink: 0; border-top: 1px solid var(--border-color); padding: 1rem; }
-        .my-schedule-section h3 { margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); }
+        /* NEW: Styles for My Schedule section when it's under the calendar */
+        .my-schedule-section {
+            flex-shrink: 0;
+            margin-top: 1.5rem;
+            background-color: var(--bg-calendar);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4);
+            animation: fadeInUp .5s var(--transition) both;
+        }
+        .my-schedule-section h3 { margin: 0 0 1.25rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); }
         .my-schedule-list { max-height: 25vh; overflow-y: auto; padding-right: 0.5rem; margin-right: -0.5rem; }
         
         .my-schedule-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: .75rem; background: rgba(var(--rgb-primary), 0.05); animation: scaleIn .4s var(--transition) both; position: relative; }
@@ -257,6 +269,13 @@
             <div class="calendar-wrapper">
                 <div class="calendar-container"><div id='calendar'></div></div>
             </div>
+
+            <!-- "My Schedule" section is NOW HERE, under the calendar -->
+            <div class="my-schedule-section" id="my-schedule-summary" style="display: none;">
+                <h3><i class="ri-calendar-2-line"></i> جدولـي</h3>
+                <div class="my-schedule-list custom-scrollbar" id="my-schedule-list"></div>
+                <div class="total-credits-summary" id="total-credits-summary"></div>
+            </div>
         </main>
         
         <aside class="sidebar" id="sidebar">
@@ -285,12 +304,7 @@
                         <div id="exams-list"></div>
                     </div>
                 </div>
-                
-                <div class="my-schedule-section" id="my-schedule-summary" style="display: none;">
-                    <h3><i class="ri-calendar-2-line"></i> جدولـي</h3>
-                    <div class="my-schedule-list custom-scrollbar" id="my-schedule-list"></div>
-                    <div class="total-credits-summary" id="total-credits-summary"></div>
-                </div>
+                <!-- "My Schedule" section was REMOVED FROM HERE -->
             </div>
 
             <footer class="sidebar-footer">
