@@ -117,7 +117,14 @@
         .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
         .header-actions button:hover { background-color: rgba(var(--rgb-primary), 0.2); border-color: var(--primary); transform: translateY(-2px); }
         
-        .calendar-wrapper { flex-grow: 1; min-height: 400px; display: flex; flex-direction: column; }
+        /* THE FIX IS HERE: `flex-grow` is removed and `min-height` is adjusted */
+        .calendar-wrapper {
+            /* flex-grow: 1; */ /* This was causing the overlap */
+            min-height: 50vh; /* A responsive minimum height */
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0; /* Prevents shrinking */
+        }
         .calendar-container { flex-grow: 1; background-color: var(--bg-calendar); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); animation: scaleIn .5s var(--transition) both; }
         #calendar { height: 100%; }
         .fc { --fc-border-color: var(--border-color); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; }
@@ -141,7 +148,7 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4);
-            animation: fadeInUp .5s var(--transition) both;
+            animation: fadeInUp .5s var(--transition) both .2s; /* Added small delay */
         }
         .my-schedule-section h3 { margin: 0 0 1.25rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); }
         .my-schedule-list { max-height: 25vh; overflow-y: auto; padding-right: 0.5rem; margin-right: -0.5rem; }
@@ -342,7 +349,7 @@
                     COLOR_PALETTE: ['#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f97316', '#ef4444', '#06b6d4', '#d946ef'],
                     DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
                     STORAGE_KEYS: { SETTINGS: 'quScheduleSettings_v10', COURSES: 'quScheduleCourses_v10', SELECTED: 'quScheduleSelected_v10', COLORS: 'quScheduleColors_v10' },
-                    EXPECTED_UNIVERSITY_ORIGIN: "https://edu-gate.qu.edu.sa", // Can be adjusted if needed
+                    EXPECTED_UNIVERSITY_ORIGIN: "https://edu-gate.qu.edu.sa",
                     EXTRACTOR_URL: 'https://mutlaq001.github.io/schedule/extractor.js',
                     EXAMS_DATA_URL: 'https://mutlaq001.github.io/schedule/exams.json'
                 },
@@ -710,7 +717,6 @@
                         events: [], dir: 'rtl', dayHeaderFormat: { weekday: 'long' },
                         slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
                         hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6],
-                        // eventClick handler has been removed to make the calendar view-only
                         eventContent: (arg) => {
                             const props = arg.event.extendedProps;
                             const wrapper = document.createElement('div');
