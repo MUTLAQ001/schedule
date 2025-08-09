@@ -131,7 +131,6 @@
         .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
         .light .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
         
-        /* NEW: Styles for My Schedule section when it's under the calendar */
         .my-schedule-section {
             flex-shrink: 0;
             margin-top: 1.5rem;
@@ -270,7 +269,6 @@
                 <div class="calendar-container"><div id='calendar'></div></div>
             </div>
 
-            <!-- "My Schedule" section is NOW HERE, under the calendar -->
             <div class="my-schedule-section" id="my-schedule-summary" style="display: none;">
                 <h3><i class="ri-calendar-2-line"></i> جدولـي</h3>
                 <div class="my-schedule-list custom-scrollbar" id="my-schedule-list"></div>
@@ -304,7 +302,6 @@
                         <div id="exams-list"></div>
                     </div>
                 </div>
-                <!-- "My Schedule" section was REMOVED FROM HERE -->
             </div>
 
             <footer class="sidebar-footer">
@@ -380,8 +377,6 @@
                 
                 _listenForDataFromOpener() {
                     window.addEventListener('message', (event) => {
-                        // For security, you can check event.origin, but it can be tricky with redirects.
-                        // We will check the data structure instead.
                         if (event.data && event.data.type === 'universityCoursesData') {
                             const courses = event.data.data;
                             localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
@@ -391,9 +386,8 @@
                         }
                     }, false);
                     
-                    // Signal to opener that we are ready to receive data.
                     if (window.opener) {
-                        window.opener.postMessage('request_schedule_data', '*'); // Use specific origin in production if possible
+                        window.opener.postMessage('request_schedule_data', '*');
                     }
                 },
 
@@ -715,12 +709,8 @@
                         initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
                         events: [], dir: 'rtl', dayHeaderFormat: { weekday: 'long' },
                         slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
-                        hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], // Hide Friday and Saturday
-                        eventClick: ({ event }) => { 
-                            if (event.id && event.id.startsWith('preview-event')) return;
-                            const sectionBtn = document.querySelector(`.section-btn[data-unique-id='${event.extendedProps.uniqueId}']`);
-                            if(sectionBtn) sectionBtn.click();
-                        },
+                        hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6],
+                        // eventClick handler has been removed to make the calendar view-only
                         eventContent: (arg) => {
                             const props = arg.event.extendedProps;
                             const wrapper = document.createElement('div');
