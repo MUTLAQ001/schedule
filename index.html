@@ -211,7 +211,7 @@
         .action-picker-display { width: 100%; padding: .5rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text); background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all var(--transition); text-align: center; }
         .action-picker-display:hover { border-color: var(--primary); }
         .light .action-picker-display { background: rgba(0,0,0,0.04); }
-        .action-picker-panel { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; z-index: 3500; background-color: rgba(30,30,32,0.9); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: scaleIn 0.2s ease-out; transform-origin: bottom center; max-height: 200px; overflow-y: auto; }
+        .action-picker-panel { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; z-index: 3500; background-color: rgba(30,30,32,0.9); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: scaleIn 0.2s ease-out; transform-origin: bottom center; max-height: 200px; overflow-y: auto; }
         .light .action-picker-panel { background-color: rgba(250,250,250,0.9); }
         .action-picker-option { width: 100%; padding: 0.7rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text-muted); background-color: transparent; border-radius: var(--radius-full); border: none; cursor: pointer; transition: all var(--transition); text-align: center; }
         .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); }
@@ -219,7 +219,6 @@
     </style>
 </head>
 <body>
-
     <div class="cosmic-bg-container">
         <div class="nebula-glow"></div>
         <canvas id="starfield-canvas"></canvas>
@@ -298,7 +297,7 @@
                 document.body.classList.add('mobile-view');
                 return;
             }
-
+			
             const QU_ScheduleApp = {
                 state: {
                     calendar: null, allCoursesData: [], groupedCourses: {}, selectedSections: new Set(),
@@ -414,7 +413,9 @@
                         const courseItem = document.createElement('div');
                         courseItem.className = 'course-item';
                         courseItem.style.animationDelay = `${i * 50}ms`;
+                        
                         const sectionsHTML = group.sections.map(section => `<div class="section-btn ${this.state.selectedSections.has(section.uniqueId) ? 'selected' : ''}" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`).join('');
+                        
                         courseItem.innerHTML = `
                             <div class="course-item-header">
                                 <span class="color-dot" style="background-color: ${group.color};"></span>
@@ -422,6 +423,7 @@
                                 <i class="ri-arrow-down-s-line toggle-icon"></i>
                             </div>
                             <div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
+                        
                         coursesListContainer.appendChild(courseItem);
                     });
                 },
@@ -479,12 +481,14 @@
                         }
                     });
                 },
+                
                 _populateDOMElements() {
                     const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-table-container', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 'conflict-banner'];
                     ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
                     this.dom.tabButtons = document.querySelectorAll('.tab-btn');
                     this.dom.tabContents = document.querySelectorAll('.tab-content');
                 },
+                
                 _calculateConflicts(selectedCourses) {
                     const conflictMap = new Map();
                     for (let i = 0; i < selectedCourses.length; i++) { for (let j = i + 1; j < selectedCourses.length; j++) { const cA = selectedCourses[i], cB = selectedCourses[j]; if (cA.code === cB.code) continue; const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || []; if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) { msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`); msgB.push(`تعارض وقت محاضرة مع ${cA.name} (${cA.code})`); } if (cA.examPeriodId && cB.examPeriodId && cA.examPeriodId === cB.examPeriodId) { msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`); msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`); } if (msgA.length > 0) conflictMap.set(cA.uniqueId, msgA); if (msgB.length > 0) conflictMap.set(cB.uniqueId, msgB); } }
@@ -513,6 +517,18 @@
                     this.dom.coursesList.addEventListener('mouseover', e => this._handleSectionHover(e, true));
                     this.dom.coursesList.addEventListener('mouseout', e => this._handleSectionHover(e, false));
                 },
+                _handleCourseColorChange(event) {
+                    if (event.target.matches('.color-picker-input')) {
+                        const code = event.target.dataset.courseCode;
+                        const newColor = event.target.value;
+                        this.state.customColors[code] = newColor;
+                        if(this.state.groupedCourses[code]) this.state.groupedCourses[code].color = newColor;
+                        this._saveCustomColors();
+                        this.updateCalendarAndConflicts();
+                        this._renderCoursesList();
+                        this._buildSettingsModal();
+                    }
+                },
                 _handleSectionHover(event, isHovering) {
                     const sectionBtn = event.target.closest('.section-btn'); if (!sectionBtn) return;
                     if (isHovering) { const uniqueId = sectionBtn.dataset.uniqueId; const section = this.state.allCoursesData.find(c => c.uniqueId === uniqueId); if (section) this._showPreviewEvent(section); } else { this._removePreviewEvent(); }
@@ -525,8 +541,8 @@
                     const existingSource = this.state.calendar.getEventSourceById('preview-source'); if (existingSource) existingSource.remove();
                 },
                 _handleCourseListClick(e) {
-                    const sectionBtn = e.target.closest('.section-btn'); const header = e.target.closest('.course-item-header'); 
-                    if (sectionBtn) { const uniqueId = sectionBtn.dataset.uniqueId; sectionBtn.classList.toggle('selected'); if (this.state.selectedSections.has(uniqueId)) { this.state.selectedSections.delete(uniqueId); } else { this.state.selectedSections.add(uniqueId); } this.updateCalendarAndConflicts(); } else if (header) { header.parentElement.classList.toggle('open'); }
+                    const sectionBtn = e.target.closest('.section-btn'); const header = e.target.closest('.course-item-header'); const colorPicker = e.target.closest('.color-picker-label');
+                    if (colorPicker) return; if (sectionBtn) { const uniqueId = sectionBtn.dataset.uniqueId; sectionBtn.classList.toggle('selected'); if (this.state.selectedSections.has(uniqueId)) { this.state.selectedSections.delete(uniqueId); } else { this.state.selectedSections.add(uniqueId); } this.updateCalendarAndConflicts(); } else if (header) { header.parentElement.classList.toggle('open'); }
                 },
                 _handleClearCalendar() {
                     Swal.fire({ title: 'هل أنت متأكد؟', text: "سيتم مسح جميع المواد المختارة من الجدول.", icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، امسح الجدول!', cancelButtonText: 'إلغاء', customClass: { popup: 'swal-popup-animation-in' }, showClass: { popup: '' }, hideClass: { popup: 'swal-popup-animation-out' }, }).then((result) => { if (result.isConfirmed) { this.state.selectedSections.clear(); this.updateCalendarAndConflicts(); document.querySelectorAll('.section-btn.selected').forEach(b => b.classList.remove('selected')); Swal.fire({ toast: true, position: 'bottom', icon: 'success', title: 'تم مسح الجدول بنجاح', showConfirmButton: false, timer: 2000 }); } });
@@ -579,7 +595,6 @@
                     this._populateTimeSelects();
                     this._applySettings();
                 },
-
                 _attachModalEventListeners() {
                     this.dom.settingsModal.querySelector('#close-modal-btn').addEventListener('click', () => this._toggleSettingsModal(false));
                     this.dom.settingsModal.querySelector('#course-colors-list').addEventListener('change', e => this._handleCourseColorChange(e));
@@ -589,7 +604,6 @@
                     this.dom.settingsModal.querySelector('#import-file-input').addEventListener('change', e => this._handleImport(e));
                     this.dom.settingsModal.querySelector('#reset-app-btn').addEventListener('click', () => this._handleReset());
                 },
-
                 _handleVisibilityToggle(event) {
                     const btn = event.target.closest('.course-visibility-btn');
                     if (!btn) return;
@@ -662,33 +676,9 @@
                 },
 
                 _createActionPicker(container, options, initialValue, onChange) {
-                    container.innerHTML = '';
-                    let isOpen = false;
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'action-picker-wrapper';
-                    const selectedOption = options.find(opt => opt.value === initialValue) || options[0];
-                    const display = document.createElement('button');
-                    display.type = 'button';
-                    display.className = 'action-picker-display';
-                    display.textContent = selectedOption.label;
-                    const panel = document.createElement('div');
-                    panel.className = 'action-picker-panel';
-                    panel.style.display = 'none';
-                    options.forEach(option => {
-                        const btn = document.createElement('button');
-                        btn.type = 'button';
-                        btn.className = `action-picker-option ${initialValue === option.value ? 'selected' : ''}`;
-                        btn.textContent = option.label;
-                        btn.onclick = () => { onChange(option.value); display.textContent = option.label; panel.querySelectorAll('.selected').forEach(el => el.classList.remove('selected')); btn.classList.add('selected'); closePanel(); };
-                        panel.appendChild(btn);
-                    });
-                    const openPanel = () => { isOpen = true; panel.style.display = 'block'; };
-                    const closePanel = () => { isOpen = false; panel.style.display = 'none'; };
-                    display.onclick = () => isOpen ? closePanel() : openPanel();
-                    wrapper.appendChild(display);
-                    wrapper.appendChild(panel);
-                    container.appendChild(wrapper);
-                    document.addEventListener('click', (e) => { if (!wrapper.contains(e.target)) closePanel(); });
+                    container.innerHTML = ''; let isOpen = false; const wrapper = document.createElement('div'); wrapper.className = 'action-picker-wrapper'; const selectedOption = options.find(opt => opt.value === initialValue) || options[0]; const display = document.createElement('button'); display.type = 'button'; display.className = 'action-picker-display'; display.textContent = selectedOption.label; const panel = document.createElement('div'); panel.className = 'action-picker-panel'; panel.style.display = 'none';
+                    options.forEach(option => { const btn = document.createElement('button'); btn.type = 'button'; btn.className = `action-picker-option ${initialValue === option.value ? 'selected' : ''}`; btn.textContent = option.label; btn.onclick = () => { onChange(option.value); display.textContent = option.label; panel.querySelectorAll('.selected').forEach(el => el.classList.remove('selected')); btn.classList.add('selected'); closePanel(); }; panel.appendChild(btn); });
+                    const openPanel = () => { isOpen = true; panel.style.display = 'block'; }; const closePanel = () => { isOpen = false; panel.style.display = 'none'; }; display.onclick = () => isOpen ? closePanel() : openPanel(); wrapper.appendChild(display); wrapper.appendChild(panel); container.appendChild(wrapper); document.addEventListener('click', (e) => { if (!wrapper.contains(e.target)) closePanel(); });
                 }
             };
             
