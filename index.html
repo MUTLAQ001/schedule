@@ -111,12 +111,12 @@
         .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); opacity: 0.8; }
         
         .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
-        .my-schedule-container .card { animation-delay: 200ms; padding: 1.5rem; }
-        .my-schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .my-schedule-container .card { animation-delay: 200ms; }
+        .my-schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 1.5rem 1.5rem 0; }
         .my-schedule-header h3 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: .75rem; color: var(--primary); }
         .my-schedule-header-summary { font-size: 1rem; font-weight: 600; color: var(--text-light); }
         .my-schedule-header-summary span { color: var(--text-dark); font-weight: 700; }
-        .my-schedule-table-wrapper { overflow-y: auto; max-height: 40vh; }
+        .my-schedule-table-wrapper { overflow-y: auto; max-height: 40vh; padding: 0 1.5rem 1.5rem; }
         .my-schedule-table { width: 100%; border-collapse: collapse; }
         .my-schedule-table th, .my-schedule-table td { padding: 1rem; text-align: right; border-bottom: 1px solid var(--border-color); }
         .my-schedule-table th { font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
@@ -129,7 +129,7 @@
         .course-cell b { font-weight: 600; }
         .course-cell small { font-size: 0.8rem; color: var(--text-light); }
         .status-badge { background-color: var(--danger-bg); color: var(--danger); padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 600; font-size: 0.8rem; }
-
+        
         .fc { --fc-border-color: var(--border-color); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; }
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
@@ -266,7 +266,6 @@
             }
 
             const QU_ScheduleApp = {
-                // ... (All JS code is placed here)
                 state: {
                     calendar: null, allCoursesData: [], groupedCourses: {}, selectedSections: new Set(),
                     hiddenCourseCodes: new Set(), examSchedule: {}, customColors: {},
