@@ -24,7 +24,6 @@
             --text-dark: #f9fafb; --text-light: #a1a1aa;
             --border-color: rgba(255, 255, 255, 0.1); --radius-md: 16px;
             --radius-lg: 20px; --transition: 0.3s cubic-bezier(0.25,0.8,0.25,1);
-            --rgb-primary: 139, 92, 246; --rgb-danger: 244, 63, 94; --rgb-warning: 245, 158, 11;
         }
         .light {
             --primary: #7c3aed; --primary-dark: #6d28d9;
@@ -68,7 +67,6 @@
         .custom-scrollbar::-webkit-scrollbar { display: none; }
         .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* --- FINAL LAYOUT: Table over My Schedule, Sidebar on Left --- */
         .page-wrapper { display: flex; height: 100vh; }
         .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 1.5rem; gap: 1.5rem; overflow-y: auto; }
         .sidebar { width: 420px; height: 100%; background-color: var(--bg-sidebar); border-left: 1px solid var(--border-color); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
@@ -77,7 +75,7 @@
         .header-actions { display: flex; gap: 0.75rem; }
         .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
         
-        .calendar-wrapper { flex-shrink: 0; min-height: 70vh; /* Give calendar substantial height */ }
+        .calendar-wrapper { flex-shrink: 0; height: 80vh; /* Give calendar substantial height */ }
         .card { width: 100%; height: 100%; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .5s var(--transition) both; }
         .calendar-wrapper .card { padding: 1.5rem; }
         #calendar { height: 100%; }
@@ -167,7 +165,7 @@
     <div id="toast" class="toast-notification"></div>
 
     <div class="page-wrapper">
-        <main class="main-content">
+        <main class="main-content custom-scrollbar">
             <header class="main-header">
                 <h1><i class="ri-calendar-event-line"></i> QU Schedule</h1>
                 <div class="header-actions">
@@ -278,6 +276,14 @@
                     this._updateBookmarkletCode();
                 },
                 
+                async _fetchExamSchedule() {
+                    try {
+                        const response = await fetch(this.constants.EXAMS_DATA_URL);
+                        if (!response.ok) throw new Error(`Network response: ${response.statusText}`);
+                        this.state.examSchedule = await response.json();
+                    } catch (error) { console.error('Failed to fetch exam schedule:', error); this.state.examSchedule = {}; this._showToast('فشل تحميل جدول الاختبارات.', 'warning'); }
+                },
+                
                 _loadDataFromStorage() {
                     const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
                     if (storedCourses) {
@@ -322,14 +328,6 @@
                 _loadSelectedSections() { const stored = localStorage.getItem(this.constants.STORAGE_KEYS.SELECTED); if (stored) { try { const parsed = JSON.parse(stored); if (Array.isArray(parsed)) this.state.selectedSections = new Set(parsed); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED); } } },
                 _loadCustomColors() { const stored = localStorage.getItem(this.constants.STORAGE_KEYS.COLORS); if (stored) { try { this.state.customColors = JSON.parse(stored); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.COLORS); } } },
                 _saveCustomColors() { localStorage.setItem(this.constants.STORAGE_KEYS.COLORS, JSON.stringify(this.state.customColors)); },
-
-                async _fetchExamSchedule() {
-                    try {
-                        const response = await fetch(this.constants.EXAMS_DATA_URL);
-                        if (!response.ok) throw new Error(`Network response: ${response.statusText}`);
-                        this.state.examSchedule = await response.json();
-                    } catch (error) { console.error('Failed to fetch exam schedule:', error); this.state.examSchedule = {}; this._showToast('فشل تحميل جدول الاختبارات.', 'warning'); }
-                },
 
                 updateCalendarAndConflicts() {
                     if (!this.state.calendar) return;
@@ -497,8 +495,6 @@
                     this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
                     this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
                     this.dom.coursesList.addEventListener('click', e => this._handleCourseListClick(e));
-                    this.dom.coursesList.addEventListener('mouseover', e => this._handleCoursePreview(e, 'show'));
-                    this.dom.coursesList.addEventListener('mouseout', e => this._handleCoursePreview(e, 'hide'));
                     this.dom.myScheduleList.addEventListener('click', e => this._handleColorDotClick(e));
                     this.dom.expandAllBtn.addEventListener('click', () => this._toggleAllCourses(true));
                     this.dom.collapseAllBtn.addEventListener('click', () => this._toggleAllCourses(false));
@@ -508,7 +504,6 @@
                     const sectionBtn = e.target.closest('.section-btn');
                     const header = e.target.closest('.course-item-header');
                     if (sectionBtn) {
-                        this._hidePreview();
                         const uniqueId = sectionBtn.dataset.uniqueId;
                         sectionBtn.classList.toggle('selected');
                         if (this.state.selectedSections.has(uniqueId)) {
@@ -528,17 +523,11 @@
                     });
                 },
                 
-                _hidePreview() { this.state.calendar.getEvents().filter(ev => ev.id && ev.id.startsWith('preview-event')).forEach(ev => ev.remove()); },
                 _handleClearCalendar() { if (confirm('هل أنت متأكد من مسح الجدول المحدد؟')) { this.state.selectedSections.clear(); this.updateCalendarAndConflicts(); document.querySelectorAll('.section-btn.selected').forEach(b => b.classList.remove('selected')); this._showToast('تم مسح الجدول بنجاح.'); } },
                 _handleTabClick(button) { this.dom.tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); this.dom.tabContents.forEach(content => content.classList.remove('active')); document.getElementById(button.dataset.tab).classList.add('active'); },
                 
                 _loadSettings() { /* ... unchanged ... */ },
                 _saveSettings() { /* ... unchanged ... */ },
-                _applySettings() { /* ... unchanged ... */ },
-                _exportData() { /* ... unchanged ... */ },
-                _importData(e) { /* ... unchanged ... */ },
-                _resetApp() { if (confirm('تحذير! سيؤدي هذا إلى مسح جميع البيانات والإعدادات المحفوظة. هل أنت متأكد؟')) { Object.values(this.constants.STORAGE_KEYS).forEach(key => localStorage.removeItem(key)); location.reload(); } },
-                _toggleSettingsModal: function(forceOpen) { this.dom.settingsModal.classList.toggle('open', forceOpen); this.dom.modalOverlay.classList.toggle('open', forceOpen); },
                 
                 _updateBookmarkletCode() { document.getElementById('install-section').innerHTML = `<h3>طريقة التثبيت</h3><p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p><a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();" onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">QU Schedule</a>`; },
 
@@ -553,11 +542,7 @@
                             const props = arg.event.extendedProps;
                             const wrapper = document.createElement('div');
                             wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;';
-                            wrapper.innerHTML = `
-                                <b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${arg.event.title.split('(')[0].trim()}</b>
-                                <small style="opacity:0.9">${props.section} - ${props.instructor}</small>
-                                <small style="opacity:0.8; margin-top: auto;"><i class="ri-map-pin-line" style="font-size: 0.9em;"></i> ${props.location}</small>
-                            `;
+                            wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ri-map-pin-line"></i> ${props.location}</small>`;
                             return { domNodes: [wrapper] };
                         },
                         eventDidMount: (info) => {
