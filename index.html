@@ -76,7 +76,7 @@
         .header-actions { display: flex; gap: 0.75rem; }
         .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; }
         
-        .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
+        .calendar-wrapper { flex: 1; min-height: 50vh; }
         .card { width: 100%; height: 100%; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .5s var(--transition) both; }
         .calendar-wrapper .card { padding: 1.5rem; }
         #calendar { height: 100%; }
@@ -248,9 +248,6 @@
             }
 
             const QU_ScheduleApp = {
-                // ... All JavaScript logic from previous correct version ...
-                // The following is a complete, corrected, and verified script.
-                
                 state: {
                     calendar: null, allCoursesData: [], groupedCourses: {}, selectedSections: new Set(),
                     hiddenCourseCodes: new Set(), examSchedule: {}, customColors: {},
@@ -271,7 +268,7 @@
                     this._buildSettingsModal();
                     this._setupEventListeners();
                     this._initCosmicEffects();
-                    this._loadSettings();
+                    this._loadSettings(); // This now also populates time selects
                     this._loadCustomColors();
                     this._initializeCalendar();
                     this._loadDataFromStorage();
@@ -528,8 +525,19 @@
                 _handleClearCalendar() { if (confirm('هل أنت متأكد من مسح الجدول المحدد؟')) { this.state.selectedSections.clear(); this.updateCalendarAndConflicts(); document.querySelectorAll('.section-btn.selected').forEach(b => b.classList.remove('selected')); this._showToast('تم مسح الجدول بنجاح.'); } },
                 _handleTabClick(button) { this.dom.tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); this.dom.tabContents.forEach(content => content.classList.remove('active')); document.getElementById(button.dataset.tab).classList.add('active'); },
                 
-                _loadSettings() { /* Logic is in _buildSettingsModal */ },
-                _toggleSettingsModal(forceOpen) { this.dom.settingsModal.classList.toggle('open', forceOpen); this.dom.modalOverlay.classList.toggle('open', forceOpen); },
+                _loadSettings() {
+                    const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
+                    if (saved) {
+                        try {
+                            const parsed = JSON.parse(saved);
+                            this.state.userSettings = { ...this.state.userSettings, ...parsed };
+                        } catch (e) { /* Use defaults */ }
+                    }
+                    this._applySettings();
+                    this._populateTimeSelects();
+                },
+                _saveSettings() { localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS, JSON.stringify(this.state.userSettings)); },
+                
                 _updateBookmarkletCode() { document.getElementById('install-section').innerHTML = `<h3>طريقة التثبيت</h3><p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p><a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();" onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">QU Schedule</a>`; },
 
                 _initializeCalendar() {
@@ -537,8 +545,8 @@
                     const calendarOptions = {
                         initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
                         events: [], dir: 'rtl', dayHeaderFormat: { weekday: 'long' },
-                        slotMinTime: '08:00:00', slotMaxTime: '22:00:00',
-                        hiddenDays: [5, 6],
+                        slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
+                        hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6],
                         eventContent: (arg) => {
                             const props = arg.event.extendedProps;
                             const wrapper = document.createElement('div');
@@ -579,10 +587,18 @@
                     this.dom.modeToggleContainer = modal.querySelector('.mode-toggle');
                     this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
                 },
-                 _initCosmicEffects() { /* ... unchanged ... */ },
-                 _populateTimeSelects() { /* ... unchanged ... */ },
-                 _populateCourseVisibilityList() { /* ... unchanged ... */ },
-                 _populateAccentColorPicker() { /* ... unchanged ... */ }
+                _toggleSettingsModal(forceOpen) { this.dom.settingsModal.classList.toggle('open', forceOpen); this.dom.modalOverlay.classList.toggle('open', forceOpen); },
+                _initCosmicEffects() { /* ... unchanged ... */ },
+                _populateTimeSelects() {
+                    for (let i = 0; i < 24; i++) {
+                        const t = `${String(i).padStart(2,'0')}:00:00`, l = `${String(i).padStart(2,'0')}:00`;
+                        this.dom.minTimeSelect.add(new Option(l,t)); this.dom.maxTimeSelect.add(new Option(l,t));
+                    }
+                    this.dom.minTimeSelect.value = this.state.userSettings.minTime;
+                    this.dom.maxTimeSelect.value = this.state.userSettings.maxTime;
+                },
+                _populateCourseVisibilityList() { /* ... unchanged ... */ },
+                _populateAccentColorPicker() { /* ... unchanged ... */ }
             };
             
             QU_ScheduleApp.init();
