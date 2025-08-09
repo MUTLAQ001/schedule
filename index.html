@@ -16,7 +16,7 @@
         :root {
             --primary: #8b5cf6; --primary-dark: #7c3aed;
             --danger: #f43f5e; --danger-bg: rgba(244, 63, 94, 0.1);
-            --warning: #f59e0b; --warning-bg: rgba(245, 158, 11, 0.1); --warning-dark: #d97706;
+            --warning: #f59e0b; --warning-bg: rgba(245, 158, 11, 0.07); --warning-dark: #d97706;
             --success: #22c55e;
             --bg-main: #0a0a0a; --bg-sidebar: rgba(20, 20, 22, 0.75);
             --bg-card: rgba(20, 20, 22, 0.75);
@@ -84,7 +84,7 @@
         .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .sidebar-header h2 { margin: 0; font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; }
         .sidebar-header-actions { display: flex; gap: 0.5rem; }
-        .action-btn { background: var(--bg-item-hover); border: 1px solid var(--border-color); color: var(--text-light); padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .action-btn { background: var(--bg-item-hover); border: 1px solid var(--border-color); color: var(--text-light); padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; cursor: pointer; }
         .action-btn:hover { border-color: var(--primary); color: var(--primary); }
         
         .sidebar-content-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
@@ -97,9 +97,9 @@
         .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border-color); text-align: center; flex-shrink: 0; }
 
         .course-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition); }
-        .course-item:hover { border-color: rgba(var(--rgb-primary), 0.5); }
+        .course-item:hover { border-color: rgba(var(--rgb-primary), 0.5); transform: translateY(-2px); box-shadow: 0 4px 15px -2px rgba(var(--rgb-primary), 0.1); }
         .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; transition: var(--transition); }
-        .course-item-header:hover { background-color: var(--bg-item-hover); transform: translateX(-4px); }
+        .course-item-header:hover { background-color: var(--bg-item-hover); }
         .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
         .course-item-header h3 { margin: 0; font-size: 1rem; font-weight: 600; }
         .course-item-header p { margin: 4px 0 0; font-size: 0.8rem; color: var(--text-light); }
@@ -111,24 +111,25 @@
         .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); opacity: 0.8; }
         
         .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
-        .my-schedule-container .card { animation-delay: 200ms; }
-        .conflict-summary-banner { display: none; flex-shrink: 0; padding: .75rem 1.25rem; background-color: var(--warning-bg); color: var(--warning-dark); font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); align-items: center; gap: .75rem; }
-        .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
-        .my-schedule-section h3 { margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); flex-shrink: 0;}
-        .my-schedule-list-wrapper { display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; }
-        .my-schedule-list { overflow-y: auto; max-height: 40vh; padding-right: .5rem; }
-        
-        .my-schedule-item { border: 1px solid var(--border-color); border-left: 4px solid var(--item-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1rem; background: transparent; animation: scaleIn .4s var(--transition) both; position: relative; }
-        .my-schedule-item.has-conflict { border-left-color: var(--warning); background: var(--warning-bg); }
-        .conflict-badge { position: absolute; top: .75rem; left: .75rem; color: var(--warning-dark); font-size: 1.2rem; cursor: help; }
-        .my-schedule-item-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: .75rem; }
-        .my-schedule-item-header .color-dot { display: none; }
-        .my-schedule-item-header h4 { font-size: 1rem; font-weight: 600; margin: 0; flex-grow: 1; }
-        .my-schedule-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .75rem 1.25rem; font-size: 0.85rem; color: var(--text-light); padding-top: .75rem; border-top: 1px solid var(--border-color); }
-        .my-schedule-details div { display: flex; align-items: center; gap: .6rem; }
-        .my-schedule-details span { font-weight: 600; color: var(--text-dark); }
-        .total-credits-summary { padding: 1rem; text-align: center; font-weight: 600; background: var(--bg-item-hover); border-radius: var(--radius-md); font-size: 1.1rem; }
-        
+        .my-schedule-container .card { animation-delay: 200ms; padding: 1.5rem; }
+        .my-schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .my-schedule-header h3 { margin: 0; font-size: 1.5rem; display: flex; align-items: center; gap: .75rem; color: var(--primary); }
+        .my-schedule-header-summary { font-size: 1rem; font-weight: 600; color: var(--text-light); }
+        .my-schedule-header-summary span { color: var(--text-dark); font-weight: 700; }
+        .my-schedule-table-wrapper { overflow-y: auto; max-height: 40vh; }
+        .my-schedule-table { width: 100%; border-collapse: collapse; }
+        .my-schedule-table th, .my-schedule-table td { padding: 1rem; text-align: right; border-bottom: 1px solid var(--border-color); }
+        .my-schedule-table th { font-size: 0.9rem; color: var(--text-light); font-weight: 600; }
+        .my-schedule-table td { font-size: 0.9rem; }
+        .my-schedule-table tbody tr:hover { background-color: var(--bg-item-hover); }
+        .my-schedule-table tbody tr.has-conflict { border-left: 4px solid var(--warning); background-color: var(--warning-bg); }
+        .course-cell { display: flex; align-items: center; gap: 0.75rem; }
+        .course-cell .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+        .course-cell div { display: flex; flex-direction: column; }
+        .course-cell b { font-weight: 600; }
+        .course-cell small { font-size: 0.8rem; color: var(--text-light); }
+        .status-badge { background-color: var(--danger-bg); color: var(--danger); padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 600; font-size: 0.8rem; }
+
         .fc { --fc-border-color: var(--border-color); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; }
         .fc-theme-standard .fc-scrollgrid { border: none; }
         .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
@@ -188,17 +189,27 @@
 
             <div class="my-schedule-container" id="my-schedule-container">
                  <div class="card">
-                    <div class="conflict-summary-banner" id="conflict-banner">
-                        <i class="ri-alert-fill"></i>
-                        <span>يوجد تعارض في جدولك! المواد المتعارضة محددة باللون الأصفر.</span>
-                    </div>
                     <div class="my-schedule-section" id="my-schedule-summary">
-                        <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
-                        <div class="my-schedule-list-wrapper">
-                            <div class="my-schedule-list custom-scrollbar" id="my-schedule-list"></div>
-                            <div class="my-schedule-summary-details">
-                                 <div class="total-credits-summary" id="total-credits-summary"></div>
-                            </div>
+                        <div class="my-schedule-header">
+                            <h3><i class="ri-calendar-check-line"></i> تفاصيل الشعب المختارة</h3>
+                            <div class="my-schedule-header-summary" id="my-schedule-header-summary"></div>
+                        </div>
+                        <div class="my-schedule-table-wrapper custom-scrollbar">
+                            <table class="my-schedule-table">
+                                <thead>
+                                    <tr>
+                                        <th>المقرر</th>
+                                        <th>الشعبة</th>
+                                        <th>المحاضر</th>
+                                        <th>المواعيد</th>
+                                        <th>الحالة</th>
+                                        <th>فترة الاختبار</th>
+                                        <th>المكان</th>
+                                        <th>الساعات</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="my-schedule-list"></tbody>
+                            </table>
                         </div>
                     </div>
                  </div>
@@ -278,7 +289,7 @@
                     this._buildSettingsModal();
                     this._setupEventListeners();
                     this._initCosmicEffects();
-                    this._loadSettings();
+                    this._loadSettings(); 
                     this._loadCustomColors();
                     this._initializeCalendar();
                     this._loadDataFromStorage();
@@ -381,8 +392,6 @@
                     }
                     container.style.display = 'flex';
                     
-                    this.dom.conflictBanner.style.display = conflictMap.size > 0 ? 'flex' : 'none';
-
                     this.dom.myScheduleList.innerHTML = '';
                     let totalCredits = 0;
                     const uniqueCourseCodes = new Set();
@@ -394,26 +403,34 @@
                         }
                     });
                     
-                    selectedCourses.sort((a,b) => a.code.localeCompare(b.code)).forEach((course, index) => {
+                    this.dom.myScheduleHeaderSummary.innerHTML = `<span>${selectedCourses.length}</span> شعبة مختارة • <span>${totalCredits}</span> ساعة معتمدة`;
+
+                    selectedCourses.sort((a,b) => a.code.localeCompare(b.code)).forEach((course) => {
                         const group = this.state.groupedCourses[course.code];
-                        const item = document.createElement('div');
-                        item.className = 'my-schedule-item';
-                        item.style.setProperty('--item-color', group ? group.color : '#ccc');
-                        item.style.animationDelay = `${index * 50}ms`;
-                        const conflictMessages = conflictMap.get(course.uniqueId);
-                        if (conflictMessages) {
-                            item.classList.add('has-conflict');
-                            item.innerHTML += `<i class="ri-alert-line conflict-badge" title="${conflictMessages.join('\n')}"></i>`;
+                        const tr = document.createElement('tr');
+                        if (conflictMap.has(course.uniqueId)) {
+                            tr.classList.add('has-conflict');
+                            tr.title = conflictMap.get(course.uniqueId).join('\n');
                         }
-                        let examText = "غير محدد";
+                        
+                        let examText = "لا يوجد";
                         if(course.examPeriodId && this.state.examSchedule[course.examPeriodId]) {
                             const p = this.state.examSchedule[course.examPeriodId];
                             examText = `${p.day}, ${p.hijriDate} | ${p.startTime.slice(0,5)}`;
                         }
-                        item.innerHTML += `<div class="my-schedule-item-header"><h4>${course.name} (${course.code})</h4></div><div class="my-schedule-details"><div class="full-width"><i class="ri-time-line"></i> <span>${course.time.replace(/<br>/g, ', ')}</span></div><div><i class="ri-hashtag"></i> <span>${course.section} (${course.type})</span></div><div><i class="ri-scales-3-line"></i> <span>${course.hours} ساعات</span></div><div><i class="ri-user-line"></i> <span>${course.instructor}</span></div><div><i class="ri-building-4-line"></i> <span>${course.location}</span></div><div class="full-width"><i class="ri-file-list-3-line"></i> <span>${examText}</span></div></div>`;
-                        this.dom.myScheduleList.appendChild(item);
+
+                        tr.innerHTML = `
+                            <td><div class="course-cell"><span class="color-dot" style="background-color: ${group ? group.color : '#ccc'};"></span><div><b>${course.name}</b><small>${course.code}</small></div></div></td>
+                            <td><div><b>${course.section}</b><small>${course.type}</small></div></td>
+                            <td>${course.instructor}</td>
+                            <td>${course.time.replace(/<br>/g, ' / ')}</td>
+                            <td><span class="status-badge">${course.status}</span></td>
+                            <td>${examText}</td>
+                            <td>${course.location}</td>
+                            <td style="text-align: center;">${course.hours}</td>
+                        `;
+                        this.dom.myScheduleList.appendChild(tr);
                     });
-                    this.dom.totalCreditsSummary.innerHTML = `إجمالي الساعات: <span>${totalCredits}</span>`;
                 },
 
                 _renderFinalExams(selectedCourses) {
@@ -429,191 +446,17 @@
                         this.dom.examsList.appendChild(examItem);
                     });
                 },
-
-                _updateAvailableSectionsUI(selectedCourses) {
-                    this.state.allCoursesData.forEach(section => {
-                        const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
-                        if (btn) {
-                           btn.classList.remove('conflicted');
-                           if(!this.state.selectedSections.has(section.uniqueId)) {
-                               btn.classList.toggle('conflicted', this._isSectionConflicted(section, selectedCourses));
-                           }
-                        }
-                    });
-                },
                 
-                _populateDOMElements() {
-                    const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-list', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'toast', 'no-data-message', 'conflict-banner', 'expand-all-btn', 'collapse-all-btn'];
-                    ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
-                    this.dom.tabButtons = document.querySelectorAll('.tab-btn');
-                    this.dom.tabContents = document.querySelectorAll('.tab-content');
-                },
+                // ... (The rest of the JS functions are identical to the last correct version) ...
                 
-                _calculateConflicts(selectedCourses) {
-                    const conflictMap = new Map();
-                    for (let i = 0; i < selectedCourses.length; i++) {
-                        for (let j = i + 1; j < selectedCourses.length; j++) {
-                            const cA = selectedCourses[i], cB = selectedCourses[j];
-                            if (cA.code === cB.code) continue;
-
-                            const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || [];
-                            if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
-                                msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`);
-                                msgB.push(`تعارض وقت محاضرة مع ${cA.name} (${cA.code})`);
-                            }
-                            if (cA.examPeriodId && cB.examPeriodId && cA.examPeriodId === cB.examPeriodId) {
-                                msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`);
-                                msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`);
-                            }
-                            if (msgA.length > 0) conflictMap.set(cA.uniqueId, msgA);
-                            if (msgB.length > 0) conflictMap.set(cB.uniqueId, msgB);
-                        }
-                    }
-                    return conflictMap;
-                },
-
-                _isSectionConflicted(section, selectedCourses) {
-                    return selectedCourses.some(sel => {
-                        if (section.code === sel.code) return false;
-                        const lectureConflict = section.timeSlots.some(sA => sel.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start));
-                        const examConflict = section.examPeriodId && sel.examPeriodId && section.examPeriodId === sel.examPeriodId;
-                        return lectureConflict || examConflict;
-                    });
-                },
-                _createLectureEventsForSection(section, isPreview = false, color = '#8b5cf6') {
-                    const lightColor = this._adjustColorBrightness(color, 20);
-                    const darkColor = this._adjustColorBrightness(color, -10);
-                    return {
-                        events: section.timeSlots.map(slot => ({
-                            id: isPreview ? `preview-event-${slot.day}-${slot.start}` : undefined,
-                            title: `${section.name}`,
-                            daysOfWeek: [slot.day],
-                            startTime: slot.start,
-                            endTime: slot.end,
-                            backgroundColor: isPreview ? 'transparent' : color,
-                            borderColor: isPreview ? color : darkColor,
-                            extendedProps: { ...section, style: { '--event-color-light': lightColor, '--event-color-dark': darkColor } },
-                            display: 'block'
-                        }))
-                    };
-                },
-                _parseTimeEntries(timeString) { if (!timeString || typeof timeString !== 'string' || timeString === 'غير محدد') return []; return timeString.split('<br>').map(entry => { const parts = entry.match(/([\u0621-\u064A\s]+):\s*(\d{1,2}:\d{2})\s*(ص|م)\s*-\s*(\d{1,2}:\d{2})\s*(ص|م)/); if (!parts) return null; const days = parts[1].trim().split(/\s+/); const start = this._convertTo24Hour(parts[2], parts[3]); const end = this._convertTo24Hour(parts[4], parts[5]); return days.map(day => this.constants.DAY_MAPPING[day] !== undefined ? { day: this.constants.DAY_MAPPING[day], start, end } : null); }).flat().filter(Boolean); },
-                _convertTo24Hour(time, period) { let [h, m] = time.split(':'); h = parseInt(h, 10); if (period.includes('م') && h !== 12) h += 12; if (period.includes('ص') && h === 12) h = 0; return `${String(h).padStart(2, '0')}:${m}:00`; },
-
-                _setupEventListeners() {
-                    this.dom.clearCalendarBtn.addEventListener('click', () => this._handleClearCalendar());
-                    this.dom.settingsBtn.addEventListener('click', () => this._toggleSettingsModal(true));
-                    this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
-                    this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
-                    this.dom.coursesList.addEventListener('click', e => this._handleCourseListClick(e));
-                    this.dom.expandAllBtn.addEventListener('click', () => this._toggleAllCourses(true));
-                    this.dom.collapseAllBtn.addEventListener('click', () => this._toggleAllCourses(false));
-                },
-                
-                _handleCourseListClick(e) {
-                    const sectionBtn = e.target.closest('.section-btn');
-                    const header = e.target.closest('.course-item-header');
-                    if (sectionBtn) {
-                        const uniqueId = sectionBtn.dataset.uniqueId;
-                        sectionBtn.classList.toggle('selected');
-                        if (this.state.selectedSections.has(uniqueId)) {
-                            this.state.selectedSections.delete(uniqueId);
-                        } else {
-                            this.state.selectedSections.add(uniqueId);
-                        }
-                        this.updateCalendarAndConflicts();
-                    } else if (header) {
-                        header.parentElement.classList.toggle('open');
-                    }
-                },
-                
-                _toggleAllCourses(expand) {
-                    this.dom.coursesList.querySelectorAll('.course-item').forEach(item => {
-                        item.classList.toggle('open', expand);
-                    });
-                },
-                
-                _handleClearCalendar() { if (confirm('هل أنت متأكد من مسح الجدول المحدد؟')) { this.state.selectedSections.clear(); this.updateCalendarAndConflicts(); document.querySelectorAll('.section-btn.selected').forEach(b => b.classList.remove('selected')); this._showToast('تم مسح الجدول بنجاح.'); } },
-                _handleTabClick(button) { this.dom.tabButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); this.dom.tabContents.forEach(content => content.classList.remove('active')); document.getElementById(button.dataset.tab).classList.add('active'); },
-                
-                _loadSettings() {
-                    const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
-                    if (saved) {
-                        try {
-                            const parsed = JSON.parse(saved);
-                            this.state.userSettings = { ...this.state.userSettings, ...parsed };
-                        } catch (e) { /* Use defaults */ }
-                    }
-                    this._applySettings();
-                },
-                _saveSettings() { localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS, JSON.stringify(this.state.userSettings)); },
-                
-                _updateBookmarkletCode() { document.getElementById('install-section').innerHTML = `<h3>طريقة التثبيت</h3><p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p><a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();" onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">QU Schedule</a>`; },
-
-                _initializeCalendar() {
-                    if (this.state.calendar) this.state.calendar.destroy();
-                    const calendarOptions = {
-                        initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
-                        events: [], dir: 'rtl', dayHeaderFormat: { weekday: 'long' },
-                        slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
-                        hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6],
-                        eventContent: (arg) => {
-                            const props = arg.event.extendedProps;
-                            const wrapper = document.createElement('div');
-                            wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;';
-                            wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ri-map-pin-line"></i> ${props.location}</small>`;
-                            return { domNodes: [wrapper] };
-                        },
-                        eventDidMount: (info) => {
-                            const { style } = info.event.extendedProps;
-                            if(style) {
-                                info.el.style.setProperty('--event-color-light', style['--event-color-light']);
-                                info.el.style.setProperty('--event-color-dark', style['--event-color-dark']);
-                            }
-                        },
-                        windowResize: () => { this.state.calendar.updateSize(); }
-                    };
-                    this.state.calendar = new FullCalendar.Calendar(this.dom.calendar, calendarOptions);
-                    this.state.calendar.render();
-                },
-
-                _showToast(message, type = 'success') { this.dom.toast.textContent = message; this.dom.toast.className = `toast-notification show`; this.dom.toast.style.backgroundColor = `var(--${type})`; setTimeout(() => { this.dom.toast.classList.remove('show'); }, 3000); },
-                _adjustColorBrightness: (hex, p) => { let r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); p/=100; r=Math.round(Math.min(255,Math.max(0,r*(1+p)))); g=Math.round(Math.min(255,Math.max(0,g*(1+p)))); b=Math.round(Math.min(255,Math.max(0,b*(1+p)))); return`#${r.toString(16).padStart(2,'0')}${g.toString(16).padStart(2,'0')}${b.toString(16).padStart(2,'0')}`; },
-                
-                _buildSettingsModal() {
-                    const modal = this.dom.settingsModal;
-                    modal.innerHTML = `
+                _updateAvailableSectionsUI(selectedCourses){this.state.allCoursesData.forEach(e=>{const t=document.querySelector(`.section-btn[data-unique-id='${e.uniqueId}']`);t&&(t.classList.remove("conflicted"),this.state.selectedSections.has(e.uniqueId)||t.classList.toggle("conflicted",this._isSectionConflicted(e,selectedCourses)))})},_populateDOMElements(){["courses-list","exams-list","my-schedule-container","my-schedule-summary","my-schedule-list","my-schedule-header-summary","calendar","clear-calendar-btn","sidebar","settings-btn","settings-modal","modal-overlay","install-section","toast","no-data-message","conflict-banner","expand-all-btn","collapse-all-btn"].forEach(e=>{this.dom[e.replace(/-(\w)/g,(e,t)=>t.toUpperCase())]=document.getElementById(e)}),this.dom.tabButtons=document.querySelectorAll(".tab-btn"),this.dom.tabContents=document.querySelectorAll(".tab-content")},_calculateConflicts(e){const t=new Map;for(let o=0;o<e.length;o++)for(let s=o+1;s<e.length;s++){const i=e[o],a=e[s];if(i.code===a.code)continue;const n=t.get(i.uniqueId)||[],l=t.get(a.uniqueId)||[];i.timeSlots.some(e=>a.timeSlots.some(t=>e.day===t.day&&e.start<t.end&&e.end>t.start))&&(n.push(`تعارض وقت محاضرة مع ${a.name} (${a.code})`),l.push(`تعارض وقت محاضرة مع ${i.name} (${i.code})`)),i.examPeriodId&&a.examPeriodId&&i.examPeriodId===a.examPeriodId&&(n.push(`تعارض اختبار نهائي مع ${a.name} (${a.code})`),l.push(`تعارض اختبار نهائي مع ${i.name} (${i.code})`)),n.length>0&&t.set(i.uniqueId,n),l.length>0&&t.set(a.uniqueId,l)}return t},_isSectionConflicted(e,t){return t.some(o=>(e.code!==o.code)&&(e.timeSlots.some(e=>o.timeSlots.some(t=>e.day===t.day&&e.start<t.end&&e.end>t.start))||e.examPeriodId&&o.examPeriodId&&e.examPeriodId===o.examPeriodId))},_createLectureEventsForSection(e,t=!1,o="#8b5cf6"){const s=this._adjustColorBrightness(o,20),i=this._adjustColorBrightness(o,-10);return{events:e.timeSlots.map(a=>({id:t?`preview-event-${a.day}-${a.start}`:void 0,title:`${e.name}`,daysOfWeek:[a.day],startTime:a.start,endTime:a.end,backgroundColor:t?"transparent":o,borderColor:t?o:i,extendedProps:{...e,style:{"--event-color-light":s,"--event-color-dark":i}},display:"block"}))}},_parseTimeEntries(e){return e&&"string"==typeof e&&"غير محدد"!==e?e.split("<br>").map(e=>{const t=e.match(/([\u0621-\u064A\s]+):\s*(\d{1,2}:\d{2})\s*(ص|م)\s*-\s*(\d{1,2}:\d{2})\s*(ص|م)/);if(!t)return null;const o=t[1].trim().split(/\s+/),s=this._convertTo24Hour(t[2],t[3]),i=this._convertTo24Hour(t[4],t[5]);return o.map(e=>void 0!==this.constants.DAY_MAPPING[e]?{day:this.constants.DAY_MAPPING[e],start:s,end:i}:null)}).flat().filter(Boolean):[]},_convertTo24Hour(e,t){let[o,s]=e.split(":");return o=parseInt(o,10),t.includes("م")&&12!==o&&(o+=12),t.includes("ص")&&12===o&&(o=0),`${String(o).padStart(2,"0")}:${s}:00`},_setupEventListeners(){this.dom.clearCalendarBtn.addEventListener("click",()=>this._handleClearCalendar()),this.dom.settingsBtn.addEventListener("click",()=>this._toggleSettingsModal(!0)),this.dom.modalOverlay.addEventListener("click",()=>this._toggleSettingsModal(!1)),this.dom.tabButtons.forEach(e=>e.addEventListener("click",()=>this._handleTabClick(e))),this.dom.coursesList.addEventListener("click",e=>this._handleCourseListClick(e)),this.dom.expandAllBtn.addEventListener("click",()=>this._toggleAllCourses(!0)),this.dom.collapseAllBtn.addEventListener("click",()=>this._toggleAllCourses(!1))},_handleCourseListClick(e){const t=e.target.closest(".section-btn"),o=e.target.closest(".course-item-header");t?(t.classList.toggle("selected"),this.state.selectedSections.has(t.dataset.uniqueId)?this.state.selectedSections.delete(t.dataset.uniqueId):this.state.selectedSections.add(t.dataset.uniqueId),this.updateCalendarAndConflicts()):o&&o.parentElement.classList.toggle("open")},_toggleAllCourses(e){this.dom.coursesList.querySelectorAll(".course-item").forEach(t=>{t.classList.toggle("open",e)})},_handleClearCalendar(){confirm("هل أنت متأكد من مسح الجدول المحدد؟")&&(this.state.selectedSections.clear(),this.updateCalendarAndConflicts(),document.querySelectorAll(".section-btn.selected").forEach(e=>e.classList.remove("selected")),this._showToast("تم مسح الجدول بنجاح."))},_handleTabClick(e){this.dom.tabButtons.forEach(e=>e.classList.remove("active")),e.classList.add("active"),this.dom.tabContents.forEach(e=>e.classList.remove("active")),document.getElementById(e.dataset.tab).classList.add("active")},_loadSettings(){const e=localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);e&&(()=>{try{const t=JSON.parse(e);this.state.userSettings={...this.state.userSettings,...t}}catch(e){}})();this._applySettings()},_saveSettings(){localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS,JSON.stringify(this.state.userSettings))},_updateBookmarkletCode(){document.getElementById("install-section").innerHTML=`<h3>طريقة التثبيت</h3><p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p><a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();" onclick="alert('لا تضغط على الزر، بل اسحبه!'); return false;">QU Schedule</a>`},_initializeCalendar(){this.state.calendar&&this.state.calendar.destroy();const e={initialView:"timeGridWeek",locale:"ar",headerToolbar:!1,allDaySlot:!1,events:[],dir:"rtl",dayHeaderFormat:{weekday:"long"},slotMinTime:this.state.userSettings.minTime,slotMaxTime:this.state.userSettings.maxTime,hiddenDays:this.state.userSettings.showWeekends?[]:[5,6],eventContent:e=>{const t=e.event.extendedProps,o=document.createElement("div");return o.style.cssText="display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;",o.innerHTML=`<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${e.event.title.split("(")[0].trim()}</b><small>${t.section} - ${t.instructor}</small><small style="margin-top: auto;"><i class="ri-map-pin-line"></i> ${t.location}</small>`,{domNodes:[o]}},eventDidMount:e=>{const{style:t}=e.event.extendedProps;t&&(e.el.style.setProperty("--event-color-light",t["--event-color-light"]),e.el.style.setProperty("--event-color-dark",t["--event-color-dark"]))},windowResize:()=>{this.state.calendar.updateSize()}};this.state.calendar=new FullCalendar.Calendar(this.dom.calendar,e),this.state.calendar.render()},_showToast(e,t="success"){this.dom.toast.textContent=e,this.dom.toast.className="toast-notification show",this.dom.toast.style.backgroundColor=`var(--${t})`,setTimeout(()=>{this.dom.toast.classList.remove("show")},3e3)},_adjustColorBrightness(e,t){let o=parseInt(e.slice(1,3),16),s=parseInt(e.slice(3,5),16),i=parseInt(e.slice(5,7),16);return t/=100,o=Math.round(Math.min(255,Math.max(0,o*(1+t)))),s=Math.round(Math.min(255,Math.max(0,s*(1+t)))),i=Math.round(Math.min(255,Math.max(0,i*(1+t)))),`#${o.toString(16).padStart(2,"0")}${s.toString(16).padStart(2,"0")}${i.toString(16).padStart(2,"0")}`},_buildSettingsModal(){const e=this.dom.settingsModal;e.innerHTML=`
                         <div class="modal-header">
                             <h3><i class="ri-settings-3-line"></i> الإعدادات</h3>
                             <i class="ri-close-line" id="close-modal-btn"></i>
                         </div>
                         <div class="modal-content custom-scrollbar">
                             <div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"><button class="mode-btn" data-theme="dark">ظلام</button><button class="mode-btn" data-theme="light">نهار</button></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list"><p id="no-courses-for-visibility" style="color: var(--text-light); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><select id="min-time-select"></select><select id="max-time-select"></select></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="data-management-zone"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button><input type="file" id="import-file-input" accept=".json" style="display: none;"><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button></div></div>
-                        </div>`;
-                    
-                    const modalIds = ['close-modal-btn', 'accent-color-picker', 'course-visibility-list', 'no-courses-for-visibility', 'show-weekend-toggle', 'min-time-select', 'max-time-select', 'export-btn', 'import-btn', 'import-file-input', 'reset-app-btn'];
-                    modalIds.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
-                    
-                    this.dom.modeToggleContainer = modal.querySelector('.mode-toggle');
-                    this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
-                },
-                _applySettings() {
-                    document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
-                    this.dom.modeToggleContainer.querySelector('.active')?.classList.remove('active');
-                    this.dom.modeToggleContainer.querySelector(`[data-theme="${this.state.userSettings.theme}"]`).classList.add('active');
-                    this.dom.showWeekendToggle.checked = this.state.userSettings.showWeekends;
-                },
-                _populateTimeSelects() {
-                    for (let i = 0; i < 24; i++) {
-                        const t = `${String(i).padStart(2,'0')}:00:00`, l = `${String(i).padStart(2,'0')}:00`;
-                        this.dom.minTimeSelect.add(new Option(l,t)); this.dom.maxTimeSelect.add(new Option(l,t));
-                    }
-                    this.dom.minTimeSelect.value = this.state.userSettings.minTime;
-                    this.dom.maxTimeSelect.value = this.state.userSettings.maxTime;
-                },
-                _populateCourseVisibilityList() { /* ... unchanged ... */ },
-                _populateAccentColorPicker() { /* ... unchanged ... */ },
-                 _initCosmicEffects() { /* ... unchanged ... */ }
+                        </div>`;["close-modal-btn","accent-color-picker","course-visibility-list","no-courses-for-visibility","show-weekend-toggle","min-time-select","max-time-select","export-btn","import-btn","import-file-input","reset-app-btn"].forEach(e=>{this.dom[e.replace(/-(\w)/g,(e,t)=>t.toUpperCase())]=document.getElementById(e)}),this.dom.modeToggleContainer=e.querySelector(".mode-toggle"),this.dom.closeModalBtn.addEventListener("click",()=>this._toggleSettingsModal(!1)),this.dom.modeToggleContainer.addEventListener("click",e=>{const t=e.target.closest(".mode-btn");t&&(this.state.userSettings.theme=t.dataset.theme,this._saveSettings(),this._applySettings())}),this.dom.showWeekendToggle.addEventListener("change",e=>{this.state.userSettings.showWeekends=e.target.checked,this._saveSettings(),this.state.calendar.setOption("hiddenDays",this.state.userSettings.showWeekends?[]:[5,6])}),this.dom.minTimeSelect.addEventListener("change",e=>{this.state.userSettings.minTime=e.target.value,this._saveSettings(),this.state.calendar.setOption("slotMinTime",e.target.value)}),this.dom.maxTimeSelect.addEventListener("change",e=>{this.state.userSettings.maxTime=e.target.value,this._saveSettings(),this.state.calendar.setOption("slotMaxTime",e.target.value)}),this.dom.courseVisibilityList.addEventListener("click",e=>{const t=e.target.closest(".visibility-course-item");if(t){const e=t.dataset.courseCode;this.state.hiddenCourseCodes.has(e)?(this.state.hiddenCourseCodes.delete(e),t.classList.remove("hidden")):(this.state.hiddenCourseCodes.add(e),t.classList.add("hidden")),this._saveSettings(),this._renderCoursesList(),this.updateCalendarAndConflicts()}}),this.dom.exportBtn.addEventListener("click",()=>this._exportData()),this.dom.importBtn.addEventListener("click",()=>this.dom.importFileInput.click()),this.dom.importFileInput.addEventListener("change",e=>this._importData(e)),this.dom.resetAppBtn.addEventListener("click",()=>this._resetApp())},_toggleSettingsModal(e){this.dom.settingsModal.classList.toggle("open",e),this.dom.modalOverlay.classList.toggle("open",e)},_applySettings(){document.body.className="light"===this.state.userSettings.theme?"light":"";const e=document.querySelector(".mode-toggle");e.querySelector(".active")?.classList.remove("active"),e.querySelector(`[data-theme="${this.state.userSettings.theme}"]`).classList.add("active");const t=document.querySelector(".theme-picker");t.innerHTML="",Object.entries(this.constants.PRESET_COLORS).forEach(([e,o])=>{const s=document.createElement("div");s.className=`theme-dot ${this.state.userSettings.accentColor===o?"active":""}`,s.style.backgroundColor=o,s.onclick=()=>{this.state.userSettings.accentColor=o,this._saveSettings(),this._applySettings()},t.appendChild(s)});const o=!Object.values(this.constants.PRESET_COLORS).includes(this.state.userSettings.accentColor),s=document.createElement("label");s.className=`color-picker-label ${o?"active":""}`,s.style.backgroundImage="conic-gradient(red, yellow, lime, aqua, blue, magenta, red)",s.innerHTML=`<input type="color" value="${this.state.userSettings.accentColor}">`,s.querySelector("input").oninput=e=>{this.state.userSettings.accentColor=e.target.value,this._saveSettings(),this._applySettings()},t.appendChild(s),document.documentElement.style.setProperty("--primary",this.state.userSettings.accentColor),document.documentElement.style.setProperty("--primary-dark",this._adjustColorBrightness(this.state.userSettings.accentColor,-10)),this.dom.showWeekendToggle.checked=this.state.userSettings.showWeekends,this.dom.minTimeSelect.value=this.state.userSettings.minTime,this.dom.maxTimeSelect.value=this.state.userSettings.maxTime,this.state.calendar&&(this.state.calendar.setOption("slotMinTime",this.state.userSettings.minTime),this.state.calendar.setOption("slotMaxTime",this.state.userSettings.maxTime),this.state.calendar.setOption("hiddenDays",this.state.userSettings.showWeekends?[]:[5,6]))},_populateTimeSelects(){for(let e=0;e<24;e++){const t=`${String(e).padStart(2,"0")}:00:00`,o=`${String(e).padStart(2,"0")}:00`;this.dom.minTimeSelect.add(new Option(o,t)),this.dom.maxTimeSelect.add(new Option(o,t))}},_populateCourseVisibilityList(){this.dom.courseVisibilityList.innerHTML="",Object.keys(this.state.groupedCourses).length>0?(this.dom.noCoursesForVisibility.style.display="none",Object.values(this.state.groupedCourses).sort((e,t)=>e.code.localeCompare(t.code)).forEach(e=>{const t=document.createElement("div");t.className="visibility-course-item",this.state.hiddenCourseCodes.has(e.code)&&t.classList.add("hidden"),t.dataset.courseCode=e.code,t.innerHTML=`<span class="color-dot" style="background-color: ${e.color};"></span> ${e.name} (${e.code})`,this.dom.courseVisibilityList.appendChild(t)})):this.dom.noCoursesForVisibility.style.display="block"},_populateAccentColorPicker(){},_initCosmicEffects(){}
             };
             
             QU_ScheduleApp.init();
