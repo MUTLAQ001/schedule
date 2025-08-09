@@ -106,6 +106,7 @@
         .section-btn.conflicted { background-color: rgba(var(--rgb-danger), 0.1); border-color: var(--color-danger); color: var(--color-danger); }
         .section-btn .section-type { font-size: 0.7rem; color: var(--color-text-muted); }
         .section-btn.selected .section-type { color: rgba(255,255,255,0.8); }
+        .section-btn.no-time { border-bottom: 3px solid var(--item-color); padding-bottom: calc(0.5rem - 3px); }
 
         .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
         .my-schedule-container .card { animation-delay: 200ms; }
@@ -211,7 +212,7 @@
         .action-picker-display { width: 100%; padding: .5rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text); background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: all var(--transition); text-align: center; }
         .action-picker-display:hover { border-color: var(--primary); }
         .light .action-picker-display { background: rgba(0,0,0,0.04); }
-        .action-picker-panel { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; z-index: 3500; background-color: rgba(30,30,32,0.9); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: scaleIn 0.2s ease-out; transform-origin: bottom center; max-height: 200px; overflow-y: auto; }
+        .action-picker-panel { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; z-index: 3500; background-color: rgba(30,30,32,0.9); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: scaleIn 0.2s ease-out; transform-origin: bottom center; max-height: 200px; overflow-y: auto; }
         .light .action-picker-panel { background-color: rgba(250,250,250,0.9); }
         .action-picker-option { width: 100%; padding: 0.7rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text-muted); background-color: transparent; border-radius: var(--radius-full); border: none; cursor: pointer; transition: all var(--transition); text-align: center; }
         .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); }
@@ -297,7 +298,7 @@
                 document.body.classList.add('mobile-view');
                 return;
             }
-
+			
             const QU_ScheduleApp = {
                 state: {
                     calendar: null, allCoursesData: [], groupedCourses: {}, selectedSections: new Set(),
@@ -414,7 +415,15 @@
                         courseItem.className = 'course-item';
                         courseItem.style.animationDelay = `${i * 50}ms`;
                         
-                        const sectionsHTML = group.sections.map(section => `<div class="section-btn ${this.state.selectedSections.has(section.uniqueId) ? 'selected' : ''}" data-unique-id="${section.uniqueId}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`).join('');
+                        const sectionsHTML = group.sections.map(section => {
+                            const isNoTime = section.time === 'غير محدد';
+                            return `<div class="section-btn ${this.state.selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" 
+                                         data-unique-id="${section.uniqueId}" 
+                                         style="${isNoTime ? '--item-color:' + group.color : ''}">
+                                        <div class="section-btn-number">${section.section}</div>
+                                        <div class="section-type">${section.type || ''}</div>
+                                    </div>`;
+                        }).join('');
                         
                         courseItem.innerHTML = `
                             <div class="course-item-header">
@@ -553,6 +562,12 @@
                 _hexToRgb(hex) {
                     let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex); return result ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}` : '139, 92, 246';
                 },
+                _hexToHue(H) {
+                    if (!H) return 257; let r=0,g=0,b=0; if(H.length==7){r="0x"+H[1]+H[2];g="0x"+H[3]+H[4];b="0x"+H[5]+H[6];}
+                    r/=255;g/=255;b/=255; let cmin=Math.min(r,g,b),cmax=Math.max(r,g,b),delta=cmax-cmin,h=0;
+                    if(delta==0)h=0; else if(cmax==r)h=((g-b)/delta)%6; else if(cmax==g)h=(b-r)/delta+2; else h=(r-g)/delta+4;
+                    h=Math.round(h*60); if(h<0)h+=360; return h;
+                },
                 
                 _loadSettings() { const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS); if (saved) { try { this.state.userSettings = { ...this.state.userSettings, ...JSON.parse(saved) }; this.state.hiddenCourseCodes = new Set(this.state.userSettings.hiddenCourseCodes || []); } catch (e) {} } this._applySettings(); },
                 _saveSettings() { this.state.userSettings.hiddenCourseCodes = Array.from(this.state.hiddenCourseCodes); localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS, JSON.stringify(this.state.userSettings)); },
@@ -671,13 +686,6 @@
                     container.innerHTML = ''; let isOpen = false; const wrapper = document.createElement('div'); wrapper.className = 'action-picker-wrapper'; const selectedOption = options.find(opt => opt.value === initialValue) || options[0]; const display = document.createElement('button'); display.type = 'button'; display.className = 'action-picker-display'; display.textContent = selectedOption.label; const panel = document.createElement('div'); panel.className = 'action-picker-panel'; panel.style.display = 'none';
                     options.forEach(option => { const btn = document.createElement('button'); btn.type = 'button'; btn.className = `action-picker-option ${initialValue === option.value ? 'selected' : ''}`; btn.textContent = option.label; btn.onclick = () => { onChange(option.value); display.textContent = option.label; panel.querySelectorAll('.selected').forEach(el => el.classList.remove('selected')); btn.classList.add('selected'); closePanel(); }; panel.appendChild(btn); });
                     const openPanel = () => { isOpen = true; panel.style.display = 'block'; }; const closePanel = () => { isOpen = false; panel.style.display = 'none'; }; display.onclick = () => isOpen ? closePanel() : openPanel(); wrapper.appendChild(display); wrapper.appendChild(panel); container.appendChild(wrapper); document.addEventListener('click', (e) => { if (!wrapper.contains(e.target)) closePanel(); });
-                },
-
-                _hexToHue(H) {
-                    if (!H) return 257; let r=0,g=0,b=0; if(H.length==7){r="0x"+H[1]+H[2];g="0x"+H[3]+H[4];b="0x"+H[5]+H[6];}
-                    r/=255;g/=255;b/=255; let cmin=Math.min(r,g,b),cmax=Math.max(r,g,b),delta=cmax-cmin,h=0;
-                    if(delta==0)h=0; else if(cmax==r)h=((g-b)/delta)%6; else if(cmax==g)h=(b-r)/delta+2; else h=(r-g)/delta+4;
-                    h=Math.round(h*60); if(h<0)h+=360; return h;
                 },
             };
             
