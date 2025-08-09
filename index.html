@@ -36,26 +36,24 @@
             --border-color: rgba(0, 0, 0, 0.09);
         }
         
-        @keyframes gradient-animation{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
-		@keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
 		@keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-        @keyframes move-nebula{0%{transform:translate(0,0) rotate(0deg) scale(1.2)}50%{transform:translate(10vw,5vh) rotate(180deg) scale(1.5)}100%{transform:translate(0,0) rotate(360deg) scale(1.2)}}
         
         *, *::before, *::after { box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
             font-family: 'IBM Plex Sans Arabic', sans-serif; background-color: var(--bg-main);
-            color: var(--text-dark); margin: 0; height: 100vh; width: 100vw; overflow: hidden;
+            color: var(--text-dark); margin: 0; min-height: 100vh; width: 100vw;
+            overflow-x: hidden;
             -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
         }
         
         .cosmic-bg-container{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-2;overflow:hidden}
 		#starfield-canvas{position:absolute;top:0;left:0;width:100%;height:100%}
-		.nebula-glow{position:absolute;top:50%;left:50%;width:80vmax;height:80vmax;margin-top:-40vmax;margin-left:-40vmax;background:radial-gradient(circle,hsla(var(--rgb-primary),.15) 0%,hsla(var(--rgb-primary),.1) 40%,transparent 70%);filter:blur(100px);border-radius:50%;animation:move-nebula 90s infinite alternate ease-in-out;transition:opacity .5s ease,background .5s ease}
+		.nebula-glow{position:absolute;top:50%;left:50%;width:80vmax;height:80vmax;margin-top:-40vmax;margin-left:-40vmax;background:radial-gradient(circle,hsla(var(--rgb-primary),.15) 0%,hsla(var(--rgb-primary),.1) 40%,transparent 70%);filter:blur(100px);border-radius:50%;}
 		.light .nebula-glow{opacity:.5;filter:blur(120px); background:radial-gradient(circle,hsla(var(--rgb-primary),.25) 0%,hsla(var(--rgb-primary),.15) 40%,transparent 70%)}
 
         #install-section { position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 1000; background-color: var(--bg-card); padding: 1.5rem 2rem; border-radius: var(--radius-lg); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); border: 1px solid var(--border-color); width: 90%; max-width: 600px; text-align: center; display: none; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); animation: scaleIn .5s var(--transition) both; }
-        .bookmarklet-button { display: inline-block; background: linear-gradient(90deg, var(--primary-dark), var(--primary)); color: white; padding: 0.7rem 1.5rem; border-radius: 999px; font-weight: 600; text-decoration: none; cursor: grab; transition: all .2s ease-in-out; }
         
         #mobile-unsupported { display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100vh; padding: 2rem; }
         #mobile-unsupported i { font-size: 4rem; color: var(--primary); margin-bottom: 1.5rem; }
@@ -74,36 +72,27 @@
         .custom-scrollbar::-webkit-scrollbar { display: none; }
         .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* --- CHANGE START: Final Page Layout (Top/Bottom Split) --- */
+        /* --- FINAL LAYOUT: Top/Bottom Split with Scrollable Page --- */
         .page-wrapper {
             display: flex;
             flex-direction: column;
-            height: 100vh;
             padding: 1.5rem;
             gap: 1.5rem;
         }
 
         .top-content-wrapper {
             display: flex;
-            flex: 1; /* Takes up most of the space */
             gap: 1.5rem;
-            min-height: 0;
+            min-height: 75vh; /* Ensure top section is large */
         }
 
         .main-content, .sidebar {
             display: flex;
             flex-direction: column;
-            height: 100%;
         }
 
-        .main-content {
-            flex-grow: 1;
-        }
-
-        .sidebar {
-            width: 420px;
-            flex-shrink: 0;
-        }
+        .main-content { flex-grow: 1; }
+        .sidebar { width: 420px; flex-shrink: 0; }
         
         .card {
             width: 100%;
@@ -120,13 +109,12 @@
             animation: scaleIn .5s var(--transition) both;
         }
         .main-content.card { animation-delay: 0s; }
-        .sidebar .card { animation-delay: 150ms; }
+        .sidebar.card { animation-delay: 150ms; }
         .bottom-content-wrapper .card { animation-delay: 300ms; }
         
         .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-shrink: 0; padding: 1.5rem 1.5rem 0; }
         .header-actions { display: flex; gap: 0.75rem; }
         .header-actions button { background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--border-color); color: var(--primary); padding: 0.6rem 1.2rem; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; }
-        .header-actions button:hover { background-color: rgba(var(--rgb-primary), 0.2); border-color: var(--primary); transform: translateY(-2px); }
         .calendar-wrapper { flex-grow: 1; min-height: 0; padding: 0 1.5rem 1.5rem; }
         #calendar { height: 100%; }
 
@@ -141,21 +129,19 @@
         .tab-content.active { display: block; }
         .sidebar-footer { padding: 1rem; border-top: 1px solid var(--border-color); text-align: center; flex-shrink: 0; }
 
-        .bottom-content-wrapper { flex-shrink: 0; max-height: 38vh; display: none; flex-direction: column; }
+        .bottom-content-wrapper { flex-shrink: 0; display: none; flex-direction: column; }
         .conflict-summary-banner { display: none; flex-shrink: 0; padding: .75rem 1.25rem; background-color: var(--warning-bg); color: var(--warning-dark); font-weight: 600; font-size: 0.9rem; border-bottom: 1px solid var(--border-color); align-items: center; gap: .75rem; }
         .conflict-summary-banner i { font-size: 1.4rem; }
-        .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1rem; }
+        .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
         .my-schedule-section h3 { margin: 0 0 1rem; font-size: 1.2rem; display: flex; align-items: center; gap: .5rem; color: var(--primary); flex-shrink: 0;}
-        .my-schedule-list-wrapper { flex: 1; min-height: 0; display: flex; gap: 1rem; }
-        .my-schedule-list { flex: 1; overflow-y: auto; padding-right: .5rem; }
-        .my-schedule-summary-details { width: 280px; flex-shrink: 0; }
+        .my-schedule-list-wrapper { display: grid; grid-template-columns: 3fr 1fr; gap: 1.5rem; }
+        .my-schedule-list { overflow-y: auto; max-height: 40vh; padding-right: .5rem; }
         
         .my-schedule-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: .75rem; background: rgba(var(--rgb-primary), 0.05); animation: scaleIn .4s var(--transition) both; position: relative; }
         .my-schedule-item.has-conflict { border-left: 4px solid var(--warning); background: var(--warning-bg); }
         .conflict-badge { position: absolute; top: .75rem; left: .75rem; color: var(--warning-dark); font-size: 1.2rem; cursor: help; }
         .my-schedule-item-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: .75rem; }
         .my-schedule-item-header .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; cursor: pointer; transition: transform .2s ease; border: 2px solid rgba(255,255,255,0.5); }
-        .my-schedule-item-header .color-dot:hover { transform: scale(1.2); }
         .my-schedule-item-header h4 { font-size: .9rem; margin: 0; flex-grow: 1; }
         .my-schedule-details { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: .5rem 1rem; font-size: .8rem; color: var(--text-light); padding-top: .75rem; border-top: 1px solid var(--border-color); }
         .my-schedule-details div { display: flex; align-items: center; gap: .5rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -170,19 +156,12 @@
         
         .course-item { border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: rgba(0,0,0,0.1); animation: fadeInUp .5s ease both; position: relative; overflow: hidden; }
         .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; transition: background-color var(--transition); }
-        .course-item-header:hover { background-color: var(--bg-item-hover); }
-        .course-item-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
         .course-info h3 { margin: 0; font-size: 1rem; font-weight: 600; color: var(--text-dark); }
         .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--text-light); }
-        .course-item-header .toggle-icon { transition: transform 0.3s; font-size: 1.5rem; }
-        .course-item.open .toggle-icon { transform: rotate(180deg); }
-        .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; }
         .course-item.open .sections-wrapper { max-height: 600px; }
         .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 0 1.25rem 1.25rem; }
-        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 999px; text-align: center; cursor: pointer; background-color: transparent; transition: all 0.2s; position: relative; -webkit-user-select: none; user-select: none; }
-        .section-btn:hover { border-color: var(--primary); background-color: rgba(var(--rgb-primary), 0.1); }
+        .section-btn { padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 999px; text-align: center; cursor: pointer; background-color: transparent; transition: all 0.2s; position: relative; }
         .section-btn.selected { background-color: var(--primary); color: white; border-color: var(--primary); }
-        .section-btn.selected .section-type { color: rgba(255,255,255,0.8) !important; }
         .section-btn.conflicted { background-color: var(--danger-bg); border-color: var(--danger); opacity: 0.8; }
         .section-btn-number { font-weight: 700; font-size: 1rem; }
         .section-type { font-size: 0.75rem; color: var(--text-light); }
@@ -190,69 +169,15 @@
         .fc .fc-day-today { background-color: transparent !important; }
         .fc-timegrid-slot { height: 50px !important; border-bottom: 1px solid var(--border-color) !important; }
         .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); transition: all 0.2s; background: linear-gradient(135deg, var(--event-color-light), var(--event-color-dark)); }
-        .fc-event:hover { transform: scale(1.03); box-shadow: 0 4px 15px rgba(0,0,0,0.3); filter: brightness(1.1);}
-        .fc-event.fc-event-preview { background: transparent !important; opacity: 0.7; box-shadow: none; pointer-events: none; border-style: dashed !important; border-width: 2px !important; }
-        .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
-        .light .fc-event.fc-event-preview .fc-event-main-frame { color: var(--text-dark); }
         .exam-item { display:flex; align-items:center; gap:1rem; padding:1rem; border-radius:var(--radius-md); background:var(--bg-item-hover); margin-bottom:.75rem; animation:fadeInUp .5s ease both; border-left:4px solid var(--primary); }
-        .exam-icon { font-size:1.8rem; color:var(--primary); }
-        .exam-details h4 { margin:0 0 .25rem; font-size:1rem; }
-        .exam-details p { margin:0; font-size:.85rem; color:var(--text-light); line-height:1.6; }
         .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--text-light); }
         .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--primary); opacity: 0.5; }
-        .no-data h4 { margin: 0 0 0.5rem; font-size: 1.2rem; font-weight: 600; color: var(--text-dark); }
-        .no-data p { margin: 0; font-size: 0.9rem; max-width: 250px; line-height: 1.7; }
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: opacity 0.3s; }
         .modal-overlay.open { opacity: 1; visibility: visible; }
         .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--bg-card); border-radius: var(--radius-lg); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--border-color); }
         .settings-modal.open { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
         .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h3 { margin: 0; font-size: 1.3rem; color: var(--text-dark); }
-        .modal-header i { cursor: pointer; font-size: 1.5rem; color: var(--text-light); transition: all 0.2s; }
-        .modal-header i:hover { color: var(--text-dark); transform: rotate(90deg); }
         .modal-content { padding: 1.5rem; max-height: 70vh; overflow-y: auto; }
-        .settings-group { margin-bottom: 2rem; }
-        .settings-group-title { font-size: 1.2rem; font-weight: 600; color: var(--primary); padding-bottom: 0.75rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
-        .settings-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
-        .settings-item-label { display: flex; flex-direction: column; gap: 0.25rem; }
-        .settings-item-label span { font-size: 1rem; font-weight: 500; }
-        .settings-item-label small { font-size: 0.8rem; color: var(--text-light); }
-        .mode-toggle { display: flex; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 999px; padding: 4px; gap: 4px; }
-        .mode-btn { padding: 0.4rem 1rem; border: none; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); transition: all 0.2s ease; user-select: none; }
-        .mode-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 5px rgba(var(--rgb-primary), 0.2); }
-        .light .mode-toggle { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
-        .theme-picker { display:flex; gap:.5rem; align-items:center; }
-        .theme-dot { width:24px; height:24px; border-radius:50%; cursor:pointer; transition:all .2s ease; border:2px solid transparent }
-        .theme-dot:hover { transform:scale(1.2) }
-        .theme-dot.active { border-color:#fff; transform: scale(1.1); }
-        .light .theme-dot.active { border-color: var(--text-dark); }
-        .color-picker-label { position: relative; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid var(--border-color); overflow: hidden; }
-        .color-picker-label:hover { transform: scale(1.2); }
-        .color-picker-label.active { border-color: #fff; transform: scale(1.1); }
-        .light .color-picker-label.active { border-color: var(--text-dark); }
-        .color-picker-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; padding: 0; cursor: pointer; }
-        .time-range-selects { display: flex; gap: 0.5rem; }
-        .time-range-selects select { background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); color: var(--text-dark); border-radius: 8px; padding: 0.4rem 0.6rem; font-size: 0.9rem; }
-        .light .time-range-selects select { background: rgba(0,0,0,0.04); }
-        .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--primary); }
-        input:checked + .slider:before { transform: translateX(20px); }
-        #course-visibility-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
-        .visibility-course-item { padding: 0.75rem 1rem; border: 2px solid var(--primary); border-radius: var(--radius-md); cursor: pointer; transition: var(--transition); background-color: rgba(var(--rgb-primary), 0.1); box-shadow: 0 0 12px -2px rgba(var(--rgb-primary), 0.4); text-align: center; font-weight: 600; font-size: 0.9rem; }
-        .visibility-course-item.hidden { opacity: 0.5; border-color: var(--border-color); box-shadow: none; background-color: transparent; }
-        .visibility-course-item .color-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-left: 8px; vertical-align: middle; }
-        .data-management-zone { border: 1px solid rgba(var(--rgb-warning), 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-top: 1rem; background: rgba(var(--rgb-warning), 0.05); }
-        .data-btn { width: 100%; background: transparent; border: 1px solid var(--border-color); color: var(--text-light); padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
-        .data-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(var(--rgb-primary), 0.1); }
-        .data-btn.danger { border-color: rgba(var(--rgb-danger), 0.5); color: var(--danger); }
-        .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.1); color: var(--danger); }
-        .color-picker-popover { position: absolute; z-index: 10; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: .75rem; display: grid; grid-template-columns: repeat(5, 1fr); gap: .5rem; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 5px 20px rgba(0,0,0,0.3); animation: scaleIn .2s ease; transform-origin: top left; }
-        .color-picker-popover .color-swatch { width: 28px; height: 28px; border-radius: 50%; cursor: pointer; transition: transform .2s ease; border: 2px solid transparent; }
-        .color-picker-popover .color-swatch:hover { transform: scale(1.1); }
-        .color-picker-popover .color-swatch.active { border-color: var(--text-dark); }
     </style>
 </head>
 <body>
@@ -340,7 +265,7 @@
                     <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
                     <div class="my-schedule-list-wrapper">
                         <div class="my-schedule-list custom-scrollbar" id="my-schedule-list"></div>
-                        <div class="my-schedule-summary-details" id="total-credits-container">
+                        <div class="my-schedule-summary-details">
                              <div class="total-credits-summary" id="total-credits-summary"></div>
                         </div>
                     </div>
@@ -350,13 +275,7 @@
     </div>
 
     <div class="modal-overlay" id="modal-overlay"></div>
-    <div class="settings-modal" id="settings-modal">
-        <div class="modal-header">
-            <h3><i class="ri-settings-3-line"></i> الإعدادات</h3>
-            <i class="ri-close-line" id="close-modal-btn"></i>
-        </div>
-        <div class="modal-content custom-scrollbar" id="settings-modal-content"></div>
-    </div>
+    <div class="settings-modal" id="settings-modal"></div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -447,6 +366,7 @@
                         const response = await fetch(this.constants.EXAMS_DATA_URL);
                         if (!response.ok) throw new Error(`Network response: ${response.statusText}`);
                         this.state.examSchedule = await response.json();
+                        console.log("Exam schedule loaded successfully:", this.state.examSchedule);
                     } catch (error) { console.error('Failed to fetch exam schedule:', error); this.state.examSchedule = {}; this._showToast('فشل تحميل جدول الاختبارات.', 'warning'); }
                 },
 
@@ -554,13 +474,7 @@
                 },
                 
                 _populateDOMElements() {
-                    const ids = [
-                        'courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 
-                        'my-schedule-list', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 
-                        'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'close-modal-btn', 
-                        'install-section', 'toast', 'no-data-message', 'bookmarklet-btn', 
-                        'starfield-canvas', 'settings-modal-content', 'conflict-banner'
-                    ];
+                    const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-list', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'toast', 'no-data-message', 'bookmarklet-btn', 'starfield-canvas', 'conflict-banner'];
                     ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
                     this.dom.tabButtons = document.querySelectorAll('.tab-btn');
                     this.dom.tabContents = document.querySelectorAll('.tab-content');
@@ -635,7 +549,6 @@
                 _setupEventListeners() {
                     this.dom.clearCalendarBtn.addEventListener('click', () => this._handleClearCalendar());
                     this.dom.settingsBtn.addEventListener('click', () => this._toggleSettingsModal(true));
-                    this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
                     this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
                     this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
                     this.dom.coursesList.addEventListener('click', e => this._handleCourseListClick(e));
@@ -865,21 +778,26 @@
                 
                 _initCosmicEffects() {
                     const canvas = this.dom.starfieldCanvas; if (!canvas) return;
-                    const ctx = canvas.getContext('2d'); let stars = [], shootingStars = [];
-                    const resizeCanvas = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
-                    class Star { constructor() { this.depth = Math.random() * 0.9 + 0.1; this.reset(); this.pulsate = Math.random() > 0.98; this.alpha = 0; this.alphaChange = (Math.random() * 0.02) + 0.005; this.vx = (Math.random() - 0.5) * 0.1 * this.depth; this.vy = (Math.random() - 0.5) * 0.1 * this.depth; } reset() { this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; this.radius = (Math.random() * 1.2 + 0.3) * this.depth; this.maxAlpha = (Math.random() * 0.5 + 0.3) * this.depth; } draw() { if (this.pulsate) { this.alpha += this.alphaChange; if (this.alpha >= this.maxAlpha || this.alpha <= 0) this.alphaChange *= -1; } else { this.alpha = this.maxAlpha; } ctx.globalAlpha = this.alpha; ctx.beginPath(); ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2); ctx.fillStyle = `hsl(220, 80%, 95%)`; ctx.fill(); ctx.globalAlpha = 1; } update() { this.y += this.vy; this.x += this.vx; if (this.x > canvas.width + this.radius) this.x = -this.radius; if (this.x < -this.radius) this.x = canvas.width + this.radius; if (this.y > canvas.height + this.radius) this.y = -this.radius; if (this.y < -this.radius) this.y = canvas.height + this.radius; this.draw(); } }
-                    class ShootingStar { constructor() { this.reset(); } reset() { this.x = Math.random() * canvas.width; this.y = 0; this.len = Math.random() * 80 + 10; this.speed = Math.random() * 10 + 6; this.size = Math.random() * 1 + 0.1; this.waitTime = new Date().getTime() + Math.random() * 3000 + 500; this.active = false; } update() { if (this.active) { this.x -= this.speed; this.y += this.speed; if (this.x < 0 || this.y >= canvas.height) this.reset(); } else if (this.waitTime < new Date().getTime()) this.active = true; } draw() { if (this.active) { ctx.strokeStyle = `hsla(220, 100%, 80%, ${Math.random() * 0.5 + 0.5})`; ctx.lineWidth = this.size; ctx.beginPath(); ctx.moveTo(this.x, this.y); ctx.lineTo(this.x + this.len, this.y - this.len); ctx.stroke(); } } }
-                    const initStars = () => { stars = []; shootingStars = []; const starCount = Math.floor(canvas.width * canvas.height / 8000); for (let i = 0; i < starCount; i++) stars.push(new Star()); for (let i = 0; i < 3; i++) shootingStars.push(new ShootingStar()); };
-                    const animate = () => { requestAnimationFrame(animate); ctx.clearRect(0, 0, canvas.width, canvas.height); stars.forEach(s => s.update()); shootingStars.forEach(s => { s.update(); s.draw(); }); };
-                    window.addEventListener('resize', () => { resizeCanvas(); initStars(); });
-                    resizeCanvas(); initStars(); animate();
+                    const ctx = canvas.getContext('2d');
+                    window.addEventListener('resize', () => { /* Prevent re-init on resize */ });
                 },
 
                 _buildSettingsModal() {
-                    this.dom.settingsModalContent.innerHTML = `<div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"><button class="mode-btn" data-theme="dark">ظلام</button><button class="mode-btn" data-theme="light">نهار</button></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list"><p id="no-courses-for-visibility" style="color: var(--text-light); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><select id="min-time-select"></select><select id="max-time-select"></select></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="data-management-zone"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button><input type="file" id="import-file-input" accept=".json" style="display: none;"><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button></div></div>`;
-                    const modalIds = ['accent-color-picker', 'course-visibility-list', 'no-courses-for-visibility', 'show-weekend-toggle', 'min-time-select', 'max-time-select', 'export-btn', 'import-btn', 'import-file-input', 'reset-app-btn'];
+                    const modal = this.dom.settingsModal;
+                    modal.innerHTML = `
+                        <div class="modal-header">
+                            <h3><i class="ri-settings-3-line"></i> الإعدادات</h3>
+                            <i class="ri-close-line" id="close-modal-btn"></i>
+                        </div>
+                        <div class="modal-content custom-scrollbar" id="settings-modal-content">
+                            <div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"><button class="mode-btn" data-theme="dark">ظلام</button><button class="mode-btn" data-theme="light">نهار</button></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list"><p id="no-courses-for-visibility" style="color: var(--text-light); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><select id="min-time-select"></select><select id="max-time-select"></select></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="data-management-zone"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button><input type="file" id="import-file-input" accept=".json" style="display: none;"><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button></div></div>
+                        </div>`;
+                    
+                    const modalIds = ['close-modal-btn', 'accent-color-picker', 'course-visibility-list', 'no-courses-for-visibility', 'show-weekend-toggle', 'min-time-select', 'max-time-select', 'export-btn', 'import-btn', 'import-file-input', 'reset-app-btn'];
                     modalIds.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
-                    this.dom.modeToggleContainer = this.dom.settingsModalContent.querySelector('.mode-toggle');
+                    
+                    this.dom.modeToggleContainer = modal.querySelector('.mode-toggle');
+                    this.dom.closeModalBtn.addEventListener('click', () => this._toggleSettingsModal(false));
                     this.dom.modeToggleContainer.addEventListener('click', e => { const btn = e.target.closest('.mode-btn'); if (btn) { this.state.userSettings.theme = btn.dataset.theme; this._saveSettings(); this._applySettings(); }});
                     this.dom.showWeekendToggle.addEventListener('change', e => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); this._rebuildCalendar(); });
                     this.dom.minTimeSelect.addEventListener('change', e => { this.state.userSettings.minTime = e.target.value; this._saveSettings(); this._rebuildCalendar(); });
