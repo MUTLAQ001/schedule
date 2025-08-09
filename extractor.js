@@ -1,26 +1,20 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v30 (Final & Corrected) Initialized...");
+    console.log("🚀 QU Schedule Extractor v31 (Final & Corrected) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
 
     /**
-     * Parses all details (time, location, exam period) from the raw section string.
+     * Parses the time and location details from the raw section string.
      * @param {string} detailsRaw - The raw string from the hidden input.
-     * @returns {{timeText: string, location: string, examPeriodId: string|null}}
+     * @returns {{timeText: string, location: string}}
      */
-    function parseAllDetails(detailsRaw) {
-        if (!detailsRaw || detailsRaw.trim() === '') {
-            return { timeText: 'غير محدد', location: 'غير محدد', examPeriodId: null };
-        }
-
+    function parseTimeDetails(detailsRaw) {
+        if (!detailsRaw || detailsRaw.trim() === '') return { timeText: 'غير محدد', location: 'غير محدد' };
         let loc = 'غير محدد';
-        let examId = null;
-        let timeText = 'غير محدد';
-
-        // Extract location
+        // Extract location first
         const locMatch = detailsRaw.match(/@r(.*?)(?:@n|@t|$)/);
         if (locMatch && locMatch[1] && locMatch[1].trim() !== '') {
             loc = locMatch[1].trim();
@@ -36,21 +30,11 @@ javascript:(function() {
                 const timeStr = segments[1].replace(/@r.*$/, '').trim();
                 return `${days}: ${timeStr}`;
             }).filter(Boolean);
-
-            if (timeParts.length > 0) {
-                timeText = timeParts.join('<br>');
-            }
+            const timeText = timeParts.length > 0 ? timeParts.join('<br>') : 'غير محدد';
+            return { timeText, location: loc };
         }
         
-        // Extract Exam Period ID from the same raw string, as it's sometimes embedded.
-        // The value is often at the end after the location.
-        // Example: "1 @t 10:00 ص - 11:40 ص @r 40"
-        const examMatch = detailsRaw.match(/@r\s*.*?\s*(\d+)$/);
-        if (examMatch && examMatch[1]) {
-            examId = examMatch[1].trim();
-        }
-
-        return { timeText, location: loc, examPeriodId: examId };
+        return { timeText: 'غير محدد', location: loc };
     }
 
     /**
@@ -82,15 +66,10 @@ javascript:(function() {
                 const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
                 const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
                 
-                // Primary method to get examPeriodId from its own hidden input
+                // **CORRECTED LOGIC**: Directly target the dedicated input for exam period.
                 let examPeriodId = row.querySelector('input[type="hidden"][id$=":examPeriod"]')?.value.trim();
 
-                const parsedDetails = parseAllDetails(detailsRaw);
-
-                // If the primary method failed, try the secondary method from the parsed string
-                if (!examPeriodId && parsedDetails.examPeriodId) {
-                    examPeriodId = parsedDetails.examPeriodId;
-                }
+                const timeDetails = parseTimeDetails(detailsRaw);
                 
                 const isPractical = type && (type.includes('عملي') || type.includes('تدريب') || type.includes('تمارين'));
                 
@@ -105,8 +84,8 @@ javascript:(function() {
                     code,
                     name,
                     section,
-                    time: parsedDetails.timeText,
-                    location: parsedDetails.location,
+                    time: timeDetails.timeText,
+                    location: timeDetails.location,
                     instructor: instructor || 'غير محدد',
                     examPeriodId: examPeriodId || null,
                     hours: hours || '0',
@@ -134,7 +113,7 @@ javascript:(function() {
 
         if (courses && courses.length > 0) {
             console.log(`🎉 Success! Found ${courses.length} sections.`);
-            console.log("Sample extracted data:", courses[0]);
+            console.log("Sample extracted data:", courses.find(c => c.examPeriodId) || courses[0]);
             
             sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
             const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
@@ -147,7 +126,6 @@ javascript:(function() {
 
             const messageHandler = (event) => {
                 if (event.source !== viewerWindow) return;
-
                 if (event.data === 'request_schedule_data') {
                     const storedData = sessionStorage.getItem(TEMP_STORAGE_KEY);
                     if (storedData) {
