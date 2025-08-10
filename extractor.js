@@ -1,7 +1,7 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v38 (Final Composite Version) Initialized...");
+    console.log("🚀 QU Schedule Extractor v36 (Final Version with Delay) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
@@ -31,16 +31,22 @@ javascript:(function() {
     function extractCourses(rows) {
         const coursesData = [];
         let lastTheoreticalCourse = null;
+
         const getVal = (row, th) => {
-            let cell = row.querySelector(`td[data-th=" ${th} "]`) || row.querySelector(`td[data-th=" ${th} "]`) || row.querySelector(`td[data-th="${th}"]`) || row.querySelector(`td[data-th*="${th}"]`);
+            let cell = row.querySelector(`td[data-th=" ${th} "]`) || row.querySelector(`td[data-th="${th}"]`) || row.querySelector(`td[data-th*="${th}"]`);
             return cell ? cell.textContent.trim() : '';
         };
+
         rows.forEach(row => {
             const code = getVal(row, 'رمز المقرر');
             const name = getVal(row, 'اسم المقرر');
             const section = getVal(row, 'الشعبة');
+
             if (name && code && section) {
-                if (lastTheoreticalCourse && code !== lastTheoreticalCourse.code) { lastTheoreticalCourse = null; }
+                if (lastTheoreticalCourse && code !== lastTheoreticalCourse.code) {
+                    lastTheoreticalCourse = null;
+                }
+
                 let hours = getVal(row, 'الساعات');
                 let type = getVal(row, 'النشاط');
                 const status = getVal(row, 'الحالة');
@@ -48,52 +54,41 @@ javascript:(function() {
                 const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
                 const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
                 let examPeriodId = row.querySelector('input[type="hidden"][id$=":examPeriod"]')?.value.trim();
+
                 const isPractical = type && (type.includes('عملي') || type.includes('تدريب') || type.includes('تمارين'));
+                
                 if (isPractical && (!hours || hours.trim() === '0' || hours.trim() === '') && lastTheoreticalCourse && lastTheoreticalCourse.code === code) {
                     hours = lastTheoreticalCourse.hours;
                     examPeriodId = lastTheoreticalCourse.examPeriodId;
                 }
+                
                 const timeDetails = parseTimeDetails(detailsRaw);
-                coursesData.push({ code, name, section, time: timeDetails.timeText, location: timeDetails.location, instructor: instructor || 'غير محدد', examPeriodId: examPeriodId || null, hours: hours || '0', type: type || 'نظري', status: status || 'غير معروف', campus: campus || 'غير معروف' });
-                if (!isPractical) { lastTheoreticalCourse = { code: code, hours: hours, examPeriodId: examPeriodId }; }
+                const courseInfo = { code, name, section, time: timeDetails.timeText, location: timeDetails.location, instructor: instructor || 'غير محدد', examPeriodId: examPeriodId || null, hours: hours || '0', type: type || 'نظري', status: status || 'غير معروف', campus: campus || 'غير معروف' };
+                coursesData.push(courseInfo);
+
+                if (!isPractical) {
+                    lastTheoreticalCourse = { code: courseInfo.code, hours: courseInfo.hours, examPeriodId: examPeriodId };
+                }
             }
         });
         return coursesData;
     }
 
-    function findCourseDocument() {
-        if (document.querySelectorAll('tr.ROW1, tr.ROW2').length > 10) {
-            return document;
-        }
-        const frames = document.querySelectorAll('iframe, frame');
-        for (let i = 0; i < frames.length; i++) {
-            try {
-                const frameDoc = frames[i].contentDocument || frames[i].contentWindow.document;
-                if (frameDoc.querySelectorAll('tr.ROW1, tr.ROW2').length > 10) {
-                    console.log(`Table found in frame #${i}.`);
-                    return frameDoc;
-                }
-            } catch (e) { /* Ignore security errors */ }
-        }
-        return document; // Fallback
-    }
-
+    // Main execution block
     setTimeout(() => {
-        const doc = findCourseDocument();
-        const courseRows = doc.querySelectorAll('tr.ROW1, tr.ROW2');
+        const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
+        
+        console.log(`Found ${courseRows.length} total rows in the HTML (visible and hidden).`);
         
         if (courseRows.length === 0) {
-            alert("فشل استخراج البيانات.\n\nلم يتم العثور على جدول المقررات. تأكد من أنك في الصفحة الصحيحة وأن الجدول معروض أمامك.");
+            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' بعد أن تقوم بالبحث.");
             return;
         }
-        
-        console.log(`Found ${courseRows.length} total rows in the document.`);
+
         const courses = extractCourses(courseRows);
 
-        if (courses.length > 0) {
-            const uniqueCourses = new Set(courses.map(c => c.code)).size;
-            alert(`🎉 نجح الاستخلاص!\n\nتم العثور على ${courses.length} شعبة لـ ${uniqueCourses} مقرر.\n\nسيتم الآن فتح نافذة العرض.`);
-            
+        if (courses && courses.length > 0) {
+            console.log(`🎉 Success! Extracted data for ${courses.length} sections.`);
             sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
             const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
 
@@ -115,7 +110,7 @@ javascript:(function() {
             };
             window.addEventListener('message', messageHandler, false);
         } else {
-            alert("تم العثور على الجدول، ولكن لم يتم استخلاص أي بيانات. قد تكون هناك مشكلة في تنسيق الصفحة.");
+            alert("فشل استخراج البيانات. لم يتم العثور على بيانات يمكن قراءتها في الجدول.");
         }
-    }, 1500);
+    }, 1000); // <-- تم زيادة التأخير إلى ثانية كاملة
 })();
