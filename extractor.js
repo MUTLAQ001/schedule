@@ -1,7 +1,7 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v35 (Final Attempt with specific selector) Initialized...");
+    console.log("🚀 QU Schedule Extractor v36 (Final Version with Delay) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
@@ -76,17 +76,12 @@ javascript:(function() {
 
     // Main execution block
     setTimeout(() => {
-        // محاولة استخدام محددات مختلفة وأكثر دقة
-        let courseRows = document.querySelectorAll('tbody[id$=":offeredCoursesTable_data"] > tr');
-        if (courseRows.length === 0) {
-            console.log("Specific selector didn't work, falling back to general class selector.");
-            courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
-        }
+        const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
         
-        console.log(`Found ${courseRows.length} rows in total. If this number is low, please display all entries on the page before running the script.`);
+        console.log(`Found ${courseRows.length} total rows in the HTML (visible and hidden).`);
         
         if (courseRows.length === 0) {
-            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' بعد أن تقوم بالبحث وعرض كل النتائج.");
+            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' بعد أن تقوم بالبحث.");
             return;
         }
 
@@ -115,7 +110,7 @@ javascript:(function() {
             };
             window.addEventListener('message', messageHandler, false);
         } else {
-            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي بيانات للمقررات في الصفحة. الرجاء التأكد من أنك في الصفحة الصحيحة وعرضت كل النتائج.");
+            alert("فشل استخراج البيانات. لم يتم العثور على بيانات يمكن قراءتها في الجدول.");
         }
-    }, 500);
+    }, 1000); // <-- تم زيادة التأخير إلى ثانية كاملة
 })();
