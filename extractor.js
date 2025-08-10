@@ -1,11 +1,12 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v36 (Final Version with Delay) Initialized...");
+    console.log("🚀 QU Schedule Extractor v37 (Frame-Searching Version) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
 
+    // ---- No changes needed in these helper functions ----
     function parseTimeDetails(detailsRaw) {
         if (!detailsRaw || detailsRaw.trim() === '') return { timeText: 'غير محدد', location: 'غير محدد' };
         let loc = 'غير محدد';
@@ -31,22 +32,16 @@ javascript:(function() {
     function extractCourses(rows) {
         const coursesData = [];
         let lastTheoreticalCourse = null;
-
         const getVal = (row, th) => {
             let cell = row.querySelector(`td[data-th=" ${th} "]`) || row.querySelector(`td[data-th="${th}"]`) || row.querySelector(`td[data-th*="${th}"]`);
             return cell ? cell.textContent.trim() : '';
         };
-
         rows.forEach(row => {
             const code = getVal(row, 'رمز المقرر');
             const name = getVal(row, 'اسم المقرر');
             const section = getVal(row, 'الشعبة');
-
             if (name && code && section) {
-                if (lastTheoreticalCourse && code !== lastTheoreticalCourse.code) {
-                    lastTheoreticalCourse = null;
-                }
-
+                if (lastTheoreticalCourse && code !== lastTheoreticalCourse.code) { lastTheoreticalCourse = null; }
                 let hours = getVal(row, 'الساعات');
                 let type = getVal(row, 'النشاط');
                 const status = getVal(row, 'الحالة');
@@ -54,41 +49,63 @@ javascript:(function() {
                 const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
                 const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
                 let examPeriodId = row.querySelector('input[type="hidden"][id$=":examPeriod"]')?.value.trim();
-
                 const isPractical = type && (type.includes('عملي') || type.includes('تدريب') || type.includes('تمارين'));
-                
                 if (isPractical && (!hours || hours.trim() === '0' || hours.trim() === '') && lastTheoreticalCourse && lastTheoreticalCourse.code === code) {
                     hours = lastTheoreticalCourse.hours;
                     examPeriodId = lastTheoreticalCourse.examPeriodId;
                 }
-                
                 const timeDetails = parseTimeDetails(detailsRaw);
-                const courseInfo = { code, name, section, time: timeDetails.timeText, location: timeDetails.location, instructor: instructor || 'غير محدد', examPeriodId: examPeriodId || null, hours: hours || '0', type: type || 'نظري', status: status || 'غير معروف', campus: campus || 'غير معروف' };
-                coursesData.push(courseInfo);
-
-                if (!isPractical) {
-                    lastTheoreticalCourse = { code: courseInfo.code, hours: courseInfo.hours, examPeriodId: examPeriodId };
-                }
+                coursesData.push({ code, name, section, time: timeDetails.timeText, location: timeDetails.location, instructor: instructor || 'غير محدد', examPeriodId: examPeriodId || null, hours: hours || '0', type: type || 'نظري', status: status || 'غير معروف', campus: campus || 'غير معروف' });
+                if (!isPractical) { lastTheoreticalCourse = { code: code, hours: hours, examPeriodId: examPeriodId }; }
             }
         });
         return coursesData;
     }
+    // ---- End of helper functions ----
 
-    // Main execution block
-    setTimeout(() => {
-        const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
-        
-        console.log(`Found ${courseRows.length} total rows in the HTML (visible and hidden).`);
-        
-        if (courseRows.length === 0) {
-            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' بعد أن تقوم بالبحث.");
-            return;
+    // ---- NEW: Main logic to find the correct document (page or frame) ----
+    function findCourseDocument() {
+        console.log("Searching for course table in the main document...");
+        if (document.querySelectorAll('tr.ROW1, tr.ROW2').length > 0) {
+            console.log("Found table in the main document.");
+            return document;
         }
 
+        console.log("Table not in main document. Searching in frames...");
+        const frames = document.querySelectorAll('iframe, frame');
+        for (let i = 0; i < frames.length; i++) {
+            try {
+                const frameDoc = frames[i].contentDocument || frames[i].contentWindow.document;
+                if (frameDoc.querySelectorAll('tr.ROW1, tr.ROW2').length > 0) {
+                    console.log(`Found table in frame #${i}.`);
+                    return frameDoc;
+                }
+            } catch (e) {
+                console.warn(`Could not access frame #${i} due to security policy. This is usually normal.`);
+            }
+        }
+        
+        console.log("Could not find table in any frame. Defaulting to main document.");
+        return document; // Fallback
+    }
+
+    setTimeout(() => {
+        const doc = findCourseDocument(); // Get the correct document
+        const courseRows = doc.querySelectorAll('tr.ROW1, tr.ROW2');
+        
+        if (courseRows.length === 0) {
+            alert("فشل استخراج البيانات بشكل كامل.\n\nلم يتم العثور على جدول المقررات. تأكد من أنك في الصفحة الصحيحة وأن الجدول معروض أمامك.");
+            return;
+        }
+        
+        console.log(`Analyzing ${courseRows.length} rows found in the correct document...`);
         const courses = extractCourses(courseRows);
 
-        if (courses && courses.length > 0) {
-            console.log(`🎉 Success! Extracted data for ${courses.length} sections.`);
+        if (courses.length > 0) {
+            const uniqueCourses = new Set(courses.map(c => c.code)).size;
+            const alertMessage = `🎉 نجح الاستخلاص!\n\nتم العثور على ${courses.length} شعبة لـ ${uniqueCourses} مقرر.\n\nسيتم الآن فتح نافذة العرض.`;
+            alert(alertMessage);
+            
             sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
             const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
 
@@ -110,7 +127,7 @@ javascript:(function() {
             };
             window.addEventListener('message', messageHandler, false);
         } else {
-            alert("فشل استخراج البيانات. لم يتم العثور على بيانات يمكن قراءتها في الجدول.");
+            alert("تم العثور على الجدول، ولكن لم يتم استخلاص أي بيانات. قد تكون هناك مشكلة في تنسيق الصفحة.");
         }
-    }, 1000); // <-- تم زيادة التأخير إلى ثانية كاملة
+    }, 1500); // Increased delay slightly to ensure frames load
 })();
