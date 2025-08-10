@@ -1,7 +1,7 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v29 (Corrected & Improved) Initialized...");
+    console.log("🚀 QU Schedule Extractor v30 (Corrected & Improved) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
@@ -49,23 +49,10 @@ javascript:(function() {
         const coursesData = [];
         let lastTheoreticalCourse = null;
 
-        /**
-         * A robust function to get cell value by header text, trying multiple selectors.
-         * @param {Element} row - The table row element.
-         * @param {string} th - The header text (e.g., 'اسم المقرر').
-         * @returns {string} The trimmed text content of the cell.
-         */
         const getVal = (row, th) => {
-            // Most common case from observation: non-breaking spaces
-            let cell = row.querySelector(`td[data-th=" ${th} "]`); // Note: These are non-breaking spaces (Alt+0160)
-            if (!cell) {
-                // Try exact match
-                cell = row.querySelector(`td[data-th="${th}"]`);
-            }
-            if (!cell) {
-                // Fallback to contains selector, this is the most flexible
-                cell = row.querySelector(`td[data-th*="${th}"]`);
-            }
+            let cell = row.querySelector(`td[data-th=" ${th} "]`);
+            if (!cell) cell = row.querySelector(`td[data-th="${th}"]`);
+            if (!cell) cell = row.querySelector(`td[data-th*="${th}"]`);
             return cell ? cell.textContent.trim() : '';
         };
 
@@ -75,34 +62,35 @@ javascript:(function() {
             const section = getVal(row, 'الشعبة');
 
             if (name && code && section) {
+                // **FIX:** Reset lastTheoreticalCourse if the course code changes.
+                // This prevents incorrect inheritance and fixes the issue of skipping the first course.
+                if (lastTheoreticalCourse && code !== lastTheoreticalCourse.code) {
+                    lastTheoreticalCourse = null;
+                }
+
                 let hours = getVal(row, 'الساعات');
                 let type = getVal(row, 'النشاط');
                 const status = getVal(row, 'الحالة');
                 const campus = getVal(row, 'المقر');
-
-                // Extract data from hidden inputs
                 const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
                 const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
                 let examPeriodId = row.querySelector('input[type="hidden"][id$=":examPeriod"]')?.value.trim();
 
                 const isPractical = type && (type.includes('عملي') || type.includes('تدريب') || type.includes('تمارين'));
                 
-                // If the current section is a practical part and has no hours, inherit from the last theoretical course with the same code.
                 if (isPractical && (!hours || hours.trim() === '0' || hours.trim() === '') && lastTheoreticalCourse && lastTheoreticalCourse.code === code) {
                     hours = lastTheoreticalCourse.hours;
-                    examPeriodId = lastTheoreticalCourse.examPeriodId; // Also inherit exam period
+                    examPeriodId = lastTheoreticalCourse.examPeriodId;
                 }
                 
                 const timeDetails = parseTimeDetails(detailsRaw);
 
                 const courseInfo = {
-                    code,
-                    name,
-                    section,
+                    code, name, section,
                     time: timeDetails.timeText,
                     location: timeDetails.location,
                     instructor: instructor || 'غير محدد',
-                    examPeriodId: examPeriodId || null, // Pass the ID directly
+                    examPeriodId: examPeriodId || null,
                     hours: hours || '0',
                     type: type || 'نظري',
                     status: status || 'غير معروف',
@@ -110,7 +98,6 @@ javascript:(function() {
                 };
                 coursesData.push(courseInfo);
 
-                // If this is a theoretical course, store it for potential practical sections that follow.
                 if (!isPractical) {
                     lastTheoreticalCourse = { code: courseInfo.code, hours: courseInfo.hours, examPeriodId: examPeriodId };
                 }
@@ -120,7 +107,6 @@ javascript:(function() {
     }
 
     setTimeout(() => {
-        // The most reliable selector for course rows in the university portal
         const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
         let courses = [];
 
@@ -132,7 +118,6 @@ javascript:(function() {
             console.log(`🎉 Success! Found ${courses.length} sections.`);
             console.log("Sample extracted data:", courses[0]);
             
-            // Use sessionStorage to avoid cluttering localStorage permanently
             sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
             const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
 
@@ -142,18 +127,12 @@ javascript:(function() {
                 return;
             }
 
-            // A listener to send data once the viewer is ready. This is more reliable.
             const messageHandler = (event) => {
-                // Ensure the message is from the viewer window we opened
                 if (event.source !== viewerWindow) return;
-
                 if (event.data === 'request_schedule_data') {
                     const storedData = sessionStorage.getItem(TEMP_STORAGE_KEY);
                     if (storedData) {
-                        // Send data to the viewer window
                         viewerWindow.postMessage({ type: 'universityCoursesData', data: JSON.parse(storedData) }, new URL(VIEWER_URL).origin);
-                        
-                        // Clean up
                         sessionStorage.removeItem(TEMP_STORAGE_KEY);
                         window.removeEventListener('message', messageHandler);
                     }
