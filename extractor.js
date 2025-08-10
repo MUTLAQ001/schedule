@@ -1,7 +1,7 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v33 (Handles All Sections) Initialized...");
+    console.log("🚀 QU Schedule Extractor v34 (Handles Hidden Rows) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
@@ -9,6 +9,7 @@ javascript:(function() {
     function parseTimeDetails(detailsRaw) {
         if (!detailsRaw || detailsRaw.trim() === '') return { timeText: 'غير محدد', location: 'غير محدد' };
         let loc = 'غير محدد';
+        // يفضل استخلاص الموقع أولاً لأنه قد يتداخل مع صيغة الوقت
         if (detailsRaw.includes('@r')) {
             const locMatch = detailsRaw.match(/@r(.*?)(?:@n|@t|$)/);
             if (locMatch && locMatch[1] && locMatch[1].trim() !== '') loc = locMatch[1].trim();
@@ -19,7 +20,7 @@ javascript:(function() {
                 const segments = part.split('@t');
                 if (segments.length < 2) return null;
                 const days = segments[0].trim().split(/\s+/).map(d => dayMap[d] || d).join(' ');
-                const timeStr = segments[1].replace(/@r.*$/, '').trim();
+                const timeStr = segments[1].replace(/@r.*$/, '').trim(); // إزالة أي بيانات موقع قد تكون ملتصقة
                 return `${days}: ${timeStr}`;
             }).filter(Boolean);
             const timeText = timeParts.length > 0 ? timeParts.join('<br>') : 'غير محدد';
@@ -29,11 +30,12 @@ javascript:(function() {
     }
 
     function extractCourses(rows) {
-        console.log(`Extracting data from ${rows.length} visible rows...`);
+        console.log(`Extracting data from ${rows.length} rows (including hidden ones)...`);
         const coursesData = [];
         let lastTheoreticalCourse = null;
 
         const getVal = (row, th) => {
+            // يبحث عن الخلية بناءً على السمة data-th
             let cell = row.querySelector(`td[data-th=" ${th} "]`) || row.querySelector(`td[data-th="${th}"]`) || row.querySelector(`td[data-th*="${th}"]`);
             return cell ? cell.textContent.trim() : '';
         };
@@ -77,9 +79,11 @@ javascript:(function() {
 
     // Main execution block
     setTimeout(() => {
+        // هذا السطر هو الأهم، سيجلب كل الصفوف سواء كانت ظاهرة أو مخفية
         const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
+        
         if (courseRows.length === 0) {
-            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' وأن المواد ظاهرة أمامك.");
+            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' بعد أن تقوم بالبحث.");
             return;
         }
 
@@ -108,7 +112,7 @@ javascript:(function() {
             };
             window.addEventListener('message', messageHandler, false);
         } else {
-            alert("فشل استخراج البيانات.\n\nقد يكون السبب أن صفحة الجامعة لم تقم بتحميل كل الشعب بعد.\n\n**الحل: قبل تشغيل الأداة، تأكد من النزول لأسفل القائمة في صفحة المقررات حتى تتأكد من ظهور جميع الشعب للمواد التي تريدها.**\n\nإذا كانت هناك أزرار مثل 'عرض المزيد'، اضغط عليها أولاً ثم أعد تشغيل الأداة.");
+            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي بيانات للمقررات في الصفحة. الرجاء التأكد من أنك في الصفحة الصحيحة.");
         }
     }, 500);
 })();
