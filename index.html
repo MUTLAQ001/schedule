@@ -79,8 +79,6 @@
 
         .sidebar-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
         .sidebar-header h2 { margin: 0; font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--color-text-dark); }
-        .action-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--color-border); color: var(--color-text-muted); padding: 0.5rem 1rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all var(--transition); }
-        .action-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background-color: rgba(var(--rgb-primary), 0.1); }
         
         .sidebar-content-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
         .sidebar-tabs { display: flex; padding: 0.75rem 1rem 0; border-bottom: 1px solid var(--color-border); }
@@ -176,7 +174,7 @@
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--primary); }
         input:checked + .slider:before { transform: translateX(20px); }
-        .mode-toggle { display: flex; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 999px; padding: 4px; gap: 4px; }
+        .mode-toggle { display: flex; background: rgba(0,0,0,0.3); border: 1px solid var(--color-border); border-radius: 999px; padding: 4px; gap: 4px; }
         .light .mode-toggle { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.08); }
         .mode-btn { padding: 0.4rem 1rem; border: none; border-radius: 999px; font-size: 0.9rem; font-weight: 600; cursor: pointer; background: transparent; color: var(--text-light); transition: all 0.2s ease; }
         .mode-btn.active { background: var(--primary); color: #fff; box-shadow: 0 2px 5px rgba(var(--rgb-primary), 0.2); }
@@ -298,7 +296,7 @@
                 document.body.classList.add('mobile-view');
                 return;
             }
-			
+
             const QU_ScheduleApp = {
                 state: {
                     calendar: null, allCoursesData: [], groupedCourses: {}, selectedSections: new Set(),
@@ -412,7 +410,7 @@
 
                     visibleCourses.sort((a,b) => a.code.localeCompare(b.code)).forEach((group, i) => {
                         const courseItem = document.createElement('div');
-                        courseItem.className = 'course-item'; // Removed 'open' class
+                        courseItem.className = 'course-item';
                         courseItem.style.animationDelay = `${i * 50}ms`;
                         
                         const sectionsHTML = group.sections.map(section => {
@@ -490,12 +488,14 @@
                         }
                     });
                 },
+                
                 _populateDOMElements() {
                     const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-table-container', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 'conflict-banner'];
                     ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
                     this.dom.tabButtons = document.querySelectorAll('.tab-btn');
                     this.dom.tabContents = document.querySelectorAll('.tab-content');
                 },
+                
                 _calculateConflicts(selectedCourses) {
                     const conflictMap = new Map();
                     for (let i = 0; i < selectedCourses.length; i++) { for (let j = i + 1; j < selectedCourses.length; j++) { const cA = selectedCourses[i], cB = selectedCourses[j]; if (cA.code === cB.code) continue; const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || []; if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) { msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`); msgB.push(`تعارض وقت محاضرة مع ${cA.name} (${cA.code})`); } if (cA.examPeriodId && cB.examPeriodId && cA.examPeriodId === cB.examPeriodId) { msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`); msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`); } if (msgA.length > 0) conflictMap.set(cA.uniqueId, msgA); if (msgB.length > 0) conflictMap.set(cB.uniqueId, msgB); } }
