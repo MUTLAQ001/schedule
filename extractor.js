@@ -1,7 +1,7 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v34 (Handles Hidden Rows) Initialized...");
+    console.log("🚀 QU Schedule Extractor v35 (Final Attempt with specific selector) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
@@ -9,7 +9,6 @@ javascript:(function() {
     function parseTimeDetails(detailsRaw) {
         if (!detailsRaw || detailsRaw.trim() === '') return { timeText: 'غير محدد', location: 'غير محدد' };
         let loc = 'غير محدد';
-        // يفضل استخلاص الموقع أولاً لأنه قد يتداخل مع صيغة الوقت
         if (detailsRaw.includes('@r')) {
             const locMatch = detailsRaw.match(/@r(.*?)(?:@n|@t|$)/);
             if (locMatch && locMatch[1] && locMatch[1].trim() !== '') loc = locMatch[1].trim();
@@ -20,7 +19,7 @@ javascript:(function() {
                 const segments = part.split('@t');
                 if (segments.length < 2) return null;
                 const days = segments[0].trim().split(/\s+/).map(d => dayMap[d] || d).join(' ');
-                const timeStr = segments[1].replace(/@r.*$/, '').trim(); // إزالة أي بيانات موقع قد تكون ملتصقة
+                const timeStr = segments[1].replace(/@r.*$/, '').trim();
                 return `${days}: ${timeStr}`;
             }).filter(Boolean);
             const timeText = timeParts.length > 0 ? timeParts.join('<br>') : 'غير محدد';
@@ -30,12 +29,10 @@ javascript:(function() {
     }
 
     function extractCourses(rows) {
-        console.log(`Extracting data from ${rows.length} rows (including hidden ones)...`);
         const coursesData = [];
         let lastTheoreticalCourse = null;
 
         const getVal = (row, th) => {
-            // يبحث عن الخلية بناءً على السمة data-th
             let cell = row.querySelector(`td[data-th=" ${th} "]`) || row.querySelector(`td[data-th="${th}"]`) || row.querySelector(`td[data-th*="${th}"]`);
             return cell ? cell.textContent.trim() : '';
         };
@@ -79,18 +76,24 @@ javascript:(function() {
 
     // Main execution block
     setTimeout(() => {
-        // هذا السطر هو الأهم، سيجلب كل الصفوف سواء كانت ظاهرة أو مخفية
-        const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
+        // محاولة استخدام محددات مختلفة وأكثر دقة
+        let courseRows = document.querySelectorAll('tbody[id$=":offeredCoursesTable_data"] > tr');
+        if (courseRows.length === 0) {
+            console.log("Specific selector didn't work, falling back to general class selector.");
+            courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
+        }
+        
+        console.log(`Found ${courseRows.length} rows in total. If this number is low, please display all entries on the page before running the script.`);
         
         if (courseRows.length === 0) {
-            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' بعد أن تقوم بالبحث.");
+            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' بعد أن تقوم بالبحث وعرض كل النتائج.");
             return;
         }
 
         const courses = extractCourses(courseRows);
 
         if (courses && courses.length > 0) {
-            console.log(`🎉 Success! Found ${courses.length} sections.`);
+            console.log(`🎉 Success! Extracted data for ${courses.length} sections.`);
             sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
             const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
 
@@ -112,7 +115,7 @@ javascript:(function() {
             };
             window.addEventListener('message', messageHandler, false);
         } else {
-            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي بيانات للمقررات في الصفحة. الرجاء التأكد من أنك في الصفحة الصحيحة.");
+            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي بيانات للمقررات في الصفحة. الرجاء التأكد من أنك في الصفحة الصحيحة وعرضت كل النتائج.");
         }
     }, 500);
 })();
