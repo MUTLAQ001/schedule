@@ -1,7 +1,7 @@
 javascript:(function() {
     'use strict';
     console.clear();
-    console.log("🚀 QU Schedule Extractor v32 (Stable & Corrected) Initialized...");
+    console.log("🚀 QU Schedule Extractor v33 (Handles All Sections) Initialized...");
 
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
@@ -29,7 +29,7 @@ javascript:(function() {
     }
 
     function extractCourses(rows) {
-        console.log("Extracting all visible data...");
+        console.log(`Extracting data from ${rows.length} visible rows...`);
         const coursesData = [];
         let lastTheoreticalCourse = null;
 
@@ -108,7 +108,7 @@ javascript:(function() {
             };
             window.addEventListener('message', messageHandler, false);
         } else {
-            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات. تأكد من تحميل جميع الشعب عن طريق النزول لأسفل القائمة قبل تشغيل الأداة.");
+            alert("فشل استخراج البيانات.\n\nقد يكون السبب أن صفحة الجامعة لم تقم بتحميل كل الشعب بعد.\n\n**الحل: قبل تشغيل الأداة، تأكد من النزول لأسفل القائمة في صفحة المقررات حتى تتأكد من ظهور جميع الشعب للمواد التي تريدها.**\n\nإذا كانت هناك أزرار مثل 'عرض المزيد'، اضغط عليها أولاً ثم أعد تشغيل الأداة.");
         }
     }, 500);
 })();
