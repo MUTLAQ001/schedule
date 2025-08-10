@@ -412,7 +412,7 @@
 
                     visibleCourses.sort((a,b) => a.code.localeCompare(b.code)).forEach((group, i) => {
                         const courseItem = document.createElement('div');
-                        courseItem.className = 'course-item';
+                        courseItem.className = 'course-item'; // Removed 'open' class
                         courseItem.style.animationDelay = `${i * 50}ms`;
                         
                         const sectionsHTML = group.sections.map(section => {
@@ -490,14 +490,12 @@
                         }
                     });
                 },
-                
                 _populateDOMElements() {
                     const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-table-container', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 'conflict-banner'];
                     ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
                     this.dom.tabButtons = document.querySelectorAll('.tab-btn');
                     this.dom.tabContents = document.querySelectorAll('.tab-content');
                 },
-                
                 _calculateConflicts(selectedCourses) {
                     const conflictMap = new Map();
                     for (let i = 0; i < selectedCourses.length; i++) { for (let j = i + 1; j < selectedCourses.length; j++) { const cA = selectedCourses[i], cB = selectedCourses[j]; if (cA.code === cB.code) continue; const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || []; if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) { msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`); msgB.push(`تعارض وقت محاضرة مع ${cA.name} (${cA.code})`); } if (cA.examPeriodId && cB.examPeriodId && cA.examPeriodId === cB.examPeriodId) { msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`); msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`); } if (msgA.length > 0) conflictMap.set(cA.uniqueId, msgA); if (msgB.length > 0) conflictMap.set(cB.uniqueId, msgB); } }
@@ -606,7 +604,7 @@
                         this._saveCustomColors();
                         this.updateCalendarAndConflicts();
                         this._renderCoursesList();
-                        this._buildSettingsModal();
+                        this._buildSettingsModal(); // Rebuild to reflect new color in settings
                     }
                 },
                 _handleVisibilityToggle(event) {
