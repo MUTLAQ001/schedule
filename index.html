@@ -1381,8 +1381,7 @@
                             SELECTED: 'quScheduleSelected_v15',
                             COLORS: 'quScheduleColors_v15'
                         },
-                        EXTRACTOR_URL: 'https://mutlaq001.github.io/schedule/extractor.js',
-                        EXAMS_DATA_URL: 'https://mutlaq001.github.io/schedule/exams.json'
+                        EXTRACTOR_URL: 'https://mutlaq001.github.io/schedule/extractor.js'
                     },
                     dom: {},
 
@@ -1397,35 +1396,14 @@
                         this._updateBookmarkletCode();
                     },
 
-                    async _fetchExamSchedule() {
-                        try {
-                            const response = await fetch(`${this.constants.EXAMS_DATA_URL}?v=${Date.now()}`);
-                            if (!response.ok)
-                                throw new Error(`Network response: ${response.statusText}`);
-                            this.state.examSchedule = await response.json();
-                        } catch (error) {
-                            console.error('Failed to fetch exam schedule:', error);
-                            this.state.examSchedule = {};
-                            Swal.fire({
-                                toast: true,
-                                position: 'bottom',
-                                icon: 'warning',
-                                title: 'فشل تحميل جدول الاختبارات',
-                                showConfirmButton: false,
-                                timer: 3000
-                            });
-                        }
-                    },
                     _loadDataFromStorage() {
                         const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
                         if (storedCourses) {
                             try {
                                 const courses = JSON.parse(storedCourses);
-                                this._processAndDisplayData(courses).then( () => {
-                                    this._loadSelectedSections();
-                                    this.updateCalendarAndConflicts();
-                                }
-                                );
+                                this._processAndDisplayData(courses); // <-- FIX
+                                this._loadSelectedSections();
+                                this.updateCalendarAndConflicts();
                             } catch (e) {
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
                                 this.dom.installSection.style.display = 'block';
@@ -1441,7 +1419,8 @@
                                 localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
                                 this.state.selectedSections.clear();
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED);
-                                this._processAndDisplayData(courses).then( () => this.updateCalendarAndConflicts());
+                                this._processAndDisplayData(courses); // <-- FIX
+                                this.updateCalendarAndConflicts();
                             }
                         }
                         , false);
@@ -1449,9 +1428,8 @@
                             window.opener.postMessage('request_schedule_data', '*');
                         }
                     },
-                    async _processAndDisplayData(courses) {
+                    _processAndDisplayData(courses) { // <-- FIX: Removed async
                         this.dom.installSection.style.display = 'none';
-                        await this._fetchExamSchedule();
                         this.state.allCoursesData = courses.map( (section, index) => ({
                             ...section,
                             uniqueId: `${section.code}-${section.section}-${index}`,
@@ -1564,11 +1542,7 @@
                                 totalCredits += parseInt(course.hours, 10) || 0;
                                 uniqueCourseCodes.add(course.code);
                             }
-                            let examText = "لا يوجد";
-                            if (course.examPeriodId && this.state.examSchedule[course.examPeriodId]) {
-                                const p = this.state.examSchedule[course.examPeriodId];
-                                examText = `${p.day}, ${p.hijriDate.split('/')[2]}/${p.hijriDate.split('/')[1]}`;
-                            }
+                            const examText = course.examPeriodId || "لا يوجد"; // <-- FIX
                             const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
                             const conflictMessages = conflictMap.get(course.uniqueId);
                             const isConflicted = !!conflictMessages;
@@ -1586,16 +1560,15 @@
                     _renderFinalExams(selectedCourses) {
                         this.dom.examsList.innerHTML = '';
                         const uniqueExams = [...new Map(selectedCourses.map(e => e.examPeriodId ? [e.examPeriodId, e] : [e.uniqueId, e])).values()];
-                        const validExams = uniqueExams.filter(e => e.examPeriodId && this.state.examSchedule[e.examPeriodId]);
+                        const validExams = uniqueExams.filter(e => e.examPeriodId); // <-- FIX
                         if (validExams.length === 0) {
                             this.dom.examsList.innerHTML = `<div class="no-data"><i class="ri-file-text-line"></i><h4>لا توجد اختبارات</h4><p>لم يتم تحديد اختبارات نهائية للمقررات المختارة.</p></div>`;
                             return;
                         }
                         validExams.sort( (a, b) => parseInt(a.examPeriodId, 10) - parseInt(b.examPeriodId, 10)).forEach( (exam) => {
-                            const periodData = this.state.examSchedule[exam.examPeriodId];
                             const examItem = document.createElement('div');
                             examItem.className = 'course-item';
-                            examItem.innerHTML = `<div class="course-item-header" style="cursor:default;"><div class="course-info"><h3>${exam.name} (${exam.code})</h3><p><strong>${periodData.day} ${periodData.hijriDate}</strong> | من ${periodData.startTime.slice(0, 5)} إلى ${periodData.endTime.slice(0, 5)}</p></div></div>`;
+                            examItem.innerHTML = `<div class="course-item-header" style="cursor:default;"><div class="course-info"><h3>${exam.name} (${exam.code})</h3><p><strong>فترة الاختبار: ${exam.examPeriodId}</strong></p></div></div>`; // <-- FIX
                             this.dom.examsList.appendChild(examItem);
                         }
                         );
