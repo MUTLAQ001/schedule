@@ -1,8 +1,5 @@
 javascript:(function() {
     'use strict';
-    console.clear();
-    console.log("🚀 QU Schedule Extractor v36 (Final Version with Delay) Initialized...");
-
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
     const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
 
@@ -31,22 +28,18 @@ javascript:(function() {
     function extractCourses(rows) {
         const coursesData = [];
         let lastTheoreticalCourse = null;
-
         const getVal = (row, th) => {
             let cell = row.querySelector(`td[data-th=" ${th} "]`) || row.querySelector(`td[data-th="${th}"]`) || row.querySelector(`td[data-th*="${th}"]`);
             return cell ? cell.textContent.trim() : '';
         };
-
         rows.forEach(row => {
             const code = getVal(row, 'رمز المقرر');
             const name = getVal(row, 'اسم المقرر');
             const section = getVal(row, 'الشعبة');
-
             if (name && code && section) {
                 if (lastTheoreticalCourse && code !== lastTheoreticalCourse.code) {
                     lastTheoreticalCourse = null;
                 }
-
                 let hours = getVal(row, 'الساعات');
                 let type = getVal(row, 'النشاط');
                 const status = getVal(row, 'الحالة');
@@ -54,18 +47,14 @@ javascript:(function() {
                 const instructor = row.querySelector('input[type="hidden"][id$=":instructor"]')?.value.trim();
                 const detailsRaw = row.querySelector('input[type="hidden"][id$=":section"]')?.value.trim();
                 let examPeriodId = row.querySelector('input[type="hidden"][id$=":examPeriod"]')?.value.trim();
-
                 const isPractical = type && (type.includes('عملي') || type.includes('تدريب') || type.includes('تمارين'));
-                
                 if (isPractical && (!hours || hours.trim() === '0' || hours.trim() === '') && lastTheoreticalCourse && lastTheoreticalCourse.code === code) {
                     hours = lastTheoreticalCourse.hours;
                     examPeriodId = lastTheoreticalCourse.examPeriodId;
                 }
-                
                 const timeDetails = parseTimeDetails(detailsRaw);
                 const courseInfo = { code, name, section, time: timeDetails.timeText, location: timeDetails.location, instructor: instructor || 'غير محدد', examPeriodId: examPeriodId || null, hours: hours || '0', type: type || 'نظري', status: status || 'غير معروف', campus: campus || 'غير معروف' };
                 coursesData.push(courseInfo);
-
                 if (!isPractical) {
                     lastTheoreticalCourse = { code: courseInfo.code, hours: courseInfo.hours, examPeriodId: examPeriodId };
                 }
@@ -74,30 +63,21 @@ javascript:(function() {
         return coursesData;
     }
 
-    // Main execution block
     setTimeout(() => {
         const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
-        
-        console.log(`Found ${courseRows.length} total rows in the HTML (visible and hidden).`);
-        
         if (courseRows.length === 0) {
             alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' بعد أن تقوم بالبحث.");
             return;
         }
-
         const courses = extractCourses(courseRows);
-
         if (courses && courses.length > 0) {
-            console.log(`🎉 Success! Extracted data for ${courses.length} sections.`);
             sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
             const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
-
             if (!viewerWindow || viewerWindow.closed || typeof viewerWindow.closed === 'undefined') {
                 alert("فشل فتح نافذة العارض.\n\nالرجاء السماح بالنوافذ المنبثقة (Pop-ups) لهذا الموقع والمحاولة مرة أخرى.");
                 sessionStorage.removeItem(TEMP_STORAGE_KEY);
                 return;
             }
-
             const messageHandler = (event) => {
                 if (event.source === viewerWindow && event.data === 'request_schedule_data') {
                     const storedData = sessionStorage.getItem(TEMP_STORAGE_KEY);
@@ -112,5 +92,5 @@ javascript:(function() {
         } else {
             alert("فشل استخراج البيانات. لم يتم العثور على بيانات يمكن قراءتها في الجدول.");
         }
-    }, 1000); // <-- تم زيادة التأخير إلى ثانية كاملة
+    }, 1000);
 })();
