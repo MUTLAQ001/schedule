@@ -762,40 +762,64 @@
                     _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return;
-                        
+
+                        // Add the clicked section first
                         schedule.sections.add(sectionId);
-                        
-                        const linkedGroup = this.state.linkedCourseGroups[section.name];
-                        if (!linkedGroup) return;
+                        const linkedSectionIds = schedule.linkedSections.get(sectionId) || new Set();
 
-                        const otherCourseCodes = linkedGroup.filter(code => code !== section.code);
-                        if (otherCourseCodes.length === 0) return;
+                        // 1. Auto-add Lab/Practical session (section number + 1)
+                        if (section.type && section.type.includes('محاضرة')) {
+                            const lectureNum = parseInt(section.section, 10);
+                            if (!isNaN(lectureNum)) {
+                                const labSectionNum = (lectureNum + 1).toString();
+                                const labSection = this.state.groupedCourses[section.code]?.sections.find(
+                                    s => s.section === labSectionNum && s.type && (s.type.includes('عملي') || s.type.includes('تدريب'))
+                                );
 
-                        const linkedSectionIds = new Set();
-                        
-                        for (const otherCode of otherCourseCodes) {
-                            const correspondingSection = this.state.groupedCourses[otherCode]?.sections.find(s => s.section === section.section);
-                            if (!correspondingSection) continue;
-                            
-                            if (schedule.sections.has(correspondingSection.uniqueId)) continue;
-
-                            if (this.state.userSettings.hideClosedCourses && correspondingSection.status.includes('مغلقة')) {
-                                this._showToast('info', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} مغلقة.`);
-                                continue;
+                                if (labSection && !schedule.sections.has(labSection.uniqueId)) {
+                                    const tempSelectedForLab = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+                                    if (this._isSectionConflicted(labSection, tempSelectedForLab)) {
+                                        this._showToast('warning', `الشعبة العملية ${labSection.code}-${labSection.section} متعارضة ولم تتم إضافتها.`);
+                                    } else if (this.state.userSettings.hideClosedCourses && labSection.status.includes('مغلقة')) {
+                                        this._showToast('info', `الشعبة العملية ${labSection.code}-${labSection.section} مغلقة.`);
+                                    } else {
+                                        schedule.sections.add(labSection.uniqueId);
+                                        linkedSectionIds.add(labSection.uniqueId);
+                                        this._showToast('success', `تمت إضافة الشعبة العملية تلقائيًا: ${labSection.code}-${labSection.section}`);
+                                    }
+                                }
                             }
-                            
-                            // Temporarily add the main section to check for conflicts against the full potential schedule
-                            const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-
-                            if (this._isSectionConflicted(correspondingSection, tempSelectedDetails)) {
-                                this._showToast('warning', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} متعارضة.`);
-                                continue;
-                            }
-
-                            schedule.sections.add(correspondingSection.uniqueId);
-                            linkedSectionIds.add(correspondingSection.uniqueId);
-                            this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
                         }
+
+                        // 2. Auto-add linked courses (same name, different code, same section number)
+                        const linkedGroup = this.state.linkedCourseGroups[section.name];
+                        if (linkedGroup) {
+                            const otherCourseCodes = linkedGroup.filter(code => code !== section.code);
+                            if (otherCourseCodes.length > 0) {
+                                for (const otherCode of otherCourseCodes) {
+                                    const correspondingSection = this.state.groupedCourses[otherCode]?.sections.find(s => s.section === section.section);
+                                    if (!correspondingSection || schedule.sections.has(correspondingSection.uniqueId)) continue;
+                                    
+                                    if (this.state.userSettings.hideClosedCourses && correspondingSection.status.includes('مغلقة')) {
+                                        this._showToast('info', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} مغلقة.`);
+                                        continue;
+                                    }
+                                    
+                                    const tempSelectedForLinked = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+
+                                    if (this._isSectionConflicted(correspondingSection, tempSelectedForLinked)) {
+                                        this._showToast('warning', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} متعارضة.`);
+                                        continue;
+                                    }
+
+                                    schedule.sections.add(correspondingSection.uniqueId);
+                                    linkedSectionIds.add(correspondingSection.uniqueId);
+                                    this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
+                                }
+                            }
+                        }
+                        
+                        // Save all linked sections (from both mechanisms)
                         if (linkedSectionIds.size > 0) {
                            schedule.linkedSections.set(sectionId, linkedSectionIds);
                         }
