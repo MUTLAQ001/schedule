@@ -412,7 +412,7 @@
                         this.state.linkedCourseGroups = {};
                         for (const name in coursesByName) {
                             if (coursesByName[name].length > 1) {
-                                this.state.linkedCourseGroups[name] = coursesByName[name];
+                                this.state.linkedCourseGroups[name] = [...new Set(coursesByName[name])];
                             }
                         }
 
@@ -435,7 +435,7 @@
                                     this.state.schedules = parsed.schedules.map(s => ({ 
                                         name: s.name, 
                                         sections: new Set(s.sections),
-                                        linkedSections: new Map(s.linkedSections || [])
+                                        linkedSections: new Map((s.linkedSections || []).map(([key, value]) => [key, new Set(value)]))
                                     }));
                                     this.state.activeScheduleIndex = parsed.activeScheduleIndex < parsed.schedules.length ? parsed.activeScheduleIndex : 0;
                                 }
@@ -455,7 +455,7 @@
                            schedules: this.state.schedules.map(s => ({ 
                                name: s.name, 
                                sections: Array.from(s.sections),
-                               linkedSections: Array.from(s.linkedSections.entries())
+                               linkedSections: Array.from(s.linkedSections.entries()).map(([key, value]) => [key, Array.from(value)])
                            }))
                         };
                         localStorage.setItem(this.constants.STORAGE_KEYS.SCHEDULES, JSON.stringify(serializableSchedules));
@@ -772,8 +772,7 @@
                         if (otherCourseCodes.length === 0) return;
 
                         const linkedSectionIds = new Set();
-                        schedule.linkedSections.set(sectionId, linkedSectionIds);
-
+                        
                         for (const otherCode of otherCourseCodes) {
                             const correspondingSection = this.state.groupedCourses[otherCode]?.sections.find(s => s.section === section.section);
                             if (!correspondingSection) continue;
@@ -785,8 +784,10 @@
                                 continue;
                             }
                             
-                            const currentScheduleDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-                            if (this._isSectionConflicted(correspondingSection, currentScheduleDetails)) {
+                            // Temporarily add the main section to check for conflicts against the full potential schedule
+                            const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+
+                            if (this._isSectionConflicted(correspondingSection, tempSelectedDetails)) {
                                 this._showToast('warning', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} متعارضة.`);
                                 continue;
                             }
@@ -794,6 +795,9 @@
                             schedule.sections.add(correspondingSection.uniqueId);
                             linkedSectionIds.add(correspondingSection.uniqueId);
                             this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
+                        }
+                        if (linkedSectionIds.size > 0) {
+                           schedule.linkedSections.set(sectionId, linkedSectionIds);
                         }
                     },
                     
@@ -807,9 +811,15 @@
                             if(linkedIds.size > 0) this._showToast('info', 'تمت إزالة الشعب المرتبطة.');
                         }
 
+                        // This part handles removing a "child" section, which will also remove the parent
                         for (const [triggerId, linkedIds] of schedule.linkedSections.entries()) {
                             if (linkedIds.has(sectionId)) {
-                                linkedIds.delete(sectionId);
+                                schedule.sections.delete(triggerId);
+                                linkedIds.forEach(id => schedule.sections.delete(id));
+                                schedule.linkedSections.delete(triggerId);
+                                if(linkedIds.size > 0) this._showToast('info', 'تمت إزالة المجموعة المرتبطة.');
+                                // Break because we found and processed the group
+                                break;
                             }
                         }
                     },
@@ -1012,7 +1022,11 @@
                             Swal.fire('الجدول الحالي فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning');
                             return;
                         }
-                        const dataStr = JSON.stringify({ version: 20, schedule: Array.from(activeSchedule.sections), linked: Array.from(activeSchedule.linkedSections.entries()) });
+                        const dataStr = JSON.stringify({ 
+                            version: 20, 
+                            schedule: Array.from(activeSchedule.sections), 
+                            linked: Array.from(activeSchedule.linkedSections.entries()).map(([key, value]) => [key, Array.from(value)]) 
+                        });
                         const dataBlob = new Blob([dataStr],{ type: 'application/json' });
                         const url = URL.createObjectURL(dataBlob);
                         const a = document.createElement('a');
@@ -1033,7 +1047,12 @@
                                     const newName = `مستورد ${new Date().toLocaleTimeString('ar-SA')}`;
                                     this._addSchedule(newName, false);
                                     const newSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                                    data.schedule.forEach(id => newSchedule.sections.add(id));
+                                    data.schedule.forEach(id => {
+                                        // Ensure the course exists in the current data before adding
+                                        if (this.state.allCoursesData.some(c => c.uniqueId === id)) {
+                                            newSchedule.sections.add(id);
+                                        }
+                                    });
                                     if(data.linked && Array.isArray(data.linked)) {
                                         newSchedule.linkedSections = new Map(data.linked.map(([key, val]) => [key, new Set(val)]));
                                     }
