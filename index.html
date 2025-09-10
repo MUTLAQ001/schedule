@@ -326,6 +326,72 @@
                 animation: scaleIn .8s var(--transition-smooth) .2s both;
             }
 
+            /* NEW: Styles for Schedule Tabs */
+            .schedule-tabs-container {
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0.5rem;
+                background: rgba(0,0,0,0.2);
+                border-radius: var(--radius);
+                flex-shrink: 0;
+                animation: fadeInUp .8s var(--transition-smooth) .1s both;
+            }
+            .schedule-tab {
+                padding: 0.6rem 1.2rem;
+                border: none;
+                border-radius: var(--radius-md);
+                background: transparent;
+                color: var(--color-text-muted);
+                font-weight: 600;
+                cursor: pointer;
+                transition: var(--transition);
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .schedule-tab.active {
+                background: var(--color-primary);
+                color: white;
+                box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);
+            }
+            .schedule-tab-name {
+                outline: none;
+            }
+            .schedule-tab .delete-schedule-btn {
+                font-size: 1.1rem;
+                color: rgba(255,255,255,0.6);
+                background: none;
+                border: none;
+                padding: 0;
+                margin-right: -5px;
+                display: none;
+                cursor: pointer;
+            }
+            .schedule-tab.active .delete-schedule-btn {
+                display: inline-block;
+            }
+            .schedule-tab.active .delete-schedule-btn:hover {
+                color: white;
+            }
+            #add-schedule-btn {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: rgba(var(--rgb-primary), 0.1);
+                color: var(--color-primary);
+                border: 1px solid var(--color-border);
+                font-size: 1.5rem;
+                cursor: pointer;
+                transition: var(--transition);
+                flex-shrink: 0;
+            }
+            #add-schedule-btn:hover {
+                background: var(--color-primary);
+                color: white;
+                transform: rotate(90deg);
+            }
+
             .calendar-wrapper {
                 flex: 1 1 auto;
                 min-height: 500px;
@@ -571,7 +637,6 @@
                 flex-shrink: 0;
                 font-family: var(--font-title);
             }
-
             .my-schedule-table-wrapper {
                 overflow-x: auto;
             }
@@ -1264,10 +1329,15 @@
                         </button>
                         <button id="clear-calendar-btn">
                             <i class="ri-delete-bin-6-line"></i>
-                            مسح الجدول
+                            مسح الجدول الحالي
                         </button>
                     </div>
                 </header>
+                 <!-- NEW: Schedule Tabs Container -->
+                <div class="schedule-tabs-container" id="schedule-tabs-container">
+                    <!-- Tabs will be dynamically inserted here -->
+                </div>
+
                 <div class="calendar-wrapper card">
                     <div id='calendar'></div>
                 </div>
@@ -1344,7 +1414,9 @@
                         calendar: null,
                         allCoursesData: [],
                         groupedCourses: {},
-                        selectedSections: new Set(),
+                        // MODIFIED: State for multiple schedules
+                        schedules: [],
+                        activeScheduleIndex: 0,
                         hiddenCourseCodes: new Set(),
                         customColors: {},
                         userSettings: {
@@ -1375,10 +1447,10 @@
                             'السبت': 6
                         },
                         STORAGE_KEYS: {
-                            SETTINGS: 'quScheduleSettings_v15',
-                            COURSES: 'quScheduleCourses_v15',
-                            SELECTED: 'quScheduleSelected_v15',
-                            COLORS: 'quScheduleColors_v15'
+                            SETTINGS: 'quScheduleSettings_v16', // Version bump
+                            COURSES: 'quScheduleCourses_v16',
+                            SCHEDULES: 'quScheduleSchedules_v16', // New key for schedules
+                            COLORS: 'quScheduleColors_v16'
                         },
                         EXTRACTOR_URL: 'https://mutlaq001.github.io/schedule/extractor.js'
                     },
@@ -1401,9 +1473,10 @@
                             try {
                                 const courses = JSON.parse(storedCourses);
                                 this._processAndDisplayData(courses);
-                                this._loadSelectedSections();
-                                this.updateCalendarAndConflicts();
+                                this._loadSchedules(); // MODIFIED: Load schedules instead of single selection
+                                this.updateFullUI();
                             } catch (e) {
+                                console.error("Error loading courses:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
                                 this.dom.installSection.style.display = 'block';
                             }
@@ -1411,15 +1484,18 @@
                             this.dom.installSection.style.display = 'block';
                         }
                     },
+
                     _listenForDataFromOpener() {
                         window.addEventListener('message', (event) => {
                             if (event.data && event.data.type === 'universityCoursesData') {
                                 const courses = event.data.data;
                                 localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
-                                this.state.selectedSections.clear();
-                                localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED);
+                                // MODIFIED: Reset schedules to a single new one
+                                this.state.schedules = [{ name: 'جدول ١', sections: new Set() }];
+                                this.state.activeScheduleIndex = 0;
+                                this._saveSchedules();
                                 this._processAndDisplayData(courses);
-                                this.updateCalendarAndConflicts();
+                                this.updateFullUI();
                             }
                         }
                         , false);
@@ -1454,18 +1530,44 @@
                         this._renderCoursesList();
                         this._buildSettingsModal();
                     },
-                    _loadSelectedSections() {
-                        const stored = localStorage.getItem(this.constants.STORAGE_KEYS.SELECTED);
+                    
+                    // MODIFIED: Load multiple schedules
+                    _loadSchedules() {
+                        const stored = localStorage.getItem(this.constants.STORAGE_KEYS.SCHEDULES);
                         if (stored) {
                             try {
                                 const parsed = JSON.parse(stored);
-                                if (Array.isArray(parsed))
-                                    this.state.selectedSections = new Set(parsed);
+                                if (parsed && Array.isArray(parsed.schedules)) {
+                                    this.state.schedules = parsed.schedules.map(s => ({
+                                        name: s.name,
+                                        sections: new Set(s.sections)
+                                    }));
+                                    this.state.activeScheduleIndex = parsed.activeScheduleIndex || 0;
+                                }
                             } catch (e) {
-                                localStorage.removeItem(this.constants.STORAGE_KEYS.SELECTED);
+                                console.error("Error loading schedules:", e);
+                                localStorage.removeItem(this.constants.STORAGE_KEYS.SCHEDULES);
                             }
                         }
+                        // If no schedules loaded, create a default one
+                        if (this.state.schedules.length === 0) {
+                            this.state.schedules.push({ name: 'جدول ١', sections: new Set() });
+                            this.state.activeScheduleIndex = 0;
+                        }
                     },
+                    
+                    // MODIFIED: Save multiple schedules
+                    _saveSchedules() {
+                        const serializableSchedules = {
+                           activeScheduleIndex: this.state.activeScheduleIndex,
+                           schedules: this.state.schedules.map(s => ({
+                               name: s.name,
+                               sections: Array.from(s.sections)
+                           }))
+                        };
+                        localStorage.setItem(this.constants.STORAGE_KEYS.SCHEDULES, JSON.stringify(serializableSchedules));
+                    },
+
                     _loadCustomColors() {
                         const stored = localStorage.getItem(this.constants.STORAGE_KEYS.COLORS);
                         if (stored) {
@@ -1479,28 +1581,104 @@
                     _saveCustomColors() {
                         localStorage.setItem(this.constants.STORAGE_KEYS.COLORS, JSON.stringify(this.state.customColors));
                     },
+                    
+                    // NEW: Helper function to update all UI parts
+                    updateFullUI() {
+                        this._renderScheduleTabs();
+                        this.updateCalendarAndConflicts();
+                    },
+
                     updateCalendarAndConflicts() {
-                        if (!this.state.calendar)
-                            return;
+                        if (!this.state.calendar) return;
+
+                        // Get sections for the currently active schedule
+                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                        const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
+                        
                         this.state.calendar.removeAllEvents();
-                        const selectedCourseDetails = Array.from(this.state.selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+
+                        // Update the section buttons in the sidebar
+                        document.querySelectorAll('.section-btn').forEach(btn => {
+                            btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
+                        });
+
+                        const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+                        
                         const conflictMap = this._calculateConflicts(selectedCourseDetails);
+                        
                         selectedCourseDetails.forEach(section => {
                             const group = this.state.groupedCourses[section.code];
                             if (group && !this.state.hiddenCourseCodes.has(section.code)) {
                                 const lectureEvents = this._createLectureEventsForSection(section, false, group.color);
                                 this.state.calendar.addEventSource(lectureEvents);
                             }
-                        }
-                        );
+                        });
+                        
                         this._renderFinalExams(selectedCourseDetails);
                         this._renderMyScheduleSummary(selectedCourseDetails, conflictMap);
                         this._updateAvailableSectionsUI(selectedCourseDetails);
-                        localStorage.setItem(this.constants.STORAGE_KEYS.SELECTED, JSON.stringify(Array.from(this.state.selectedSections)));
+                        this._saveSchedules();
                     },
+                    
+                    // NEW: Renders the schedule tabs UI
+                    _renderScheduleTabs() {
+                        const container = this.dom.scheduleTabsContainer;
+                        container.innerHTML = ''; // Clear existing tabs
+
+                        if(this.state.schedules.length === 0 && this.state.allCoursesData.length > 0) {
+                            container.innerHTML = `<div class="no-data" style="padding: 0.5rem 1rem; height: auto;"><p>لا توجد جداول. اضغط + لإنشاء جدول جديد.</p></div>`;
+                        }
+                        
+                        this.state.schedules.forEach((schedule, index) => {
+                            const tab = document.createElement('button');
+                            tab.className = 'schedule-tab';
+                            if (index === this.state.activeScheduleIndex) {
+                                tab.classList.add('active');
+                            }
+                            tab.dataset.index = index;
+                            tab.innerHTML = `<span class="schedule-tab-name" contenteditable="false">${schedule.name}</span>
+                                           <i class="ri-close-line delete-schedule-btn"></i>`;
+                            
+                            tab.addEventListener('click', () => this._switchSchedule(index));
+                            
+                            const nameSpan = tab.querySelector('.schedule-tab-name');
+                            tab.addEventListener('dblclick', () => {
+                                nameSpan.contentEditable = true;
+                                nameSpan.focus();
+                            });
+                            nameSpan.addEventListener('blur', () => {
+                                nameSpan.contentEditable = false;
+                                this._renameSchedule(index, nameSpan.textContent);
+                            });
+                            nameSpan.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    nameSpan.blur();
+                                }
+                            });
+                            
+                            tab.querySelector('.delete-schedule-btn').addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                this._deleteSchedule(index);
+                            });
+
+                            container.appendChild(tab);
+                        });
+
+                        const addButton = document.createElement('button');
+                        addButton.id = 'add-schedule-btn';
+                        addButton.innerHTML = '<i class="ri-add-line"></i>';
+                        addButton.title = 'إضافة جدول جديد';
+                        addButton.addEventListener('click', () => this._addSchedule());
+                        container.appendChild(addButton);
+                    },
+
                     _renderCoursesList() {
                         const coursesListContainer = this.dom.coursesList;
                         coursesListContainer.innerHTML = '';
+                        
+                        const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
+
                         const visibleCourses = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code));
                         if (Object.keys(this.state.groupedCourses).length > 0 && visibleCourses.length === 0) {
                             coursesListContainer.innerHTML = `<div class="no-data"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
@@ -1512,7 +1690,7 @@
                             courseItem.style.animationDelay = `${i * 50}ms`;
                             const sectionsHTML = group.sections.map(section => {
                                 const isNoTime = section.time === 'غير محدد';
-                                return `<div class="section-btn ${this.state.selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`;
+                                return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`;
                             }
                             ).join('');
                             courseItem.innerHTML = `<div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
@@ -1530,6 +1708,13 @@
                         this.dom.conflictBanner.style.display = conflictMap.size > 0 ? 'flex' : 'none';
                         const tableContainer = this.dom.myScheduleTableContainer;
                         tableContainer.innerHTML = '';
+                        
+                        if(selectedCourses.length === 0) {
+                            tableContainer.innerHTML = `<div class="no-data" style="height: 200px;"><i class="ri-add-circle-line"></i><h4>الجدول فارغ</h4><p>اختر الشعب من قائمة المقررات لإضافتها هنا.</p></div>`;
+                             this.dom.totalCreditsSummary.innerHTML = `إجمالي الساعات: <span>0</span>`;
+                             return;
+                        }
+
                         const table = document.createElement('table');
                         table.className = 'my-schedule-table';
                         table.innerHTML = `<thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>الحالة</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>`;
@@ -1573,11 +1758,12 @@
                         );
                     },
                     _updateAvailableSectionsUI(selectedCourses) {
+                         const activeSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
                         this.state.allCoursesData.forEach(section => {
                             const btn = document.querySelector(`.section-btn[data-unique-id='${section.uniqueId}']`);
                             if (btn) {
                                 btn.classList.remove('conflicted');
-                                if (!this.state.selectedSections.has(section.uniqueId)) {
+                                if (!activeSections.has(section.uniqueId)) {
                                     btn.classList.toggle('conflicted', this._isSectionConflicted(section, selectedCourses));
                                 }
                             }
@@ -1585,7 +1771,7 @@
                         );
                     },
                     _populateDOMElements() {
-                        const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-table-container', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 'conflict-banner'];
+                        const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-table-container', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 'conflict-banner', 'schedule-tabs-container'];
                         ids.forEach(id => {
                             this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
                         }
@@ -1713,52 +1899,44 @@
                     _handleCourseListClick(e) {
                         const sectionBtn = e.target.closest('.section-btn');
                         const header = e.target.closest('.course-item-header');
+                        
                         if (sectionBtn) {
                             const uniqueId = sectionBtn.dataset.uniqueId;
-                            sectionBtn.classList.toggle('selected');
-                            if (this.state.selectedSections.has(uniqueId)) {
-                                this.state.selectedSections.delete(uniqueId);
+                            const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                            if (!activeSchedule) return;
+
+                            //sectionBtn.classList.toggle('selected');
+                            if (activeSchedule.sections.has(uniqueId)) {
+                                activeSchedule.sections.delete(uniqueId);
                             } else {
-                                this.state.selectedSections.add(uniqueId);
+                                activeSchedule.sections.add(uniqueId);
                             }
-                            this.updateCalendarAndConflicts();
+                            this.updateCalendarAndConflicts(); // This will re-render buttons and save
                         } else if (header) {
                             header.parentElement.classList.toggle('open');
                         }
                     },
                     _handleClearCalendar() {
+                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                        if (!activeSchedule || activeSchedule.sections.size === 0) {
+                            Swal.fire({ toast: true, position: 'bottom', icon: 'info', title: 'الجدول الحالي فارغ بالفعل', showConfirmButton: false, timer: 2000 });
+                            return;
+                        }
+
                         Swal.fire({
                             title: 'هل أنت متأكد؟',
-                            text: "سيتم مسح جميع المواد المختارة من الجدول.",
+                            text: `سيتم مسح جميع المواد المختارة من "${activeSchedule.name}".`,
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonText: 'نعم، امسح الجدول!',
                             cancelButtonText: 'إلغاء',
-                            customClass: {
-                                popup: 'swal-popup-animation-in'
-                            },
-                            showClass: {
-                                popup: ''
-                            },
-                            hideClass: {
-                                popup: 'swal-popup-animation-out'
-                            },
                         }).then( (result) => {
                             if (result.isConfirmed) {
-                                this.state.selectedSections.clear();
+                                activeSchedule.sections.clear();
                                 this.updateCalendarAndConflicts();
-                                document.querySelectorAll('.section-btn.selected').forEach(b => b.classList.remove('selected'));
-                                Swal.fire({
-                                    toast: true,
-                                    position: 'bottom',
-                                    icon: 'success',
-                                    title: 'تم مسح الجدول بنجاح',
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                });
+                                Swal.fire({ toast: true, position: 'bottom', icon: 'success', title: 'تم مسح الجدول بنجاح', showConfirmButton: false, timer: 2000 });
                             }
-                        }
-                        );
+                        });
                     },
                     _handleTabClick(button) {
                         this.dom.tabButtons.forEach(btn => btn.classList.remove('active'));
@@ -1807,6 +1985,58 @@
                         };
                         this.state.calendar = new FullCalendar.Calendar(this.dom.calendar,calendarOptions);
                         this.state.calendar.render();
+                    },
+                    // NEW: Functions for managing schedules
+                    _addSchedule() {
+                        const newName = `جدول ${this.state.schedules.length + 1}`;
+                        this.state.schedules.push({ name: newName, sections: new Set() });
+                        this.state.activeScheduleIndex = this.state.schedules.length - 1;
+                        this.updateFullUI();
+                    },
+
+                    _switchSchedule(index) {
+                        if (index !== this.state.activeScheduleIndex) {
+                            this.state.activeScheduleIndex = index;
+                            this._renderCoursesList();
+                            this.updateFullUI();
+                        }
+                    },
+                    
+                    _deleteSchedule(index) {
+                        const scheduleName = this.state.schedules[index].name;
+                        Swal.fire({
+                            title: `حذف "${scheduleName}"؟`,
+                            text: "لا يمكن التراجع عن هذا الإجراء.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'نعم، احذفه!',
+                            cancelButtonText: 'إلغاء'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.state.schedules.splice(index, 1);
+                                if (this.state.activeScheduleIndex >= index) {
+                                    this.state.activeScheduleIndex = Math.max(0, this.state.activeScheduleIndex - 1);
+                                }
+                                if(this.state.schedules.length === 0){
+                                    this._addSchedule(); // Add a default one if all are deleted
+                                } else {
+                                    this.updateFullUI();
+                                }
+                                Swal.fire({ toast: true, position: 'bottom', icon: 'success', title: 'تم حذف الجدول', showConfirmButton: false, timer: 2000 });
+                            }
+                        });
+                    },
+                    
+                    _renameSchedule(index, newName) {
+                        const trimmedName = newName.trim();
+                        if (trimmedName) {
+                            this.state.schedules[index].name = trimmedName;
+                            this._saveSchedules();
+                        } else {
+                            // Restore original name if input is empty
+                            this.dom.scheduleTabsContainer.querySelector(`[data-index='${index}'] .schedule-tab-name`).textContent = this.state.schedules[index].name;
+                        }
                     },
                     _adjustColorBrightness(hex, p) {
                         let r = parseInt(hex.slice(1, 3), 16)
@@ -1928,13 +2158,14 @@
                         this._renderCoursesList();
                     },
                     _handleExport() {
-                        if (this.state.selectedSections.size === 0) {
-                            Swal.fire('الجدول فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning');
+                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                        if (!activeSchedule || activeSchedule.sections.size === 0) {
+                            Swal.fire('الجدول الحالي فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning');
                             return;
                         }
                         const dataStr = JSON.stringify({
-                            version: 1,
-                            schedule: Array.from(this.state.selectedSections)
+                            version: 2, // New version for single schedule export
+                            schedule: Array.from(activeSchedule.sections)
                         });
                         const dataBlob = new Blob([dataStr],{
                             type: 'application/json'
@@ -1942,47 +2173,41 @@
                         const url = URL.createObjectURL(dataBlob);
                         const a = document.createElement('a');
                         a.href = url;
-                        a.download = `qu_schedule_${new Date().toISOString().slice(0, 10)}.json`;
+                        const safeName = activeSchedule.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                        a.download = `qu_schedule_${safeName}.json`;
                         a.click();
                         URL.revokeObjectURL(url);
                     },
                     _handleImport(e) {
                         const file = e.target.files[0];
-                        if (!file)
-                            return;
+                        if (!file) return;
                         const reader = new FileReader();
                         reader.onload = (event) => {
                             try {
                                 const data = JSON.parse(event.target.result);
-                                if (data && data.version === 1 && Array.isArray(data.schedule)) {
-                                    this.state.selectedSections.clear();
-                                    data.schedule.forEach(id => this.state.selectedSections.add(id));
-                                    this._renderCoursesList();
-                                    this.updateCalendarAndConflicts();
+                                if (data && data.schedule && Array.isArray(data.schedule)) {
+                                    const newName = `مستورد ${new Date().toLocaleTimeString('ar-SA')}`;
+                                    const newSections = new Set(data.schedule);
+                                    this.state.schedules.push({name: newName, sections: newSections});
+                                    this.state.activeScheduleIndex = this.state.schedules.length - 1;
+
+                                    this.updateFullUI();
                                     this._toggleSettingsModal(false);
-                                    Swal.fire({
-                                        toast: true,
-                                        position: 'bottom',
-                                        icon: 'success',
-                                        title: 'تم استيراد الجدول بنجاح!',
-                                        showConfirmButton: false,
-                                        timer: 3000
-                                    });
+                                    Swal.fire({ toast: true, position: 'bottom', icon: 'success', title: 'تم استيراد الجدول بنجاح!', showConfirmButton: false, timer: 3000 });
                                 } else {
                                     throw new Error('Invalid file format');
                                 }
                             } catch (error) {
                                 Swal.fire('خطأ!', 'ملف غير صالح. تأكد من أنه ملف جدول تم تصديره من هذه الأداة.', 'error');
                             }
-                        }
-                        ;
+                        };
                         reader.readAsText(file);
                         e.target.value = '';
                     },
                     _handleReset() {
                         Swal.fire({
                             title: 'هل أنت متأكد؟',
-                            text: "سيؤدي هذا إلى مسح جميع بيانات التطبيق المحفوظة (المقررات، الإعدادات، والألوان).",
+                            text: "سيؤدي هذا إلى مسح جميع بيانات التطبيق المحفوظة (المقررات، الجداول، الإعدادات، والألوان).",
                             icon: 'warning',
                             showCancelButton: true,
                             confirmButtonColor: '#d33',
@@ -2003,8 +2228,8 @@
                     _applySettings() {
                         document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
                         const primaryColor = this.state.userSettings.accentColor;
-                        document.documentElement.style.setProperty('--primary', primaryColor);
-                        document.documentElement.style.setProperty('--primary-dark', this._adjustColorBrightness(primaryColor, -10));
+                        document.documentElement.style.setProperty('--color-primary', primaryColor);
+                        document.documentElement.style.setProperty('--color-primary-dark', this._adjustColorBrightness(primaryColor, -10));
                         document.documentElement.style.setProperty('--rgb-primary', this._hexToRgb(primaryColor));
                         const primaryHue = this._hexToHue(primaryColor);
                         const secondaryHue = (primaryHue + 40) % 360;
@@ -2031,6 +2256,7 @@
                                 this.state.userSettings.showWeekends = e.target.checked;
                                 this._saveSettings();
                                 this._initializeCalendar();
+                                this.updateCalendarAndConflicts(); // Re-add events
                             }
                             ;
                         }
@@ -2083,12 +2309,14 @@
                             this.state.userSettings.minTime = newVal;
                             this._saveSettings();
                             this._initializeCalendar();
+                             this.updateCalendarAndConflicts(); // Re-add events
                         }
                         );
                         this._createActionPicker(maxContainer, timeOptions, this.state.userSettings.maxTime, (newVal) => {
                             this.state.userSettings.maxTime = newVal;
                             this._saveSettings();
                             this._initializeCalendar();
+                             this.updateCalendarAndConflicts(); // Re-add events
                         }
                         );
                     },
