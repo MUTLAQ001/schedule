@@ -326,7 +326,6 @@
                 animation: scaleIn .8s var(--transition-smooth) .2s both;
             }
 
-            /* NEW: Styles for Schedule Tabs */
             .schedule-tabs-container {
                 display: flex;
                 align-items: center;
@@ -949,7 +948,7 @@
             .settings-group-title {
                 font-size: 1.2rem;
                 font-weight: 600;
-                color: var(--primary);
+                color: var(--color-primary);
                 padding-bottom: 0.75rem;
                 border-bottom: 1px solid var(--color-border);
                 margin-bottom: 1.25rem;
@@ -1019,7 +1018,7 @@
             }
 
             input:checked + .slider {
-                background-color: var(--primary);
+                background-color: var(--color-primary);
             }
 
             input:checked + .slider:before {
@@ -1053,7 +1052,7 @@
             }
 
             .mode-btn.active {
-                background: var(--primary);
+                background: var(--color-primary);
                 color: #fff;
                 box-shadow: 0 2px 5px rgba(var(--rgb-primary), 0.2);
             }
@@ -1157,19 +1156,19 @@
             }
 
             .data-btn:hover {
-                border-color: var(--primary);
-                color: var(--primary);
+                border-color: var(--color-primary);
+                color: var(--color-primary);
                 background: rgba(var(--rgb-primary), 0.1);
             }
 
             .data-btn.danger {
                 border-color: rgba(var(--rgb-danger), 0.5);
-                color: var(--danger);
+                color: var(--color-danger);
             }
 
             .data-btn.danger:hover {
                 background: rgba(var(--rgb-danger), 0.1);
-                color: var(--danger);
+                color: var(--color-danger);
             }
 
             .course-visibility-grid {
@@ -1249,7 +1248,7 @@
             }
 
             .action-picker-display:hover {
-                border-color: var(--primary);
+                border-color: var(--color-primary);
             }
 
             .light .action-picker-display {
@@ -1298,7 +1297,7 @@
             }
 
             .action-picker-option.selected {
-                color: var(--primary);
+                color: var(--color-primary);
                 font-weight: 700;
                 background-color: transparent;
             }
@@ -1333,7 +1332,6 @@
                         </button>
                     </div>
                 </header>
-                 <!-- NEW: Schedule Tabs Container -->
                 <div class="schedule-tabs-container" id="schedule-tabs-container">
                     <!-- Tabs will be dynamically inserted here -->
                 </div>
@@ -1414,7 +1412,6 @@
                         calendar: null,
                         allCoursesData: [],
                         groupedCourses: {},
-                        // MODIFIED: State for multiple schedules
                         schedules: [],
                         activeScheduleIndex: 0,
                         hiddenCourseCodes: new Set(),
@@ -1425,7 +1422,8 @@
                             showWeekends: false,
                             minTime: '08:00:00',
                             maxTime: '22:00:00',
-                            hiddenCourseCodes: []
+                            hiddenCourseCodes: [],
+                            hideClosedCourses: false // NEW: Setting for hiding closed courses
                         }
                     },
                     constants: {
@@ -1447,10 +1445,10 @@
                             'السبت': 6
                         },
                         STORAGE_KEYS: {
-                            SETTINGS: 'quScheduleSettings_v16', // Version bump
-                            COURSES: 'quScheduleCourses_v16',
-                            SCHEDULES: 'quScheduleSchedules_v16', // New key for schedules
-                            COLORS: 'quScheduleColors_v16'
+                            SETTINGS: 'quScheduleSettings_v17', // Version bump
+                            COURSES: 'quScheduleCourses_v17',
+                            SCHEDULES: 'quScheduleSchedules_v17', 
+                            COLORS: 'quScheduleColors_v17'
                         },
                         EXTRACTOR_URL: 'https://mutlaq001.github.io/schedule/extractor.js'
                     },
@@ -1473,7 +1471,7 @@
                             try {
                                 const courses = JSON.parse(storedCourses);
                                 this._processAndDisplayData(courses);
-                                this._loadSchedules(); // MODIFIED: Load schedules instead of single selection
+                                this._loadSchedules();
                                 this.updateFullUI();
                             } catch (e) {
                                 console.error("Error loading courses:", e);
@@ -1490,7 +1488,6 @@
                             if (event.data && event.data.type === 'universityCoursesData') {
                                 const courses = event.data.data;
                                 localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
-                                // MODIFIED: Reset schedules to a single new one
                                 this.state.schedules = [{ name: 'جدول ١', sections: new Set() }];
                                 this.state.activeScheduleIndex = 0;
                                 this._saveSchedules();
@@ -1531,7 +1528,6 @@
                         this._buildSettingsModal();
                     },
                     
-                    // MODIFIED: Load multiple schedules
                     _loadSchedules() {
                         const stored = localStorage.getItem(this.constants.STORAGE_KEYS.SCHEDULES);
                         if (stored) {
@@ -1549,14 +1545,12 @@
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.SCHEDULES);
                             }
                         }
-                        // If no schedules loaded, create a default one
                         if (this.state.schedules.length === 0) {
                             this.state.schedules.push({ name: 'جدول ١', sections: new Set() });
                             this.state.activeScheduleIndex = 0;
                         }
                     },
                     
-                    // MODIFIED: Save multiple schedules
                     _saveSchedules() {
                         const serializableSchedules = {
                            activeScheduleIndex: this.state.activeScheduleIndex,
@@ -1582,7 +1576,6 @@
                         localStorage.setItem(this.constants.STORAGE_KEYS.COLORS, JSON.stringify(this.state.customColors));
                     },
                     
-                    // NEW: Helper function to update all UI parts
                     updateFullUI() {
                         this._renderScheduleTabs();
                         this.updateCalendarAndConflicts();
@@ -1591,13 +1584,11 @@
                     updateCalendarAndConflicts() {
                         if (!this.state.calendar) return;
 
-                        // Get sections for the currently active schedule
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
                         
                         this.state.calendar.removeAllEvents();
 
-                        // Update the section buttons in the sidebar
                         document.querySelectorAll('.section-btn').forEach(btn => {
                             btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
                         });
@@ -1620,10 +1611,9 @@
                         this._saveSchedules();
                     },
                     
-                    // NEW: Renders the schedule tabs UI
                     _renderScheduleTabs() {
                         const container = this.dom.scheduleTabsContainer;
-                        container.innerHTML = ''; // Clear existing tabs
+                        container.innerHTML = ''; 
 
                         if(this.state.schedules.length === 0 && this.state.allCoursesData.length > 0) {
                             container.innerHTML = `<div class="no-data" style="padding: 0.5rem 1rem; height: auto;"><p>لا توجد جداول. اضغط + لإنشاء جدول جديد.</p></div>`;
@@ -1673,6 +1663,7 @@
                         container.appendChild(addButton);
                     },
 
+                    // MODIFIED: This function now filters closed courses if the setting is enabled.
                     _renderCoursesList() {
                         const coursesListContainer = this.dom.coursesList;
                         coursesListContainer.innerHTML = '';
@@ -1684,16 +1675,28 @@
                             coursesListContainer.innerHTML = `<div class="no-data"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
                             return;
                         }
+
                         visibleCourses.sort( (a, b) => a.code.localeCompare(b.code)).forEach( (group, i) => {
+                            // NEW: Filter sections based on the user setting
+                            const sectionsToDisplay = this.state.userSettings.hideClosedCourses
+                                ? group.sections.filter(section => !section.status.includes('مغلقة'))
+                                : group.sections;
+
+                            // NEW: If all sections for a course are filtered out, don't render the course item at all.
+                            if (sectionsToDisplay.length === 0) {
+                                return; // Skips to the next course in the loop
+                            }
+
                             const courseItem = document.createElement('div');
                             courseItem.className = 'course-item';
                             courseItem.style.animationDelay = `${i * 50}ms`;
-                            const sectionsHTML = group.sections.map(section => {
+                            const sectionsHTML = sectionsToDisplay.map(section => { // MODIFIED: Use sectionsToDisplay
                                 const isNoTime = section.time === 'غير محدد';
                                 return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`;
                             }
                             ).join('');
-                            courseItem.innerHTML = `<div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${group.sections.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
+                            // MODIFIED: Update the count to reflect the number of displayed sections
+                            courseItem.innerHTML = `<div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
                             coursesListContainer.appendChild(courseItem);
                         }
                         );
@@ -1905,13 +1908,12 @@
                             const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                             if (!activeSchedule) return;
 
-                            //sectionBtn.classList.toggle('selected');
                             if (activeSchedule.sections.has(uniqueId)) {
                                 activeSchedule.sections.delete(uniqueId);
                             } else {
                                 activeSchedule.sections.add(uniqueId);
                             }
-                            this.updateCalendarAndConflicts(); // This will re-render buttons and save
+                            this.updateCalendarAndConflicts(); 
                         } else if (header) {
                             header.parentElement.classList.toggle('open');
                         }
@@ -1986,7 +1988,6 @@
                         this.state.calendar = new FullCalendar.Calendar(this.dom.calendar,calendarOptions);
                         this.state.calendar.render();
                     },
-                    // NEW: Functions for managing schedules
                     _addSchedule() {
                         const newName = `جدول ${this.state.schedules.length + 1}`;
                         this.state.schedules.push({ name: newName, sections: new Set() });
@@ -2019,7 +2020,7 @@
                                     this.state.activeScheduleIndex = Math.max(0, this.state.activeScheduleIndex - 1);
                                 }
                                 if(this.state.schedules.length === 0){
-                                    this._addSchedule(); // Add a default one if all are deleted
+                                    this._addSchedule();
                                 } else {
                                     this.updateFullUI();
                                 }
@@ -2034,7 +2035,6 @@
                             this.state.schedules[index].name = trimmedName;
                             this._saveSchedules();
                         } else {
-                            // Restore original name if input is empty
                             this.dom.scheduleTabsContainer.querySelector(`[data-index='${index}'] .schedule-tab-name`).textContent = this.state.schedules[index].name;
                         }
                     },
@@ -2100,6 +2100,7 @@
                         this.state.userSettings.hiddenCourseCodes = Array.from(this.state.hiddenCourseCodes);
                         localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS, JSON.stringify(this.state.userSettings));
                     },
+                    // MODIFIED: Added the new "Hide Closed Courses" toggle to the modal HTML
                     _buildSettingsModal() {
                         const modal = this.dom.settingsModal;
                         let courseColorsHTML = Object.values(this.state.groupedCourses).sort( (a, b) => a.code.localeCompare(b.code)).map(group => `<div class="settings-item"><div class="settings-item-label"><span style="color: ${group.color}; font-weight: 600;">${group.name} (${group.code})</span></div><label class="color-picker-label" style="background-color: ${group.color};"><input type="color" class="color-picker-input" data-course-code="${group.code}" value="${group.color}"></label></div>`).join('');
@@ -2113,7 +2114,49 @@
                         ).join('');
                         if (!courseVisibilityHTML)
                             courseVisibilityHTML = '<p style="color: var(--text-light); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
-                        modal.innerHTML = ` <div class="modal-header"><h3><i class="ri-settings-3-line"></i> الإعدادات</h3><i class="ri-close-line modal-close-btn" id="close-modal-btn"></i></div> <div class="modal-content custom-scrollbar"> <div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div> <div class="settings-group"><h4 class="settings-group-title"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div></div> <div class="settings-group"><h4 class="settings-group-title"><i class="ri-paint-brush-line"></i>ألوان المقررات</h4><div id="course-colors-list">${courseColorsHTML}</div></div> <div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><div id="min-time-select-container"></div><div id="max-time-select-container"></div></div></div></div> <div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="data-management-zone"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button><input type="file" id="import-file-input" accept=".json" style="display: none;"><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button></div></div> </div>`;
+                        
+                        modal.innerHTML = `
+                            <div class="modal-header"><h3><i class="ri-settings-3-line"></i> الإعدادات</h3><i class="ri-close-line modal-close-btn" id="close-modal-btn"></i></div>
+                            <div class="modal-content custom-scrollbar">
+                                <div class="settings-group">
+                                    <h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4>
+                                    <div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"></div></div>
+                                    <div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div>
+                                </div>
+                                <div class="settings-group">
+                                    <h4 class="settings-group-title"><i class="ri-filter-3-line"></i>ترشيح المقررات</h4>
+                                    <div class="settings-item">
+                                        <div class="settings-item-label"><span>إخفاء الشعب المغلقة</span><small>لإزالة الشعب غير المتاحة من القائمة</small></div>
+                                        <label class="toggle-switch"><input type="checkbox" id="hide-closed-toggle"><span class="slider"></span></label>
+                                    </div>
+                                    <h4 class="settings-group-title" style="margin-top: 2rem;"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4>
+                                    <div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div>
+                                </div>
+                                <div class="settings-group">
+                                    <h4 class="settings-group-title"><i class="ri-paint-brush-line"></i>ألوان المقررات</h4>
+                                    <div id="course-colors-list">${courseColorsHTML}</div>
+                                </div>
+                                <div class="settings-group">
+                                    <h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4>
+                                    <div class="settings-item">
+                                        <div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div>
+                                        <label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label>
+                                    </div>
+                                    <div class="settings-item">
+                                        <div class="settings-item-label"><span>نطاق الساعات</span></div>
+                                        <div class="time-range-selects"><div id="min-time-select-container"></div><div id="max-time-select-container"></div></div>
+                                    </div>
+                                </div>
+                                <div class="settings-group">
+                                    <h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4>
+                                    <div class="data-management-zone">
+                                        <button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button>
+                                        <button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button>
+                                        <input type="file" id="import-file-input" accept=".json" style="display: none;">
+                                        <button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button>
+                                    </div>
+                                </div>
+                            </div>`;
                         this._attachModalEventListeners();
                         this._populateTimeSelects();
                         this._applySettings();
@@ -2164,7 +2207,7 @@
                             return;
                         }
                         const dataStr = JSON.stringify({
-                            version: 2, // New version for single schedule export
+                            version: 2,
                             schedule: Array.from(activeSchedule.sections)
                         });
                         const dataBlob = new Blob([dataStr],{
@@ -2225,6 +2268,7 @@
                         this.dom.modalOverlay.classList.toggle('open', show);
                         this.dom.settingsModal.classList.toggle('open', show);
                     },
+                    // MODIFIED: Added logic to handle the new toggle switch
                     _applySettings() {
                         document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
                         const primaryColor = this.state.userSettings.accentColor;
@@ -2256,9 +2300,19 @@
                                 this.state.userSettings.showWeekends = e.target.checked;
                                 this._saveSettings();
                                 this._initializeCalendar();
-                                this.updateCalendarAndConflicts(); // Re-add events
+                                this.updateCalendarAndConflicts();
                             }
                             ;
+                        }
+                        // NEW: Connect the "Hide Closed Courses" toggle to its state and function
+                        const hideClosedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
+                        if (hideClosedToggle) {
+                            hideClosedToggle.checked = this.state.userSettings.hideClosedCourses;
+                            hideClosedToggle.onchange = (e) => {
+                                this.state.userSettings.hideClosedCourses = e.target.checked;
+                                this._saveSettings();
+                                this._renderCoursesList(); // Re-render the course list with the new filter
+                            };
                         }
                     },
 
@@ -2309,14 +2363,14 @@
                             this.state.userSettings.minTime = newVal;
                             this._saveSettings();
                             this._initializeCalendar();
-                             this.updateCalendarAndConflicts(); // Re-add events
+                             this.updateCalendarAndConflicts();
                         }
                         );
                         this._createActionPicker(maxContainer, timeOptions, this.state.userSettings.maxTime, (newVal) => {
                             this.state.userSettings.maxTime = newVal;
                             this._saveSettings();
                             this._initializeCalendar();
-                             this.updateCalendarAndConflicts(); // Re-add events
+                             this.updateCalendarAndConflicts();
                         }
                         );
                     },
