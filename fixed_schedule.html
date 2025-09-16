@@ -260,10 +260,29 @@
             .main-app {
                 display: none;
                 height: 100vh;
+                flex-direction: row;
+                overflow: hidden;
+            }
+
+            .main-content {
+                flex-grow: 1;
+                height: 100%;
+                display: flex;
                 flex-direction: column;
                 padding: 2rem;
                 gap: 1.5rem;
                 overflow-y: auto;
+            }
+
+            .sidebar {
+                width: 420px;
+                height: 100%;
+                background-color: var(--color-card);
+                border-left: 1px solid var(--color-border);
+                display: flex;
+                flex-direction: column;
+                flex-shrink: 0;
+                backdrop-filter: blur(16px);
             }
 
             .main-header {
@@ -328,27 +347,223 @@
                     0 16px 40px -12px rgba(0,0,0,0.4),
                     0 0 0 1px rgba(255,255,255,0.05),
                     inset 0 1px 0 rgba(255,255,255,0.1);
-                padding: 2rem;
+                padding: 1.5rem;
                 position: relative;
                 overflow: hidden;
                 animation: scaleIn .8s var(--transition-smooth) .2s both;
+                min-height: 500px;
             }
 
-            .content-area::before {
+            .sidebar-header {
+                padding: 1.5rem 2rem;
+                border-bottom: 1px solid var(--color-border);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-shrink: 0;
+            }
+
+            .sidebar-header h2 {
+                margin: 0;
+                font-family: var(--font-title);
+                font-size: 1.5rem;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                color: var(--color-text-dark);
+            }
+
+            .sidebar-content {
+                flex: 1;
+                padding: 1rem;
+                overflow-y: auto;
+            }
+
+            .course-item {
+                border: 1px solid var(--color-border);
+                border-radius: var(--radius-md);
+                margin-bottom: 0.75rem;
+                background-color: transparent;
+                animation: fadeInUp .5s ease both;
+                overflow: hidden;
+                transition: var(--transition-smooth);
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.07),
+                    0 4px 15px rgba(0,0,0,0.1);
+                position: relative;
+            }
+
+            .course-item::before {
                 content: '';
                 position: absolute;
                 top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(135deg, 
-                    rgba(255,255,255,0.1) 0%, 
-                    transparent 50%, 
-                    rgba(var(--rgb-primary), 0.05) 100%);
-                pointer-events: none;
-                opacity: 0;
-                transition: opacity 0.3s ease;
+                background: linear-gradient(90deg, 
+                    transparent 0%, 
+                    rgba(var(--rgb-primary), 0.05) 50%, 
+                    transparent 100%);
+                transform: translateX(-100%);
+                transition: transform 0.6s ease;
             }
 
-            .content-area:hover::before {
-                opacity: 1;
+            .course-item:hover::before {
+                transform: translateX(100%);
+            }
+
+            .course-item:hover {
+                transform: translateY(-4px);
+                border-color: rgba(var(--rgb-primary), 0.5);
+                box-shadow: 
+                    inset 0 1px 0 rgba(255,255,255,0.07), 
+                    0 8px 25px -10px rgba(0,0,0,0.4);
+            }
+
+            .course-item-header {
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                padding: 1.25rem;
+                cursor: pointer;
+            }
+
+            .course-item .color-dot {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                flex-shrink: 0;
+                box-shadow: 0 0 10px 1px;
+            }
+
+            .course-info {
+                flex-grow: 1;
+            }
+
+            .course-info h3 {
+                margin: 0;
+                font-family: var(--font-title);
+                font-size: 1.1rem;
+                font-weight: 400;
+                color: var(--color-text-dark);
+            }
+
+            .course-info p {
+                margin: 4px 0 0;
+                font-size: 0.8rem;
+                color: var(--color-text-muted);
+            }
+
+            .course-item.open .sections-wrapper {
+                max-height: 9999px;
+            }
+
+            .sections-wrapper {
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s ease-out;
+                background-color: rgba(0,0,0,0.1);
+            }
+
+            .sections-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 0.75rem;
+                padding: 1rem 1.25rem 1.25rem;
+            }
+
+            .section-btn {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.25rem;
+                padding: 0.5rem;
+                border: 1px solid var(--color-border);
+                border-radius: var(--radius-full);
+                text-align: center;
+                cursor: pointer;
+                background-color: transparent;
+                transition: all var(--transition);
+                position: relative;
+                overflow: hidden;
+            }
+
+            .section-btn::before {
+                content: '';
+                position: absolute;
+                top: 50%; left: 50%;
+                width: 0; height: 0;
+                background: radial-gradient(circle, rgba(var(--rgb-primary), 0.3) 0%, transparent 70%);
+                transition: all 0.3s ease;
+                transform: translate(-50%, -50%);
+                border-radius: 50%;
+                z-index: -1;
+            }
+
+            .section-btn:hover::before {
+                width: 100px; height: 100px;
+            }
+
+            .section-btn:hover {
+                border-color: var(--color-primary);
+                color: var(--color-primary);
+                background: rgba(var(--rgb-primary), 0.1);
+            }
+
+            .section-btn.selected {
+                background-color: var(--color-primary);
+                color: white;
+                border-color: var(--color-primary);
+            }
+
+            .section-btn .section-type {
+                font-size: 0.7rem;
+                color: var(--color-text-muted);
+            }
+
+            .section-btn.selected .section-type {
+                color: rgba(255,255,255,0.8);
+            }
+
+            .no-data {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                height: 200px;
+                text-align: center;
+                padding: 2rem;
+                color: var(--color-text-muted);
+            }
+
+            .no-data i {
+                font-size: 3rem;
+                margin-bottom: 1rem;
+                color: var(--color-primary);
+                opacity: 0.5;
+            }
+
+            #calendar {
+                height: 100%;
+                min-height: 400px;
+            }
+
+            .fc {
+                --fc-border-color: var(--color-border);
+                --fc-event-text-color: #fff;
+                --fc-page-bg-color: transparent;
+                font-family: var(--font-body);
+            }
+
+            .fc-theme-standard .fc-scrollgrid {
+                border: none;
+            }
+
+            .fc-event {
+                border: none !important;
+                border-radius: 8px !important;
+                font-weight: 600;
+                padding: 4px 8px !important;
+                cursor: pointer;
             }
 
             .info-message {
@@ -437,36 +652,46 @@
         </div>
 
         <div class="main-app" id="main-app">
-            <header class="main-header">
-                <h1><i class="ri-calendar-event-line"></i> QU Schedule</h1>
-                <div class="header-actions">
-                    <button onclick="showWelcome()">
-                        <i class="ri-home-line"></i> العودة للرئيسية
-                    </button>
-                    <button onclick="toggleTheme()">
-                        <i class="ri-sun-line"></i> تغيير المظهر
-                    </button>
-                </div>
-            </header>
+            <main class="main-content">
+                <header class="main-header">
+                    <h1><i class="ri-calendar-event-line"></i> QU Schedule</h1>
+                    <div class="header-actions">
+                        <button onclick="showWelcome()">
+                            <i class="ri-home-line"></i> العودة للرئيسية
+                        </button>
+                        <button onclick="toggleTheme()">
+                            <i class="ri-sun-line"></i> تغيير المظهر
+                        </button>
+                        <button onclick="clearSchedule()">
+                            <i class="ri-delete-bin-6-line"></i> مسح الجدول
+                        </button>
+                    </div>
+                </header>
 
-            <div class="content-area">
-                <div class="info-message">
-                    <i class="ri-calendar-check-line"></i>
-                    <h3>مرحباً بك في نظام جدولة مقررات جامعة القصيم</h3>
-                    <p>هذا النظام المحسن يوفر واجهة جميلة وسهلة الاستخدام لتنظيم جدولك الدراسي</p>
-                    <p>استخدم أداة الاستخراج من شريط الإشارات المرجعية لبدء استيراد بيانات المقررات</p>
-                    
-                    <div class="bookmarklet-info">
-                        <h4>الخطوات:</h4>
-                        <ol style="text-align: right; max-width: 400px; margin: 0 auto;">
-                            <li>اذهب إلى صفحة المقررات المطروحة في موقع الجامعة</li>
-                            <li>اضغط على أداة الاستخراج من شريط الإشارات المرجعية</li>
-                            <li>انتظر حتى يتم استخراج البيانات</li>
-                            <li>استمتع بتنظيم جدولك!</li>
-                        </ol>
+                <div class="content-area">
+                    <div id="calendar"></div>
+                    <div id="no-courses-message" class="info-message">
+                        <i class="ri-calendar-check-line"></i>
+                        <h3>في انتظار بيانات المقررات</h3>
+                        <p>استخدم أداة الاستخراج من شريط الإشارات المرجعية لاستيراد المقررات</p>
                     </div>
                 </div>
-            </div>
+            </main>
+
+            <aside class="sidebar">
+                <header class="sidebar-header">
+                    <h2><i class="ri-stack-line"></i> المقررات</h2>
+                </header>
+                <div class="sidebar-content">
+                    <div id="courses-list">
+                        <div class="no-data">
+                            <i class="ri-time-line"></i>
+                            <h4>في انتظار البيانات...</h4>
+                            <p>شغّل الأداة من صفحة المقررات المطروحة.</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
         </div>
 
         <script>
@@ -591,6 +816,255 @@
                 }
             }
 
+            // App state
+            let appState = {
+                courses: [],
+                selectedSections: new Set(),
+                calendar: null,
+                groupedCourses: {},
+                colorPalette: ['#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f97316', '#ef4444', '#06b6d4', '#d946ef']
+            };
+
+            // Course data processing
+            function processCoursesData(courses) {
+                appState.courses = courses.map((section, index) => ({
+                    ...section,
+                    uniqueId: `${section.code}-${section.section}-${index}`,
+                    timeSlots: parseTimeEntries(section.time)
+                }));
+
+                appState.groupedCourses = appState.courses.reduce((acc, course) => {
+                    if (!acc[course.code]) {
+                        acc[course.code] = {
+                            name: course.name,
+                            code: course.code,
+                            sections: [],
+                            color: appState.colorPalette[Object.keys(acc).length % appState.colorPalette.length]
+                        };
+                    }
+                    acc[course.code].sections.push(course);
+                    return acc;
+                }, {});
+
+                renderCoursesList();
+                initializeCalendar();
+            }
+
+            // Parse time entries
+            function parseTimeEntries(timeString) {
+                if (!timeString || timeString === 'غير محدد') return [];
+                
+                const dayMapping = {
+                    'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6
+                };
+
+                return timeString.split('<br>').map(entry => {
+                    const parts = entry.match(/([ء-يs]+):s*(\d{1,2}:\d{2})\s*(ص|م)\s*-\s*(\d{1,2}:\d{2})\s*(ص|م)/);
+                    if (!parts) return null;
+                    
+                    const days = parts[1].trim().split(/\s+/);
+                    const start = convertTo24Hour(parts[2], parts[3]);
+                    const end = convertTo24Hour(parts[4], parts[5]);
+                    
+                    return days.map(day => dayMapping[day] !== undefined ? {
+                        day: dayMapping[day],
+                        start,
+                        end
+                    } : null);
+                }).flat().filter(Boolean);
+            }
+
+            // Convert to 24 hour format
+            function convertTo24Hour(time, period) {
+                let [h, m] = time.split(':');
+                h = parseInt(h, 10);
+                if (period.includes('م') && h !== 12) h += 12;
+                if (period.includes('ص') && h === 12) h = 0;
+                return `${String(h).padStart(2, '0')}:${m}:00`;
+            }
+
+            // Render courses list
+            function renderCoursesList() {
+                const container = document.getElementById('courses-list');
+                container.innerHTML = '';
+
+                if (Object.keys(appState.groupedCourses).length === 0) {
+                    container.innerHTML = `
+                        <div class="no-data">
+                            <i class="ri-time-line"></i>
+                            <h4>في انتظار البيانات...</h4>
+                            <p>شغّل الأداة من صفحة المقررات المطروحة.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                Object.values(appState.groupedCourses)
+                    .sort((a, b) => a.code.localeCompare(b.code))
+                    .forEach((group, i) => {
+                        const courseItem = document.createElement('div');
+                        courseItem.className = 'course-item';
+                        courseItem.style.animationDelay = `${i * 50}ms`;
+
+                        const sectionsHTML = group.sections.map(section => `
+                            <div class="section-btn ${appState.selectedSections.has(section.uniqueId) ? 'selected' : ''}" 
+                                 data-unique-id="${section.uniqueId}" 
+                                 onclick="toggleSection('${section.uniqueId}')">
+                                <div class="section-btn-number">${section.section}</div>
+                                <div class="section-type">${section.type || ''}</div>
+                            </div>
+                        `).join('');
+
+                        courseItem.innerHTML = `
+                            <div class="course-item-header" onclick="toggleCourseExpansion(this)">
+                                <span class="color-dot" style="background-color: ${group.color};"></span>
+                                <div class="course-info">
+                                    <h3>${group.name} (${group.code})</h3>
+                                    <p>${group.sections.length} شعب متاحة</p>
+                                </div>
+                                <i class="ri-arrow-down-s-line toggle-icon"></i>
+                            </div>
+                            <div class="sections-wrapper">
+                                <div class="sections-grid">${sectionsHTML}</div>
+                            </div>
+                        `;
+                        
+                        container.appendChild(courseItem);
+                    });
+            }
+
+            // Toggle course expansion
+            function toggleCourseExpansion(header) {
+                header.parentElement.classList.toggle('open');
+            }
+
+            // Toggle section selection
+            function toggleSection(uniqueId) {
+                if (appState.selectedSections.has(uniqueId)) {
+                    appState.selectedSections.delete(uniqueId);
+                } else {
+                    appState.selectedSections.add(uniqueId);
+                }
+                
+                updateUI();
+                updateCalendarEvents();
+            }
+
+            // Update UI
+            function updateUI() {
+                // Update section buttons
+                document.querySelectorAll('.section-btn').forEach(btn => {
+                    btn.classList.toggle('selected', appState.selectedSections.has(btn.dataset.uniqueId));
+                });
+
+                // Show/hide no courses message
+                const noCourses = document.getElementById('no-courses-message');
+                if (appState.selectedSections.size === 0) {
+                    noCourses.style.display = 'flex';
+                } else {
+                    noCourses.style.display = 'none';
+                }
+            }
+
+            // Initialize calendar
+            function initializeCalendar() {
+                if (appState.calendar) {
+                    appState.calendar.destroy();
+                }
+
+                appState.calendar = new FullCalendar.Calendar(document.getElementById('calendar'), {
+                    initialView: 'timeGridWeek',
+                    locale: 'ar',
+                    headerToolbar: {
+                        left: 'prev,next today',
+                        center: 'title',
+                        right: 'timeGridWeek,timeGridDay'
+                    },
+                    allDaySlot: false,
+                    events: [],
+                    dir: 'rtl',
+                    slotMinTime: '08:00:00',
+                    slotMaxTime: '22:00:00',
+                    hiddenDays: [5, 6], // Hide Friday and Saturday
+                    eventContent: (arg) => {
+                        const props = arg.event.extendedProps;
+                        return {
+                            html: `
+                                <div style="font-size: 0.8rem; line-height: 1.3;">
+                                    <b>${arg.event.title.split('(')[0].trim()}</b><br>
+                                    ${props.section} - ${props.instructor}<br>
+                                    <small><i class="ri-map-pin-line"></i> ${props.location}</small>
+                                </div>
+                            `
+                        };
+                    }
+                });
+
+                appState.calendar.render();
+            }
+
+            // Update calendar events
+            function updateCalendarEvents() {
+                if (!appState.calendar) return;
+
+                appState.calendar.removeAllEvents();
+
+                const selectedCourses = Array.from(appState.selectedSections)
+                    .map(id => appState.courses.find(c => c.uniqueId === id))
+                    .filter(Boolean);
+
+                selectedCourses.forEach(section => {
+                    const group = appState.groupedCourses[section.code];
+                    if (!group) return;
+
+                    section.timeSlots.forEach(slot => {
+                        appState.calendar.addEvent({
+                            title: `${section.name} (${section.code})`,
+                            daysOfWeek: [slot.day],
+                            startTime: slot.start,
+                            endTime: slot.end,
+                            backgroundColor: group.color,
+                            borderColor: group.color,
+                            extendedProps: section
+                        });
+                    });
+                });
+            }
+
+            // Clear schedule
+            function clearSchedule() {
+                if (appState.selectedSections.size === 0) {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'الجدول فارغ',
+                        text: 'لا توجد مقررات مختارة لحذفها'
+                    });
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'هل أنت متأكد؟',
+                    text: 'سيتم مسح جميع المقررات المختارة من الجدول',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'نعم، امسح الجدول',
+                    cancelButtonText: 'إلغاء'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        appState.selectedSections.clear();
+                        updateUI();
+                        updateCalendarEvents();
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'تم المسح',
+                            text: 'تم مسح الجدول بنجاح',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                });
+            }
+
             // Navigation functions
             function showMainApp() {
                 document.getElementById('welcome-screen').style.display = 'none';
@@ -624,8 +1098,7 @@
                         confirmButtonText: 'ممتاز!'
                     }).then(() => {
                         showMainApp();
-                        // Here you would normally process the course data
-                        console.log('Received course data:', event.data.data);
+                        processCoursesData(event.data.data);
                     });
                 }
             }, false);
