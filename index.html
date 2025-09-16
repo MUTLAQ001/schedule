@@ -58,45 +58,6 @@
             @keyframes gradient-animation { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
             @keyframes swal-scale-in { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
             @keyframes swal-scale-out { from { transform: scale(1); opacity: 1; } to { transform: scale(0.9); opacity: 0; } }
-            
-            /* Enhanced Cosmic Animations */
-            @keyframes starTwinkle {
-                0%, 100% { opacity: 0.3; transform: scale(1); }
-                50% { opacity: 1; transform: scale(1.2); }
-            }
-            @keyframes starMove {
-                0% { transform: translateX(-100vw) translateY(0); }
-                100% { transform: translateX(100vw) translateY(-50px); }
-            }
-            @keyframes meteorsShower {
-                0% { transform: translateX(-100px) translateY(-100px) rotate(45deg); opacity: 0; }
-                10% { opacity: 1; }
-                90% { opacity: 1; }
-                100% { transform: translateX(100vw) translateY(100vh) rotate(45deg); opacity: 0; }
-            }
-            @keyframes galaxyRotate {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-            @keyframes nebulaFloat {
-                0%, 100% { transform: translate(-50%, -50%) scale(1); }
-                50% { transform: translate(-50%, -50%) scale(1.1); }
-            }
-            @keyframes pulseGlow {
-                0%, 100% { box-shadow: 0 0 20px rgba(var(--rgb-primary), 0.3); }
-                50% { box-shadow: 0 0 40px rgba(var(--rgb-primary), 0.6), 0 0 60px rgba(var(--rgb-primary), 0.3); }
-            }
-            @keyframes floatingElements {
-                0%, 100% { transform: translateY(0px) rotate(0deg); }
-                25% { transform: translateY(-20px) rotate(5deg); }
-                50% { transform: translateY(-10px) rotate(-5deg); }
-                75% { transform: translateY(-15px) rotate(3deg); }
-            }
-            @keyframes dataFlow {
-                0% { transform: translateX(-100%); opacity: 0; }
-                50% { opacity: 1; }
-                100% { transform: translateX(100%); opacity: 0; }
-            }
 
             *, *::before, *::after { box-sizing: border-box; }
             html { scroll-behavior: smooth; }
@@ -112,72 +73,31 @@
                 -moz-osx-font-smoothing: grayscale;
             }
 
-            .cosmic-bg-container { 
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden;
-                background: linear-gradient(135deg, 
-                    rgba(10, 10, 10, 1) 0%, 
-                    rgba(20, 15, 30, 0.9) 25%, 
-                    rgba(15, 20, 35, 0.8) 50%, 
-                    rgba(25, 15, 40, 0.9) 75%, 
-                    rgba(10, 10, 10, 1) 100%);
-            }
+            .cosmic-bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden }
             #starfield-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100% }
-            
             .nebula-glow {
                 position: absolute; top: 50%; left: 50%;
                 width: 80vmax; height: 80vmax; margin-top: -40vmax; margin-left: -40vmax;
-                background: radial-gradient(circle,
-                    hsl(var(--primary-hue),90%,60%,.2) 0%,
-                    hsl(var(--secondary-hue),80%,50%,.15) 30%,
-                    hsl(calc(var(--primary-hue) + 60),70%,40%,.1) 60%,
-                    transparent 80%);
-                filter: blur(120px); border-radius: 50%;
-                animation: nebulaFloat 8s ease-in-out infinite;
+                background: radial-gradient(circle,hsl(var(--primary-hue),90%,60%,.15) 0%,hsl(var(--secondary-hue),80%,50%,.1) 40%,transparent 70%);
+                filter: blur(100px); border-radius: 50%;
+                animation: nebulaRotate 30s linear infinite;
             }
-            
-            .cosmic-bg-container::before {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background: 
-                    radial-gradient(circle at 20% 30%, rgba(var(--rgb-primary), 0.1) 0%, transparent 50%),
-                    radial-gradient(circle at 80% 70%, rgba(var(--rgb-secondary, 200, 100, 255), 0.08) 0%, transparent 50%),
-                    radial-gradient(circle at 40% 80%, rgba(var(--rgb-primary), 0.05) 0%, transparent 50%);
-                animation: galaxyRotate 120s linear infinite;
+            .cosmic-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+            .shooting-star {
+                position: absolute; width: 2px; height: 2px; background: #fff;
+                border-radius: 50%; opacity: 0;
+                box-shadow: 0 0 6px 2px rgba(255,255,255,0.5), 0 0 12px 4px rgba(139, 92, 246, 0.3);
             }
-            
-            .cosmic-bg-container::after {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background-image: 
-                    radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
-                    radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
-                    radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.4), transparent),
-                    radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.2), transparent),
-                    radial-gradient(2px 2px at 160px 30px, rgba(255,255,255,0.3), transparent);
-                background-repeat: repeat;
-                background-size: 200px 100px;
-                animation: starMove 200s linear infinite;
+            @keyframes nebulaRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+            @keyframes shootingStar {
+                0% { opacity: 0; transform: translateX(-100px) translateY(100px) scale(0); }
+                10% { opacity: 1; transform: translateX(-50px) translateY(50px) scale(1); }
+                90% { opacity: 1; transform: translateX(300px) translateY(-300px) scale(1); }
+                100% { opacity: 0; transform: translateX(350px) translateY(-350px) scale(0); }
             }
-            
-            .meteor {
-                position: absolute;
-                width: 2px;
-                height: 2px;
-                background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%, rgba(255,255,255,0) 100%);
-                border-radius: 50%;
-                box-shadow: 0 0 10px rgba(255,255,255,0.8);
-            }
-            
-            .floating-particle {
-                position: absolute;
-                width: 4px;
-                height: 4px;
-                background: rgba(var(--rgb-primary), 0.6);
-                border-radius: 50%;
-                animation: floatingElements 6s ease-in-out infinite;
-                box-shadow: 0 0 10px rgba(var(--rgb-primary), 0.4);
+            @keyframes starTwinkle {
+                0%, 100% { opacity: 0.3; transform: scale(1); }
+                50% { opacity: 1; transform: scale(1.2); }
             }
 
             #install-section {
@@ -192,61 +112,57 @@
                 color: white; padding: 0.7rem 1.5rem; border-radius: var(--radius-full);
                 font-weight: 600; text-decoration: none; cursor: grab;
             }
-
-            /* --- Desktop Specific Styles --- */
-            .page-wrapper { display: flex; height: 100vh; }
-            .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 2rem; gap: 1.5rem; overflow-y: auto; }
-            .sidebar { width: 420px; height: 100%; background-color: var(--color-card); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
-            /* Hide mobile view by default */
-            #mobile-view-container { display: none; }
-
-            /* --- Mobile View Activation --- */
+            #mobile-unsupported { display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100vh; padding: 2rem; }
             .mobile-view .page-wrapper, .mobile-view #install-section { display: none !important; }
-            .mobile-view #mobile-view-container { display: flex; flex-direction: column; height: 100vh; width: 100%; overflow: hidden; }
-
-            /* --- Mobile Welcome Screen --- */
-            #mobile-welcome-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100%; padding: 1.5rem; animation: fadeInUp .8s var(--transition-smooth) both; }
-            #mobile-welcome-screen h2 { font-family: var(--font-title); font-size: 2rem; margin-bottom: 1rem; color: var(--color-primary); }
-            #mobile-welcome-screen .welcome-card { background: var(--color-card); padding: 2rem; border-radius: var(--radius); border: 1px solid var(--color-border); backdrop-filter: blur(16px); width: 100%; max-width: 450px; }
-            .welcome-card h3 { margin-top: 0; font-size: 1.3rem; }
-            .welcome-card ol { text-align: right; padding-right: 1.5rem; line-height: 1.8; color: var(--color-text-muted); }
-            .welcome-card li { margin-bottom: 1rem; }
-            .welcome-card .import-btn { display: inline-flex; align-items: center; gap: 0.5rem; width: 100%; justify-content: center; background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary)); color: white; padding: 0.8rem 1.5rem; border-radius: var(--radius-full); font-weight: 700; text-decoration: none; border: none; cursor: pointer; margin-top: 1rem; transition: var(--transition); }
-            .welcome-card .import-btn:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(var(--rgb-primary), 0.3); }
-
-            /* --- Mobile Main UI --- */
-            #mobile-app-container { display: none; flex-direction: column; height: 100%; width: 100%; }
-            .mobile-header { padding: 1rem 1.5rem; background-color: var(--color-card); border-bottom: 1px solid var(--color-border); backdrop-filter: blur(10px); flex-shrink: 0; text-align: center; }
-            .mobile-header h1 { margin: 0; font-family: var(--font-title); font-size: 1.3rem; background: linear-gradient(90deg,var(--color-primary-dark),var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-            .mobile-content { flex-grow: 1; overflow-y: auto; padding: 1rem; }
-            .mobile-tab-content { display: none; }
-            .mobile-tab-content.active { display: block; animation: fadeInUp .5s var(--transition-smooth) both; }
-            .mobile-nav { display: flex; background-color: var(--color-card); border-top: 1px solid var(--color-border); backdrop-filter: blur(10px); flex-shrink: 0; }
-            .mobile-nav-btn { flex: 1; padding: 0.75rem 0.5rem; border: none; background: transparent; color: var(--color-text-muted); display: flex; flex-direction: column; align-items: center; gap: 0.25rem; font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: var(--transition); }
-            .mobile-nav-btn i { font-size: 1.5rem; }
-            .mobile-nav-btn.active { color: var(--color-primary); }
-
-            /* Mobile Calendar styles */
-            #mobile-calendar-view .card { padding: 1rem; }
-            #mobile-calendar-view .fc-toolbar-title { font-size: 1.1rem !important; }
-            #mobile-calendar-view .fc-event-main-frame { font-size: 0.7rem !important; }
-
-             /* Mobile Responsive Table */
-            .mobile-view .my-schedule-table { display: block; }
-            .mobile-view .my-schedule-table thead { display: none; }
-            .mobile-view .my-schedule-table tbody { display: block; }
-            .mobile-view .my-schedule-table tr { display: block; border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1rem; padding: 1rem; background: rgba(0,0,0,0.1); }
-            .mobile-view .my-schedule-table td { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border: none; text-align: left; }
-            .mobile-view .my-schedule-table td::before { content: attr(data-label); font-weight: 600; color: var(--color-text-muted); text-align: right; margin-left: 1rem; }
-            .mobile-view .my-schedule-table .course-cell { display: block; text-align: right; }
-            .mobile-view .my-schedule-table .hours-value { font-size: 1.1rem; }
-            .mobile-view .total-credits-summary { text-align: center; }
+            .mobile-view #mobile-unsupported { display: flex; }
+            
+            /* Enhanced Mobile Support */
+            @media (max-width: 1200px) {
+                .page-wrapper { flex-direction: column; }
+                .sidebar { width: 100%; height: auto; min-height: 50vh; order: 2; }
+                .main-content { order: 1; height: 50vh; padding: 1rem; }
+                .main-header h1 { font-size: 2rem; }
+                .schedule-tabs-container { overflow-x: auto; scrollbar-width: none; }
+                .schedule-tabs-container::-webkit-scrollbar { display: none; }
+            }
+            
+            @media (max-width: 768px) {
+                :root { --radius: 12px; --radius-md: 8px; }
+                .main-content { padding: 0.75rem; gap: 1rem; }
+                .main-header { flex-direction: column; gap: 1rem; align-items: stretch; }
+                .main-header h1 { font-size: 1.5rem; text-align: center; }
+                .header-actions { justify-content: center; gap: 0.5rem; }
+                .header-actions button { font-size: 0.8rem; padding: 0.5rem 1rem; }
+                .sidebar { border-left: none; border-top: 1px solid var(--color-border); }
+                .sidebar-header { padding: 1rem; }
+                .sidebar-header h2 { font-size: 1.2rem; }
+                .course-item-header { padding: 1rem 0.75rem; }
+                .sections-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 0.5rem; padding: 0.75rem; }
+                .section-btn { padding: 0.4rem; font-size: 0.8rem; }
+                .my-schedule-table { font-size: 0.8rem; }
+                .my-schedule-table thead th, .my-schedule-table tbody td { padding: 0.5rem 0.25rem; }
+                .settings-modal { width: 95%; max-width: none; }
+                .schedule-tab { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
+                #add-schedule-btn { width: 32px; height: 32px; font-size: 1.2rem; }
+            }
+            
+            @media (max-width: 480px) {
+                .main-content { padding: 0.5rem; }
+                .course-visibility-grid { grid-template-columns: 1fr; }
+                .settings-item { flex-direction: column; align-items: stretch; gap: 0.5rem; }
+                .time-range-selects { flex-direction: column; }
+                .modal-content { padding: 1rem; }
+            }
 
             .custom-scrollbar::-webkit-scrollbar { width: 8px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
             .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(var(--rgb-primary), 0.3); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
             .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(var(--rgb-primary), 0.5); }
             .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(var(--rgb-primary), 0.3) transparent; }
+
+            .page-wrapper { display: flex; height: 100vh; }
+            .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 2rem; gap: 1.5rem; overflow-y: auto; }
+            .sidebar { width: 420px; height: 100%; background-color: var(--color-card); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
 
             .main-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) both; }
             .main-header h1 {
@@ -261,58 +177,9 @@
                 padding: 0.6rem 1.2rem; border-radius: var(--radius-full); font-size: 0.9rem; font-weight: 600; cursor: pointer;
                 display: inline-flex; align-items: center; gap: 0.5rem; transition: all var(--transition);
             }
-            .header-actions button:hover { 
-                background: rgba(var(--rgb-primary), 0.2); 
-                border-color: var(--color-primary); 
-                transform: translateY(-2px) scale(1.02); 
-                box-shadow: 
-                    0 4px 15px rgba(var(--rgb-primary), 0.2),
-                    0 0 20px rgba(var(--rgb-primary), 0.1);
-                animation: pulseGlow 2s ease-in-out infinite;
-            }
+            .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: var(--color-primary); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
 
-            .card { 
-                width: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); 
-                border-radius: var(--radius); display: flex; flex-direction: column; 
-                backdrop-filter: blur(16px); 
-                box-shadow: 
-                    0 16px 40px -12px rgba(0,0,0,0.4),
-                    0 0 0 1px rgba(255,255,255,0.05),
-                    inset 0 1px 0 rgba(255,255,255,0.1);
-                overflow: hidden; 
-                animation: scaleIn .8s var(--transition-smooth) .2s both;
-                position: relative;
-            }
-            
-            .card::before {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(135deg, 
-                    rgba(255,255,255,0.1) 0%, 
-                    transparent 50%, 
-                    rgba(var(--rgb-primary), 0.05) 100%);
-                pointer-events: none;
-                opacity: 0;
-                transition: opacity 0.3s ease;
-            }
-            
-            .card:hover::before {
-                opacity: 1;
-            }
-            
-            .card:hover {
-                transform: translateY(-2px);
-                box-shadow: 
-                    0 20px 50px -12px rgba(0,0,0,0.5),
-                    0 0 0 1px rgba(var(--rgb-primary), 0.2),
-                    inset 0 1px 0 rgba(255,255,255,0.15),
-                    0 0 30px rgba(var(--rgb-primary), 0.1);
-            }
-            .mobile-view .card { height: auto; }
-            .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
-            .calendar-wrapper .card { padding: 1.5rem; height: 100%; }
-            #calendar { height: 100%; }
+            .card { width: 100%; height: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .8s var(--transition-smooth) .2s both; }
 
             .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) .1s both; overflow-x: auto;}
             .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
@@ -324,6 +191,10 @@
             #add-schedule-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); border: 1px solid var(--color-border); font-size: 1.5rem; cursor: pointer; transition: var(--transition); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
             #add-schedule-btn:hover { background: var(--color-primary); color: white; transform: rotate(90deg); }
 
+            .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
+            .calendar-wrapper .card { padding: 1.5rem; }
+            #calendar { height: 100%; }
+
             .sidebar-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
             .sidebar-header h2 { margin: 0; font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--color-text-dark); }
             .sidebar-content-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
@@ -334,32 +205,7 @@
             .tab-content.active { display: block; }
             .sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
 
-            .course-item { 
-                border: 1px solid var(--color-border); border-radius: var(--radius-md); 
-                margin-bottom: 0.75rem; background-color: transparent; 
-                animation: fadeInUp .5s ease both; overflow: hidden; 
-                transition: var(--transition-smooth); 
-                box-shadow: 
-                    inset 0 1px 0 rgba(255,255,255,0.07),
-                    0 4px 15px rgba(0,0,0,0.1);
-                position: relative;
-            }
-            
-            .course-item::before {
-                content: '';
-                position: absolute;
-                top: 0; left: 0; right: 0; bottom: 0;
-                background: linear-gradient(90deg, 
-                    transparent 0%, 
-                    rgba(var(--rgb-primary), 0.05) 50%, 
-                    transparent 100%);
-                transform: translateX(-100%);
-                transition: transform 0.6s ease;
-            }
-            
-            .course-item:hover::before {
-                transform: translateX(100%);
-            }
+            .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition-smooth); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
             .course-item:hover { transform: translateY(-4px); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4); }
             .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; }
             .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
@@ -369,30 +215,7 @@
             .course-item.open .sections-wrapper { max-height: 9999px; }
             .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background-color: rgba(0,0,0,0.1); }
             .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 1rem 1.25rem 1.25rem; }
-            .section-btn { 
-                display: flex; flex-direction: column; align-items: center; justify-content: center; 
-                gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); 
-                border-radius: var(--radius-full); text-align: center; cursor: pointer; 
-                background-color: transparent; transition: all var(--transition);
-                position: relative;
-                overflow: hidden;
-            }
-            
-            .section-btn::before {
-                content: '';
-                position: absolute;
-                top: 50%; left: 50%;
-                width: 0; height: 0;
-                background: radial-gradient(circle, rgba(var(--rgb-primary), 0.3) 0%, transparent 70%);
-                transition: all 0.3s ease;
-                transform: translate(-50%, -50%);
-                border-radius: 50%;
-                z-index: -1;
-            }
-            
-            .section-btn:hover::before {
-                width: 100px; height: 100px;
-            }
+            .section-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: transparent; transition: all var(--transition); }
             .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
             .section-btn.selected { background-color: var(--color-primary); color: white; border-color: var(--color-primary); }
             .section-btn.conflicted { background-color: rgba(var(--rgb-danger), 0.1); border-color: var(--color-danger); color: var(--color-danger); }
@@ -505,66 +328,10 @@
         </style>
     </head>
     <body>
+        <!-- HTML structure is unchanged -->
         <div class="cosmic-bg-container"><div class="nebula-glow"></div><canvas id="starfield-canvas"></canvas></div>
         <div id="install-section"></div>
-        
-        <!-- START: MOBILE VIEW CONTAINER -->
-        <div id="mobile-view-container">
-             <!-- Welcome screen for mobile, shown when no data is loaded -->
-            <div id="mobile-welcome-screen">
-                <div class="welcome-card">
-                    <h2><i class="ri-smartphone-line"></i> مرحباً بك في QU Schedule</h2>
-                    <h3>للبدء، اتبع الخطوات التالية:</h3>
-                    <ol>
-                        <li>افتح هذا الموقع على <b>جهاز كمبيوتر</b>.</li>
-                        <li>شغّل الأداة (Bookmarklet) على صفحة المقررات المطروحة.</li>
-                        <li>من الإعدادات <i class="ri-settings-3-line"></i>، اضغط على "<b>تصدير بيانات المقررات</b>" واحفظ الملف.</li>
-                        <li>أرسل الملف المحفوظ إلى جوالك.</li>
-                        <li>اضغط على الزر أدناه واختر الملف.</li>
-                    </ol>
-                    <button class="import-btn" id="mobile-import-data-btn"><i class="ri-upload-cloud-2-line"></i> استيراد بيانات المقررات</button>
-                    <input type="file" id="mobile-import-file-input" accept=".json" style="display: none;">
-                </div>
-            </div>
-
-            <!-- Main app container for mobile, shown after data is loaded -->
-            <div id="mobile-app-container">
-                <header class="mobile-header">
-                    <h1 id="mobile-header-title">الجدول</h1>
-                </header>
-                <main class="mobile-content custom-scrollbar">
-                    <div id="mobile-calendar-view" class="mobile-tab-content active">
-                        <div class="card"><div id='mobile-calendar'></div></div>
-                    </div>
-                    <div id="mobile-courses-view" class="mobile-tab-content">
-                       <div id="mobile-courses-list"></div>
-                    </div>
-                    <div id="mobile-summary-view" class="mobile-tab-content">
-                       <div class="my-schedule-container" id="mobile-my-schedule-container">
-                           <div class="card">
-                               <div class="conflict-summary-banner" id="mobile-conflict-banner"><i class="ri-alert-fill"></i><span>يوجد تعارض في جدولك!</span></div>
-                               <div class="my-schedule-section" id="mobile-my-schedule-summary">
-                                   <div id="mobile-my-schedule-table-container" class="my-schedule-table-wrapper"></div>
-                                   <div class="my-schedule-footer"><div class="total-credits-summary" id="mobile-total-credits-summary"></div></div>
-                               </div>
-                           </div>
-                       </div>
-                    </div>
-                    <div id="mobile-settings-view" class="mobile-tab-content">
-                        <!-- Mobile settings will be built by JS -->
-                    </div>
-                </main>
-                <nav class="mobile-nav" id="mobile-nav">
-                    <button class="mobile-nav-btn active" data-tab="mobile-calendar-view" data-title="الجدول"><i class="ri-calendar-event-line"></i><span>الجدول</span></button>
-                    <button class="mobile-nav-btn" data-tab="mobile-courses-view" data-title="المقررات"><i class="ri-layout-grid-line"></i><span>المقررات</span></button>
-                    <button class="mobile-nav-btn" data-tab="mobile-summary-view" data-title="قائمتي"><i class="ri-list-check-2"></i><span>قائمتي</span></button>
-                    <button class="mobile-nav-btn" data-tab="mobile-settings-view" data-title="الإعدادات"><i class="ri-settings-3-line"></i><span>الإعدادات</span></button>
-                </nav>
-            </div>
-        </div>
-        <!-- END: MOBILE VIEW CONTAINER -->
-
-        <!-- START: DESKTOP VIEW CONTAINER (Unchanged) -->
+        <div id="mobile-unsupported"><h2>العرض غير مدعوم</h2><p>يرجى فتح الصفحة من جهاز لابتوب.</p><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit">MUTLAQ1</a></div>
         <div class="page-wrapper">
             <main class="main-content custom-scrollbar">
                 <header class="main-header"><h1><i class="ri-calendar-event-line"></i> QU Schedule</h1><div class="header-actions"><button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button><button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button></div></header>
@@ -579,110 +346,23 @@
             </aside>
             <div class="modal-overlay" id="modal-overlay"></div><div class="settings-modal" id="settings-modal"></div>
         </div>
-        <!-- END: DESKTOP VIEW CONTAINER -->
-
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024;
+                // Initialize cosmic background
+                initCosmicBackground();
                 
-                if (isMobile) {
+                // Enhanced mobile detection with improved threshold
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 768) {
                     document.body.classList.add('mobile-view');
+                    return;
                 }
-
-                // Enhanced Starfield Animation
-                function initStarfield() {
-                    const canvas = document.getElementById('starfield-canvas');
-                    if (!canvas) return;
-                    
-                    const ctx = canvas.getContext('2d');
-                    
-                    const resizeCanvas = () => {
-                        canvas.width = window.innerWidth;
-                        canvas.height = window.innerHeight;
-                    };
-                    
-                    resizeCanvas();
-                    window.addEventListener('resize', resizeCanvas);
-                    
-                    const stars = [];
-                    const meteors = [];
-                    
-                    // Create stars
-                    for (let i = 0; i < 150; i++) {
-                        stars.push({
-                            x: Math.random() * canvas.width,
-                            y: Math.random() * canvas.height,
-                            size: Math.random() * 1.5 + 0.5,
-                            opacity: Math.random() * 0.8 + 0.2,
-                            twinkleSpeed: Math.random() * 0.02 + 0.01,
-                            twinklePhase: Math.random() * Math.PI * 2
-                        });
-                    }
-                    
-                    // Animation loop
-                    const animate = () => {
-                        ctx.clearRect(0, 0, canvas.width, canvas.height);
-                        
-                        // Draw and animate stars
-                        stars.forEach(star => {
-                            star.twinklePhase += star.twinkleSpeed;
-                            const twinkle = Math.sin(star.twinklePhase) * 0.3 + 0.7;
-                            
-                            ctx.globalAlpha = star.opacity * twinkle;
-                            ctx.fillStyle = '#ffffff';
-                            ctx.beginPath();
-                            ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                            ctx.fill();
-                        });
-                        
-                        // Occasionally add meteors
-                        if (Math.random() < 0.002) {
-                            meteors.push({
-                                x: -30,
-                                y: Math.random() * canvas.height * 0.5,
-                                speedX: Math.random() * 3 + 2,
-                                speedY: Math.random() * 1.5 + 0.5,
-                                life: 1
-                            });
-                        }
-                        
-                        // Draw meteors
-                        for (let i = meteors.length - 1; i >= 0; i--) {
-                            const meteor = meteors[i];
-                            
-                            meteor.x += meteor.speedX;
-                            meteor.y += meteor.speedY;
-                            meteor.life -= 0.008;
-                            
-                            ctx.globalAlpha = meteor.life;
-                            ctx.fillStyle = '#ffffff';
-                            ctx.beginPath();
-                            ctx.arc(meteor.x, meteor.y, 1.5, 0, Math.PI * 2);
-                            ctx.fill();
-                            
-                            if (meteor.x > canvas.width + 30 || meteor.life <= 0) {
-                                meteors.splice(i, 1);
-                            }
-                        }
-                        
-                        ctx.globalAlpha = 1;
-                        requestAnimationFrame(animate);
-                    };
-                    
-                    animate();
-                }
-
-                // Initialize starfield
-                initStarfield();
 
                 const QU_ScheduleApp = {
-                    isMobile,
                     state: {
                         calendar: null,
-                        mobileCalendar: null,
                         allCoursesData: [],
                         groupedCourses: {},
-                        linkedCourseGroups: {},
+                        linkedCourseGroups: {}, // NEW: To store linked courses by name
                         schedules: [],
                         activeScheduleIndex: 0,
                         hiddenCourseCodes: new Set(),
@@ -694,7 +374,7 @@
                             minTime: '08:00:00',
                             maxTime: '22:00:00',
                             hiddenCourseCodes: [],
-                            hideClosedCourses: false
+                            hideClosedCourses: false // NEW: Setting for hiding closed courses
                         }
                     },
                     constants: {
@@ -716,525 +396,23 @@
                         this._setupEventListeners();
                         this._loadSettings();
                         this._loadCustomColors();
-
-                        if (this.isMobile) {
-                            this.initMobileView();
-                        } else {
-                            this.initDesktopView();
-                        }
-                    },
-
-                    initDesktopView() {
                         this._initializeCalendar();
                         this._loadDataFromStorage();
                         this._listenForDataFromOpener();
                         this._updateBookmarkletCode();
                     },
-                    
-                    initMobileView() {
-                        const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
-                        if (storedCourses) {
-                            this.setupMobileUIWithData(JSON.parse(storedCourses));
-                        } else {
-                            this.dom.mobileWelcomeScreen.style.display = 'flex';
-                            this.dom.mobileAppContainer.style.display = 'none';
-                        }
-                    },
 
-                    setupMobileUIWithData(courses) {
-                        this.dom.mobileWelcomeScreen.style.display = 'none';
-                        this.dom.mobileAppContainer.style.display = 'flex';
-                        this._processAndDisplayData(courses);
-                        this._loadSchedules();
-                        this._initializeMobileCalendar();
-                        this.updateFullUI();
-                    },
-                
-                    _populateDOMElements() {
-                        if (this.isMobile) {
-                            const mobileIds = ['mobile-view-container', 'mobile-welcome-screen', 'mobile-app-container', 'mobile-header-title', 'mobile-calendar', 'mobile-courses-list', 'mobile-my-schedule-container', 'mobile-my-schedule-table-container', 'mobile-conflict-banner', 'mobile-total-credits-summary', 'mobile-settings-view', 'mobile-import-data-btn', 'mobile-import-file-input', 'mobile-nav'];
-                            mobileIds.forEach(id => {
-                                this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
-                            });
-                             this.dom.mobileTabContents = document.querySelectorAll('.mobile-tab-content');
-                             this.dom.mobileNavBtns = document.querySelectorAll('.mobile-nav-btn');
-                        } else {
-                            const desktopIds = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-table-container', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 'conflict-banner', 'schedule-tabs-container'];
-                            desktopIds.forEach(id => {
-                                this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
-                            });
-                            this.dom.tabButtons = document.querySelectorAll('.tab-btn');
-                            this.dom.tabContents = document.querySelectorAll('.tab-content');
-                        }
-                    },
-
-                    _setupEventListeners() {
-                        if (this.isMobile) {
-                           this.dom.mobileImportDataBtn.addEventListener('click', () => this.dom.mobileImportFileInput.click());
-                           this.dom.mobileImportFileInput.addEventListener('change', e => this._handleMobileCourseImport(e));
-                           this.dom.mobileNav.addEventListener('click', e => this._handleMobileTabClick(e));
-                           document.getElementById('mobile-courses-list').addEventListener('click', e => this._handleCourseListClick(e));
-                        } else {
-                            this.dom.clearCalendarBtn.addEventListener('click', () => this._handleClearCalendar());
-                            this.dom.settingsBtn.addEventListener('click', () => this._toggleSettingsModal(true));
-                            this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
-                            this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
-                            this.dom.coursesList.addEventListener('click', e => this._handleCourseListClick(e));
-                            this.dom.coursesList.addEventListener('mouseover', e => this._handleSectionHover(e, true));
-                            this.dom.coursesList.addEventListener('mouseout', e => this._handleSectionHover(e, false));
-                        }
-                    },
-                    
-                    _handleMobileTabClick(event) {
-                        const btn = event.target.closest('.mobile-nav-btn');
-                        if (!btn) return;
-
-                        this.dom.mobileNavBtns.forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        
-                        this.dom.mobileTabContents.forEach(c => c.classList.remove('active'));
-                        document.getElementById(btn.dataset.tab).classList.add('active');
-
-                        this.dom.mobileHeaderTitle.textContent = btn.dataset.title;
-                    },
-                    
-                    _handleMobileCourseImport(e) {
-                        const file = e.target.files[0];
-                        if (!file) return;
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            try {
-                                const data = JSON.parse(event.target.result);
-                                if (data && data.type === 'QU_SCHEDULE_RAW_COURSES' && Array.isArray(data.courses)) {
-                                    localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(data.courses));
-                                    this.schedules = []; // Reset schedules
-                                    this.setupMobileUIWithData(data.courses);
-                                    this._showToast('success', 'تم استيراد بيانات المقررات بنجاح!');
-                                } else {
-                                    throw new Error('Invalid file format');
-                                }
-                            } catch (error) {
-                                Swal.fire('خطأ!', 'ملف غير صالح. تأكد من أنه ملف بيانات المقررات الذي تم تصديره.', 'error');
-                            }
-                        };
-                        reader.readAsText(file);
-                        e.target.value = '';
-                    },
-
-                    _initializeCalendar() {
-                        if (this.state.calendar) this.state.calendar.destroy();
-                        const calendarOptions = {
-                            initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false, events: [], dir: 'rtl',
-                            dayHeaderFormat: { weekday: 'long' }, slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
-                            hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false,
-                            dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; },
-                            eventContent: (arg) => {
-                                const props = arg.event.extendedProps;
-                                const wrapper = document.createElement('div');
-                                wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;';
-                                wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ri-map-pin-line"></i> ${props.location}</small>`;
-                                return { domNodes: [wrapper] };
-                            },
-                            windowResize: () => { this.state.calendar.updateSize(); }
-                        };
-                        this.state.calendar = new FullCalendar.Calendar(this.dom.calendar,calendarOptions);
-                        this.state.calendar.render();
-                    },
-
-                     _initializeMobileCalendar() {
-                        if (this.state.mobileCalendar) this.state.mobileCalendar.destroy();
-                        const calendarOptions = {
-                            initialView: 'timeGridDay',
-                            locale: 'ar',
-                            headerToolbar: { start: 'title', center: '', end: 'prev,next' },
-                            allDaySlot: false, events: [], dir: 'rtl',
-                            slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
-                            hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6],
-                            eventContent: (arg) => {
-                                const props = arg.event.extendedProps;
-                                return { html: `<div style="font-size:0.75rem; line-height:1.3;"><b>${arg.event.title.split('(')[0].trim()}</b><br>${props.section} - ${props.location}</div>` };
-                            },
-                        };
-                        this.state.mobileCalendar = new FullCalendar.Calendar(this.dom.mobileCalendar, calendarOptions);
-                        this.state.mobileCalendar.render();
-                    },
-
-                    updateFullUI() {
-                         if (this.isMobile) {
-                             this._renderCoursesList(this.dom.mobileCoursesList);
-                             this.updateCalendarAndConflicts();
-                         } else {
-                            this._renderScheduleTabs();
-                            this._renderCoursesList(this.dom.coursesList);
-                            this.updateCalendarAndConflicts();
-                         }
-                    },
-                    
-                    updateCalendarAndConflicts() {
-                        const calendarInstance = this.isMobile ? this.state.mobileCalendar : this.state.calendar;
-                        if (!calendarInstance) return;
-
-                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
-                        
-                        calendarInstance.removeAllEvents();
-                        
-                        document.querySelectorAll('.section-btn').forEach(btn => {
-                            btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
-                        });
-
-                        const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-                        const conflictMap = this._calculateConflicts(selectedCourseDetails);
-                        
-                        selectedCourseDetails.forEach(section => {
-                            const group = this.state.groupedCourses[section.code];
-                            if (group && !this.state.hiddenCourseCodes.has(section.code)) {
-                                const lectureEvents = this._createLectureEventsForSection(section, false, group.color);
-                                calendarInstance.addEventSource(lectureEvents);
-                            }
-                        });
-                        
-                        if(!this.isMobile) this._renderFinalExams(selectedCourseDetails);
-                        
-                        this._renderMyScheduleSummary(selectedCourseDetails, conflictMap);
-                        this._updateAvailableSectionsUI(selectedCourseDetails);
-                        this._saveSchedules();
-                    },
-
-                    _renderCoursesList(container) {
-                        if(!container) return;
-                        container.innerHTML = '';
-                        
-                        const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
-                        const visibleCourses = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code));
-
-                        if (Object.keys(this.state.groupedCourses).length > 0 && visibleCourses.length === 0) {
-                            container.innerHTML = `<div class="no-data"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
-                            return;
-                        }
-
-                        visibleCourses.sort((a, b) => a.code.localeCompare(b.code)).forEach((group, i) => {
-                            const sectionsToDisplay = this.state.userSettings.hideClosedCourses
-                                ? group.sections.filter(section => !section.status.includes('مغلقة'))
-                                : group.sections;
-
-                            if (sectionsToDisplay.length === 0) return;
-
-                            const courseItem = document.createElement('div');
-                            courseItem.className = 'course-item';
-                            courseItem.style.animationDelay = `${i * 50}ms`;
-
-                            const sectionsHTML = sectionsToDisplay.map(section => {
-                                const isNoTime = section.time === 'غير محدد';
-                                return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`;
-                            }).join('');
-                            
-                            courseItem.innerHTML = `<div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
-                            container.appendChild(courseItem);
-                        });
-                    },
-                    
-                     _renderMyScheduleSummary(selectedCourses, conflictMap) {
-                        const container = this.isMobile ? this.dom.mobileMyScheduleContainer : this.dom.myScheduleContainer;
-                        const conflictBanner = this.isMobile ? this.dom.mobileConflictBanner : this.dom.conflictBanner;
-                        const tableContainer = this.isMobile ? this.dom.mobileMyScheduleTableContainer : this.dom.myScheduleTableContainer;
-                        const creditsSummary = this.isMobile ? this.dom.mobileTotalCreditsSummary : this.dom.totalCreditsSummary;
-
-                        container.style.display = selectedCourses.length === 0 ? 'none' : 'flex';
-                        if (selectedCourses.length === 0) return;
-
-                        conflictBanner.style.display = conflictMap.size > 0 ? 'flex' : 'none';
-                        tableContainer.innerHTML = '';
-                        
-                        const table = document.createElement('table');
-                        table.className = 'my-schedule-table';
-                        table.innerHTML = `<thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>الحالة</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>`;
-                        const tbody = document.createElement('tbody');
-                        let totalCredits = 0;
-                        const uniqueCourseCodes = new Set();
-                        selectedCourses.sort( (a, b) => a.code.localeCompare(b.code)).forEach(course => {
-                            if (!uniqueCourseCodes.has(course.code)) {
-                                totalCredits += parseInt(course.hours, 10) || 0;
-                                uniqueCourseCodes.add(course.code);
-                            }
-                            const examText = course.examPeriodId || "لا يوجد";
-                            const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
-                            const conflictMessages = conflictMap.get(course.uniqueId);
-                            const isConflicted = !!conflictMessages;
-                            const row = document.createElement('tr');
-                            if (isConflicted) row.classList.add('has-conflict');
-                            
-                            // For mobile view, add data-label attributes for responsive table
-                            row.innerHTML = `
-                                <td data-label="المقرر" class="course-cell"><div class="course-code">${isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMessages.join('\n')}"></i>` : ''} ${course.code}</div><div class="course-name">${course.name}</div></td>
-                                <td data-label="الشعبة" class="section-cell"><div class="section-number">${course.section}</div><div class="section-type">${course.type}</div></td>
-                                <td data-label="المحاضر">${course.instructor}</td>
-                                <td data-label="المواعيد">${course.time.replace(/<br>/g, ' ')}</td>
-                                <td data-label="الحالة"><span class="status-badge status-${statusClass}">${course.status}</span></td>
-                                <td data-label="الاختبار">${examText}</td>
-                                <td data-label="المكان">${course.location}</td>
-                                <td data-label="الساعات"><div class="hours-value">${course.hours}</div></td>
-                            `;
-                            tbody.appendChild(row);
-                        });
-                        table.appendChild(tbody);
-                        tableContainer.appendChild(table);
-                        creditsSummary.innerHTML = `إجمالي الساعات: <span>${totalCredits}</span>`;
-                    },
-
-                    _buildSettingsModal() {
-                        const modalContainer = this.isMobile ? this.dom.mobileSettingsView : this.dom.settingsModal;
-                        if (!modalContainer) return;
-
-                        let courseColorsHTML = Object.values(this.state.groupedCourses).sort( (a, b) => a.code.localeCompare(b.code)).map(group => `<div class="settings-item"><div class="settings-item-label"><span style="color: ${group.color}; font-weight: 600;">${group.name} (${group.code})</span></div><label class="color-picker-label" style="background-color: ${group.color};"><input type="color" class="color-picker-input" data-course-code="${group.code}" value="${group.color}"></label></div>`).join('');
-                        if (!courseColorsHTML) courseColorsHTML = '<p style="color: var(--color-text-muted); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
-                        
-                        let courseVisibilityHTML = Object.values(this.state.groupedCourses).sort( (a, b) => a.code.localeCompare(b.code)).map(group => {
-                            const isHidden = this.state.hiddenCourseCodes.has(group.code);
-                            const rgb = this._hexToRgb(group.color);
-                            return `<button class="course-visibility-btn ${isHidden ? 'hidden' : 'visible'}" data-course-code="${group.code}" style="--item-color: ${group.color}; --item-color-rgb: ${rgb};"><span class="color-dot"></span>${group.code}</button>`;
-                        }).join('');
-                        if (!courseVisibilityHTML) courseVisibilityHTML = '<p style="color: var(--color-text-muted); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
-                        
-                        const desktopDataManagement = `
-                            <button class="data-btn" id="export-raw-data-btn"><i class="ri-file-download-line"></i>تصدير بيانات المقررات (للجوال)</button>
-                            <button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button>
-                            <button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button>
-                            <input type="file" id="import-file-input" accept=".json" style="display: none;">
-                        `;
-
-                        const mobileDataManagement = `
-                            <button class="data-btn" id="mobile-reimport-data-btn"><i class="ri-loop-left-line"></i>إعادة استيراد بيانات المقررات</button>
-                            <input type="file" id="mobile-reimport-file-input" accept=".json" style="display: none;">
-                        `;
-
-                        const settingsContent = `
-                            <div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div>
-                            <div class="settings-group"><h4 class="settings-group-title"><i class="ri-filter-3-line"></i>ترشيح المقررات</h4><div class="settings-item"><div class="settings-item-label"><span>إخفاء الشعب المغلقة</span><small>لإزالة الشعب غير المتاحة من القائمة</small></div><label class="toggle-switch"><input type="checkbox" id="hide-closed-toggle"><span class="slider"></span></label></div><h4 class="settings-group-title" style="margin-top: 2rem;"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div></div>
-                            <div class="settings-group"><h4 class="settings-group-title"><i class="ri-paint-brush-line"></i>ألوان المقررات</h4><div id="course-colors-list">${courseColorsHTML}</div></div>
-                            <div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><div id="min-time-select-container"></div><div id="max-time-select-container"></div></div></div></div>
-                            <div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="data-management-zone">${this.isMobile ? mobileDataManagement : desktopDataManagement}<button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button></div></div>
-                            <footer class="sidebar-footer" style="border:none; padding: 1rem 0 0;"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ri-telegram-line"></i> MUTLAQ1</a></footer>
-                        `;
-                        
-                        if (this.isMobile) {
-                            modalContainer.innerHTML = settingsContent;
-                        } else {
-                            modalContainer.innerHTML = `
-                                <div class="modal-header"><h3><i class="ri-settings-3-line"></i> الإعدادات</h3><i class="ri-close-line modal-close-btn" id="close-modal-btn"></i></div>
-                                <div class="modal-content custom-scrollbar">${settingsContent}</div>`;
-                        }
-                        this._attachModalEventListeners();
-                        this._populateTimeSelects();
-                        this._applySettings();
-                    },
-
-                    _attachModalEventListeners() {
-                        const container = this.isMobile ? document.getElementById('mobile-settings-view') : this.dom.settingsModal;
-                        
-                        if (!this.isMobile) {
-                            container.querySelector('#close-modal-btn').addEventListener('click', () => this._toggleSettingsModal(false));
-                            container.querySelector('#export-raw-data-btn').addEventListener('click', () => this._handleExportRawData());
-                            container.querySelector('#export-btn').addEventListener('click', () => this._handleExport());
-                            container.querySelector('#import-btn').addEventListener('click', () => container.querySelector('#import-file-input').click());
-                            container.querySelector('#import-file-input').addEventListener('change', e => this._handleImport(e));
-                        } else {
-                            container.querySelector('#mobile-reimport-data-btn').addEventListener('click', () => container.querySelector('#mobile-reimport-file-input').click());
-                            container.querySelector('#mobile-reimport-file-input').addEventListener('change', e => this._handleMobileCourseImport(e));
-                        }
-                        
-                        container.querySelector('#course-colors-list').addEventListener('change', e => this._handleCourseColorChange(e));
-                        container.querySelector('#course-visibility-list').addEventListener('click', e => this._handleVisibilityToggle(e));
-                        container.querySelector('#reset-app-btn').addEventListener('click', () => this._handleReset());
-                    },
-                    
-                    _handleExportRawData() {
-                        const rawCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
-                        if (!rawCourses) {
-                            Swal.fire('لا توجد بيانات!', 'الرجاء تشغيل الأداة أولاً لاستخراج بيانات المقررات.', 'warning');
-                            return;
-                        }
-
-                        const dataToExport = {
-                            type: 'QU_SCHEDULE_RAW_COURSES',
-                            version: 20,
-                            courses: JSON.parse(rawCourses)
-                        };
-                        
-                        const dataStr = JSON.stringify(dataToExport, null, 2);
-                        const dataBlob = new Blob([dataStr], { type: 'application/json' });
-                        const url = URL.createObjectURL(dataBlob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = `qu_courses_data.json`;
-                        a.click();
-                        URL.revokeObjectURL(url);
-                    },
-
-                    // Initialize the starfield animation
-                    initStarfield() {
-                        const canvas = document.getElementById('starfield-canvas');
-                        const ctx = canvas.getContext('2d');
-                        
-                        const resizeCanvas = () => {
-                            canvas.width = window.innerWidth;
-                            canvas.height = window.innerHeight;
-                        };
-                        
-                        resizeCanvas();
-                        window.addEventListener('resize', resizeCanvas);
-                        
-                        const stars = [];
-                        const meteors = [];
-                        const particles = [];
-                        
-                        // Create stars
-                        for (let i = 0; i < 200; i++) {
-                            stars.push({
-                                x: Math.random() * canvas.width,
-                                y: Math.random() * canvas.height,
-                                size: Math.random() * 2 + 0.5,
-                                opacity: Math.random() * 0.8 + 0.2,
-                                twinkleSpeed: Math.random() * 0.02 + 0.01,
-                                twinklePhase: Math.random() * Math.PI * 2
-                            });
-                        }
-                        
-                        // Create floating particles
-                        for (let i = 0; i < 30; i++) {
-                            particles.push({
-                                x: Math.random() * canvas.width,
-                                y: Math.random() * canvas.height,
-                                size: Math.random() * 3 + 1,
-                                speedX: (Math.random() - 0.5) * 0.5,
-                                speedY: (Math.random() - 0.5) * 0.5,
-                                opacity: Math.random() * 0.6 + 0.2,
-                                hue: Math.random() * 60 + 240 // Blue to purple range
-                            });
-                        }
-                        
-                        // Animation loop
-                        const animate = () => {
-                            ctx.clearRect(0, 0, canvas.width, canvas.height);
-                            
-                            // Draw and animate stars
-                            stars.forEach(star => {
-                                star.twinklePhase += star.twinkleSpeed;
-                                const twinkle = Math.sin(star.twinklePhase) * 0.3 + 0.7;
-                                
-                                ctx.globalAlpha = star.opacity * twinkle;
-                                ctx.fillStyle = '#ffffff';
-                                ctx.beginPath();
-                                ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                                ctx.fill();
-                                
-                                // Add glow effect for larger stars
-                                if (star.size > 1.5) {
-                                    ctx.globalAlpha = (star.opacity * twinkle) * 0.3;
-                                    ctx.beginPath();
-                                    ctx.arc(star.x, star.y, star.size * 3, 0, Math.PI * 2);
-                                    ctx.fill();
-                                }
-                            });
-                            
-                            // Draw and animate particles
-                            particles.forEach(particle => {
-                                particle.x += particle.speedX;
-                                particle.y += particle.speedY;
-                                
-                                // Wrap around screen
-                                if (particle.x < 0) particle.x = canvas.width;
-                                if (particle.x > canvas.width) particle.x = 0;
-                                if (particle.y < 0) particle.y = canvas.height;
-                                if (particle.y > canvas.height) particle.y = 0;
-                                
-                                ctx.globalAlpha = particle.opacity;
-                                ctx.fillStyle = `hsl(${particle.hue}, 70%, 60%)`;
-                                ctx.beginPath();
-                                ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-                                ctx.fill();
-                                
-                                // Add particle glow
-                                ctx.globalAlpha = particle.opacity * 0.3;
-                                ctx.beginPath();
-                                ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
-                                ctx.fill();
-                            });
-                            
-                            // Occasionally add meteors
-                            if (Math.random() < 0.003) {
-                                meteors.push({
-                                    x: -50,
-                                    y: Math.random() * canvas.height * 0.5,
-                                    speedX: Math.random() * 5 + 3,
-                                    speedY: Math.random() * 2 + 1,
-                                    life: 1,
-                                    trail: []
-                                });
-                            }
-                            
-                            // Draw and animate meteors
-                            for (let i = meteors.length - 1; i >= 0; i--) {
-                                const meteor = meteors[i];
-                                
-                                meteor.trail.push({x: meteor.x, y: meteor.y});
-                                if (meteor.trail.length > 20) meteor.trail.shift();
-                                
-                                meteor.x += meteor.speedX;
-                                meteor.y += meteor.speedY;
-                                meteor.life -= 0.005;
-                                
-                                // Draw trail
-                                meteor.trail.forEach((point, index) => {
-                                    const trailOpacity = (index / meteor.trail.length) * meteor.life;
-                                    ctx.globalAlpha = trailOpacity;
-                                    ctx.fillStyle = '#ffffff';
-                                    ctx.beginPath();
-                                    ctx.arc(point.x, point.y, 1, 0, Math.PI * 2);
-                                    ctx.fill();
-                                });
-                                
-                                // Draw meteor head
-                                ctx.globalAlpha = meteor.life;
-                                ctx.fillStyle = '#ffffff';
-                                ctx.beginPath();
-                                ctx.arc(meteor.x, meteor.y, 2, 0, Math.PI * 2);
-                                ctx.fill();
-                                
-                                if (meteor.x > canvas.width + 50 || meteor.y > canvas.height + 50 || meteor.life <= 0) {
-                                    meteors.splice(i, 1);
-                                }
-                            }
-                            
-                            ctx.globalAlpha = 1;
-                            requestAnimationFrame(animate);
-                        };
-                        
-                        animate();
-                    }
-                });
-
-                // Initialize enhanced features
-                QU_ScheduleApp.initStarfield();
-                
-                // Add floating particles to the cosmic background
-                const addFloatingParticles = () => {
-                    const cosmicContainer = document.querySelector('.cosmic-bg-container');
-                    
-                    for (let i = 0; i < 15; i++) {
-                        const particle = document.createElement('div');
-                        particle.className = 'floating-particle';
-                        particle.style.left = Math.random() * 100 + '%';
-                        particle.style.top = Math.random() * 100 + '%';
-                        particle.style.animationDelay = Math.random() * 6 + 's';
-                        particle.style.animationDuration = (Math.random() * 4 + 4) + 's';
-                        cosmicContainer.appendChild(particle);
-                    }
+                    // Other methods will be placed here
                 };
                 
-                addFloatingParticles();
+                // Binding 'this' for all functions to ensure context is correct
+                for (const key of Object.getOwnPropertyNames(Object.getPrototypeOf(QU_ScheduleApp))) {
+                    if (key !== 'constructor' && typeof QU_ScheduleApp[key] === 'function') {
+                       QU_ScheduleApp[key] = QU_ScheduleApp[key].bind(QU_ScheduleApp);
+                    }
+                }
 
-                // Extend QU_ScheduleApp with additional methods
+                // Add methods to the prototype
                 Object.assign(QU_ScheduleApp, {
                     _loadDataFromStorage() {
                         const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
@@ -1253,6 +431,7 @@
                             this.dom.installSection.style.display = 'block';
                         }
                     },
+
                     _listenForDataFromOpener() {
                         window.addEventListener('message', (event) => {
                             if (event.data && event.data.type === 'universityCoursesData') {
@@ -1270,8 +449,9 @@
                             window.opener.postMessage('request_schedule_data', '*');
                         }
                     },
+
                     _processAndDisplayData(courses) {
-                        if (!this.isMobile) this.dom.installSection.style.display = 'none';
+                        this.dom.installSection.style.display = 'none';
                         this.state.allCoursesData = courses.map((section, index) => ({
                             ...section,
                             uniqueId: `${section.code}-${section.section}-${index}`,
@@ -1301,8 +481,8 @@
                             group.color = this.state.customColors[group.code] || this.constants.COLOR_PALETTE[colorIndex++ % this.constants.COLOR_PALETTE.length];
                         });
 
-                        if (!this.isMobile) document.getElementById('no-data-message').style.display = 'none';
-                        
+                        document.getElementById('no-data-message').style.display = 'none';
+                        this._renderCoursesList();
                         this._buildSettingsModal();
                     },
                     
@@ -1319,12 +499,16 @@
                                     }));
                                     this.state.activeScheduleIndex = parsed.activeScheduleIndex < parsed.schedules.length ? parsed.activeScheduleIndex : 0;
                                 }
-                            } catch (e) { console.error("Error loading schedules:", e); localStorage.removeItem(this.constants.STORAGE_KEYS.SCHEDULES); }
+                            } catch (e) {
+                                console.error("Error loading schedules:", e);
+                                localStorage.removeItem(this.constants.STORAGE_KEYS.SCHEDULES);
+                            }
                         }
                         if (this.state.schedules.length === 0) {
                            this._addSchedule("جدول ١", true);
                         }
                     },
+                    
                     _saveSchedules() {
                         const serializableSchedules = {
                            activeScheduleIndex: this.state.activeScheduleIndex,
@@ -1336,11 +520,50 @@
                         };
                         localStorage.setItem(this.constants.STORAGE_KEYS.SCHEDULES, JSON.stringify(serializableSchedules));
                     },
+
                     _loadCustomColors() {
                         const stored = localStorage.getItem(this.constants.STORAGE_KEYS.COLORS);
-                        if (stored) { try { this.state.customColors = JSON.parse(stored); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.COLORS); } }
+                        if (stored) {
+                            try { this.state.customColors = JSON.parse(stored); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.COLORS); }
+                        }
                     },
-                    _saveCustomColors() { localStorage.setItem(this.constants.STORAGE_KEYS.COLORS, JSON.stringify(this.state.customColors)); },
+                    _saveCustomColors() {
+                        localStorage.setItem(this.constants.STORAGE_KEYS.COLORS, JSON.stringify(this.state.customColors));
+                    },
+                    
+                    updateFullUI() {
+                        this._renderScheduleTabs();
+                        this.updateCalendarAndConflicts();
+                    },
+
+                    updateCalendarAndConflicts() {
+                        if (!this.state.calendar) return;
+
+                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                        const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
+                        
+                        this.state.calendar.removeAllEvents();
+                        
+                        document.querySelectorAll('.section-btn').forEach(btn => {
+                            btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
+                        });
+
+                        const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+                        const conflictMap = this._calculateConflicts(selectedCourseDetails);
+                        
+                        selectedCourseDetails.forEach(section => {
+                            const group = this.state.groupedCourses[section.code];
+                            if (group && !this.state.hiddenCourseCodes.has(section.code)) {
+                                const lectureEvents = this._createLectureEventsForSection(section, false, group.color);
+                                this.state.calendar.addEventSource(lectureEvents);
+                            }
+                        });
+                        
+                        this._renderFinalExams(selectedCourseDetails);
+                        this._renderMyScheduleSummary(selectedCourseDetails, conflictMap);
+                        this._updateAvailableSectionsUI(selectedCourseDetails);
+                        this._saveSchedules();
+                    },
                     
                     _renderScheduleTabs() {
                         const container = this.dom.scheduleTabsContainer;
@@ -1378,8 +601,74 @@
                         fragment.appendChild(addButton);
                         container.appendChild(fragment);
                     },
+
+                    _renderCoursesList() {
+                        const coursesListContainer = this.dom.coursesList;
+                        coursesListContainer.innerHTML = '';
+                        
+                        const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
+                        const visibleCourses = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code));
+
+                        if (Object.keys(this.state.groupedCourses).length > 0 && visibleCourses.length === 0) {
+                            coursesListContainer.innerHTML = `<div class="no-data"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
+                            return;
+                        }
+
+                        visibleCourses.sort((a, b) => a.code.localeCompare(b.code)).forEach((group, i) => {
+                            const sectionsToDisplay = this.state.userSettings.hideClosedCourses
+                                ? group.sections.filter(section => !section.status.includes('مغلقة'))
+                                : group.sections;
+
+                            if (sectionsToDisplay.length === 0) return;
+
+                            const courseItem = document.createElement('div');
+                            courseItem.className = 'course-item';
+                            courseItem.style.animationDelay = `${i * 50}ms`;
+
+                            const sectionsHTML = sectionsToDisplay.map(section => {
+                                const isNoTime = section.time === 'غير محدد';
+                                return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`;
+                            }).join('');
+                            
+                            courseItem.innerHTML = `<div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div>`;
+                            coursesListContainer.appendChild(courseItem);
+                        });
+                    },
+
+                    _renderMyScheduleSummary(selectedCourses, conflictMap) {
+                        const container = this.dom.myScheduleContainer;
+                        container.style.display = selectedCourses.length === 0 ? 'none' : 'flex';
+                        if (selectedCourses.length === 0) return;
+
+                        this.dom.conflictBanner.style.display = conflictMap.size > 0 ? 'flex' : 'none';
+                        const tableContainer = this.dom.myScheduleTableContainer;
+                        tableContainer.innerHTML = '';
+                        
+                        const table = document.createElement('table');
+                        table.className = 'my-schedule-table';
+                        table.innerHTML = `<thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>الحالة</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>`;
+                        const tbody = document.createElement('tbody');
+                        let totalCredits = 0;
+                        const uniqueCourseCodes = new Set();
+                        selectedCourses.sort( (a, b) => a.code.localeCompare(b.code)).forEach(course => {
+                            if (!uniqueCourseCodes.has(course.code)) {
+                                totalCredits += parseInt(course.hours, 10) || 0;
+                                uniqueCourseCodes.add(course.code);
+                            }
+                            const examText = course.examPeriodId || "لا يوجد";
+                            const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
+                            const conflictMessages = conflictMap.get(course.uniqueId);
+                            const isConflicted = !!conflictMessages;
+                            const row = document.createElement('tr');
+                            if (isConflicted) row.classList.add('has-conflict');
+                            row.innerHTML = `<td class="course-cell"><div class="course-code">${isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMessages.join('\n')}"></i>` : ''} ${course.code}</div><div class="course-name">${course.name}</div></td><td class="section-cell"><div class="section-number">${course.section}</div><div class="section-type">${course.type}</div></td><td>${course.instructor}</td><td>${course.time.replace(/<br>/g, ' ')}</td><td><span class="status-badge status-${statusClass}">${course.status}</span></td><td>${examText}</td><td>${course.location}</td><td><div class="hours-value">${course.hours}</div></td>`;
+                            tbody.appendChild(row);
+                        });
+                        table.appendChild(tbody);
+                        tableContainer.appendChild(table);
+                        this.dom.totalCreditsSummary.innerHTML = `إجمالي الساعات: <span>${totalCredits}</span>`;
+                    },
                     _renderFinalExams(selectedCourses) {
-                        if (this.isMobile || !this.dom.examsList) return;
                         this.dom.examsList.innerHTML = '';
                         const uniqueExams = [...new Map(selectedCourses.map(e => e.examPeriodId ? [e.examPeriodId, e] : [e.uniqueId, e])).values()];
                         const validExams = uniqueExams.filter(e => e.examPeriodId);
@@ -1405,6 +694,14 @@
                                 }
                             }
                         });
+                    },
+                    _populateDOMElements() {
+                        const ids = ['courses-list', 'exams-list', 'my-schedule-container', 'my-schedule-summary', 'my-schedule-table-container', 'total-credits-summary', 'calendar', 'clear-calendar-btn', 'sidebar', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 'conflict-banner', 'schedule-tabs-container'];
+                        ids.forEach(id => {
+                            this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
+                        });
+                        this.dom.tabButtons = document.querySelectorAll('.tab-btn');
+                        this.dom.tabContents = document.querySelectorAll('.tab-content');
                     },
                     _calculateConflicts(selectedCourses) {
                         const conflictMap = new Map();
@@ -1470,8 +767,16 @@
                         if (period.includes('ص') && h === 12) h = 0;
                         return `${String(h).padStart(2, '0')}:${m}:00`;
                     },
+                    _setupEventListeners() {
+                        this.dom.clearCalendarBtn.addEventListener('click', () => this._handleClearCalendar());
+                        this.dom.settingsBtn.addEventListener('click', () => this._toggleSettingsModal(true));
+                        this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
+                        this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
+                        this.dom.coursesList.addEventListener('click', e => this._handleCourseListClick(e));
+                        this.dom.coursesList.addEventListener('mouseover', e => this._handleSectionHover(e, true));
+                        this.dom.coursesList.addEventListener('mouseout', e => this._handleSectionHover(e, false));
+                    },
                     _handleSectionHover(event, isHovering) {
-                        if (this.isMobile) return;
                         const sectionBtn = event.target.closest('.section-btn');
                         if (!sectionBtn) return;
                         if (isHovering) {
@@ -1513,66 +818,49 @@
                             header.parentElement.classList.toggle('open');
                         }
                     },
+                    
                     _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return;
-
-                        schedule.sections.add(sectionId);
-                        const linkedSectionIds = schedule.linkedSections.get(sectionId) || new Set();
-
-                        if (section.type && section.type.includes('محاضرة')) {
-                            const lectureNum = parseInt(section.section, 10);
-                            if (!isNaN(lectureNum)) {
-                                const labSectionNum = (lectureNum + 1).toString();
-                                const labSection = this.state.groupedCourses[section.code]?.sections.find(
-                                    s => s.section === labSectionNum && s.type && (s.type.includes('عملي') || s.type.includes('تدريب'))
-                                );
-
-                                if (labSection && !schedule.sections.has(labSection.uniqueId)) {
-                                    const tempSelectedForLab = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-                                    if (this._isSectionConflicted(labSection, tempSelectedForLab)) {
-                                        this._showToast('warning', `الشعبة العملية ${labSection.code}-${labSection.section} متعارضة ولم تتم إضافتها.`);
-                                    } else if (this.state.userSettings.hideClosedCourses && labSection.status.includes('مغلقة')) {
-                                        this._showToast('info', `الشعبة العملية ${labSection.code}-${labSection.section} مغلقة.`);
-                                    } else {
-                                        schedule.sections.add(labSection.uniqueId);
-                                        linkedSectionIds.add(labSection.uniqueId);
-                                        this._showToast('success', `تمت إضافة الشعبة العملية تلقائيًا: ${labSection.code}-${labSection.section}`);
-                                    }
-                                }
-                            }
-                        }
-                        const linkedGroup = this.state.linkedCourseGroups[section.name];
-                        if (linkedGroup) {
-                            const otherCourseCodes = linkedGroup.filter(code => code !== section.code);
-                            if (otherCourseCodes.length > 0) {
-                                for (const otherCode of otherCourseCodes) {
-                                    const correspondingSection = this.state.groupedCourses[otherCode]?.sections.find(s => s.section === section.section);
-                                    if (!correspondingSection || schedule.sections.has(correspondingSection.uniqueId)) continue;
-                                    
-                                    if (this.state.userSettings.hideClosedCourses && correspondingSection.status.includes('مغلقة')) {
-                                        this._showToast('info', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} مغلقة.`);
-                                        continue;
-                                    }
-                                    
-                                    const tempSelectedForLinked = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-
-                                    if (this._isSectionConflicted(correspondingSection, tempSelectedForLinked)) {
-                                        this._showToast('warning', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} متعارضة.`);
-                                        continue;
-                                    }
-
-                                    schedule.sections.add(correspondingSection.uniqueId);
-                                    linkedSectionIds.add(correspondingSection.uniqueId);
-                                    this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
-                                }
-                            }
-                        }
                         
+                        schedule.sections.add(sectionId);
+                        
+                        const linkedGroup = this.state.linkedCourseGroups[section.name];
+                        if (!linkedGroup) return;
+
+                        const otherCourseCodes = linkedGroup.filter(code => code !== section.code);
+                        if (otherCourseCodes.length === 0) return;
+
+                        const linkedSectionIds = new Set();
+                        
+                        for (const otherCode of otherCourseCodes) {
+                            const correspondingSection = this.state.groupedCourses[otherCode]?.sections.find(s => s.section === section.section);
+                            if (!correspondingSection) continue;
+                            
+                            if (schedule.sections.has(correspondingSection.uniqueId)) continue;
+
+                            if (this.state.userSettings.hideClosedCourses && correspondingSection.status.includes('مغلقة')) {
+                                this._showToast('info', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} مغلقة.`);
+                                continue;
+                            }
+                            
+                            // Temporarily add the main section to check for conflicts against the full potential schedule
+                            const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+
+                            if (this._isSectionConflicted(correspondingSection, tempSelectedDetails)) {
+                                this._showToast('warning', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} متعارضة.`);
+                                continue;
+                            }
+
+                            schedule.sections.add(correspondingSection.uniqueId);
+                            linkedSectionIds.add(correspondingSection.uniqueId);
+                            this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
+                        }
                         if (linkedSectionIds.size > 0) {
                            schedule.linkedSections.set(sectionId, linkedSectionIds);
                         }
                     },
+                    
                     _removeSectionAndUnlink(sectionId, schedule) {
                         schedule.sections.delete(sectionId);
 
@@ -1582,16 +870,20 @@
                             schedule.linkedSections.delete(sectionId);
                             if(linkedIds.size > 0) this._showToast('info', 'تمت إزالة الشعب المرتبطة.');
                         }
+
+                        // This part handles removing a "child" section, which will also remove the parent
                         for (const [triggerId, linkedIds] of schedule.linkedSections.entries()) {
                             if (linkedIds.has(sectionId)) {
                                 schedule.sections.delete(triggerId);
                                 linkedIds.forEach(id => schedule.sections.delete(id));
                                 schedule.linkedSections.delete(triggerId);
                                 if(linkedIds.size > 0) this._showToast('info', 'تمت إزالة المجموعة المرتبطة.');
+                                // Break because we found and processed the group
                                 break;
                             }
                         }
                     },
+
                     _handleClearCalendar() {
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         if (!activeSchedule || activeSchedule.sections.size === 0) {
@@ -1611,9 +903,11 @@
                             }
                         });
                     },
+
                     _showToast(icon, title) {
                          Swal.fire({ toast: true, position: 'bottom', icon: icon, title: title, showConfirmButton: false, timer: 3000, timerProgressBar: true });
                     },
+                    
                     _handleTabClick(button) {
                         this.dom.tabButtons.forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
@@ -1623,6 +917,26 @@
                     _updateBookmarkletCode() {
                         document.getElementById('install-section').innerHTML = `<h3>طريقة التثبيت</h3><p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p><a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية في متصفحك.', icon:'error'}); return false;">QU Schedule</a>`;
                     },
+                    _initializeCalendar() {
+                        if (this.state.calendar) this.state.calendar.destroy();
+                        const calendarOptions = {
+                            initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false, events: [], dir: 'rtl',
+                            dayHeaderFormat: { weekday: 'long' }, slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
+                            hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false,
+                            dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; },
+                            eventContent: (arg) => {
+                                const props = arg.event.extendedProps;
+                                const wrapper = document.createElement('div');
+                                wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;';
+                                wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ri-map-pin-line"></i> ${props.location}</small>`;
+                                return { domNodes: [wrapper] };
+                            },
+                            windowResize: () => { this.state.calendar.updateSize(); }
+                        };
+                        this.state.calendar = new FullCalendar.Calendar(this.dom.calendar,calendarOptions);
+                        this.state.calendar.render();
+                    },
+
                     _addSchedule(name, isDefault = false) {
                         const scheduleName = name || `جدول ${this.state.schedules.length + 1}`;
                         this.state.schedules.push({ name: scheduleName, sections: new Set(), linkedSections: new Map() });
@@ -1631,6 +945,7 @@
                             this.updateFullUI();
                         }
                     },
+
                     _switchSchedule(index) {
                         if (index !== this.state.activeScheduleIndex) {
                             this.state.activeScheduleIndex = index;
@@ -1645,7 +960,9 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 this.state.schedules.splice(index, 1);
-                                if (this.state.activeScheduleIndex >= index) { this.state.activeScheduleIndex = Math.max(0, this.state.activeScheduleIndex - 1); }
+                                if (this.state.activeScheduleIndex >= index) {
+                                    this.state.activeScheduleIndex = Math.max(0, this.state.activeScheduleIndex - 1);
+                                }
                                 if(this.state.schedules.length === 0){ this._addSchedule("جدول ١", true); }
                                 this.updateFullUI();
                                 this._showToast('success', 'تم حذف الجدول');
@@ -1657,7 +974,9 @@
                         if (trimmedName) {
                             this.state.schedules[index].name = trimmedName;
                             this._saveSchedules();
-                        } else { this.dom.scheduleTabsContainer.querySelector(`[data-index='${index}'] .schedule-tab-name`).textContent = this.state.schedules[index].name; }
+                        } else {
+                            this.dom.scheduleTabsContainer.querySelector(`[data-index='${index}'] .schedule-tab-name`).textContent = this.state.schedules[index].name;
+                        }
                     },
                     _adjustColorBrightness(hex, p) {
                         let r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
@@ -1687,12 +1006,50 @@
                     },
                     _loadSettings() {
                         const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
-                        if (saved) { try { this.state.userSettings = { ...this.state.userSettings, ...JSON.parse(saved) }; this.state.hiddenCourseCodes = new Set(this.state.userSettings.hiddenCourseCodes || []); } catch (e) {} }
+                        if (saved) {
+                            try {
+                                this.state.userSettings = { ...this.state.userSettings, ...JSON.parse(saved) };
+                                this.state.hiddenCourseCodes = new Set(this.state.userSettings.hiddenCourseCodes || []);
+                            } catch (e) {}
+                        }
                         this._applySettings();
                     },
                     _saveSettings() {
                         this.state.userSettings.hiddenCourseCodes = Array.from(this.state.hiddenCourseCodes);
                         localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS, JSON.stringify(this.state.userSettings));
+                    },
+                    _buildSettingsModal() {
+                        const modal = this.dom.settingsModal;
+                        let courseColorsHTML = Object.values(this.state.groupedCourses).sort( (a, b) => a.code.localeCompare(b.code)).map(group => `<div class="settings-item"><div class="settings-item-label"><span style="color: ${group.color}; font-weight: 600;">${group.name} (${group.code})</span></div><label class="color-picker-label" style="background-color: ${group.color};"><input type="color" class="color-picker-input" data-course-code="${group.code}" value="${group.color}"></label></div>`).join('');
+                        if (!courseColorsHTML) courseColorsHTML = '<p style="color: var(--color-text-muted); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
+                        let courseVisibilityHTML = Object.values(this.state.groupedCourses).sort( (a, b) => a.code.localeCompare(b.code)).map(group => {
+                            const isHidden = this.state.hiddenCourseCodes.has(group.code);
+                            const rgb = this._hexToRgb(group.color);
+                            return `<button class="course-visibility-btn ${isHidden ? 'hidden' : 'visible'}" data-course-code="${group.code}" style="--item-color: ${group.color}; --item-color-rgb: ${rgb};"><span class="color-dot"></span>${group.code}</button>`;
+                        }).join('');
+                        if (!courseVisibilityHTML) courseVisibilityHTML = '<p style="color: var(--color-text-muted); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
+                        
+                        modal.innerHTML = `
+                            <div class="modal-header"><h3><i class="ri-settings-3-line"></i> الإعدادات</h3><i class="ri-close-line modal-close-btn" id="close-modal-btn"></i></div>
+                            <div class="modal-content custom-scrollbar">
+                                <div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div>
+                                <div class="settings-group"><h4 class="settings-group-title"><i class="ri-filter-3-line"></i>ترشيح المقررات</h4><div class="settings-item"><div class="settings-item-label"><span>إخفاء الشعب المغلقة</span><small>لإزالة الشعب غير المتاحة من القائمة</small></div><label class="toggle-switch"><input type="checkbox" id="hide-closed-toggle"><span class="slider"></span></label></div><h4 class="settings-group-title" style="margin-top: 2rem;"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div></div>
+                                <div class="settings-group"><h4 class="settings-group-title"><i class="ri-paint-brush-line"></i>ألوان المقررات</h4><div id="course-colors-list">${courseColorsHTML}</div></div>
+                                <div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><div id="min-time-select-container"></div><div id="max-time-select-container"></div></div></div></div>
+                                <div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="data-management-zone"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button><input type="file" id="import-file-input" accept=".json" style="display: none;"><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button></div></div>
+                            </div>`;
+                        this._attachModalEventListeners();
+                        this._populateTimeSelects();
+                        this._applySettings();
+                    },
+                    _attachModalEventListeners() {
+                        this.dom.settingsModal.querySelector('#close-modal-btn').addEventListener('click', () => this._toggleSettingsModal(false));
+                        this.dom.settingsModal.querySelector('#course-colors-list').addEventListener('change', e => this._handleCourseColorChange(e));
+                        this.dom.settingsModal.querySelector('#course-visibility-list').addEventListener('click', e => this._handleVisibilityToggle(e));
+                        this.dom.settingsModal.querySelector('#export-btn').addEventListener('click', () => this._handleExport());
+                        this.dom.settingsModal.querySelector('#import-btn').addEventListener('click', () => this.dom.settingsModal.querySelector('#import-file-input').click());
+                        this.dom.settingsModal.querySelector('#import-file-input').addEventListener('change', e => this._handleImport(e));
+                        this.dom.settingsModal.querySelector('#reset-app-btn').addEventListener('click', () => this._handleReset());
                     },
                     _handleCourseColorChange(event) {
                         if (event.target.matches('.color-picker-input')) {
@@ -1717,17 +1074,27 @@
                             btn.classList.add('hidden'); btn.classList.remove('visible');
                         }
                         this._saveSettings();
-                        this._renderCoursesList(this.isMobile ? this.dom.mobileCoursesList : this.dom.coursesList);
+                        this._renderCoursesList();
                     },
                     _handleExport() {
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        if (!activeSchedule || activeSchedule.sections.size === 0) { Swal.fire('الجدول الحالي فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning'); return; }
-                        const dataStr = JSON.stringify({ version: 20, schedule: Array.from(activeSchedule.sections), linked: Array.from(activeSchedule.linkedSections.entries()).map(([key, value]) => [key, Array.from(value)]) });
+                        if (!activeSchedule || activeSchedule.sections.size === 0) {
+                            Swal.fire('الجدول الحالي فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning');
+                            return;
+                        }
+                        const dataStr = JSON.stringify({ 
+                            version: 20, 
+                            schedule: Array.from(activeSchedule.sections), 
+                            linked: Array.from(activeSchedule.linkedSections.entries()).map(([key, value]) => [key, Array.from(value)]) 
+                        });
                         const dataBlob = new Blob([dataStr],{ type: 'application/json' });
                         const url = URL.createObjectURL(dataBlob);
-                        const a = document.createElement('a'); a.href = url;
+                        const a = document.createElement('a');
+                        a.href = url;
                         const safeName = activeSchedule.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                        a.download = `qu_schedule_${safeName}.json`; a.click(); URL.revokeObjectURL(url);
+                        a.download = `qu_schedule_${safeName}.json`;
+                        a.click();
+                        URL.revokeObjectURL(url);
                     },
                     _handleImport(e) {
                         const file = e.target.files[0];
@@ -1740,8 +1107,15 @@
                                     const newName = `مستورد ${new Date().toLocaleTimeString('ar-SA')}`;
                                     this._addSchedule(newName, false);
                                     const newSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                                    data.schedule.forEach(id => { if (this.state.allCoursesData.some(c => c.uniqueId === id)) { newSchedule.sections.add(id); } });
-                                    if(data.linked && Array.isArray(data.linked)) { newSchedule.linkedSections = new Map(data.linked.map(([key, val]) => [key, new Set(val)])); }
+                                    data.schedule.forEach(id => {
+                                        // Ensure the course exists in the current data before adding
+                                        if (this.state.allCoursesData.some(c => c.uniqueId === id)) {
+                                            newSchedule.sections.add(id);
+                                        }
+                                    });
+                                    if(data.linked && Array.isArray(data.linked)) {
+                                        newSchedule.linkedSections = new Map(data.linked.map(([key, val]) => [key, new Set(val)]));
+                                    }
                                     this.updateFullUI();
                                     this._toggleSettingsModal(false);
                                     this._showToast('success', 'تم استيراد الجدول بنجاح!');
@@ -1757,11 +1131,12 @@
                             showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'نعم، إعادة تعيين!', cancelButtonText: 'إلغاء'
                         }).then((result) => { if (result.isConfirmed) { localStorage.clear(); location.reload(); } });
                     },
-                    _toggleSettingsModal(show) { this.dom.modalOverlay.classList.toggle('open', show); this.dom.settingsModal.classList.toggle('open', show); },
+                    _toggleSettingsModal(show) {
+                        this.dom.modalOverlay.classList.toggle('open', show);
+                        this.dom.settingsModal.classList.toggle('open', show);
+                    },
                     _applySettings() {
                         document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
-                        if (this.isMobile) { document.body.classList.add('mobile-view'); }
-                        
                         const primaryColor = this.state.userSettings.accentColor;
                         document.documentElement.style.setProperty('--color-primary', primaryColor);
                         document.documentElement.style.setProperty('--color-primary-dark', this._adjustColorBrightness(primaryColor, -10));
@@ -1770,27 +1145,25 @@
                         document.documentElement.style.setProperty('--primary-hue', String(primaryHue));
                         document.documentElement.style.setProperty('--secondary-hue', String((primaryHue + 40) % 360));
 
-                        const container = this.isMobile ? document.getElementById('mobile-settings-view') : this.dom.settingsModal;
-                        const modeToggle = container.querySelector('.mode-toggle');
+                        const modeToggle = this.dom.settingsModal.querySelector('.mode-toggle');
                         if (modeToggle) {
                             modeToggle.innerHTML = `<button class="mode-btn ${this.state.userSettings.theme === 'dark' ? 'active' : ''}" data-theme="dark">ظلام</button><button class="mode-btn ${this.state.userSettings.theme === 'light' ? 'active' : ''}" data-theme="light">نهار</button>`;
                             modeToggle.onclick = e => { if (e.target.matches('.mode-btn')) { this.state.userSettings.theme = e.target.dataset.theme; this._saveSettings(); this._applySettings(); } };
                         }
                         this._populateAccentColorPicker();
-                        const showWeekendToggle = container.querySelector('#show-weekend-toggle');
+                        const showWeekendToggle = this.dom.settingsModal.querySelector('#show-weekend-toggle');
                         if (showWeekendToggle) {
                             showWeekendToggle.checked = this.state.userSettings.showWeekends;
-                            showWeekendToggle.onchange = (e) => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); if(this.isMobile) this._initializeMobileCalendar(); else this._initializeCalendar(); this.updateCalendarAndConflicts(); };
+                            showWeekendToggle.onchange = (e) => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); };
                         }
-                        const hideClosedToggle = container.querySelector('#hide-closed-toggle');
+                        const hideClosedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
                         if (hideClosedToggle) {
                             hideClosedToggle.checked = this.state.userSettings.hideClosedCourses;
-                            hideClosedToggle.onchange = (e) => { this.state.userSettings.hideClosedCourses = e.target.checked; this._saveSettings(); this._renderCoursesList(this.isMobile ? this.dom.mobileCoursesList : this.dom.coursesList); };
+                            hideClosedToggle.onchange = (e) => { this.state.userSettings.hideClosedCourses = e.target.checked; this._saveSettings(); this._renderCoursesList(); };
                         }
                     },
                     _populateAccentColorPicker() {
-                        const container = this.isMobile ? document.getElementById('mobile-settings-view') : this.dom.settingsModal;
-                        const picker = container.querySelector('#accent-color-picker');
+                        const picker = this.dom.settingsModal.querySelector('#accent-color-picker');
                         if (!picker) return;
                         picker.innerHTML = '';
                         Object.values(this.constants.PRESET_COLORS).forEach(color => {
@@ -1809,13 +1182,12 @@
                         picker.appendChild(customLabel);
                     },
                     _populateTimeSelects() {
-                        const container = this.isMobile ? document.getElementById('mobile-settings-view') : this.dom.settingsModal;
-                        const minContainer = container.querySelector('#min-time-select-container');
-                        const maxContainer = container.querySelector('#max-time-select-container');
+                        const minContainer = this.dom.settingsModal.querySelector('#min-time-select-container');
+                        const maxContainer = this.dom.settingsModal.querySelector('#max-time-select-container');
                         if (!minContainer || !maxContainer) return;
                         const timeOptions = Array.from({ length: 24 }, (_, i) => ({ value: `${String(i).padStart(2, '0')}:00:00`, label: `${String(i).padStart(2, '0')}:00` }));
-                        this._createActionPicker(minContainer, timeOptions, this.state.userSettings.minTime, (newVal) => { this.state.userSettings.minTime = newVal; this._saveSettings(); if(this.isMobile) this._initializeMobileCalendar(); else this._initializeCalendar(); this.updateCalendarAndConflicts(); });
-                        this._createActionPicker(maxContainer, timeOptions, this.state.userSettings.maxTime, (newVal) => { this.state.userSettings.maxTime = newVal; this._saveSettings(); if(this.isMobile) this._initializeMobileCalendar(); else this._initializeCalendar(); this.updateCalendarAndConflicts(); });
+                        this._createActionPicker(minContainer, timeOptions, this.state.userSettings.minTime, (newVal) => { this.state.userSettings.minTime = newVal; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); });
+                        this._createActionPicker(maxContainer, timeOptions, this.state.userSettings.maxTime, (newVal) => { this.state.userSettings.maxTime = newVal; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); });
                     },
                     _createActionPicker(container, options, initialValue, onChange) {
                         container.innerHTML = '';
@@ -1843,6 +1215,142 @@
 
                 QU_ScheduleApp.init();
             });
+            
+            // Cosmic Background Animation System
+            function initCosmicBackground() {
+                const canvas = document.getElementById('starfield-canvas');
+                const ctx = canvas.getContext('2d');
+                const cosmicContainer = document.querySelector('.cosmic-bg-container');
+                
+                // Create additional cosmic layers
+                const cosmicLayer = document.createElement('div');
+                cosmicLayer.className = 'cosmic-layer';
+                cosmicContainer.appendChild(cosmicLayer);
+                
+                let stars = [];
+                let animationId;
+                
+                function resizeCanvas() {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                    initStars();
+                }
+                
+                function initStars() {
+                    stars = [];
+                    const numStars = Math.min(200, Math.floor((canvas.width * canvas.height) / 8000));
+                    
+                    for (let i = 0; i < numStars; i++) {
+                        stars.push({
+                            x: Math.random() * canvas.width,
+                            y: Math.random() * canvas.height,
+                            size: Math.random() * 2 + 0.5,
+                            speed: Math.random() * 0.5 + 0.1,
+                            opacity: Math.random() * 0.8 + 0.2,
+                            twinkleSpeed: Math.random() * 0.02 + 0.005,
+                            twinklePhase: Math.random() * Math.PI * 2,
+                            color: Math.random() < 0.7 ? '#ffffff' : 
+                                   Math.random() < 0.5 ? '#8b5cf6' : 
+                                   Math.random() < 0.5 ? '#3b82f6' : '#ec4899'
+                        });
+                    }
+                }
+                
+                function animate() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Create gradient background
+                    const gradient = ctx.createRadialGradient(
+                        canvas.width / 2, canvas.height / 2, 0,
+                        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
+                    );
+                    gradient.addColorStop(0, 'rgba(15, 15, 25, 0.8)');
+                    gradient.addColorStop(0.5, 'rgba(10, 10, 20, 0.9)');
+                    gradient.addColorStop(1, 'rgba(5, 5, 15, 0.95)');
+                    
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Animate stars
+                    stars.forEach(star => {
+                        // Twinkling effect
+                        star.twinklePhase += star.twinkleSpeed;
+                        const twinkle = (Math.sin(star.twinklePhase) + 1) / 2;
+                        const currentOpacity = star.opacity * (0.3 + 0.7 * twinkle);
+                        
+                        // Slow movement
+                        star.x += star.speed * 0.1;
+                        star.y += star.speed * 0.05;
+                        
+                        // Wrap around edges
+                        if (star.x > canvas.width) star.x = 0;
+                        if (star.y > canvas.height) star.y = 0;
+                        
+                        // Draw star with glow
+                        ctx.save();
+                        ctx.globalAlpha = currentOpacity;
+                        
+                        // Glow effect
+                        ctx.shadowBlur = star.size * 4;
+                        ctx.shadowColor = star.color;
+                        
+                        ctx.fillStyle = star.color;
+                        ctx.beginPath();
+                        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        ctx.restore();
+                    });
+                    
+                    animationId = requestAnimationFrame(animate);
+                }
+                
+                function createShootingStar() {
+                    const shootingStar = document.createElement('div');
+                    shootingStar.className = 'shooting-star';
+                    
+                    // Random starting position (top or left edge)
+                    const startSide = Math.random() < 0.5 ? 'top' : 'left';
+                    if (startSide === 'top') {
+                        shootingStar.style.left = Math.random() * 50 + '%';
+                        shootingStar.style.top = '0px';
+                    } else {
+                        shootingStar.style.left = '0px';
+                        shootingStar.style.top = Math.random() * 50 + '%';
+                    }
+                    
+                    shootingStar.style.animation = `shootingStar ${2 + Math.random() * 2}s linear forwards`;
+                    
+                    cosmicLayer.appendChild(shootingStar);
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        if (shootingStar.parentNode) {
+                            shootingStar.parentNode.removeChild(shootingStar);
+                        }
+                    }, 4000);
+                }
+                
+                // Initialize
+                resizeCanvas();
+                animate();
+                
+                // Shooting stars
+                setInterval(createShootingStar, 3000 + Math.random() * 5000);
+                
+                // Handle resize
+                window.addEventListener('resize', () => {
+                    clearTimeout(window.resizeTimeout);
+                    window.resizeTimeout = setTimeout(resizeCanvas, 100);
+                });
+                
+                // Cleanup function
+                window.addEventListener('beforeunload', () => {
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                    }
+                });
+            }
         </script>
     </body>
 </html>
