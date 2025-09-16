@@ -80,48 +80,6 @@
                 width: 80vmax; height: 80vmax; margin-top: -40vmax; margin-left: -40vmax;
                 background: radial-gradient(circle,hsl(var(--primary-hue),90%,60%,.15) 0%,hsl(var(--secondary-hue),80%,50%,.1) 40%,transparent 70%);
                 filter: blur(100px); border-radius: 50%;
-                animation: nebulaRotate 30s linear infinite;
-            }
-            .cosmic-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
-            .shooting-star {
-                position: absolute; width: 2px; height: 2px; background: #fff;
-                border-radius: 50%; opacity: 0;
-                box-shadow: 0 0 6px 2px rgba(255,255,255,0.5), 0 0 12px 4px rgba(139, 92, 246, 0.3);
-            }
-            .cosmic-dust {
-                position: absolute; width: 1px; height: 1px; background: rgba(255,255,255,0.6);
-                border-radius: 50%; animation: cosmicFloat 15s linear infinite;
-            }
-            .aurora-layer {
-                position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-                background: linear-gradient(45deg, 
-                    transparent 0%, 
-                    rgba(139, 92, 246, 0.03) 25%, 
-                    transparent 50%, 
-                    rgba(59, 130, 246, 0.03) 75%, 
-                    transparent 100%);
-                animation: auroraFlow 20s ease-in-out infinite;
-            }
-            @keyframes nebulaRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-            @keyframes shootingStar {
-                0% { opacity: 0; transform: translateX(-100px) translateY(100px) scale(0); }
-                10% { opacity: 1; transform: translateX(-50px) translateY(50px) scale(1); }
-                90% { opacity: 1; transform: translateX(300px) translateY(-300px) scale(1); }
-                100% { opacity: 0; transform: translateX(350px) translateY(-350px) scale(0); }
-            }
-            @keyframes starTwinkle {
-                0%, 100% { opacity: 0.3; transform: scale(1); }
-                50% { opacity: 1; transform: scale(1.2); }
-            }
-            @keyframes cosmicFloat {
-                0% { transform: translateY(100vh) translateX(0px); opacity: 0; }
-                10% { opacity: 1; }
-                90% { opacity: 1; }
-                100% { transform: translateY(-10px) translateX(50px); opacity: 0; }
-            }
-            @keyframes auroraFlow {
-                0%, 100% { opacity: 0.8; transform: translateX(-100%); }
-                50% { opacity: 1; transform: translateX(100%); }
             }
 
             #install-section {
@@ -139,71 +97,6 @@
             #mobile-unsupported { display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; height: 100vh; padding: 2rem; }
             .mobile-view .page-wrapper, .mobile-view #install-section { display: none !important; }
             .mobile-view #mobile-unsupported { display: flex; }
-            
-            /* Enhanced Mobile Support */
-            @media (max-width: 1200px) {
-                .page-wrapper { flex-direction: column; }
-                .sidebar { width: 100%; height: auto; min-height: 50vh; order: 2; }
-                .main-content { order: 1; height: 50vh; padding: 1rem; }
-                .main-header h1 { font-size: 2rem; }
-                .schedule-tabs-container { overflow-x: auto; scrollbar-width: none; }
-                .schedule-tabs-container::-webkit-scrollbar { display: none; }
-                .cosmic-bg-container { transform: scale(1.1); } /* Reduce cosmic effects on medium screens */
-            }
-            
-            @media (max-width: 768px) {
-                :root { --radius: 12px; --radius-md: 8px; }
-                .main-content { padding: 0.75rem; gap: 1rem; }
-                .main-header { flex-direction: column; gap: 1rem; align-items: stretch; }
-                .main-header h1 { font-size: 1.5rem; text-align: center; }
-                .header-actions { justify-content: center; gap: 0.5rem; }
-                .header-actions button { font-size: 0.8rem; padding: 0.5rem 1rem; }
-                .sidebar { border-left: none; border-top: 1px solid var(--color-border); }
-                .sidebar-header { padding: 1rem; }
-                .sidebar-header h2 { font-size: 1.2rem; }
-                .course-item-header { padding: 1rem 0.75rem; }
-                .sections-grid { grid-template-columns: repeat(auto-fill, minmax(60px, 1fr)); gap: 0.5rem; padding: 0.75rem; }
-                .section-btn { padding: 0.4rem; font-size: 0.8rem; }
-                .my-schedule-table { font-size: 0.8rem; }
-                .my-schedule-table thead th, .my-schedule-table tbody td { padding: 0.5rem 0.25rem; }
-                .settings-modal { width: 95%; max-width: none; }
-                .schedule-tab { padding: 0.5rem 0.8rem; font-size: 0.8rem; }
-                #add-schedule-btn { width: 32px; height: 32px; font-size: 1.2rem; }
-                /* Optimize cosmic effects for mobile */
-                .cosmic-bg-container canvas { opacity: 0.7; }
-                .nebula-glow { width: 60vmax; height: 60vmax; margin-top: -30vmax; margin-left: -30vmax; }
-                .aurora-layer { animation-duration: 30s; }
-            }
-            
-            @media (max-width: 480px) {
-                .main-content { padding: 0.5rem; }
-                .course-visibility-grid { grid-template-columns: 1fr; }
-                .settings-item { flex-direction: column; align-items: stretch; gap: 0.5rem; }
-                .time-range-selects { flex-direction: column; }
-                .modal-content { padding: 1rem; }
-                /* Further optimize for small screens */
-                .cosmic-bg-container canvas { opacity: 0.5; }
-                .shooting-star { display: none; } /* Hide shooting stars on very small screens */
-                .cosmic-dust { display: none; }
-                .aurora-layer { opacity: 0.3; }
-            }
-            
-            /* High performance mode for low-end devices */
-            @media (max-width: 480px) and (max-resolution: 150dpi) {
-                .cosmic-bg-container { display: none; }
-                body { background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%); }
-            }
-            
-            /* Dark mode enhancements */
-            @media (prefers-color-scheme: dark) {
-                .cosmic-bg-container canvas { opacity: 0.9; }
-            }
-            
-            /* Reduced motion preferences */
-            @media (prefers-reduced-motion: reduce) {
-                .cosmic-bg-container * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
-                .card, .course-item, .section-btn { transition: none !important; }
-            }
 
             .custom-scrollbar::-webkit-scrollbar { width: 8px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -230,8 +123,7 @@
             }
             .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: var(--color-primary); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
 
-            .card { width: 100%; height: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .8s var(--transition-smooth) .2s both; transition: all var(--transition-smooth); }
-            .card:hover { transform: translateY(-2px); box-shadow: 0 20px 50px -12px rgba(0,0,0,0.5); border-color: rgba(var(--rgb-primary), 0.3); }
+            .card { width: 100%; height: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .8s var(--transition-smooth) .2s both; }
 
             .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) .1s both; overflow-x: auto;}
             .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
@@ -257,10 +149,8 @@
             .tab-content.active { display: block; }
             .sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
 
-            .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition-smooth); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); position: relative; }
-            .course-item::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(var(--rgb-primary), 0.05), transparent); opacity: 0; transition: opacity var(--transition); }
-            .course-item:hover { transform: translateY(-4px); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4), 0 0 20px rgba(var(--rgb-primary), 0.2); }
-            .course-item:hover::before { opacity: 1; }
+            .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition-smooth); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
+            .course-item:hover { transform: translateY(-4px); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4); }
             .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; }
             .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
             .course-info { flex-grow: 1; }
@@ -269,11 +159,9 @@
             .course-item.open .sections-wrapper { max-height: 9999px; }
             .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background-color: rgba(0,0,0,0.1); }
             .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 1rem 1.25rem 1.25rem; }
-            .section-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: transparent; transition: all var(--transition); position: relative; overflow: hidden; }
-            .section-btn::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: radial-gradient(circle, rgba(var(--rgb-primary), 0.2), transparent); border-radius: 50%; transition: all 0.4s ease; transform: translate(-50%, -50%); }
-            .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); transform: scale(1.05); }
-            .section-btn:hover::before { width: 100px; height: 100px; }
-            .section-btn.selected { background-color: var(--color-primary); color: white; border-color: var(--color-primary); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.4); }
+            .section-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: transparent; transition: all var(--transition); }
+            .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
+            .section-btn.selected { background-color: var(--color-primary); color: white; border-color: var(--color-primary); }
             .section-btn.conflicted { background-color: rgba(var(--rgb-danger), 0.1); border-color: var(--color-danger); color: var(--color-danger); }
             .section-btn .section-type { font-size: 0.7rem; color: var(--color-text-muted); }
             .section-btn.selected .section-type { color: rgba(255,255,255,0.8); }
@@ -385,11 +273,7 @@
     </head>
     <body>
         <!-- HTML structure is unchanged -->
-        <div class="cosmic-bg-container">
-            <div class="aurora-layer"></div>
-            <div class="nebula-glow"></div>
-            <canvas id="starfield-canvas"></canvas>
-        </div>
+        <div class="cosmic-bg-container"><div class="nebula-glow"></div><canvas id="starfield-canvas"></canvas></div>
         <div id="install-section"></div>
         <div id="mobile-unsupported"><h2>العرض غير مدعوم</h2><p>يرجى فتح الصفحة من جهاز لابتوب.</p><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit">MUTLAQ1</a></div>
         <div class="page-wrapper">
@@ -408,11 +292,7 @@
         </div>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                // Initialize cosmic background
-                initCosmicBackground();
-                
-                // Enhanced mobile detection with improved threshold
-                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 768) {
+                if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024) {
                     document.body.classList.add('mobile-view');
                     return;
                 }
@@ -1275,306 +1155,6 @@
 
                 QU_ScheduleApp.init();
             });
-            
-            // Cosmic Background Animation System
-            function initCosmicBackground() {
-                const canvas = document.getElementById('starfield-canvas');
-                const ctx = canvas.getContext('2d');
-                const cosmicContainer = document.querySelector('.cosmic-bg-container');
-                
-                // Create additional cosmic layers
-                const cosmicLayer = document.createElement('div');
-                cosmicLayer.className = 'cosmic-layer';
-                cosmicContainer.appendChild(cosmicLayer);
-                
-                let stars = [];
-                let planets = [];
-                let animationId;
-                let time = 0;
-                
-                function resizeCanvas() {
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                    initStars();
-                    initPlanets();
-                }
-                
-                function initStars() {
-                    stars = [];
-                    const numStars = Math.min(300, Math.floor((canvas.width * canvas.height) / 6000));
-                    
-                    for (let i = 0; i < numStars; i++) {
-                        stars.push({
-                            x: Math.random() * canvas.width,
-                            y: Math.random() * canvas.height,
-                            size: Math.random() * 2.5 + 0.5,
-                            speed: Math.random() * 0.3 + 0.05,
-                            opacity: Math.random() * 0.8 + 0.2,
-                            twinkleSpeed: Math.random() * 0.02 + 0.005,
-                            twinklePhase: Math.random() * Math.PI * 2,
-                            color: Math.random() < 0.6 ? '#ffffff' : 
-                                   Math.random() < 0.3 ? '#8b5cf6' : 
-                                   Math.random() < 0.3 ? '#3b82f6' : 
-                                   Math.random() < 0.3 ? '#ec4899' : '#22c55e',
-                            pulseSpeed: Math.random() * 0.01 + 0.005
-                        });
-                    }
-                }
-                
-                function initPlanets() {
-                    planets = [];
-                    const numPlanets = 3;
-                    
-                    for (let i = 0; i < numPlanets; i++) {
-                        planets.push({
-                            x: Math.random() * canvas.width,
-                            y: Math.random() * canvas.height,
-                            size: Math.random() * 8 + 4,
-                            color: ['#8b5cf6', '#3b82f6', '#ec4899'][i],
-                            orbitRadius: Math.random() * 50 + 30,
-                            orbitSpeed: Math.random() * 0.01 + 0.005,
-                            angle: Math.random() * Math.PI * 2,
-                            opacity: 0.3 + Math.random() * 0.4
-                        });
-                    }
-                }
-                
-                function animate() {
-                    time += 0.016; // Approximately 60fps
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                    
-                    // Create enhanced gradient background
-                    const gradient = ctx.createRadialGradient(
-                        canvas.width / 2, canvas.height / 2, 0,
-                        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
-                    );
-                    gradient.addColorStop(0, 'rgba(15, 15, 25, 0.9)');
-                    gradient.addColorStop(0.3, 'rgba(10, 10, 20, 0.95)');
-                    gradient.addColorStop(0.7, 'rgba(5, 5, 15, 0.98)');
-                    gradient.addColorStop(1, 'rgba(2, 2, 8, 1)');
-                    
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0, 0, canvas.width, canvas.height);
-                    
-                    // Draw distant planets
-                    planets.forEach(planet => {
-                        planet.angle += planet.orbitSpeed;
-                        const newX = planet.x + Math.cos(planet.angle) * planet.orbitRadius;
-                        const newY = planet.y + Math.sin(planet.angle) * planet.orbitRadius;
-                        
-                        ctx.save();
-                        ctx.globalAlpha = planet.opacity;
-                        ctx.shadowBlur = planet.size * 2;
-                        ctx.shadowColor = planet.color;
-                        
-                        // Planet glow
-                        const planetGradient = ctx.createRadialGradient(
-                            newX, newY, 0,
-                            newX, newY, planet.size * 2
-                        );
-                        planetGradient.addColorStop(0, planet.color);
-                        planetGradient.addColorStop(0.7, planet.color + '80');
-                        planetGradient.addColorStop(1, 'transparent');
-                        
-                        ctx.fillStyle = planetGradient;
-                        ctx.beginPath();
-                        ctx.arc(newX, newY, planet.size * 2, 0, Math.PI * 2);
-                        ctx.fill();
-                        
-                        // Planet core
-                        ctx.fillStyle = planet.color;
-                        ctx.beginPath();
-                        ctx.arc(newX, newY, planet.size, 0, Math.PI * 2);
-                        ctx.fill();
-                        
-                        ctx.restore();
-                    });
-                    
-                    // Enhanced star animation
-                    stars.forEach(star => {
-                        // Advanced twinkling effect
-                        star.twinklePhase += star.twinkleSpeed;
-                        const twinkle = (Math.sin(star.twinklePhase) + 1) / 2;
-                        const pulse = (Math.sin(time * star.pulseSpeed) + 1) / 2;
-                        const currentOpacity = star.opacity * (0.4 + 0.6 * twinkle) * (0.8 + 0.2 * pulse);
-                        
-                        // Gentle floating movement
-                        star.x += star.speed * 0.1 * Math.cos(time * 0.1);
-                        star.y += star.speed * 0.05 * Math.sin(time * 0.08);
-                        
-                        // Wrap around edges with smooth transition
-                        if (star.x > canvas.width + 50) star.x = -50;
-                        if (star.y > canvas.height + 50) star.y = -50;
-                        if (star.x < -50) star.x = canvas.width + 50;
-                        if (star.y < -50) star.y = canvas.height + 50;
-                        
-                        // Draw star with enhanced effects
-                        ctx.save();
-                        ctx.globalAlpha = currentOpacity;
-                        
-                        // Multiple glow layers
-                        ctx.shadowBlur = star.size * 6;
-                        ctx.shadowColor = star.color;
-                        
-                        // Outer glow
-                        const outerGradient = ctx.createRadialGradient(
-                            star.x, star.y, 0,
-                            star.x, star.y, star.size * 4
-                        );
-                        outerGradient.addColorStop(0, star.color);
-                        outerGradient.addColorStop(0.5, star.color + '40');
-                        outerGradient.addColorStop(1, 'transparent');
-                        
-                        ctx.fillStyle = outerGradient;
-                        ctx.beginPath();
-                        ctx.arc(star.x, star.y, star.size * 4, 0, Math.PI * 2);
-                        ctx.fill();
-                        
-                        // Core star
-                        ctx.fillStyle = star.color;
-                        ctx.beginPath();
-                        ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                        ctx.fill();
-                        
-                        ctx.restore();
-                    });
-                    
-                    // Add constellation connections
-                    drawConstellations();
-                    
-                    animationId = requestAnimationFrame(animate);
-                }
-                
-                function drawConstellations() {
-                    ctx.save();
-                    ctx.strokeStyle = 'rgba(139, 92, 246, 0.15)';
-                    ctx.lineWidth = 1;
-                    ctx.globalAlpha = 0.6;
-                    
-                    // Connect nearby bright stars
-                    const brightStars = stars.filter(star => star.size > 1.5 && star.opacity > 0.6);
-                    
-                    for (let i = 0; i < brightStars.length; i++) {
-                        for (let j = i + 1; j < brightStars.length; j++) {
-                            const distance = Math.sqrt(
-                                Math.pow(brightStars[i].x - brightStars[j].x, 2) +
-                                Math.pow(brightStars[i].y - brightStars[j].y, 2)
-                            );
-                            
-                            if (distance < 150) {
-                                ctx.beginPath();
-                                ctx.moveTo(brightStars[i].x, brightStars[i].y);
-                                ctx.lineTo(brightStars[j].x, brightStars[j].y);
-                                ctx.stroke();
-                            }
-                        }
-                    }
-                    
-                    ctx.restore();
-                }
-                
-                function createShootingStar() {
-                    if (Math.random() > 0.7) return; // Less frequent but more impactful
-                    
-                    const shootingStar = document.createElement('div');
-                    shootingStar.className = 'shooting-star';
-                    
-                    // Enhanced shooting star trail
-                    const colors = ['#ffffff', '#8b5cf6', '#3b82f6', '#ec4899'];
-                    const color = colors[Math.floor(Math.random() * colors.length)];
-                    
-                    shootingStar.style.background = color;
-                    shootingStar.style.boxShadow = `
-                        0 0 6px 2px ${color}80,
-                        0 0 12px 4px ${color}40,
-                        0 0 20px 6px ${color}20
-                    `;
-                    
-                    // Random starting position
-                    const startSide = Math.random() < 0.5 ? 'top' : 'left';
-                    if (startSide === 'top') {
-                        shootingStar.style.left = Math.random() * 70 + '%';
-                        shootingStar.style.top = '0px';
-                    } else {
-                        shootingStar.style.left = '0px';
-                        shootingStar.style.top = Math.random() * 70 + '%';
-                    }
-                    
-                    const duration = 1.5 + Math.random() * 2;
-                    shootingStar.style.animation = `shootingStar ${duration}s linear forwards`;
-                    
-                    cosmicLayer.appendChild(shootingStar);
-                    
-                    // Remove after animation
-                    setTimeout(() => {
-                        if (shootingStar.parentNode) {
-                            shootingStar.parentNode.removeChild(shootingStar);
-                        }
-                    }, duration * 1000 + 500);
-                }
-                
-                function createCosmicDust() {
-                    for (let i = 0; i < 3; i++) {
-                        const dust = document.createElement('div');
-                        dust.className = 'cosmic-dust';
-                        dust.style.left = Math.random() * 100 + '%';
-                        dust.style.animationDelay = Math.random() * 15 + 's';
-                        dust.style.animationDuration = (10 + Math.random() * 10) + 's';
-                        
-                        cosmicLayer.appendChild(dust);
-                        
-                        setTimeout(() => {
-                            if (dust.parentNode) {
-                                dust.parentNode.removeChild(dust);
-                            }
-                        }, 25000);
-                    }
-                }
-                
-                // Initialize
-                resizeCanvas();
-                animate();
-                
-                // Enhanced effects intervals
-                setInterval(createShootingStar, 2000 + Math.random() * 4000);
-                setInterval(createCosmicDust, 8000);
-                
-                // Handle resize with throttling
-                let resizeTimeout;
-                window.addEventListener('resize', () => {
-                    clearTimeout(resizeTimeout);
-                    resizeTimeout = setTimeout(resizeCanvas, 150);
-                });
-                
-                // Cleanup function
-                window.addEventListener('beforeunload', () => {
-                    if (animationId) {
-                        cancelAnimationFrame(animationId);
-                    }
-                });
-                
-                // Performance monitoring
-                let frameCount = 0;
-                let lastTime = Date.now();
-                setInterval(() => {
-                    const now = Date.now();
-                    const fps = frameCount / ((now - lastTime) / 1000);
-                    frameCount = 0;
-                    lastTime = now;
-                    
-                    // Reduce effects if performance is poor
-                    if (fps < 30 && stars.length > 100) {
-                        stars = stars.slice(0, Math.floor(stars.length * 0.8));
-                    }
-                }, 2000);
-                
-                // Count frames for performance monitoring
-                const originalAnimate = animate;
-                animate = function() {
-                    frameCount++;
-                    originalAnimate();
-                };
-            }
         </script>
     </body>
 </html>
