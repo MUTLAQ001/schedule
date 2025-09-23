@@ -403,21 +403,32 @@
             #conflict-modal {max-width: 500px; width: 90%;}
             #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding-right: .5rem; }
             .conflict-item {
-                border: 1px solid var(--color-border); padding: 1rem;
-                border-radius: var(--radius-md); margin-bottom: 1rem;
-            }
-            .conflict-item label {
-                display: flex; align-items: center; gap: 1rem; cursor: pointer;
+                border: 1px solid var(--color-border); 
+                padding: 1rem; border-radius: var(--radius-md); 
+                margin-bottom: 1rem;
+                position: relative;
+                transition: border-color .3s, box-shadow .3s;
             }
             .conflict-item input[type="radio"] {
-                flex-shrink: 0; accent-color: var(--color-primary);
-                width: 1.2em; height: 1.2em;
+                position: absolute; opacity: 0; width: 100%; height: 100%; top:0; left: 0; cursor: pointer;
             }
+            .conflict-item input[type="radio"]:checked + .conflict-details {
+                 border-color: var(--color-primary);
+                 box-shadow: 0 0 20px -5px rgba(var(--rgb-primary), 0.5);
+            }
+            .conflict-details {
+                 border: 2px solid transparent; 
+                 border-radius: var(--radius-md); 
+                 padding: 1rem; margin: -1rem; /* counteract parent padding */
+                 transition: all .2s;
+            }
+
             .conflict-details h4 {margin: 0 0 .5rem; font-family: var(--font-title); color: var(--color-text-dark);}
             .conflict-reason {
                 font-size: 0.8rem; padding: .2rem .6rem;
                 background-color: rgba(var(--rgb-warning), 0.1);
                 color: var(--color-warning); border-radius: var(--radius-full);
+                display: inline-block; margin-left: 0.5rem;
             }
              #my-schedule-container .resolve-conflict-btn,
             #mobile-my-schedule-list .resolve-conflict-btn {
@@ -621,7 +632,7 @@
 
             const stars = [];
             const shootingStars = [];
-            const numStars = 250;
+            const numStars = 250; 
             const numShootingStars = 3;
 
             class Star {
@@ -1256,7 +1267,7 @@
                             header.parentElement.classList.toggle('open');
                         }
                     },
-                    _addSectionAndLink(sectionId, schedule) {
+                     _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return false;
                         
@@ -1627,7 +1638,15 @@
                             showCancelButton: true,
                             cancelButtonText: 'إلغاء',
                             customClass: { popup: 'swal2-popup', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
-                            didOpen: () => {},
+                            didOpen: () => {
+                                const container = Swal.getPopup().querySelector('#conflict-modal-content');
+                                container.addEventListener('change', () => {
+                                    container.querySelectorAll('.conflict-item').forEach(item => {
+                                        item.classList.toggle('selected', item.querySelector('input').checked);
+                                    })
+                                });
+                                container.querySelector('input:checked').parentElement.parentElement.classList.add('selected');
+                            },
                             preConfirm: () => {
                                 const selected = Swal.getPopup().querySelector('input[name="conflict-resolution"]:checked');
                                 if (selected) return selected.value;
