@@ -96,10 +96,7 @@
              #install-overlay.visible {
                 opacity: 1;
             }
-             .desktop-view #install-overlay { 
-                 align-items: flex-start;
-                 padding-top: 5rem;
-             }
+             
              #install-section-container {
                 background: var(--color-card);
                 border: 1px solid var(--color-border);
@@ -409,12 +406,12 @@
                 position: relative;
                 transition: border-color .3s, box-shadow .3s;
             }
-            .conflict-item input[type="radio"] {
-                position: absolute; opacity: 0; width: 100%; height: 100%; top:0; left: 0; cursor: pointer;
+             .conflict-item input[type="radio"] {
+                 position: absolute; opacity: 0; width: 100%; height: 100%; top:0; left: 0; cursor: pointer;
             }
-            .conflict-item input[type="radio"]:checked + .conflict-details {
-                 border-color: var(--color-primary);
-                 box-shadow: 0 0 20px -5px rgba(var(--rgb-primary), 0.5);
+             .conflict-item input[type="radio"]:checked ~ div {
+                border-color: var(--color-primary);
+                box-shadow: 0 0 15px -3px rgba(var(--rgb-primary), 0.4);
             }
             .conflict-details {
                  border: 2px solid transparent; 
@@ -520,12 +517,12 @@
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
                 #mobile-courses-view .tab-content { padding: 1rem; }
-                #mobile-my-schedule-view { padding: 0; } /* Change */
-                .my-schedule-container .card { display: none; } /* Hide desktop version on mobile view */
+                #mobile-my-schedule-view { padding: 0; } 
+                .my-schedule-container .card { display: none; }
                 #mobile-my-schedule-container {
                     width: 100%;
                     height: 100%;
-                    display: block; /* changed to block */
+                    display: block;
                 }
                  .light .mobile-schedule-footer { background: rgba(0,0,0,0.03); border-color: transparent;}
                 
@@ -584,11 +581,7 @@
             <div id="mobile-calendar-view" class="mobile-view-content active">
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
-                    <div class="calendar-wrapper card">
-                        <div class="mobile-calendar-scroll-wrapper">
-                            <div id='mobile-calendar'></div>
-                        </div>
-                    </div>
+                    <div class="calendar-wrapper card"><div id='mobile-calendar'></div></div>
                 </main>
             </div>
             <div id="mobile-courses-view" class="mobile-view-content">
@@ -632,7 +625,7 @@
 
             const stars = [];
             const shootingStars = [];
-            const numStars = 250; 
+            const numStars = 250;
             const numShootingStars = 3;
 
             class Star {
@@ -1267,7 +1260,7 @@
                             header.parentElement.classList.toggle('open');
                         }
                     },
-                     _addSectionAndLink(sectionId, schedule) {
+                    _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return false;
                         
@@ -1518,7 +1511,7 @@
                         if (h < 0) h += 360;
                         return h;
                     },
-                     _showMobileSectionDetails(section, group, shouldUpdatePanel = true) {
+                    _showMobileSectionDetails(section, group, shouldUpdatePanel = true) {
                         const panel = this.dom.detailsPanel;
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const isSelected = activeSchedule.sections.has(section.uniqueId);
