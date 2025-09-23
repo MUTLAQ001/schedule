@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
     <head>
         <meta charset="UTF-8">
@@ -79,13 +80,14 @@
                 width: 80vmax; height: 80vmax; margin-top: -40vmax; margin-left: -40vmax;
                 background: radial-gradient(circle,hsl(var(--primary-hue),90%,60%,.15) 0%,hsl(var(--secondary-hue),80%,50%,.1) 40%,transparent 70%);
                 filter: blur(100px); border-radius: 50%;
+                transition: background 1s ease;
             }
 
             #install-overlay {
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
                 z-index: 2000;
-                display: none;
+                display: none; 
                 align-items: center; justify-content: center;
                 padding: 1rem;
                 opacity: 0;
@@ -94,6 +96,10 @@
              #install-overlay.visible {
                 opacity: 1;
             }
+             .desktop-view #install-overlay { 
+                 align-items: flex-start;
+                 padding-top: 5rem;
+             }
              #install-section-container {
                 background: var(--color-card);
                 border: 1px solid var(--color-border);
@@ -103,6 +109,7 @@
                 box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
                 animation: scaleIn .4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
             }
+            .light #install-section-container { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); }
             #install-header {
                 text-align: center;
                 margin-bottom: 2rem;
@@ -115,17 +122,17 @@
                 margin: 0; font-family: var(--font-title); font-size: 1.75rem;
                 color: var(--color-text-dark);
             }
-            #install-section p, #install-section li { text-align: right; color: var(--color-text-muted); line-height: 1.6;}
+            #install-section-container p, #install-section-container li { text-align: right; color: var(--color-text-muted); line-height: 1.6;}
             .bookmarklet-button {
                 display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
                 background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
                 color: white; padding: 0.8rem 1.8rem; border-radius: var(--radius-full);
                 font-weight: 700; text-decoration: none; cursor: grab;
-                transition: transform .2s ease;
+                transition: transform .2s ease, box-shadow .2s ease;
+                 box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);
             }
-            .bookmarklet-button:hover { transform: scale(1.05); }
+            .bookmarklet-button:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 25px rgba(var(--rgb-primary), 0.3); }
             .bookmarklet-button i { font-size: 1.2rem; }
-
              #install-section-mobile ol { list-style: none; padding: 0; margin: 0 0 1.5rem 0;}
              #install-section-mobile li { 
                 position: relative; 
@@ -142,7 +149,6 @@
                 display: flex; align-items: center; justify-content: center;
                 font-weight: 700; font-family: var(--font-title);
              }
-
             .code-container { margin-bottom: 1rem; }
             .code-container pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); font-size: 0.8rem; white-space: pre-wrap; word-wrap: break-word; text-align: left; direction: ltr; }
             .light .code-container pre { background: rgba(0,0,0,0.04); }
@@ -151,8 +157,9 @@
                 display: block; width: 100%; background: var(--color-primary); color: white; padding: 0.8rem; 
                 border-radius: var(--radius-md); border: none; font-weight: 700; font-size: 1rem;
                 cursor: pointer; transition: all .2s ease;
+                 box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);
             }
-            #copy-code-btn:hover { background: var(--color-primary-dark); }
+            #copy-code-btn:hover { background: var(--color-primary-dark); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(var(--rgb-primary), 0.3); }
             .js-warning { 
                 border-top: 1px solid var(--color-border); padding-top: 1rem; margin-top: 1.5rem;
                 font-size: 0.85rem; text-align: center; color: var(--color-text-muted);
@@ -162,7 +169,6 @@
                 padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600;
             }
 
-            
             .custom-scrollbar::-webkit-scrollbar { width: 8px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
             .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(var(--rgb-primary), 0.3); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
@@ -188,7 +194,9 @@
             }
             .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: var(--color-primary); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
             .card { width: 100%; height: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .8s var(--transition-smooth) .2s both; }
+            .light .card { box-shadow: 0 16px 40px -12px rgba(0,0,0,0.1); }
             .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) .1s both; overflow-x: auto;}
+            .light .schedule-tabs-container { background: rgba(0,0,0,0.05); }
             .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
             .schedule-tab.active { background: var(--color-primary); color: white; box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
             .schedule-tab-name { outline: none; }
@@ -210,7 +218,9 @@
             .tab-content.active { display: block; }
             .sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
             .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition-smooth); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
+            .light .course-item { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03); }
             .course-item:hover { transform: translateY(-4px); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4); }
+            .light .course-item:hover { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03), 0 8px 25px -10px rgba(0,0,0,0.1); }
             .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; }
             .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
             .course-info { flex-grow: 1; }
@@ -218,6 +228,7 @@
             .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--color-text-muted); }
             .course-item.open .sections-wrapper { max-height: 9999px; }
             .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background-color: rgba(0,0,0,0.1); }
+            .light .sections-wrapper { background-color: rgba(0,0,0,0.02); }
             .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 1rem 1.25rem 1.25rem; }
             .section-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: transparent; transition: all var(--transition); }
             .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
@@ -265,6 +276,7 @@
             .swal2-confirm { background: var(--color-primary)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; }
             .swal2-confirm:focus { box-shadow: 0 0 0 3px rgba(var(--rgb-primary),0.5)!important }
             .swal2-cancel { background: rgba(255,255,255,0.1)!important; color: var(--color-text)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; }
+            .light .swal2-cancel { background: rgba(0,0,0,0.1)!important; }
             .swal-popup-animation-in { animation: swal-scale-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
             .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; }
@@ -287,6 +299,7 @@
             .toggle-switch { position: relative; display: inline-block; width: 44px; height: 24px; }
             .toggle-switch input { opacity: 0; width: 0; height: 0; }
             .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.2); transition: .4s; border-radius: 34px; }
+            .light .slider { background-color: rgba(0,0,0,0.2); }
             .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
             input:checked + .slider { background-color: var(--color-primary); }
             input:checked + .slider:before { transform: translateX(20px); }
@@ -320,6 +333,7 @@
             .course-visibility-btn.hidden { border-color: var(--color-border); color: var(--color-text-muted); opacity: 0.6; }
             .course-visibility-btn.hidden .color-dot { background-color: var(--color-text-muted); opacity: 0.5; }
             .course-visibility-btn.hidden:hover { background-color: rgba(255, 255, 255, 0.05); opacity: 1; }
+            .light .course-visibility-btn.hidden:hover { background-color: rgba(0, 0, 0, 0.05); opacity: 1; }
             .action-picker-wrapper { position: relative; }
             .action-picker-display { width: 100%; padding: .5rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text); background: rgba(0,0,0,0.3); border: 1px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: all var(--transition); text-align: center; }
             .action-picker-display:hover { border-color: var(--color-primary); }
@@ -499,7 +513,98 @@
         </div>
 
         <script>
-            document.addEventListener('DOMContentLoaded', () => {
+        // Starfield and Shooting Star background script
+        function initStarfield() {
+            const canvas = document.getElementById('starfield-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            let w, h;
+            function setSize() {
+                w = canvas.width = window.innerWidth;
+                h = canvas.height = window.innerHeight;
+            }
+            setSize();
+            window.addEventListener('resize', setSize);
+
+            const stars = [];
+            const shootingStars = [];
+            const numStars = 500;
+            const numShootingStars = 3;
+
+            class Star {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * w;
+                    this.y = Math.random() * h;
+                    this.size = Math.random() * 1.5 + 0.5;
+                    this.opacity = Math.random() * 0.5 + 0.2;
+                    this.speedX = (Math.random() - 0.5) * 0.1;
+                    this.speedY = (Math.random() - 0.5) * 0.1;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+                    ctx.fill();
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0 || this.x > w || this.y < 0 || this.y > h) this.reset();
+                }
+            }
+
+            class ShootingStar {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * w;
+                    this.y = 0;
+                    this.len = Math.random() * 80 + 10;
+                    this.speed = Math.random() * 8 + 6;
+                    this.size = Math.random() * 1 + 0.5;
+                    this.waitTime = new Date().getTime() + Math.random() * 3000 + 500;
+                    this.active = false;
+                }
+                update() {
+                    if (this.active) {
+                        this.x -= this.speed;
+                        this.y += this.speed;
+                        if (this.x < -this.len || this.y > h + this.len) this.reset();
+                    } else if (this.waitTime < new Date().getTime()) {
+                        this.active = true;
+                    }
+                }
+                draw() {
+                    if (this.active) {
+                        const grad = ctx.createLinearGradient(this.x, this.y, this.x + this.len, this.y - this.len);
+                        grad.addColorStop(0, "rgba(255, 255, 255, 0.8)");
+                        grad.addColorStop(1, "rgba(255, 255, 255, 0)");
+                        ctx.strokeStyle = grad;
+                        ctx.lineWidth = this.size;
+                        ctx.beginPath();
+                        ctx.moveTo(this.x, this.y);
+                        ctx.lineTo(this.x - this.len, this.y + this.len);
+                        ctx.stroke();
+                    }
+                }
+            }
+            
+            for (let i = 0; i < numStars; i++) stars.push(new Star());
+            for (let i = 0; i < numShootingStars; i++) shootingStars.push(new ShootingStar());
+
+            function animate() {
+                ctx.clearRect(0, 0, w, h);
+                stars.forEach(s => { s.update(); s.draw(); });
+                shootingStars.forEach(s => { s.update(); s.draw(); });
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+                initStarfield();
+
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024;
                 if (isMobile) {
                     document.body.classList.add('mobile-view');
@@ -1123,13 +1228,14 @@
                                 });
                             });
                         } else {
-                            container.innerHTML = `
+                             container.innerHTML = `
                                 <div id="install-header">
                                     <i class="ri-drag-move-2-line"></i>
                                     <h2>التثبيت على الكمبيوتر</h2>
                                 </div>
                                 <p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك، ثم اضغط عليه وأنت في صفحة المقررات المطروحة.</p>
-                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ri-magic-line"></i>QU Schedule Tool</a>
+                                <br>
+                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ri-magic-line"></i> أداة QU Schedule</a>
                             `;
                         }
                     },
