@@ -291,14 +291,27 @@
                 /* --- Calendar View --- */
                 #mobile-calendar-view { padding: 1rem; gap: 1rem; }
                 #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; }
-                #mobile-calendar-view .card { padding: 1rem; flex-grow: 1; height: auto; }
+                #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
+                
+                .mobile-calendar-scroll-wrapper {
+                    overflow-x: auto;
+                    height: 100%;
+                    -webkit-overflow-scrolling: touch;
+                    direction: ltr; /* Force LTR on container for predictable scroll */
+                }
+                .mobile-calendar-scroll-wrapper::-webkit-scrollbar { height: 4px; }
+                .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track { background: transparent; }
+                .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(var(--rgb-primary), 0.5); border-radius: 4px; }
+                
+                #mobile-calendar {
+                    min-width: 850px;
+                    direction: rtl; /* Reset direction for calendar content */
+                }
                 
                 /* --- SIMPLIFIED Courses View --- */
                 #mobile-courses-view { padding: 0; }
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
-                /* Hide redundant inner header and tabs */
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
-                /* Give padding to the actual list */
                 #mobile-courses-view .tab-content { padding: 1rem; }
 
                 /* --- Edge-to-Edge "My Schedule" View --- */
@@ -306,7 +319,6 @@
                 #mobile-my-schedule-view .card { margin: 0; border-radius: 0; box-shadow: none; border-left: none; border-right: none; }
                 #mobile-my-schedule-container { width: 100%; }
                 #mobile-my-schedule-container .my-schedule-section { padding: 1.25rem; }
-                /* Hide redundant inner H3 title */
                 #mobile-my-schedule-container .my-schedule-section h3 { display: none; }
 
                 /* --- Polished Mobile Bottom Nav --- */
@@ -334,7 +346,7 @@
                 .main-content { padding: 0; height: 100%; }
                 .my-schedule-container { display: flex; }
                 .my-schedule-section { padding: 1rem; }
-                .fc .fc-toolbar { font-size: 0.8em; }
+                .fc .fc-toolbar { font-size: 0.9em; }
             }
         </style>
     </head>
@@ -367,7 +379,11 @@
             <div id="mobile-calendar-view" class="mobile-view-content active">
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
-                    <div class="calendar-wrapper card"><div id='mobile-calendar'></div></div>
+                    <div class="calendar-wrapper card">
+                        <div class="mobile-calendar-scroll-wrapper">
+                            <div id='mobile-calendar'></div>
+                        </div>
+                    </div>
                 </main>
             </div>
             <div id="mobile-courses-view" class="mobile-view-content">
@@ -1058,9 +1074,17 @@
                         if (this.state.calendar) this.state.calendar.destroy();
                         const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
                         const calendarOptions = {
-                            initialView: isMobile ? 'timeGridDay' : 'timeGridWeek', locale: 'ar', headerToolbar: isMobile ? { start: 'title', center: '', end: 'prev,next' } : false, allDaySlot: false, events: [], dir: 'rtl',
-                            dayHeaderFormat: { weekday: 'long' }, slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
-                            hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false,
+                            initialView: 'timeGridWeek', 
+                            locale: 'ar', 
+                            headerToolbar: isMobile ? { start: 'title', center: '', end: '' } : false, 
+                            allDaySlot: false, 
+                            events: [], 
+                            dir: 'rtl',
+                            dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, 
+                            slotMinTime: this.state.userSettings.minTime, 
+                            slotMaxTime: this.state.userSettings.maxTime,
+                            hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], 
+                            nowIndicator: false,
                             dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; },
                             eventContent: (arg) => {
                                 const props = arg.event.extendedProps;
