@@ -529,7 +529,7 @@
 
             const stars = [];
             const shootingStars = [];
-            const numStars = 500;
+            const numStars = 250; // Reduced from 500
             const numShootingStars = 3;
 
             class Star {
@@ -979,13 +979,13 @@
                         for (let i = 0; i < selectedCourses.length; i++) {
                             for (let j = i + 1; j < selectedCourses.length; j++) {
                                 const cA = selectedCourses[i], cB = selectedCourses[j];
-                                if (cA.code === cB.code) continue;
+                                // if (cA.code === cB.code) continue; // Allow same-course conflicts
                                 const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || [];
                                 if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
                                     msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`);
                                     msgB.push(`تعارض وقت محاضرة مع ${cA.name} (${cA.code})`);
                                 }
-                                if (cA.examPeriodId && cB.examPeriodId && cA.examPeriodId === cB.examPeriodId) {
+                                if (cA.code !== cB.code && cA.examPeriodId && cB.examPeriodId && cA.examPeriodId === cB.examPeriodId) {
                                     msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`);
                                     msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`);
                                 }
@@ -997,9 +997,9 @@
                     },
                     _isSectionConflicted(section, selectedCourses) {
                         return selectedCourses.some(sel => {
-                            if (section.code === sel.code) return false;
+                           // if (section.code === sel.code) return false;
                             const lectureConflict = section.timeSlots.some(sA => sel.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start));
-                            const examConflict = section.examPeriodId && sel.examPeriodId && section.examPeriodId === sel.examPeriodId;
+                            const examConflict = section.code !== sel.code && section.examPeriodId && sel.examPeriodId && section.examPeriodId === sel.examPeriodId;
                             return lectureConflict || examConflict;
                         });
                     },
@@ -1066,9 +1066,10 @@
                         const header = e.target.closest('.course-item-header');
                         if (sectionBtn) {
                             const uniqueId = sectionBtn.dataset.uniqueId;
+                            const section = this.state.allCoursesData.find(c => c.uniqueId === uniqueId);
+                            const group = this.state.groupedCourses[section.code];
+
                             if (isMobile) {
-                                const section = this.state.allCoursesData.find(c => c.uniqueId === uniqueId);
-                                const group = this.state.groupedCourses[section.code];
                                 this._showMobileSectionDetails(section, group);
                             } else {
                                 const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
@@ -1088,18 +1089,18 @@
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return;
                         
-                        // Prevent adding if another section from the same course group is already added
+                        // Show warning if another section from the same course is already added, but don't prevent it
                         const courseGroup = Object.values(this.state.groupedCourses).find(g => g.code === section.code);
                         if (courseGroup) {
                             const existingSection = courseGroup.sections.find(s => schedule.sections.has(s.uniqueId));
                             if (existingSection) {
-                                this._showToast('warning', `لديك شعبة (${existingSection.section}) مختارة بالفعل من مقرر ${section.code}`);
-                                return;
+                                this._showToast('info', `لديك شعبة (${existingSection.section}) مختارة بالفعل من مقرر ${section.code}`);
                             }
                         }
 
                         schedule.sections.add(sectionId);
 
+                        // Handle linked sections
                         const linkedGroup = this.state.linkedCourseGroups[section.name];
                         if (!linkedGroup) return;
 
@@ -1197,7 +1198,7 @@
                         const container = this.dom.installSectionContainer;
                         
                         if (isMobile) {
-                            container.innerHTML = `
+                             container.innerHTML = `
                                 <div id="install-header">
                                     <i class="ri-smartphone-line"></i>
                                     <h2>التثبيت على الجوال</h2>
@@ -1228,7 +1229,7 @@
                                 });
                             });
                         } else {
-                             container.innerHTML = `
+                            container.innerHTML = `
                                 <div id="install-header">
                                     <i class="ri-drag-move-2-line"></i>
                                     <h2>التثبيت على الكمبيوتر</h2>
@@ -1347,7 +1348,7 @@
                         if (h < 0) h += 360;
                         return h;
                     },
-                    _showMobileSectionDetails(section, group) {
+                     _showMobileSectionDetails(section, group, shouldUpdatePanel = true) {
                         const panel = this.dom.detailsPanel;
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const isSelected = activeSchedule.sections.has(section.uniqueId);
@@ -1359,49 +1360,61 @@
                         const actionBtnClass = isSelected ? "remove" : "add";
                         const actionBtnIcon = isSelected ? "ri-delete-bin-line" : "ri-add-line";
 
-                        panel.innerHTML = `
-                            <div class="details-header">
-                                <h4><span class="color-dot" style="background-color: ${group.color};"></span>${section.name} (${section.code})</h4>
-                                <i class="ri-close-line details-close-btn"></i>
-                            </div>
-                            <div class="details-grid">
-                                <div class="detail-item"><span>الشعبة</span><strong>${section.section}</strong></div>
-                                <div class="detail-item"><span>الحالة</span><strong><span class="status-badge status-${section.status.includes('مفتوحة') ? 'open' : 'closed'}">${section.status}</span></strong></div>
-                                <div class="detail-item" data-full-width="true"><span>المحاضر</span><strong>${section.instructor || 'غير محدد'}</strong></div>
-                                <div class="detail-item" data-full-width="true"><span>المواعيد</span><strong>${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</strong></div>
-                                <div class="detail-item"><span>المكان</span><strong>${section.location || 'غير محدد'}</strong></div>
-                                <div class="detail-item"><span>الاختبار النهائي</span><strong>${section.examPeriodId || 'لا يوجد'}</strong></div>
-                            </div>
-                            <div class="details-actions-container">
-                                <button class="details-nav-btn" id="details-prev-btn" ${currentIndex === 0 ? 'disabled' : ''}><i class="ri-arrow-right-s-line"></i></button>
-                                <button class="details-action-btn ${actionBtnClass}" id="details-action-btn"><i class="${actionBtnIcon}"></i> ${actionBtnText}</button>
-                                <button class="details-nav-btn" id="details-next-btn" ${currentIndex === courseSections.length - 1 ? 'disabled' : ''}><i class="ri-arrow-left-s-line"></i></button>
-                            </div>
-                        `;
-
+                        if (shouldUpdatePanel) {
+                           panel.innerHTML = `
+                                <div class="details-header">
+                                    <h4><span class="color-dot" style="background-color: ${group.color};"></span>${section.name} (${section.code})</h4>
+                                    <i class="ri-close-line details-close-btn"></i>
+                                </div>
+                                <div class="details-grid">
+                                    <div class="detail-item"><span>الشعبة</span><strong>${section.section}</strong></div>
+                                    <div class="detail-item"><span>الحالة</span><strong><span class="status-badge status-${section.status.includes('مفتوحة') ? 'open' : 'closed'}">${section.status}</span></strong></div>
+                                    <div class="detail-item" data-full-width="true"><span>المحاضر</span><strong>${section.instructor || 'غير محدد'}</strong></div>
+                                    <div class="detail-item" data-full-width="true"><span>المواعيد</span><strong>${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</strong></div>
+                                    <div class="detail-item"><span>المكان</span><strong>${section.location || 'غير محدد'}</strong></div>
+                                    <div class="detail-item"><span>الاختبار النهائي</span><strong>${section.examPeriodId || 'لا يوجد'}</strong></div>
+                                </div>
+                                <div class="details-actions-container">
+                                    <button class="details-nav-btn" id="details-prev-btn" ${currentIndex === 0 ? 'disabled' : ''}><i class="ri-arrow-right-s-line"></i></button>
+                                    <button class="details-action-btn ${actionBtnClass}" id="details-action-btn"><i class="${actionBtnIcon}"></i> ${actionBtnText}</button>
+                                    <button class="details-nav-btn" id="details-next-btn" ${currentIndex === courseSections.length - 1 ? 'disabled' : ''}><i class="ri-arrow-left-s-line"></i></button>
+                                </div>
+                            `;
+                        } else {
+                             // Only update the button state
+                            const btn = panel.querySelector('#details-action-btn');
+                            btn.className = `details-action-btn ${actionBtnClass}`;
+                            btn.innerHTML = `<i class="${actionBtnIcon}"></i> ${actionBtnText}`;
+                        }
+                        
                         panel.querySelector('.details-close-btn').onclick = () => this._hideMobileSectionDetails();
                         
                         panel.querySelector('#details-action-btn').onclick = () => {
-                            if (isSelected) {
+                            if (activeSchedule.sections.has(section.uniqueId)) {
                                 this._removeSectionAndUnlink(section.uniqueId, activeSchedule);
                             } else {
                                 this._addSectionAndLink(section.uniqueId, activeSchedule);
                             }
                             this.updateCalendarAndConflicts();
-                            this._hideMobileSectionDetails();
+                            // Refresh the panel UI without closing it
+                            this._showMobileSectionDetails(section, group, false);
                         };
                         
                         const prevBtn = panel.querySelector('#details-prev-btn');
-                        if (prevBtn && !prevBtn.disabled) {
-                            prevBtn.onclick = () => this._showMobileSectionDetails(courseSections[currentIndex - 1], group);
+                        if (prevBtn) {
+                           prevBtn.disabled = currentIndex === 0;
+                           prevBtn.onclick = () => this._showMobileSectionDetails(courseSections[currentIndex - 1], group, true);
                         }
                         
                         const nextBtn = panel.querySelector('#details-next-btn');
-                        if (nextBtn && !nextBtn.disabled) {
-                            nextBtn.onclick = () => this._showMobileSectionDetails(courseSections[currentIndex + 1], group);
+                        if (nextBtn) {
+                           nextBtn.disabled = currentIndex === courseSections.length - 1;
+                           nextBtn.onclick = () => this._showMobileSectionDetails(courseSections[currentIndex + 1], group, true);
                         }
 
-                        this.dom.mobileSectionDetailsOverlay.classList.add('open');
+                        if(shouldUpdatePanel) {
+                           this.dom.mobileSectionDetailsOverlay.classList.add('open');
+                        }
                     },
                     _hideMobileSectionDetails() {
                         this.dom.mobileSectionDetailsOverlay.classList.remove('open');
