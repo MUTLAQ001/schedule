@@ -265,83 +265,90 @@
             /* Mobile-specific styles */
             .mobile-wrapper, .mobile-nav { display: none; }
             
+            /* --- Mobile Section Details Panel --- */
+            .mobile-section-details-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+                z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease;
+            }
+            .mobile-section-details-overlay.open { opacity: 1; visibility: visible; }
+            .details-panel {
+                position: absolute; bottom: 0; left: 0; right: 0;
+                background-color: var(--color-card); border-top: 1px solid var(--color-border);
+                border-top-left-radius: var(--radius); border-top-right-radius: var(--radius);
+                padding: 1.5rem 1.5rem calc(1.5rem + env(safe-area-inset-bottom));
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+                transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+            .mobile-section-details-overlay.open .details-panel { transform: translateY(0); }
+            .details-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+            .details-header h4 { margin: 0; font-family: var(--font-title); font-size: 1.2rem; display: flex; align-items: center; gap: .75rem; }
+            .details-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+            .details-close-btn { font-size: 1.6rem; color: var(--color-text-muted); cursor: pointer; transition: transform .2s; }
+            .details-close-btn:hover { transform: scale(1.1); color: var(--color-text); }
+            .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1rem; margin-bottom: 1.5rem; }
+            .detail-item { display: flex; flex-direction: column; gap: 0.25rem; }
+            .detail-item span { color: var(--color-text-muted); font-size: 0.8rem; }
+            .detail-item strong { color: var(--color-text-dark); font-weight: 600; font-size: 1rem; }
+            .detail-item[data-full-width="true"] { grid-column: 1 / -1; }
+            .details-action-btn {
+                width: 100%; padding: 0.9rem 1.5rem; border: none; border-radius: var(--radius-md);
+                font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: white;
+                cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: .2s;
+            }
+            .details-action-btn.add { background-color: var(--color-primary); }
+            .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
+            .details-action-btn.remove { background-color: var(--color-danger); }
+
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
                 .page-wrapper { display: none; }
-                .mobile-wrapper { display: block; position: relative; width: 100vw; overflow: hidden; padding-bottom: 75px; /* Space for new nav bar height */ }
-                
-                /* --- Improved Mobile Header --- */
+                .mobile-wrapper { display: block; position: relative; width: 100vw; overflow: hidden; padding-bottom: 75px; }
                 .mobile-header {
                     display: flex; justify-content: space-between; align-items: center;
-                    padding: 0 1.25rem; height: 65px;
-                    background-color: var(--color-card);
-                    border-bottom: 1px solid var(--color-border);
-                    position: fixed; top: 0; left: 0; right: 0;
-                    z-index: 100; backdrop-filter: blur(16px);
-                    box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2);
+                    padding: 0 1.25rem; height: 65px; background-color: var(--color-card);
+                    border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0;
+                    z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2);
                 }
                 .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; }
                 .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; }
-
-                /* --- Main Content Views --- */
                 .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
-
-                /* --- Calendar View --- */
                 #mobile-calendar-view { padding: 1rem; gap: 1rem; }
                 #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; }
                 #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
-                
                 .mobile-calendar-scroll-wrapper {
-                    overflow-x: auto;
-                    height: 100%;
-                    -webkit-overflow-scrolling: touch;
-                    direction: ltr; /* Force LTR on container for predictable scroll */
+                    overflow-x: auto; height: 100%; -webkit-overflow-scrolling: touch; direction: ltr;
                 }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar { height: 4px; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track { background: transparent; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(var(--rgb-primary), 0.5); border-radius: 4px; }
-                
-                #mobile-calendar {
-                    min-width: 850px;
-                    direction: rtl; /* Reset direction for calendar content */
-                }
-                
-                /* --- SIMPLIFIED Courses View --- */
+                #mobile-calendar { min-width: 850px; direction: rtl; }
                 #mobile-courses-view { padding: 0; }
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
                 #mobile-courses-view .tab-content { padding: 1rem; }
-
-                /* --- Edge-to-Edge "My Schedule" View --- */
                 #mobile-my-schedule-view { padding: 0; }
                 #mobile-my-schedule-view .card { margin: 0; border-radius: 0; box-shadow: none; border-left: none; border-right: none; }
                 #mobile-my-schedule-container { width: 100%; }
                 #mobile-my-schedule-container .my-schedule-section { padding: 1.25rem; }
                 #mobile-my-schedule-container .my-schedule-section h3 { display: none; }
-
-                /* --- Polished Mobile Bottom Nav --- */
                 .mobile-nav {
                     display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
-                    background-color: var(--color-card);
-                    border-top: 1px solid var(--color-border);
+                    background-color: var(--color-card); border-top: 1px solid var(--color-border);
                     backdrop-filter: blur(16px); z-index: 100;
-                    box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2);
-                    padding-bottom: env(safe-area-inset-bottom);
+                    box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom);
                 }
                 .mobile-nav-btn {
                     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
                     gap: 5px; background: none; border: none;
-                    color: var(--color-text-muted); font-size: 0.75rem; font-weight: 700;
-                    cursor: pointer; transition: color 0.2s ease;
+                    color: var(--color-text-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: color 0.2s ease;
                 }
                 .mobile-nav-btn i { font-size: 1.6rem; }
                 .mobile-nav-btn.active { color: var(--color-primary); }
                 .mobile-nav-btn span { transition: all 0.2s ease; padding: 0.2rem 0.6rem; border-radius: 99px; }
                 .mobile-nav-btn.active span { color: white; background-color: var(--color-primary); }
-                
-                /* --- General Overrides & Inherited Styles --- */
                 .sidebar { width: 100%; height: 100%; border-left: none; }
                 .main-content { padding: 0; height: 100%; }
                 .my-schedule-container { display: flex; }
@@ -406,6 +413,9 @@
         <!-- Modals and Overlays (shared) -->
         <div class="modal-overlay" id="modal-overlay"></div>
         <div class="settings-modal" id="settings-modal"></div>
+        <div class="mobile-section-details-overlay" id="mobile-section-details-overlay">
+            <div class="details-panel" id="details-panel"></div>
+        </div>
 
         <script>
             document.addEventListener('DOMContentLoaded', () => {
@@ -459,17 +469,14 @@
                         this._updateBookmarkletCode();
                     },
 
-                    // Other methods will be placed here
                 };
                 
-                // Binding 'this' for all functions to ensure context is correct
                 for (const key of Object.getOwnPropertyNames(Object.getPrototypeOf(QU_ScheduleApp))) {
                     if (key !== 'constructor' && typeof QU_ScheduleApp[key] === 'function') {
                        QU_ScheduleApp[key] = QU_ScheduleApp[key].bind(QU_ScheduleApp);
                     }
                 }
 
-                // Add methods to the prototype
                 Object.assign(QU_ScheduleApp, {
                     _loadDataFromStorage() {
                         const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
@@ -488,7 +495,6 @@
                             this.dom.installSection.style.display = 'block';
                         }
                     },
-
                     _listenForDataFromOpener() {
                         window.addEventListener('message', (event) => {
                             if (event.data && event.data.type === 'universityCoursesData') {
@@ -506,7 +512,6 @@
                             window.opener.postMessage('request_schedule_data', '*');
                         }
                     },
-
                     _processAndDisplayData(courses) {
                         this.dom.installSection.style.display = 'none';
                         this.state.allCoursesData = courses.map((section, index) => ({
@@ -514,7 +519,6 @@
                             uniqueId: `${section.code}-${section.section}-${index}`,
                             timeSlots: this._parseTimeEntries(section.time)
                         }));
-                        
                         const coursesByName = {};
                         this.state.groupedCourses = this.state.allCoursesData.reduce((acc, course) => {
                             if (!acc[course.code]) {
@@ -525,24 +529,20 @@
                             acc[course.code].sections.push(course);
                             return acc;
                         }, {});
-
                         this.state.linkedCourseGroups = {};
                         for (const name in coursesByName) {
                             if (coursesByName[name].length > 1) {
                                 this.state.linkedCourseGroups[name] = [...new Set(coursesByName[name])];
                             }
                         }
-
                         let colorIndex = 0;
                         Object.values(this.state.groupedCourses).forEach(group => {
                             group.color = this.state.customColors[group.code] || this.constants.COLOR_PALETTE[colorIndex++ % this.constants.COLOR_PALETTE.length];
                         });
-
                         document.getElementById('no-data-message').style.display = 'none';
                         this._renderCoursesList();
                         this._buildSettingsModal();
                     },
-                    
                     _loadSchedules() {
                         const stored = localStorage.getItem(this.constants.STORAGE_KEYS.SCHEDULES);
                         if (stored) {
@@ -565,7 +565,6 @@
                            this._addSchedule("جدول 1", true);
                         }
                     },
-                    
                     _saveSchedules() {
                         const serializableSchedules = {
                            activeScheduleIndex: this.state.activeScheduleIndex,
@@ -577,7 +576,6 @@
                         };
                         localStorage.setItem(this.constants.STORAGE_KEYS.SCHEDULES, JSON.stringify(serializableSchedules));
                     },
-
                     _loadCustomColors() {
                         const stored = localStorage.getItem(this.constants.STORAGE_KEYS.COLORS);
                         if (stored) {
@@ -587,7 +585,6 @@
                     _saveCustomColors() {
                         localStorage.setItem(this.constants.STORAGE_KEYS.COLORS, JSON.stringify(this.state.customColors));
                     },
-                    
                     updateFullUI() {
                         this._renderScheduleTabs();
                         this.updateCalendarAndConflicts();
@@ -595,22 +592,16 @@
                             this._updateMobileHeader();
                         }
                     },
-
                     updateCalendarAndConflicts() {
                         if (!this.state.calendar) return;
-
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
-                        
                         this.state.calendar.removeAllEvents();
-                        
                         document.querySelectorAll('.section-btn').forEach(btn => {
                             btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
                         });
-
                         const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
                         const conflictMap = this._calculateConflicts(selectedCourseDetails);
-                        
                         selectedCourseDetails.forEach(section => {
                             const group = this.state.groupedCourses[section.code];
                             if (group && !this.state.hiddenCourseCodes.has(section.code)) {
@@ -618,22 +609,16 @@
                                 this.state.calendar.addEventSource(lectureEvents);
                             }
                         });
-                        
                         this._renderFinalExams(selectedCourseDetails);
                         this._renderMyScheduleSummary(selectedCourseDetails, conflictMap);
                         this._updateAvailableSectionsUI(selectedCourseDetails);
                         this._saveSchedules();
                     },
-                    
                     _renderScheduleTabs() {
-                        const containers = [this.dom.scheduleTabsContainer];
-                        if(isMobile) containers.push(this.dom.mobileScheduleTabsContainer);
-
+                        const containers = [this.dom.scheduleTabsContainer, this.dom.mobileScheduleTabsContainer].filter(Boolean);
                         containers.forEach(container => {
-                            if (!container) return;
                             container.innerHTML = ''; 
                             const fragment = document.createDocumentFragment();
-
                             if(this.state.schedules.length === 0 && this.state.allCoursesData.length > 0) {
                                 const noDataEl = document.createElement('div');
                                 noDataEl.className = 'no-data';
@@ -641,13 +626,11 @@
                                 noDataEl.innerHTML = '<p>لا توجد جداول. اضغط + لإنشاء جدول جديد.</p>';
                                 fragment.appendChild(noDataEl);
                             }
-                            
                             this.state.schedules.forEach((schedule, index) => {
                                 const tab = document.createElement('button');
                                 tab.className = `schedule-tab ${index === this.state.activeScheduleIndex ? 'active' : ''}`;
                                 tab.dataset.index = index;
                                 tab.innerHTML = `<span class="schedule-tab-name" contenteditable="false">${schedule.name}</span><i class="ri-close-line delete-schedule-btn"></i>`;
-                                
                                 tab.addEventListener('click', () => this._switchSchedule(index));
                                 const nameSpan = tab.querySelector('.schedule-tab-name');
                                 tab.addEventListener('dblclick', () => { nameSpan.contentEditable = true; nameSpan.focus(); });
@@ -656,7 +639,6 @@
                                 tab.querySelector('.delete-schedule-btn').addEventListener('click', (e) => { e.stopPropagation(); this._deleteSchedule(index); });
                                 fragment.appendChild(tab);
                             });
-
                             const addButton = document.createElement('button');
                             addButton.id = 'add-schedule-btn';
                             addButton.innerHTML = '<i class="ri-add-line"></i>';
@@ -666,43 +648,33 @@
                             container.appendChild(fragment);
                         });
                     },
-                    
                     _createCoursesListHTML() {
                         const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
                         const visibleCourses = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code));
-
                         if (Object.keys(this.state.groupedCourses).length > 0 && visibleCourses.length === 0) {
                             return `<div class="no-data"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
                         }
-
                         return visibleCourses.sort((a, b) => a.code.localeCompare(b.code)).map((group, i) => {
                             const sectionsToDisplay = this.state.userSettings.hideClosedCourses
                                 ? group.sections.filter(section => !section.status.includes('مغلقة'))
                                 : group.sections;
-
                             if (sectionsToDisplay.length === 0) return '';
-
                             const sectionsHTML = sectionsToDisplay.map(section => {
                                 const isNoTime = section.time === 'غير محدد';
                                 return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`;
                             }).join('');
-                            
                             return `<div class="course-item" style="animation-delay: ${i * 50}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
                         }).join('');
                     },
-
                     _renderCoursesList() {
                         const html = this._createCoursesListHTML();
                         if (this.dom.desktopCoursesList) this.dom.desktopCoursesList.innerHTML = html;
                         if (this.dom.mobileCoursesList) this.dom.mobileCoursesList.innerHTML = html;
                     },
-
                     _createMyScheduleHTML(selectedCourses, conflictMap) {
                         const conflictBannerHTML = conflictMap.size > 0 ? `<div class="conflict-summary-banner" style="display:flex;"><i class="ri-alert-fill"></i><span>يوجد تعارض في جدولك! المواد المتعارضة مظللة باللون الأصفر.</span></div>` : '';
-                        
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
-                        
                         const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
                             if (!uniqueCourseCodes.has(course.code)) {
                                 totalCredits += parseInt(course.hours, 10) || 0;
@@ -713,7 +685,6 @@
                             const conflictMessages = conflictMap.get(course.uniqueId);
                             const isConflicted = !!conflictMessages;
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMessages.join('\n')}"></i>` : '';
-                            
                             return `<tr class="${isConflicted ? 'has-conflict' : ''}">
                                 <td class="course-cell"><div class="course-code">${conflictIconHTML} ${course.code}</div><div class="course-name">${course.name}</div></td>
                                 <td class="section-cell"><div class="section-number">${course.section}</div><div class="section-type">${course.type}</div></td>
@@ -725,7 +696,6 @@
                                 <td><div class="hours-value">${course.hours}</div></td>
                             </tr>`;
                         }).join('');
-
                         return `<div class="card">
                             ${conflictBannerHTML}
                             <div class="my-schedule-section">
@@ -742,13 +712,9 @@
                             </div>
                         </div>`;
                     },
-
                     _renderMyScheduleSummary(selectedCourses, conflictMap) {
-                        const containers = [this.dom.myScheduleContainer];
-                        if (isMobile) containers.push(this.dom.mobileMyScheduleContainer);
-
+                        const containers = [this.dom.myScheduleContainer, this.dom.mobileMyScheduleContainer].filter(Boolean);
                         containers.forEach(container => {
-                            if (!container) return;
                             container.style.display = 'flex';
                             if (selectedCourses.length === 0) {
                                 container.innerHTML = `<div class="no-data"><i class="ri-calendar-check-line"></i><h4>جدولك فارغ</h4><p>اختر بعض المقررات لإنشاء جدولك.</p></div>`;
@@ -757,15 +723,12 @@
                             }
                         });
                     },
-
                     _createFinalExamsHTML(selectedCourses) {
                         const uniqueExams = [...new Map(selectedCourses.map(e => e.examPeriodId ? [e.examPeriodId, e] : [e.uniqueId, e])).values()];
                         const validExams = uniqueExams.filter(e => e.examPeriodId);
-                        
                         if (validExams.length === 0) {
                             return `<div class="no-data"><i class="ri-file-text-line"></i><h4>لا توجد اختبارات</h4><p>لم يتم تحديد اختبارات نهائية للمقررات المختارة.</p></div>`;
                         }
-                        
                         return validExams.sort((a, b) => parseInt(a.examPeriodId, 10) - parseInt(b.examPeriodId, 10)).map(exam => 
                             `<div class="course-item">
                                 <div class="course-item-header" style="cursor:default;">
@@ -777,15 +740,13 @@
                             </div>`
                         ).join('');
                     },
-
                     _renderFinalExams(selectedCourses) {
                         const html = this._createFinalExamsHTML(selectedCourses);
                         if (this.dom.desktopExamsList) this.dom.desktopExamsList.innerHTML = html;
                         if (this.dom.mobileExamsList) this.dom.mobileExamsList.innerHTML = html;
                     },
-
                     _updateAvailableSectionsUI(selectedCourses) {
-                         const activeSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
+                        const activeSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
                         this.state.allCoursesData.forEach(section => {
                             const btns = document.querySelectorAll(`.section-btn[data-unique-id='${section.uniqueId}']`);
                             btns.forEach(btn => {
@@ -805,7 +766,8 @@
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
                             // Mobile specific
                             'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
-                            'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar'
+                            'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
+                            'mobile-section-details-overlay', 'details-panel'
                         ];
                         ids.forEach(id => {
                             this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
@@ -890,7 +852,6 @@
                         this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
-                        
                         this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
                         
                         const courseLists = [this.dom.desktopCoursesList, this.dom.mobileCoursesList];
@@ -904,15 +865,19 @@
 
                         if(isMobile) {
                             this.dom.mobileNavButtons.forEach(btn => btn.addEventListener('click', () => this._handleMobileNav(btn)));
+                            this.dom.mobileSectionDetailsOverlay.addEventListener('click', (e) => {
+                                if(e.target === this.dom.mobileSectionDetailsOverlay) {
+                                    this._hideMobileSectionDetails();
+                                }
+                            });
                         }
                     },
                     _handleSectionHover(event, isHovering) {
-                        if (isMobile) return; // Disable hover on mobile
+                        if (isMobile) return;
                         const sectionBtn = event.target.closest('.section-btn');
                         if (!sectionBtn) return;
                         if (isHovering) {
-                            const uniqueId = sectionBtn.dataset.uniqueId;
-                            const section = this.state.allCoursesData.find(c => c.uniqueId === uniqueId);
+                            const section = this.state.allCoursesData.find(c => c.uniqueId === sectionBtn.dataset.uniqueId);
                             if (section) this._showPreviewEvent(section);
                         } else {
                             this._removePreviewEvent();
@@ -929,59 +894,51 @@
                         const existingSource = this.state.calendar.getEventSourceById('preview-source');
                         if (existingSource) existingSource.remove();
                     },
-
                     _handleCourseListClick(e) {
                         const sectionBtn = e.target.closest('.section-btn');
                         const header = e.target.closest('.course-item-header');
-                        
                         if (sectionBtn) {
                             const uniqueId = sectionBtn.dataset.uniqueId;
-                            const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                            if (!activeSchedule) return;
-
-                            if (activeSchedule.sections.has(uniqueId)) {
-                                this._removeSectionAndUnlink(uniqueId, activeSchedule);
+                            if (isMobile) {
+                                const section = this.state.allCoursesData.find(c => c.uniqueId === uniqueId);
+                                const group = this.state.groupedCourses[section.code];
+                                this._showMobileSectionDetails(section, group);
                             } else {
-                                this._addSectionAndLink(uniqueId, activeSchedule);
+                                const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                                if (!activeSchedule) return;
+                                if (activeSchedule.sections.has(uniqueId)) {
+                                    this._removeSectionAndUnlink(uniqueId, activeSchedule);
+                                } else {
+                                    this._addSectionAndUnlink(uniqueId, activeSchedule);
+                                }
+                                this.updateCalendarAndConflicts();
                             }
-                            this.updateCalendarAndConflicts();
                         } else if (header) {
                             header.parentElement.classList.toggle('open');
                         }
                     },
-                    
                     _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return;
-                        
                         schedule.sections.add(sectionId);
-                        
                         const linkedGroup = this.state.linkedCourseGroups[section.name];
                         if (!linkedGroup) return;
-
                         const otherCourseCodes = linkedGroup.filter(code => code !== section.code);
                         if (otherCourseCodes.length === 0) return;
-
                         const linkedSectionIds = new Set();
-                        
                         for (const otherCode of otherCourseCodes) {
                             const correspondingSection = this.state.groupedCourses[otherCode]?.sections.find(s => s.section === section.section);
                             if (!correspondingSection) continue;
-                            
                             if (schedule.sections.has(correspondingSection.uniqueId)) continue;
-
                             if (this.state.userSettings.hideClosedCourses && correspondingSection.status.includes('مغلقة')) {
                                 this._showToast('info', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} مغلقة.`);
                                 continue;
                             }
-                            
                             const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-
                             if (this._isSectionConflicted(correspondingSection, tempSelectedDetails)) {
                                 this._showToast('warning', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} متعارضة.`);
                                 continue;
                             }
-
                             schedule.sections.add(correspondingSection.uniqueId);
                             linkedSectionIds.add(correspondingSection.uniqueId);
                             this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
@@ -990,17 +947,14 @@
                            schedule.linkedSections.set(sectionId, linkedSectionIds);
                         }
                     },
-                    
                     _removeSectionAndUnlink(sectionId, schedule) {
                         schedule.sections.delete(sectionId);
-
                         if (schedule.linkedSections.has(sectionId)) {
                             const linkedIds = schedule.linkedSections.get(sectionId);
                             linkedIds.forEach(id => schedule.sections.delete(id));
                             schedule.linkedSections.delete(sectionId);
                             if(linkedIds.size > 0) this._showToast('info', 'تمت إزالة الشعب المرتبطة.');
                         }
-
                         for (const [triggerId, linkedIds] of schedule.linkedSections.entries()) {
                             if (linkedIds.has(sectionId)) {
                                 schedule.sections.delete(triggerId);
@@ -1011,14 +965,12 @@
                             }
                         }
                     },
-
                     _handleClearCalendar() {
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         if (!activeSchedule || activeSchedule.sections.size === 0) {
                             this._showToast('info', 'الجدول الحالي فارغ بالفعل');
                             return;
                         }
-
                         Swal.fire({
                             title: 'هل أنت متأكد؟', text: `سيتم مسح جميع المواد المختارة من "${activeSchedule.name}".`, icon: 'warning',
                             showCancelButton: true, confirmButtonText: 'نعم، امسح الجدول!', cancelButtonText: 'إلغاء',
@@ -1031,11 +983,9 @@
                             }
                         });
                     },
-
                     _showToast(icon, title) {
                          Swal.fire({ toast: true, position: 'bottom', icon: icon, title: title, showConfirmButton: false, timer: 3000, timerProgressBar: true });
                     },
-                    
                     _handleTabClick(button) {
                         const parentSidebar = button.closest('.sidebar');
                         parentSidebar.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
@@ -1045,27 +995,21 @@
                     },
                     _handleMobileNav(button) {
                         const view = button.dataset.view;
-                        
                         this.dom.mobileNavButtons.forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
-
                         this.dom.mobileViewContents.forEach(content => {
-                           content.style.display = 'none'; // Use display none for instant switch
+                           content.style.display = 'none';
                            content.classList.remove('active');
                         });
                         const targetView = document.getElementById(view);
                         if(targetView) {
-                            targetView.style.display = 'flex'; // Set display flex
+                            targetView.style.display = 'flex';
                             targetView.classList.add('active');
                         }
-
-                        if (view === 'mobile-calendar-view' || view === 'mobile-my-schedule-view') {
-                            this.dom.mobileHeaderTitle.textContent = this.state.schedules[this.state.activeScheduleIndex]?.name || 'الجدول';
-                        } else if (view === 'mobile-courses-view') {
-                            this.dom.mobileHeaderTitle.textContent = 'المقررات';
+                        this._updateMobileHeader();
+                        if (view === 'mobile-calendar-view') {
+                           setTimeout(() => this.state.calendar.updateSize(), 50);
                         }
-                        
-                        setTimeout(() => this.state.calendar.updateSize(), 50); // Ensure calendar resizes
                     },
                     _updateBookmarkletCode() {
                         document.getElementById('install-section').innerHTML = `<h3>طريقة التثبيت</h3><p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p><a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية في متصفحك.', icon:'error'}); return false;">QU Schedule</a>`;
@@ -1074,17 +1018,10 @@
                         if (this.state.calendar) this.state.calendar.destroy();
                         const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
                         const calendarOptions = {
-                            initialView: 'timeGridWeek', 
-                            locale: 'ar', 
-                            headerToolbar: false, // This removes the date title completely
-                            allDaySlot: false, 
-                            events: [], 
-                            dir: 'rtl',
-                            dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, 
-                            slotMinTime: this.state.userSettings.minTime, 
-                            slotMaxTime: this.state.userSettings.maxTime,
-                            hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], 
-                            nowIndicator: false,
+                            initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false, 
+                            events: [], dir: 'rtl', dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, 
+                            slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
+                            hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false,
                             dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; },
                             eventContent: (arg) => {
                                 const props = arg.event.extendedProps;
@@ -1098,7 +1035,6 @@
                         this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
                         this.state.calendar.render();
                     },
-
                     _addSchedule(name, isDefault = false) {
                         const scheduleName = name || `جدول ${this.state.schedules.length + 1}`;
                         this.state.schedules.push({ name: scheduleName, sections: new Set(), linkedSections: new Map() });
@@ -1107,7 +1043,6 @@
                             this.updateFullUI();
                         }
                     },
-
                     _switchSchedule(index) {
                         if (index !== this.state.activeScheduleIndex) {
                             this.state.activeScheduleIndex = index;
@@ -1138,7 +1073,6 @@
                             this._saveSchedules();
                             if (isMobile) this._updateMobileHeader();
                         } else {
-                            // Revert to old name if new name is empty
                             const tabNameSpan = document.querySelector(`.schedule-tab[data-index='${index}'] .schedule-tab-name`);
                             if(tabNameSpan) tabNameSpan.textContent = this.state.schedules[index].name;
                         }
@@ -1146,10 +1080,9 @@
                     _updateMobileHeader() {
                         const activeNavBtn = document.querySelector('.mobile-nav-btn.active');
                         if (!activeNavBtn) return;
-                        
                         const currentView = activeNavBtn.dataset.view;
                         if (currentView === 'mobile-calendar-view' || currentView === 'mobile-my-schedule-view') {
-                            this.dom.mobileHeaderTitle.textContent = this.state.schedules[this.state.activeScheduleIndex]?.name || 'الجدول';
+                             this.dom.mobileHeaderTitle.textContent = this.state.schedules[this.state.activeScheduleIndex]?.name || 'الجدول';
                         } else if (currentView === 'mobile-courses-view') {
                              this.dom.mobileHeaderTitle.textContent = 'المقررات';
                         }
@@ -1180,6 +1113,47 @@
                         if (h < 0) h += 360;
                         return h;
                     },
+                    _showMobileSectionDetails(section, group) {
+                        const panel = this.dom.detailsPanel;
+                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                        const isSelected = activeSchedule.sections.has(section.uniqueId);
+
+                        const actionBtnText = isSelected ? "إزالة من الجدول" : "إضافة للجدول";
+                        const actionBtnClass = isSelected ? "remove" : "add";
+                        const actionBtnIcon = isSelected ? "ri-delete-bin-line" : "ri-add-line";
+
+                        panel.innerHTML = `
+                            <div class="details-header">
+                                <h4><span class="color-dot" style="background-color: ${group.color};"></span>${section.name} (${section.code})</h4>
+                                <i class="ri-close-line details-close-btn"></i>
+                            </div>
+                            <div class="details-grid">
+                                <div class="detail-item"><span>المحاضر</span><strong>${section.instructor || 'غير محدد'}</strong></div>
+                                <div class="detail-item"><span>الحالة</span><strong><span class="status-badge status-${section.status.includes('مفتوحة') ? 'open' : 'closed'}">${section.status}</span></strong></div>
+                                <div class="detail-item" data-full-width="true"><span>المواعيد</span><strong>${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</strong></div>
+                                <div class="detail-item"><span>المكان</span><strong>${section.location || 'غير محدد'}</strong></div>
+                                <div class="detail-item"><span>الاختبار النهائي</span><strong>${section.examPeriodId || 'لا يوجد'}</strong></div>
+                            </div>
+                            <button class="details-action-btn ${actionBtnClass}" id="details-action-btn"><i class="${actionBtnIcon}"></i> ${actionBtnText}</button>
+                        `;
+
+                        panel.querySelector('.details-close-btn').onclick = () => this._hideMobileSectionDetails();
+                        
+                        panel.querySelector('#details-action-btn').onclick = () => {
+                            if (isSelected) {
+                                this._removeSectionAndUnlink(section.uniqueId, activeSchedule);
+                            } else {
+                                this._addSectionAndLink(section.uniqueId, activeSchedule);
+                            }
+                            this.updateCalendarAndConflicts();
+                            this._hideMobileSectionDetails();
+                        };
+                        
+                        this.dom.mobileSectionDetailsOverlay.classList.add('open');
+                    },
+                    _hideMobileSectionDetails() {
+                        this.dom.mobileSectionDetailsOverlay.classList.remove('open');
+                    },
                     _loadSettings() {
                         const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
                         if (saved) {
@@ -1196,79 +1170,47 @@
                     },
                     _buildSettingsModal() {
                         const modal = this.dom.settingsModal;
-                        let courseColorsHTML = Object.values(this.state.groupedCourses).sort( (a, b) => a.code.localeCompare(b.code)).map(group => `<div class="settings-item"><div class="settings-item-label"><span style="color: ${group.color}; font-weight: 600;">${group.name} (${group.code})</span></div><label class="color-picker-label" style="background-color: ${group.color};"><input type="color" class="color-picker-input" data-course-code="${group.code}" value="${group.color}"></label></div>`).join('');
-                        if (!courseColorsHTML) courseColorsHTML = '<p style="color: var(--color-text-muted); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
-                        let courseVisibilityHTML = Object.values(this.state.groupedCourses).sort( (a, b) => a.code.localeCompare(b.code)).map(group => {
-                            const isHidden = this.state.hiddenCourseCodes.has(group.code);
-                            const rgb = this._hexToRgb(group.color);
-                            return `<button class="course-visibility-btn ${isHidden ? 'hidden' : 'visible'}" data-course-code="${group.code}" style="--item-color: ${group.color}; --item-color-rgb: ${rgb};"><span class="color-dot"></span>${group.code}</button>`;
+                        let courseColorsHTML = Object.values(this.state.groupedCourses).sort((a,b)=>a.code.localeCompare(b.code)).map(g=>`<div class="settings-item"><div class="settings-item-label"><span style="color:${g.color};font-weight:600;">${g.name} (${g.code})</span></div><label class="color-picker-label" style="background-color:${g.color};"><input type="color" class="color-picker-input" data-course-code="${g.code}" value="${g.color}"></label></div>`).join('');
+                        if (!courseColorsHTML) courseColorsHTML = '<p style="color:var(--color-text-muted);font-size:0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
+                        let courseVisibilityHTML = Object.values(this.state.groupedCourses).sort((a,b)=>a.code.localeCompare(b.code)).map(g=>{
+                            const isHidden = this.state.hiddenCourseCodes.has(g.code);
+                            return`<button class="course-visibility-btn ${isHidden?'hidden':'visible'}" data-course-code="${g.code}" style="--item-color:${g.color};--item-color-rgb:${this._hexToRgb(g.color)};"><span class="color-dot"></span>${g.code}</button>`;
                         }).join('');
-                        if (!courseVisibilityHTML) courseVisibilityHTML = '<p style="color: var(--color-text-muted); font-size: 0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
-                        
+                        if (!courseVisibilityHTML) courseVisibilityHTML = '<p style="color:var(--color-text-muted);font-size:0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
                         modal.innerHTML = `
-                            <div class="modal-header"><h3><i class="ri-settings-3-line"></i> الإعدادات</h3><i class="ri-close-line modal-close-btn" id="close-modal-btn"></i></div>
+                            <div class="modal-header"><h3><i class="ri-settings-3-line"></i> الإعدادات</h3><i class="ri-close-line modal-close-btn"></i></div>
                             <div class="modal-content custom-scrollbar">
                                 <div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div>
-                                <div class="settings-group"><h4 class="settings-group-title"><i class="ri-filter-3-line"></i>ترشيح المقررات</h4><div class="settings-item"><div class="settings-item-label"><span>إخفاء الشعب المغلقة</span><small>لإزالة الشعب غير المتاحة من القائمة</small></div><label class="toggle-switch"><input type="checkbox" id="hide-closed-toggle"><span class="slider"></span></label></div><h4 class="settings-group-title" style="margin-top: 2rem;"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div></div>
+                                <div class="settings-group"><h4 class="settings-group-title"><i class="ri-filter-3-line"></i>ترشيح المقررات</h4><div class="settings-item"><div class="settings-item-label"><span>إخفاء الشعب المغلقة</span><small>لإزالة الشعب غير المتاحة من القائمة</small></div><label class="toggle-switch"><input type="checkbox" id="hide-closed-toggle"><span class="slider"></span></label></div><h4 class="settings-group-title" style="margin-top:2rem;"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div></div>
                                 <div class="settings-group"><h4 class="settings-group-title"><i class="ri-paint-brush-line"></i>ألوان المقررات</h4><div id="course-colors-list">${courseColorsHTML}</div></div>
                                 <div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><div id="min-time-select-container"></div><div id="max-time-select-container"></div></div></div></div>
-                                <div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="data-management-zone"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button><input type="file" id="import-file-input" accept=".json" style="display: none;"><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button></div></div>
+                                <div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="data-management-zone"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير الجدول الحالي</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد جدول</button><input type="file" id="import-file-input" accept=".json" style="display:none;"><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين التطبيق</button></div></div>
                             </div>`;
                         this._attachModalEventListeners();
                         this._populateTimeSelects();
                         this._applySettings();
                     },
                     _attachModalEventListeners() {
-                        this.dom.settingsModal.querySelector('#close-modal-btn').addEventListener('click', () => this._toggleSettingsModal(false));
-                        this.dom.settingsModal.querySelector('#course-colors-list').addEventListener('change', e => this._handleCourseColorChange(e));
-                        this.dom.settingsModal.querySelector('#course-visibility-list').addEventListener('click', e => this._handleVisibilityToggle(e));
-                        this.dom.settingsModal.querySelector('#export-btn').addEventListener('click', () => this._handleExport());
-                        this.dom.settingsModal.querySelector('#import-btn').addEventListener('click', () => this.dom.settingsModal.querySelector('#import-file-input').click());
-                        this.dom.settingsModal.querySelector('#import-file-input').addEventListener('change', e => this._handleImport(e));
-                        this.dom.settingsModal.querySelector('#reset-app-btn').addEventListener('click', () => this._handleReset());
+                        const modal = this.dom.settingsModal;
+                        modal.querySelector('.modal-close-btn').addEventListener('click', () => this._toggleSettingsModal(false));
+                        modal.querySelector('#course-colors-list').addEventListener('change', e => this._handleCourseColorChange(e));
+                        modal.querySelector('#course-visibility-list').addEventListener('click', e => this._handleVisibilityToggle(e));
+                        modal.querySelector('#export-btn').addEventListener('click', () => this._handleExport());
+                        modal.querySelector('#import-btn').addEventListener('click', () => modal.querySelector('#import-file-input').click());
+                        modal.querySelector('#import-file-input').addEventListener('change', e => this._handleImport(e));
+                        modal.querySelector('#reset-app-btn').addEventListener('click', () => this._handleReset());
                     },
-                    _handleCourseColorChange(event) {
-                        if (event.target.matches('.color-picker-input')) {
-                            const code = event.target.dataset.courseCode;
-                            const newColor = event.target.value;
-                            this.state.customColors[code] = newColor;
-                            if (this.state.groupedCourses[code]) this.state.groupedCourses[code].color = newColor;
-                            this._saveCustomColors();
-                            this.updateFullUI();
-                            this._buildSettingsModal();
-                        }
-                    },
-                    _handleVisibilityToggle(event) {
-                        const btn = event.target.closest('.course-visibility-btn');
-                        if (!btn) return;
-                        const code = btn.dataset.courseCode;
-                        if (this.state.hiddenCourseCodes.has(code)) {
-                            this.state.hiddenCourseCodes.delete(code);
-                            btn.classList.remove('hidden'); btn.classList.add('visible');
-                        } else {
-                            this.state.hiddenCourseCodes.add(code);
-                            btn.classList.add('hidden'); btn.classList.remove('visible');
-                        }
-                        this._saveSettings();
-                        this._renderCoursesList();
-                    },
+                    _handleCourseColorChange(e){if(e.target.matches('.color-picker-input')){const code=e.target.dataset.courseCode;const color=e.target.value;this.state.customColors[code]=color;if(this.state.groupedCourses[code])this.state.groupedCourses[code].color=color;this._saveCustomColors();this.updateFullUI();this._buildSettingsModal();}},
+                    _handleVisibilityToggle(e){const btn=e.target.closest('.course-visibility-btn');if(!btn)return;const code=btn.dataset.courseCode;if(this.state.hiddenCourseCodes.has(code)){this.state.hiddenCourseCodes.delete(code);btn.classList.remove('hidden');btn.classList.add('visible');}else{this.state.hiddenCourseCodes.add(code);btn.classList.add('hidden');btn.classList.remove('visible');}this._saveSettings();this._renderCoursesList();},
                     _handleExport() {
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        if (!activeSchedule || activeSchedule.sections.size === 0) {
-                            Swal.fire('الجدول الحالي فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning');
-                            return;
-                        }
-                        const dataStr = JSON.stringify({ 
-                            version: 20, 
-                            schedule: Array.from(activeSchedule.sections), 
-                            linked: Array.from(activeSchedule.linkedSections.entries()).map(([key, value]) => [key, Array.from(value)]) 
-                        });
-                        const dataBlob = new Blob([dataStr],{ type: 'application/json' });
-                        const url = URL.createObjectURL(dataBlob);
+                        if (!activeSchedule || activeSchedule.sections.size === 0) return Swal.fire('الجدول الحالي فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning');
+                        const dataStr = JSON.stringify({ version: 20, schedule: Array.from(activeSchedule.sections), linked: Array.from(activeSchedule.linkedSections.entries()).map(([k, v]) => [k, Array.from(v)]) });
+                        const blob = new Blob([dataStr], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
                         const a = document.createElement('a');
                         a.href = url;
-                        const safeName = activeSchedule.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                        a.download = `qu_schedule_${safeName}.json`;
+                        a.download = `qu_schedule_${activeSchedule.name.replace(/[^a-z0-9]/gi,'_').toLowerCase()}.json`;
                         a.click();
                         URL.revokeObjectURL(url);
                     },
@@ -1280,76 +1222,57 @@
                             try {
                                 const data = JSON.parse(event.target.result);
                                 if (data && data.schedule && Array.isArray(data.schedule)) {
-                                    const now = new Date();
-                                    const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-                                    const newName = `مستورد ${timeString}`;
+                                    const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
+                                    const newName = `مستورد ${time}`;
                                     this._addSchedule(newName, false);
                                     const newSchedule = this.state.schedules[this.state.activeScheduleIndex];
                                     data.schedule.forEach(id => {
-                                        if (this.state.allCoursesData.some(c => c.uniqueId === id)) {
-                                            newSchedule.sections.add(id);
-                                        }
+                                        if (this.state.allCoursesData.some(c => c.uniqueId === id)) newSchedule.sections.add(id);
                                     });
-                                    if(data.linked && Array.isArray(data.linked)) {
-                                        newSchedule.linkedSections = new Map(data.linked.map(([key, val]) => [key, new Set(val)]));
-                                    }
+                                    if(data.linked && Array.isArray(data.linked)) newSchedule.linkedSections = new Map(data.linked.map(([k, v]) => [k, new Set(v)]));
                                     this.updateFullUI();
                                     this._toggleSettingsModal(false);
                                     this._showToast('success', 'تم استيراد الجدول بنجاح!');
-                                } else { throw new Error('Invalid file format'); }
-                            } catch (error) { Swal.fire('خطأ!', 'ملف غير صالح. تأكد من أنه ملف جدول تم تصديره من هذه الأداة.', 'error'); }
+                                } else throw new Error('Invalid file format');
+                            } catch (error) { Swal.fire('خطأ!', 'ملف غير صالح.', 'error'); }
                         };
                         reader.readAsText(file);
                         e.target.value = '';
                     },
-                    _handleReset() {
-                        Swal.fire({
-                            title: 'هل أنت متأكد؟', text: "سيؤدي هذا إلى مسح جميع بيانات التطبيق المحفوظة.", icon: 'warning',
-                            showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'نعم، إعادة تعيين!', cancelButtonText: 'إلغاء'
-                        }).then((result) => { if (result.isConfirmed) { localStorage.clear(); location.reload(); } });
-                    },
-                    _toggleSettingsModal(show) {
-                        this.dom.modalOverlay.classList.toggle('open', show);
-                        this.dom.settingsModal.classList.toggle('open', show);
-                    },
-                    _applySettings() {
+                    _handleReset() { Swal.fire({ title: 'هل أنت متأكد؟', text: "سيؤدي هذا إلى مسح جميع بيانات التطبيق.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'نعم، إعادة تعيين!', cancelButtonText: 'إلغاء' }).then(r => { if (r.isConfirmed) { localStorage.clear(); location.reload(); } }); },
+                    _toggleSettingsModal(show){this.dom.modalOverlay.classList.toggle('open',show);this.dom.settingsModal.classList.toggle('open',show);},
+                    _applySettings(){
                         document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
                         if(isMobile) document.body.classList.add('mobile-view');
-                        
-                        const primaryColor = this.state.userSettings.accentColor;
-                        document.documentElement.style.setProperty('--color-primary', primaryColor);
-                        document.documentElement.style.setProperty('--color-primary-dark', this._adjustColorBrightness(primaryColor, -10));
-                        document.documentElement.style.setProperty('--rgb-primary', this._hexToRgb(primaryColor));
-                        const primaryHue = this._hexToHue(primaryColor);
-                        document.documentElement.style.setProperty('--primary-hue', String(primaryHue));
-                        document.documentElement.style.setProperty('--secondary-hue', String((primaryHue + 40) % 360));
-
+                        const pColor = this.state.userSettings.accentColor;
+                        const pDark = this._adjustColorBrightness(pColor, -10);
+                        const pRgb = this._hexToRgb(pColor);
+                        const pHue = this._hexToHue(pColor);
+                        document.documentElement.style.setProperty('--color-primary', pColor);
+                        document.documentElement.style.setProperty('--color-primary-dark', pDark);
+                        document.documentElement.style.setProperty('--rgb-primary', pRgb);
+                        document.documentElement.style.setProperty('--primary-hue', String(pHue));
+                        document.documentElement.style.setProperty('--secondary-hue', String((pHue + 40) % 360));
                         const modeToggle = this.dom.settingsModal.querySelector('.mode-toggle');
                         if (modeToggle) {
-                            modeToggle.innerHTML = `<button class="mode-btn ${this.state.userSettings.theme === 'dark' ? 'active' : ''}" data-theme="dark">ظلام</button><button class="mode-btn ${this.state.userSettings.theme === 'light' ? 'active' : ''}" data-theme="light">نهار</button>`;
+                            modeToggle.innerHTML = `<button class="mode-btn ${this.state.userSettings.theme==='dark'?'active':''}" data-theme="dark">ظلام</button><button class="mode-btn ${this.state.userSettings.theme==='light'?'active':''}" data-theme="light">نهار</button>`;
                             modeToggle.onclick = e => { if (e.target.matches('.mode-btn')) { this.state.userSettings.theme = e.target.dataset.theme; this._saveSettings(); this._applySettings(); } };
                         }
                         this._populateAccentColorPicker();
-                        const showWeekendToggle = this.dom.settingsModal.querySelector('#show-weekend-toggle');
-                        if (showWeekendToggle) {
-                            showWeekendToggle.checked = this.state.userSettings.showWeekends;
-                            showWeekendToggle.onchange = (e) => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); };
-                        }
-                        const hideClosedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
-                        if (hideClosedToggle) {
-                            hideClosedToggle.checked = this.state.userSettings.hideClosedCourses;
-                            hideClosedToggle.onchange = (e) => { this.state.userSettings.hideClosedCourses = e.target.checked; this._saveSettings(); this._renderCoursesList(); };
-                        }
+                        const weekendToggle = this.dom.settingsModal.querySelector('#show-weekend-toggle');
+                        if(weekendToggle){weekendToggle.checked=this.state.userSettings.showWeekends;weekendToggle.onchange=e=>{this.state.userSettings.showWeekends=e.target.checked;this._saveSettings();this._initializeCalendar();this.updateCalendarAndConflicts();};}
+                        const closedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
+                        if(closedToggle){closedToggle.checked=this.state.userSettings.hideClosedCourses;closedToggle.onchange=e=>{this.state.userSettings.hideClosedCourses=e.target.checked;this._saveSettings();this._renderCoursesList();};}
                     },
                     _populateAccentColorPicker() {
                         const picker = this.dom.settingsModal.querySelector('#accent-color-picker');
                         if (!picker) return;
                         picker.innerHTML = '';
-                        Object.values(this.constants.PRESET_COLORS).forEach(color => {
+                        Object.values(this.constants.PRESET_COLORS).forEach(c => {
                             const dot = document.createElement('div');
-                            dot.className = `theme-dot ${this.state.userSettings.accentColor === color ? 'active' : ''}`;
-                            dot.style.backgroundColor = color;
-                            dot.onclick = () => { this.state.userSettings.accentColor = color; this._saveSettings(); this._applySettings(); };
+                            dot.className = `theme-dot ${this.state.userSettings.accentColor === c ? 'active' : ''}`;
+                            dot.style.backgroundColor = c;
+                            dot.onclick = () => { this.state.userSettings.accentColor = c; this._saveSettings(); this._applySettings(); };
                             picker.appendChild(dot);
                         });
                         const isCustom = !Object.values(this.constants.PRESET_COLORS).includes(this.state.userSettings.accentColor);
@@ -1357,31 +1280,33 @@
                         customLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
                         customLabel.style.backgroundColor = isCustom ? this.state.userSettings.accentColor : 'transparent';
                         customLabel.innerHTML = `<input type="color" class="color-picker-input" value="${this.state.userSettings.accentColor}">`;
-                        customLabel.querySelector('input').onchange = (e) => { this.state.userSettings.accentColor = e.target.value; this._saveSettings(); this._applySettings(); };
+                        customLabel.querySelector('input').onchange = e => { this.state.userSettings.accentColor = e.target.value; this._saveSettings(); this._applySettings(); };
                         picker.appendChild(customLabel);
                     },
                     _populateTimeSelects() {
                         const minContainer = this.dom.settingsModal.querySelector('#min-time-select-container');
                         const maxContainer = this.dom.settingsModal.querySelector('#max-time-select-container');
                         if (!minContainer || !maxContainer) return;
-                        const timeOptions = Array.from({ length: 24 }, (_, i) => ({ value: `${String(i).padStart(2, '0')}:00:00`, label: `${String(i).padStart(2, '0')}:00` }));
-                        this._createActionPicker(minContainer, timeOptions, this.state.userSettings.minTime, (newVal) => { this.state.userSettings.minTime = newVal; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); });
-                        this._createActionPicker(maxContainer, timeOptions, this.state.userSettings.maxTime, (newVal) => { this.state.userSettings.maxTime = newVal; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); });
+                        const timeOpts = Array.from({ length: 24 }, (_, i) => ({ value: `${String(i).padStart(2,'0')}:00:00`, label: `${String(i).padStart(2,'0')}:00` }));
+                        this._createActionPicker(minContainer, timeOpts, this.state.userSettings.minTime, val => { this.state.userSettings.minTime = val; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); });
+                        this._createActionPicker(maxContainer, timeOpts, this.state.userSettings.maxTime, val => { this.state.userSettings.maxTime = val; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); });
                     },
-                    _createActionPicker(container, options, initialValue, onChange) {
+                    _createActionPicker(container, opts, val, onChange) {
                         container.innerHTML = '';
                         let isOpen = false;
                         const wrapper = document.createElement('div');
                         wrapper.className = 'action-picker-wrapper';
-                        const selectedOption = options.find(opt => opt.value === initialValue) || options[0];
+                        const selected = opts.find(o => o.value === val) || opts[0];
                         const display = document.createElement('button');
-                        display.type = 'button'; display.className = 'action-picker-display'; display.textContent = selectedOption.label;
+                        display.type = 'button'; display.className = 'action-picker-display'; display.textContent = selected.label;
                         const panel = document.createElement('div');
                         panel.className = 'action-picker-panel'; panel.style.display = 'none';
-                        options.forEach(option => {
+                        opts.forEach(o => {
                             const btn = document.createElement('button');
-                            btn.type = 'button'; btn.className = `action-picker-option ${initialValue === option.value ? 'selected' : ''}`; btn.textContent = option.label;
-                            btn.onclick = () => { onChange(option.value); display.textContent = option.label; panel.querySelectorAll('.selected').forEach(el => el.classList.remove('selected')); btn.classList.add('selected'); closePanel(); };
+                            btn.type = 'button';
+                            btn.className = `action-picker-option ${val === o.value ? 'selected' : ''}`;
+                            btn.textContent = o.label;
+                            btn.onclick = () => { onChange(o.value); display.textContent = o.label; panel.querySelectorAll('.selected').forEach(el=>el.classList.remove('selected')); btn.classList.add('selected'); closePanel(); };
                             panel.appendChild(btn);
                         });
                         const openPanel = () => { isOpen = true; panel.style.display = 'block'; };
