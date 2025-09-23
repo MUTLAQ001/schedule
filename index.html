@@ -87,10 +87,17 @@
                 top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
                 z-index: 2000;
-                display: none; /* Changed from flex to none */
+                display: none; /* Initially hidden */
                 align-items: center; justify-content: center;
                 padding: 1rem;
             }
+            .mobile-view #install-overlay { /* Specific for mobile centering */
+                 align-items: center; 
+            }
+             .desktop-view #install-overlay { /* Specific for desktop centering (top) */
+                 align-items: flex-start;
+                 padding-top: 5rem;
+             }
 
             #install-section {
                 background-color: var(--color-card); padding: 1.5rem 2rem; border-radius: var(--radius);
@@ -318,15 +325,22 @@
             .details-action-btn.add { background-color: var(--color-primary); }
             .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
             .details-action-btn.remove { background-color: var(--color-danger); }
-            .code-container { position: relative; margin-bottom: 1.5rem; }
+            .code-container { position: relative; margin-bottom: 1rem; }
             .code-container pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); font-size: 0.8rem; white-space: pre-wrap; word-wrap: break-word; text-align: left; direction: ltr; }
             .light .code-container pre { background: rgba(0,0,0,0.04); }
             #copy-code-btn { 
                 display: block; width: 100%; background: var(--color-primary); color: white; padding: 0.7rem; 
-                border-radius: var(--radius-md); border: none; font-weight: 600; cursor: pointer; margin-top: 1rem; 
+                border-radius: var(--radius-md); border: none; font-weight: 600; cursor: pointer; margin-bottom: 1.5rem;
             }
             #install-section p { margin-top: 0; margin-bottom: 1rem; text-align: right; }
             #install-section h3 { margin-bottom: 1.5rem; }
+            .js-warning { 
+                background: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); 
+                border-radius: var(--radius-md); padding: 1rem; font-size: 0.9rem; text-align: right; 
+                display: flex; gap: 0.75rem; align-items: flex-start; 
+            }
+            .js-warning i { font-size: 1.2rem; flex-shrink: 0; line-height: 1.5; }
+            
 
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
@@ -454,6 +468,8 @@
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024;
                 if (isMobile) {
                     document.body.classList.add('mobile-view');
+                } else {
+                    document.body.classList.add('desktop-view');
                 }
 
                 const QU_ScheduleApp = {
@@ -1033,20 +1049,23 @@
                            setTimeout(() => this.state.calendar.updateSize(), 50);
                         }
                     },
-                     _updateBookmarkletCode() {
+                    _updateBookmarkletCode() {
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
                         const installSection = this.dom.installSection;
                         
                         if (isMobile) {
                             installSection.innerHTML = `
                                 <h3>طريقة التثبيت (للجوال)</h3>
-                                <p>1. انسخ الكود التالي بالضغط على الزر.</p>
+                                <p>1. انسخ الكود التالي:</p>
                                 <div class="code-container">
                                     <pre id="mobile-bookmarklet-code">${code}</pre>
                                 </div>
                                 <button id="copy-code-btn"><i class="ri-clipboard-line"></i> نسخ الكود</button>
-                                <p style="margin-top: 1.5rem;">2. اذهب لصفحة المقررات المطروحة في متصفحك.</p>
-                                <p>3. الصق الكود في شريط العنوان واضغط "اذهب" (Enter).</p>
+                                <p>2. اذهب لصفحة المقررات المطروحة والصق الكود في شريط العنوان.</p>
+                                <div class="js-warning">
+                                   <i class="ri-alert-fill"></i>
+                                   <span><b>تنويه:</b> بعض المتصفحات تحذف <code>javascript:</code> من بداية الكود. تأكد من إعادتها يدوياً قبل الضغط على "اذهب".</span>
+                                </div>
                             `;
                             const copyBtn = installSection.querySelector('#copy-code-btn');
                             copyBtn.addEventListener('click', (e) => {
@@ -1323,6 +1342,8 @@
                     _applySettings(){
                         document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
                         if(isMobile) document.body.classList.add('mobile-view');
+                        else document.body.classList.add('desktop-view');
+
                         const pColor = this.state.userSettings.accentColor;
                         const pDark = this._adjustColorBrightness(pColor, -10);
                         const pRgb = this._hexToRgb(pColor);
