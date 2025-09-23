@@ -82,13 +82,23 @@
                 filter: blur(100px); border-radius: 50%;
             }
 
+            #install-overlay {
+                position: fixed;
+                top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+                z-index: 2000;
+                display: none; /* Changed from flex to none */
+                align-items: center; justify-content: center;
+                padding: 1rem;
+            }
+
             #install-section {
-                position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 1000;
                 background-color: var(--color-card); padding: 1.5rem 2rem; border-radius: var(--radius);
                 box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); border: 1px solid var(--color-border);
-                width: 90%; max-width: 600px; text-align: center; display: none;
+                width: 90%; max-width: 600px; text-align: center;
                 backdrop-filter: blur(16px); animation: scaleIn .5s var(--transition) both;
             }
+
             .bookmarklet-button {
                 display: inline-block; background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
                 color: white; padding: 0.7rem 1.5rem; border-radius: var(--radius-full);
@@ -333,10 +343,7 @@
                 .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
-                #install-section {
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                }
+
                 #mobile-calendar-view { padding: 1rem; gap: 1rem; }
                 #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; }
                 #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
@@ -381,7 +388,10 @@
     </head>
     <body>
         <div class="cosmic-bg-container"><div class="nebula-glow"></div><canvas id="starfield-canvas"></canvas></div>
-        <div id="install-section"></div>
+        
+        <div id="install-overlay">
+            <div id="install-section"></div>
+        </div>
         
         <!-- Desktop View -->
         <div class="page-wrapper">
@@ -511,10 +521,10 @@
                             } catch (e) {
                                 console.error("Error loading courses:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
-                                this.dom.installSection.style.display = 'block';
+                                this.dom.installOverlay.style.display = 'flex';
                             }
                         } else {
-                            this.dom.installSection.style.display = 'block';
+                            this.dom.installOverlay.style.display = 'flex';
                         }
                     },
                     _listenForDataFromOpener() {
@@ -535,7 +545,7 @@
                         }
                     },
                     _processAndDisplayData(courses) {
-                        this.dom.installSection.style.display = 'none';
+                        this.dom.installOverlay.style.display = 'none';
                         this.state.allCoursesData = courses.map((section, index) => ({
                             ...section,
                             uniqueId: `${section.code}-${section.section}-${index}`,
@@ -784,7 +794,7 @@
                     _populateDOMElements() {
                         const ids = [
                             'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
-                            'settings-modal', 'modal-overlay', 'install-section', 'no-data-message', 
+                            'settings-modal', 'modal-overlay', 'install-section', 'install-overlay', 'no-data-message', 
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
                             // Mobile specific
                             'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
@@ -1023,7 +1033,7 @@
                            setTimeout(() => this.state.calendar.updateSize(), 50);
                         }
                     },
-                    _updateBookmarkletCode() {
+                     _updateBookmarkletCode() {
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
                         const installSection = this.dom.installSection;
                         
