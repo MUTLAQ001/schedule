@@ -230,10 +230,11 @@
             .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; background-color: rgba(0,0,0,0.1); }
             .light .sections-wrapper { background-color: rgba(0,0,0,0.02); }
             .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 1rem 1.25rem 1.25rem; }
-            .section-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: transparent; transition: all var(--transition); }
+            .section-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: transparent; transition: all var(--transition); position: relative;}
             .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
             .section-btn.selected { background-color: var(--color-primary); color: white; border-color: var(--color-primary); }
-            .section-btn.conflicted { background-color: rgba(var(--rgb-danger), 0.1); border-color: var(--color-danger); color: var(--color-danger); }
+            .section-btn.conflicted { background-color: rgba(var(--rgb-danger), 0.08); border-color: rgba(var(--rgb-danger),0.5); color: var(--color-text-dark); }
+            .section-btn.conflicted::before { content: "⚠️"; position: absolute; top: 0px; right: 0px; font-size: 0.8rem; }
             .section-btn .section-type { font-size: 0.7rem; color: var(--color-text-muted); }
             .section-btn.selected .section-type { color: rgba(255,255,255,0.8); }
             .section-btn.no-time { border-bottom: 3px solid var(--item-color); padding-bottom: calc(0.5rem - 3px); }
@@ -393,7 +394,30 @@
                  border-top: 1px solid var(--color-border);
                  backdrop-filter: blur(8px);
              }
-
+            #conflict-modal {max-width: 500px; width: 90%;}
+            #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding-right: .5rem; }
+            .conflict-item {
+                border: 1px solid var(--color-border); padding: 1rem;
+                border-radius: var(--radius-md); margin-bottom: 1rem;
+            }
+            .conflict-item label {
+                display: flex; align-items: center; gap: 1rem; cursor: pointer;
+            }
+            .conflict-item input[type="radio"] {
+                flex-shrink: 0; accent-color: var(--color-primary);
+                width: 1.2em; height: 1.2em;
+            }
+            .conflict-details h4 {margin: 0 0 .5rem; font-family: var(--font-title); color: var(--color-text-dark);}
+            .conflict-reason {
+                font-size: 0.8rem; padding: .2rem .6rem;
+                background-color: rgba(var(--rgb-warning), 0.1);
+                color: var(--color-warning); border-radius: var(--radius-full);
+            }
+            #mobile-my-schedule-list .resolve-conflict-btn {
+                background: rgba(var(--rgb-warning),0.1); color: var(--color-warning);
+                border: none; padding: .5rem 1rem; border-radius: var(--radius-full);
+                font-weight: 700; margin-top: .5rem; cursor: pointer; display: flex; align-items: center; gap: .5rem;
+            }
 
             /* --- Mobile Section Details Panel --- */
             .mobile-section-details-overlay {
@@ -960,7 +984,7 @@
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
 
-                        const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
+                        const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => {
                             if (!uniqueCourseCodes.has(course.code)) {
                                 totalCredits += parseInt(course.hours, 10) || 0;
                                 uniqueCourseCodes.add(course.code);
@@ -968,8 +992,9 @@
                             const conflictMessages = conflictMap.get(course.uniqueId);
                             const isConflicted = !!conflictMessages;
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="${conflictMessages.join('\n')}"></i>` : '';
+                            const resolveBtnHTML = isConflicted ? `<button class="resolve-conflict-btn" data-unique-id="${course.uniqueId}"><i class="ri-shake-hands-line"></i> حل التعارضات</button>` : '';
 
-                            return `<div class="mobile-schedule-item ${isConflicted ? 'has-conflict' : ''}">
+                            return `<div class="mobile-schedule-item ${isConflicted ? 'has-conflict' : ''}" style="animation-delay:${i*50}ms; animation: fadeInUp .5s ease both;">
                                 <div class="mobile-schedule-header">
                                     <div class="mobile-schedule-title">
                                         <h3>${course.name}</h3>
@@ -983,6 +1008,7 @@
                                     <div class="mobile-detail-row"><i class="ri-user-line"></i> <strong>المحاضر:</strong> ${course.instructor || 'غير محدد'}</div>
                                     <div class="mobile-detail-row"><i class="ri-file-text-line"></i> <strong>الاختبار:</strong> ${course.examPeriodId || 'لا يوجد'}</div>
                                 </div>
+                                ${resolveBtnHTML}
                             </div>`;
                         }).join('');
 
@@ -1010,6 +1036,11 @@
                                 mobileContainer.innerHTML = `<div class="no-data" style="padding-top: 5rem;"><i class="ri-calendar-check-line"></i><h4>جدولك فارغ</h4><p>اختر بعض المقررات لإنشاء جدولك.</p></div>`;
                             } else {
                                 mobileContainer.innerHTML = this._createMobileScheduleHTML(selectedCourses, conflictMap);
+                                mobileContainer.querySelectorAll('.resolve-conflict-btn').forEach(btn => {
+                                    btn.addEventListener('click', (e) => {
+                                        this._handleResolveConflictClick(e.currentTarget.dataset.uniqueId);
+                                    });
+                                });
                             }
                         }
                     },
@@ -1207,14 +1238,13 @@
                             header.parentElement.classList.toggle('open');
                         }
                     },
-                     _addSectionAndLink(sectionId, schedule) {
+                    _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
-                        if (!section) return;
-
-                        // Check for conflict but don't prevent adding, just notify.
+                        if (!section) return false;
+                        
                         const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
                         if(this._isSectionConflicted(section, tempSelectedDetails)) {
-                            this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.');
+                             if(isMobile){ this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.'); }
                         }
                         
                         schedule.sections.add(sectionId);
@@ -1222,7 +1252,6 @@
                         const linkedGroup = this.state.linkedCourseGroups[section.name];
                         if (linkedGroup) {
                             const otherCourseCodes = linkedGroup.filter(code => code !== section.code);
-                            const linkedSectionIds = new Set();
                             for (const otherCode of otherCourseCodes) {
                                 const correspondingSection = this.state.groupedCourses[otherCode]?.sections.find(s => s.section === section.section);
                                 if (!correspondingSection || schedule.sections.has(correspondingSection.uniqueId)) continue;
@@ -1231,14 +1260,14 @@
                                     continue;
                                 }
                                 schedule.sections.add(correspondingSection.uniqueId);
-                                linkedSectionIds.add(correspondingSection.uniqueId);
+                                if (this.state.linkedSections) {
+                                    if(!schedule.linkedSections.has(sectionId)) schedule.linkedSections.set(sectionId, new Set());
+                                    schedule.linkedSections.get(sectionId).add(correspondingSection.uniqueId);
+                                }
                                 this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
                             }
-                            if (linkedSectionIds.size > 0) {
-                               schedule.linkedSections.set(sectionId, linkedSectionIds);
-                            }
                         }
-                        return true; // Indicate success for UI updates
+                        return true; 
                     },
                     _removeSectionAndUnlink(sectionId, schedule) {
                         schedule.sections.delete(sectionId);
@@ -1257,7 +1286,7 @@
                                 break;
                             }
                         }
-                        return true; // Indicate success for UI updates
+                        return true;
                     },
                     _handleClearCalendar() {
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
@@ -1460,7 +1489,7 @@
                         if (h < 0) h += 360;
                         return h;
                     },
-                     _showMobileSectionDetails(section, group, shouldUpdatePanel = true) {
+                    _showMobileSectionDetails(section, group, shouldUpdatePanel = true) {
                         const panel = this.dom.detailsPanel;
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const isSelected = activeSchedule.sections.has(section.uniqueId);
@@ -1532,6 +1561,70 @@
                     },
                     _hideMobileSectionDetails() {
                         this.dom.mobileSectionDetailsOverlay.classList.remove('open');
+                    },
+                     _handleResolveConflictClick(uniqueId) {
+                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                        const selectedCourses = Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+                        const mainSection = selectedCourses.find(c => c.uniqueId === uniqueId);
+                        if (!mainSection) return;
+
+                        const conflictingSections = selectedCourses.filter(s => s.uniqueId !== uniqueId && this._isSectionConflicted(mainSection, [s]));
+                        
+                        const conflictItems = [mainSection, ...conflictingSections];
+                        
+                        const itemsHTML = conflictItems.map((section, index) => {
+                             const reasons = [];
+                             if(index > 0) {
+                                 const msgs = this._getConflictMessages(mainSection, section);
+                                 if (msgs.lecture) reasons.push(`<span class="conflict-reason">تعارض محاضرة</span>`);
+                                 if (msgs.exam) reasons.push(`<span class="conflict-reason">تعارض اختبار</span>`);
+                             }
+                            
+                            return `
+                                <div class="conflict-item">
+                                    <label>
+                                        <input type="radio" name="conflict-resolution" value="${section.uniqueId}" ${index === 0 ? 'checked' : ''}>
+                                        <div class="conflict-details">
+                                            <h4>${section.name} (${section.code} - ${section.section})</h4>
+                                            <div>${reasons.join(' ')}</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            `;
+                        }).join('');
+
+                        Swal.fire({
+                            title: 'حل التعارض',
+                            html: `<div id="conflict-modal-content" class="custom-scrollbar">${itemsHTML}</div>`,
+                            confirmButtonText: 'حفظ وإزالة الأخرى',
+                            showCancelButton: true,
+                            cancelButtonText: 'إلغاء',
+                            customClass: { popup: 'swal2-popup', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
+                            didOpen: () => {},
+                            preConfirm: () => {
+                                const selected = Swal.getPopup().querySelector('input[name="conflict-resolution"]:checked');
+                                if (selected) return selected.value;
+                                return false;
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed && result.value) {
+                                const sectionToKeepId = result.value;
+                                const sectionsToRemove = conflictItems.filter(s => s.uniqueId !== sectionToKeepId);
+                                sectionsToRemove.forEach(s => this._removeSectionAndUnlink(s.uniqueId, activeSchedule));
+                                this.updateFullUI();
+                                this._showToast('success', 'تم حل التعارض بنجاح.');
+                            }
+                        });
+                    },
+                     _getConflictMessages(sectionA, sectionB) {
+                        let msgs = { lecture: false, exam: false };
+                        if (sectionA.timeSlots.some(sA => sectionB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
+                           msgs.lecture = true;
+                        }
+                        if (sectionA.code !== sectionB.code && sectionA.examPeriodId && sectionB.examPeriodId && sectionA.examPeriodId === sectionB.examPeriodId) {
+                           msgs.exam = true;
+                        }
+                        return msgs;
                     },
                     _loadSettings() {
                         const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
