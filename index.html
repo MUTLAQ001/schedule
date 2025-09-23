@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="ar" dir="rtl">
     <head>
         <meta charset="UTF-8">
@@ -83,34 +82,86 @@
             }
 
             #install-overlay {
-                position: fixed;
-                top: 0; left: 0; width: 100%; height: 100%;
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
                 z-index: 2000;
-                display: none; /* Initially hidden */
+                display: none;
                 align-items: center; justify-content: center;
                 padding: 1rem;
+                opacity: 0;
+                transition: opacity 0.3s ease;
             }
-            .mobile-view #install-overlay { /* Specific for mobile centering */
-                 align-items: center; 
+             #install-overlay.visible {
+                opacity: 1;
             }
-             .desktop-view #install-overlay { /* Specific for desktop centering (top) */
-                 align-items: flex-start;
-                 padding-top: 5rem;
+             #install-section-container {
+                background: var(--color-card);
+                border: 1px solid var(--color-border);
+                border-radius: var(--radius);
+                padding: 2rem;
+                width: 90%; max-width: 500px;
+                box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+                animation: scaleIn .4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+            }
+            #install-header {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+            #install-header i {
+                font-size: 3rem; color: var(--color-primary);
+                line-height: 1; margin-bottom: 0.5rem; display: block;
+            }
+             #install-header h2 {
+                margin: 0; font-family: var(--font-title); font-size: 1.75rem;
+                color: var(--color-text-dark);
+            }
+            #install-section p, #install-section li { text-align: right; color: var(--color-text-muted); line-height: 1.6;}
+            .bookmarklet-button {
+                display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+                background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
+                color: white; padding: 0.8rem 1.8rem; border-radius: var(--radius-full);
+                font-weight: 700; text-decoration: none; cursor: grab;
+                transition: transform .2s ease;
+            }
+            .bookmarklet-button:hover { transform: scale(1.05); }
+            .bookmarklet-button i { font-size: 1.2rem; }
+
+             #install-section-mobile ol { list-style: none; padding: 0; margin: 0 0 1.5rem 0;}
+             #install-section-mobile li { 
+                position: relative; 
+                padding-right: 2.5rem; margin-bottom: 1.25rem; 
+                font-size: 0.95rem; font-weight: 500;
+             }
+             #install-section-mobile li::before {
+                content: attr(data-step);
+                position: absolute; top: -5px; right: 0;
+                width: 32px; height: 32px;
+                border-radius: 50%;
+                background: rgba(var(--rgb-primary), 0.1);
+                color: var(--color-primary);
+                display: flex; align-items: center; justify-content: center;
+                font-weight: 700; font-family: var(--font-title);
              }
 
-            #install-section {
-                background-color: var(--color-card); padding: 1.5rem 2rem; border-radius: var(--radius);
-                box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); border: 1px solid var(--color-border);
-                width: 90%; max-width: 600px; text-align: center;
-                backdrop-filter: blur(16px); animation: scaleIn .5s var(--transition) both;
+            .code-container { margin-bottom: 1rem; }
+            .code-container pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); font-size: 0.8rem; white-space: pre-wrap; word-wrap: break-word; text-align: left; direction: ltr; }
+            .light .code-container pre { background: rgba(0,0,0,0.04); }
+            .code-container pre .highlight { color: var(--color-primary); font-weight: 700; }
+            #copy-code-btn { 
+                display: block; width: 100%; background: var(--color-primary); color: white; padding: 0.8rem; 
+                border-radius: var(--radius-md); border: none; font-weight: 700; font-size: 1rem;
+                cursor: pointer; transition: all .2s ease;
+            }
+            #copy-code-btn:hover { background: var(--color-primary-dark); }
+            .js-warning { 
+                border-top: 1px solid var(--color-border); padding-top: 1rem; margin-top: 1.5rem;
+                font-size: 0.85rem; text-align: center; color: var(--color-text-muted);
+            }
+            .js-warning code {
+                background: rgba(var(--rgb-warning), 0.1); color: var(--color-warning);
+                padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600;
             }
 
-            .bookmarklet-button {
-                display: inline-block; background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
-                color: white; padding: 0.7rem 1.5rem; border-radius: var(--radius-full);
-                font-weight: 600; text-decoration: none; cursor: grab;
-            }
             
             .custom-scrollbar::-webkit-scrollbar { width: 8px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -325,23 +376,7 @@
             .details-action-btn.add { background-color: var(--color-primary); }
             .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
             .details-action-btn.remove { background-color: var(--color-danger); }
-            .code-container { position: relative; margin-bottom: 1rem; }
-            .code-container pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); font-size: 0.8rem; white-space: pre-wrap; word-wrap: break-word; text-align: left; direction: ltr; }
-            .light .code-container pre { background: rgba(0,0,0,0.04); }
-            #copy-code-btn { 
-                display: block; width: 100%; background: var(--color-primary); color: white; padding: 0.7rem; 
-                border-radius: var(--radius-md); border: none; font-weight: 600; cursor: pointer; margin-bottom: 1.5rem;
-            }
-            #install-section p { margin-top: 0; margin-bottom: 1rem; text-align: right; }
-            #install-section h3 { margin-bottom: 1.5rem; }
-            .js-warning { 
-                background: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); 
-                border-radius: var(--radius-md); padding: 1rem; font-size: 0.9rem; text-align: right; 
-                display: flex; gap: 0.75rem; align-items: flex-start; 
-            }
-            .js-warning i { font-size: 1.2rem; flex-shrink: 0; line-height: 1.5; }
             
-
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
                 .page-wrapper { display: none; }
@@ -404,7 +439,7 @@
         <div class="cosmic-bg-container"><div class="nebula-glow"></div><canvas id="starfield-canvas"></canvas></div>
         
         <div id="install-overlay">
-            <div id="install-section"></div>
+            <div id="install-section-container"></div>
         </div>
         
         <!-- Desktop View -->
@@ -538,9 +573,11 @@
                                 console.error("Error loading courses:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
                                 this.dom.installOverlay.style.display = 'flex';
+                                this.dom.installOverlay.classList.add('visible');
                             }
                         } else {
                             this.dom.installOverlay.style.display = 'flex';
+                            this.dom.installOverlay.classList.add('visible');
                         }
                     },
                     _listenForDataFromOpener() {
@@ -562,6 +599,7 @@
                     },
                     _processAndDisplayData(courses) {
                         this.dom.installOverlay.style.display = 'none';
+                        this.dom.installOverlay.classList.remove('visible');
                         this.state.allCoursesData = courses.map((section, index) => ({
                             ...section,
                             uniqueId: `${section.code}-${section.section}-${index}`,
@@ -810,7 +848,7 @@
                     _populateDOMElements() {
                         const ids = [
                             'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
-                            'settings-modal', 'modal-overlay', 'install-section', 'install-overlay', 'no-data-message', 
+                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
                             // Mobile specific
                             'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
@@ -1051,23 +1089,30 @@
                     },
                     _updateBookmarkletCode() {
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
-                        const installSection = this.dom.installSection;
+                        const container = this.dom.installSectionContainer;
                         
                         if (isMobile) {
-                            installSection.innerHTML = `
-                                <h3>طريقة التثبيت (للجوال)</h3>
-                                <p>1. انسخ الكود التالي:</p>
-                                <div class="code-container">
-                                    <pre id="mobile-bookmarklet-code">${code}</pre>
+                            container.innerHTML = `
+                                <div id="install-header">
+                                    <i class="ri-smartphone-line"></i>
+                                    <h2>التثبيت على الجوال</h2>
                                 </div>
-                                <button id="copy-code-btn"><i class="ri-clipboard-line"></i> نسخ الكود</button>
-                                <p>2. اذهب لصفحة المقررات المطروحة والصق الكود في شريط العنوان.</p>
-                                <div class="js-warning">
-                                   <i class="ri-alert-fill"></i>
-                                   <span><b>تنويه:</b> بعض المتصفحات تحذف <code>javascript:</code> من بداية الكود. تأكد من إعادتها يدوياً قبل الضغط على "اذهب".</span>
+                                <div id="install-section-mobile">
+                                    <ol>
+                                        <li data-step="1">انسخ الكود التالي.</li>
+                                        <li data-step="2">اذهب لصفحة "المقررات المطروحة" في موقع الجامعة.</li>
+                                        <li data-step="3">الصق الكود في شريط العنوان ثم اضغط "اذهب".</li>
+                                    </ol>
+                                    <div class="code-container">
+                                        <pre><span class="highlight">javascript:</span>!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();</pre>
+                                    </div>
+                                    <button id="copy-code-btn"><i class="ri-clipboard-line"></i> نسخ الكود</button>
+                                    <div class="js-warning">
+                                        قد يحذف المتصفح <code>javascript:</code> تأكد من إعادتها يدوياً.
+                                    </div>
                                 </div>
                             `;
-                            const copyBtn = installSection.querySelector('#copy-code-btn');
+                            const copyBtn = container.querySelector('#copy-code-btn');
                             copyBtn.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 navigator.clipboard.writeText(code).then(() => {
@@ -1078,10 +1123,13 @@
                                 });
                             });
                         } else {
-                            installSection.innerHTML = `
-                                <h3>طريقة التثبيت</h3>
-                                <p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك:</p>
-                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;">QU Schedule</a>
+                            container.innerHTML = `
+                                <div id="install-header">
+                                    <i class="ri-drag-move-2-line"></i>
+                                    <h2>التثبيت على الكمبيوتر</h2>
+                                </div>
+                                <p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك، ثم اضغط عليه وأنت في صفحة المقررات المطروحة.</p>
+                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ri-magic-line"></i>QU Schedule Tool</a>
                             `;
                         }
                     },
