@@ -1023,7 +1023,7 @@
                            setTimeout(() => this.state.calendar.updateSize(), 50);
                         }
                     },
-                     _updateBookmarkletCode() {
+                    _updateBookmarkletCode() {
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
                         const installSection = this.dom.installSection;
                         
