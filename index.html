@@ -308,6 +308,15 @@
             .details-action-btn.add { background-color: var(--color-primary); }
             .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
             .details-action-btn.remove { background-color: var(--color-danger); }
+            .code-container { position: relative; margin-bottom: 1.5rem; }
+            .code-container pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); font-size: 0.8rem; white-space: pre-wrap; word-wrap: break-word; text-align: left; direction: ltr; }
+            .light .code-container pre { background: rgba(0,0,0,0.04); }
+            #copy-code-btn { 
+                display: block; width: 100%; background: var(--color-primary); color: white; padding: 0.7rem; 
+                border-radius: var(--radius-md); border: none; font-weight: 600; cursor: pointer; margin-top: 1rem; 
+            }
+            #install-section p { margin-top: 0; margin-bottom: 1rem; text-align: right; }
+            #install-section h3 { margin-bottom: 1.5rem; }
 
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
@@ -324,6 +333,10 @@
                 .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
+                #install-section {
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                }
                 #mobile-calendar-view { padding: 1rem; gap: 1rem; }
                 #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; }
                 #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
@@ -879,28 +892,6 @@
                             });
                         }
                     },
-                    _handleSectionHover(event, isHovering) {
-                        if (isMobile) return;
-                        const sectionBtn = event.target.closest('.section-btn');
-                        if (!sectionBtn) return;
-                        if (isHovering) {
-                            const section = this.state.allCoursesData.find(c => c.uniqueId === sectionBtn.dataset.uniqueId);
-                            if (section) this._showPreviewEvent(section);
-                        } else {
-                            this._removePreviewEvent();
-                        }
-                    },
-                    _showPreviewEvent(section) {
-                        this._removePreviewEvent();
-                        const group = this.state.groupedCourses[section.code];
-                        if (!group) return;
-                        const previewEventSource = this._createLectureEventsForSection(section, true, group.color);
-                        this.state.calendar.addEventSource(previewEventSource);
-                    },
-                    _removePreviewEvent() {
-                        const existingSource = this.state.calendar.getEventSourceById('preview-source');
-                        if (existingSource) existingSource.remove();
-                    },
                     _handleCourseListClick(e) {
                         const sectionBtn = e.target.closest('.section-btn');
                         const header = e.target.closest('.course-item-header');
@@ -927,11 +918,25 @@
                     _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return;
+                        
+                        // Prevent adding if another section from the same course group is already added
+                        const courseGroup = Object.values(this.state.groupedCourses).find(g => g.code === section.code);
+                        if (courseGroup) {
+                            const existingSection = courseGroup.sections.find(s => schedule.sections.has(s.uniqueId));
+                            if (existingSection) {
+                                this._showToast('warning', `لديك شعبة (${existingSection.section}) مختارة بالفعل من مقرر ${section.code}`);
+                                return;
+                            }
+                        }
+
                         schedule.sections.add(sectionId);
+
                         const linkedGroup = this.state.linkedCourseGroups[section.name];
                         if (!linkedGroup) return;
+
                         const otherCourseCodes = linkedGroup.filter(code => code !== section.code);
                         if (otherCourseCodes.length === 0) return;
+
                         const linkedSectionIds = new Set();
                         for (const otherCode of otherCourseCodes) {
                             const correspondingSection = this.state.groupedCourses[otherCode]?.sections.find(s => s.section === section.section);
@@ -1018,8 +1023,38 @@
                            setTimeout(() => this.state.calendar.updateSize(), 50);
                         }
                     },
-                    _updateBookmarkletCode() {
-                        document.getElementById('install-section').innerHTML = `<h3>طريقة التثبيت</h3><p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p><a class="bookmarklet-button" href="javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية في متصفحك.', icon:'error'}); return false;">QU Schedule</a>`;
+                     _updateBookmarkletCode() {
+                        const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
+                        const installSection = this.dom.installSection;
+                        
+                        if (isMobile) {
+                            installSection.innerHTML = `
+                                <h3>طريقة التثبيت (للجوال)</h3>
+                                <p>1. انسخ الكود التالي بالضغط على الزر.</p>
+                                <div class="code-container">
+                                    <pre id="mobile-bookmarklet-code">${code}</pre>
+                                </div>
+                                <button id="copy-code-btn"><i class="ri-clipboard-line"></i> نسخ الكود</button>
+                                <p style="margin-top: 1.5rem;">2. اذهب لصفحة المقررات المطروحة في متصفحك.</p>
+                                <p>3. الصق الكود في شريط العنوان واضغط "اذهب" (Enter).</p>
+                            `;
+                            const copyBtn = installSection.querySelector('#copy-code-btn');
+                            copyBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                navigator.clipboard.writeText(code).then(() => {
+                                    this._showToast('success', 'تم نسخ الكود بنجاح!');
+                                }).catch(err => {
+                                    console.error('Failed to copy text: ', err);
+                                    this._showToast('error', 'فشل النسخ!');
+                                });
+                            });
+                        } else {
+                            installSection.innerHTML = `
+                                <h3>طريقة التثبيت</h3>
+                                <p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك:</p>
+                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;">QU Schedule</a>
+                            `;
+                        }
                     },
                     _initializeCalendar() {
                         if (this.state.calendar) this.state.calendar.destroy();
