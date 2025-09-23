@@ -346,7 +346,7 @@
                 .main-content { padding: 0; height: 100%; }
                 .my-schedule-container { display: flex; }
                 .my-schedule-section { padding: 1rem; }
-                .fc .fc-toolbar { font-size: 0.9em; }
+                .fc .fc-toolbar { padding: 0 1rem 1rem; font-size: 0.9em; }
             }
         </style>
     </head>
@@ -1076,7 +1076,7 @@
                         const calendarOptions = {
                             initialView: 'timeGridWeek', 
                             locale: 'ar', 
-                            headerToolbar: isMobile ? { start: 'title', center: '', end: '' } : false, 
+                            headerToolbar: false, // This removes the date title
                             allDaySlot: false, 
                             events: [], 
                             dir: 'rtl',
