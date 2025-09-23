@@ -1076,7 +1076,7 @@
                         const calendarOptions = {
                             initialView: 'timeGridWeek', 
                             locale: 'ar', 
-                            headerToolbar: false, // This removes the date title
+                            headerToolbar: false, // This removes the date title completely
                             allDaySlot: false, 
                             events: [], 
                             dir: 'rtl',
@@ -1280,7 +1280,9 @@
                             try {
                                 const data = JSON.parse(event.target.result);
                                 if (data && data.schedule && Array.isArray(data.schedule)) {
-                                    const newName = `مستورد ${new Date().toLocaleTimeString('ar-SA')}`;
+                                    const now = new Date();
+                                    const timeString = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                                    const newName = `مستورد ${timeString}`;
                                     this._addSchedule(newName, false);
                                     const newSchedule = this.state.schedules[this.state.activeScheduleIndex];
                                     data.schedule.forEach(id => {
