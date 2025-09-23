@@ -96,6 +96,13 @@
              #install-overlay.visible {
                 opacity: 1;
             }
+             #install-section {
+                position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%); z-index: 1000;
+                background-color: var(--color-card); padding: 1.5rem 2rem; border-radius: var(--radius);
+                box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); border: 1px solid var(--color-border);
+                width: 90%; max-width: 600px; text-align: center; display: none;
+                backdrop-filter: blur(16px); animation: scaleIn .5s var(--transition) both;
+             }
              
              #install-section-container {
                 background: var(--color-card);
@@ -119,7 +126,7 @@
                 margin: 0; font-family: var(--font-title); font-size: 1.75rem;
                 color: var(--color-text-dark);
             }
-            #install-section-container p, #install-section-container li { text-align: right; color: var(--color-text-muted); line-height: 1.6;}
+            #install-section-container p, #install-section-container li, #install-section p { text-align: right; color: var(--color-text-muted); line-height: 1.6;}
             .bookmarklet-button {
                 display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
                 background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
@@ -555,7 +562,9 @@
         <div id="install-overlay">
             <div id="install-section-container"></div>
         </div>
-        
+
+        <div id="install-section"></div>
+
         <!-- Desktop View -->
         <div class="page-wrapper">
             <main class="main-content custom-scrollbar">
@@ -773,12 +782,12 @@
                             } catch (e) {
                                 console.error("Error loading courses:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
-                                this.dom.installOverlay.style.display = 'flex';
-                                this.dom.installOverlay.classList.add('visible');
+                                if(isMobile){ this.dom.installOverlay.style.display = 'flex'; this.dom.installOverlay.classList.add('visible'); } 
+                                else { this.dom.installSection.style.display = 'block'; }
                             }
                         } else {
-                            this.dom.installOverlay.style.display = 'flex';
-                            this.dom.installOverlay.classList.add('visible');
+                             if(isMobile){ this.dom.installOverlay.style.display = 'flex'; this.dom.installOverlay.classList.add('visible'); } 
+                             else { this.dom.installSection.style.display = 'block'; }
                         }
                     },
                     _listenForDataFromOpener() {
@@ -799,8 +808,9 @@
                         }
                     },
                     _processAndDisplayData(courses) {
-                        this.dom.installOverlay.style.display = 'none';
-                        this.dom.installOverlay.classList.remove('visible');
+                        if(isMobile) { this.dom.installOverlay.style.display = 'none'; this.dom.installOverlay.classList.remove('visible'); }
+                        else { this.dom.installSection.style.display = 'none'; }
+                        
                         this.state.allCoursesData = courses.map((section, index) => ({
                             ...section,
                             uniqueId: `${section.code}-${section.section}-${index}`,
@@ -1105,7 +1115,7 @@
                     _populateDOMElements() {
                         const ids = [
                             'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
-                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 
+                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'install-section', 'no-data-message', 
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
                             // Mobile specific
                             'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
@@ -1260,7 +1270,7 @@
                             header.parentElement.classList.toggle('open');
                         }
                     },
-                    _addSectionAndLink(sectionId, schedule) {
+                     _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return false;
                         
@@ -1358,9 +1368,9 @@
                     },
                     _updateBookmarkletCode() {
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
-                        const container = this.dom.installSectionContainer;
                         
                         if (isMobile) {
+                            const container = this.dom.installSectionContainer;
                              container.innerHTML = `
                                 <div id="install-header">
                                     <i class="ri-smartphone-line"></i>
@@ -1392,14 +1402,11 @@
                                 });
                             });
                         } else {
-                            container.innerHTML = `
-                                <div id="install-header">
-                                    <i class="ri-drag-move-2-line"></i>
-                                    <h2>التثبيت على الكمبيوتر</h2>
-                                </div>
-                                <p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك، ثم اضغط عليه وأنت في صفحة المقررات المطروحة.</p>
-                                <br>
-                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ri-magic-line"></i> أداة QU Schedule</a>
+                            const section = this.dom.installSection;
+                            section.innerHTML = `
+                                <h3>طريقة التثبيت</h3>
+                                <p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p>
+                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;">QU Schedule</a>
                             `;
                         }
                     },
@@ -1511,7 +1518,7 @@
                         if (h < 0) h += 360;
                         return h;
                     },
-                    _showMobileSectionDetails(section, group, shouldUpdatePanel = true) {
+                     _showMobileSectionDetails(section, group, shouldUpdatePanel = true) {
                         const panel = this.dom.detailsPanel;
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const isSelected = activeSchedule.sections.has(section.uniqueId);
@@ -1633,12 +1640,14 @@
                             customClass: { popup: 'swal2-popup', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
                             didOpen: () => {
                                 const container = Swal.getPopup().querySelector('#conflict-modal-content');
-                                container.addEventListener('change', () => {
-                                    container.querySelectorAll('.conflict-item').forEach(item => {
-                                        item.classList.toggle('selected', item.querySelector('input').checked);
-                                    })
+                                const radios = container.querySelectorAll('input[type="radio"]');
+                                radios.forEach(radio => {
+                                    radio.addEventListener('change', () => {
+                                        radios.forEach(r => r.closest('.conflict-item').classList.remove('selected'));
+                                        if(radio.checked) radio.closest('.conflict-item').classList.add('selected');
+                                    });
                                 });
-                                container.querySelector('input:checked').parentElement.parentElement.classList.add('selected');
+                                container.querySelector('input:checked').closest('.conflict-item').classList.add('selected');
                             },
                             preConfirm: () => {
                                 const selected = Swal.getPopup().querySelector('input[name="conflict-resolution"]:checked');
