@@ -979,7 +979,6 @@
                         for (let i = 0; i < selectedCourses.length; i++) {
                             for (let j = i + 1; j < selectedCourses.length; j++) {
                                 const cA = selectedCourses[i], cB = selectedCourses[j];
-                                // if (cA.code === cB.code) continue; // Allow same-course conflicts
                                 const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || [];
                                 if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
                                     msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`);
@@ -997,7 +996,6 @@
                     },
                     _isSectionConflicted(section, selectedCourses) {
                         return selectedCourses.some(sel => {
-                           // if (section.code === sel.code) return false;
                             const lectureConflict = section.timeSlots.some(sA => sel.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start));
                             const examConflict = section.code !== sel.code && section.examPeriodId && sel.examPeriodId && section.examPeriodId === sel.examPeriodId;
                             return lectureConflict || examConflict;
@@ -1038,7 +1036,7 @@
                         if (period.includes('ص') && h === 12) h = 0;
                         return `${String(h).padStart(2, '0')}:${m}:00`;
                     },
-                    _setupEventListeners() {
+                     _setupEventListeners() {
                         this.dom.clearCalendarBtn?.addEventListener('click', () => this._handleClearCalendar());
                         this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
@@ -1049,6 +1047,8 @@
                         courseLists.forEach(list => {
                             if(list) {
                                 list.addEventListener('click', e => this._handleCourseListClick(e));
+                                list.addEventListener('mouseover', e => this._handleSectionHover(e, true));
+                                list.addEventListener('mouseout', e => this._handleSectionHover(e, false));
                             }
                         });
 
@@ -1060,6 +1060,28 @@
                                 }
                             });
                         }
+                    },
+                    _handleSectionHover(event, isHovering) {
+                        if (isMobile) return;
+                        const sectionBtn = event.target.closest('.section-btn');
+                        if (!sectionBtn) return;
+                        if (isHovering) {
+                            const section = this.state.allCoursesData.find(c => c.uniqueId === sectionBtn.dataset.uniqueId);
+                            if (section) this._showPreviewEvent(section);
+                        } else {
+                            this._removePreviewEvent();
+                        }
+                    },
+                    _showPreviewEvent(section) {
+                        this._removePreviewEvent();
+                        const group = this.state.groupedCourses[section.code];
+                        if (!group) return;
+                        const previewEventSource = this._createLectureEventsForSection(section, true, group.color);
+                        this.state.calendar.addEventSource(previewEventSource);
+                    },
+                    _removePreviewEvent() {
+                        const existingSource = this.state.calendar.getEventSourceById('preview-source');
+                        if (existingSource) existingSource.remove();
                     },
                     _handleCourseListClick(e) {
                         const sectionBtn = e.target.closest('.section-btn');
@@ -1088,19 +1110,9 @@
                     _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return;
-                        
-                        // Show warning if another section from the same course is already added, but don't prevent it
-                        const courseGroup = Object.values(this.state.groupedCourses).find(g => g.code === section.code);
-                        if (courseGroup) {
-                            const existingSection = courseGroup.sections.find(s => schedule.sections.has(s.uniqueId));
-                            if (existingSection) {
-                                this._showToast('info', `لديك شعبة (${existingSection.section}) مختارة بالفعل من مقرر ${section.code}`);
-                            }
-                        }
 
                         schedule.sections.add(sectionId);
 
-                        // Handle linked sections
                         const linkedGroup = this.state.linkedCourseGroups[section.name];
                         if (!linkedGroup) return;
 
@@ -1348,7 +1360,7 @@
                         if (h < 0) h += 360;
                         return h;
                     },
-                     _showMobileSectionDetails(section, group, shouldUpdatePanel = true) {
+                    _showMobileSectionDetails(section, group, shouldUpdatePanel = true) {
                         const panel = this.dom.detailsPanel;
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const isSelected = activeSchedule.sections.has(section.uniqueId);
@@ -1381,7 +1393,6 @@
                                 </div>
                             `;
                         } else {
-                             // Only update the button state
                             const btn = panel.querySelector('#details-action-btn');
                             btn.className = `details-action-btn ${actionBtnClass}`;
                             btn.innerHTML = `<i class="${actionBtnIcon}"></i> ${actionBtnText}`;
@@ -1396,8 +1407,7 @@
                                 this._addSectionAndLink(section.uniqueId, activeSchedule);
                             }
                             this.updateCalendarAndConflicts();
-                            // Refresh the panel UI without closing it
-                            this._showMobileSectionDetails(section, group, false);
+                            this._showMobileSectionDetails(section, group, false); // Refresh the panel without closing it
                         };
                         
                         const prevBtn = panel.querySelector('#details-prev-btn');
