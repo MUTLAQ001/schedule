@@ -387,8 +387,11 @@
              }
              .mobile-detail-row strong { color: var(--color-text-muted); }
              .mobile-schedule-footer {
-                margin-top: auto; padding-top: 1.25rem;
-                border-top: 1px solid var(--color-border);
+                 position: sticky; bottom: 0;
+                 padding: 1rem; margin: 1rem -1rem -1rem -1rem;
+                 background-color: var(--color-card);
+                 border-top: 1px solid var(--color-border);
+                 backdrop-filter: blur(8px);
              }
 
 
@@ -466,14 +469,12 @@
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
                 #mobile-courses-view .tab-content { padding: 1rem; }
-                #mobile-my-schedule-view { padding: 1rem 0; overflow-y: auto; } /* Change */
-                .mobile-my-schedule-container .card { display: none; } /* Hide desktop version */
-                
+                #mobile-my-schedule-view { padding: 0; } /* Change */
+                .my-schedule-container .card { display: none; } /* Hide desktop version on mobile view */
                 #mobile-my-schedule-container {
                     width: 100%;
                     height: 100%;
-                    display: flex;
-                    flex-direction: column;
+                    display: block; /* changed to block */
                 }
                  .light .mobile-schedule-footer { background: rgba(0,0,0,0.03); border-color: transparent;}
                 
@@ -546,7 +547,7 @@
                 </aside>
             </div>
             <div id="mobile-my-schedule-view" class="mobile-view-content">
-                <div class="mobile-my-schedule-container" id="mobile-my-schedule-container"></div>
+                <div class="my-schedule-container" id="mobile-my-schedule-container"></div>
             </div>
 
             <nav class="mobile-nav">
@@ -1206,16 +1207,14 @@
                             header.parentElement.classList.toggle('open');
                         }
                     },
-                    _addSectionAndLink(sectionId, schedule) {
+                     _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return;
 
-                        if (isMobile) {
-                            const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-                            if(this._isSectionConflicted(section, tempSelectedDetails)) {
-                                this._showToast('warning', 'الشعبة متعارضة مع جدولك الحالي.');
-                                return false; // Indicate failure
-                            }
+                        // Check for conflict but don't prevent adding, just notify.
+                        const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+                        if(this._isSectionConflicted(section, tempSelectedDetails)) {
+                            this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.');
                         }
                         
                         schedule.sections.add(sectionId);
@@ -1231,11 +1230,6 @@
                                     this._showToast('info', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} مغلقة.`);
                                     continue;
                                 }
-                                const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-                                if (this._isSectionConflicted(correspondingSection, tempSelectedDetails)) {
-                                    this._showToast('warning', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} متعارضة.`);
-                                    continue;
-                                }
                                 schedule.sections.add(correspondingSection.uniqueId);
                                 linkedSectionIds.add(correspondingSection.uniqueId);
                                 this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
@@ -1244,7 +1238,7 @@
                                schedule.linkedSections.set(sectionId, linkedSectionIds);
                             }
                         }
-                        return true; // Indicate success
+                        return true; // Indicate success for UI updates
                     },
                     _removeSectionAndUnlink(sectionId, schedule) {
                         schedule.sections.delete(sectionId);
@@ -1263,7 +1257,7 @@
                                 break;
                             }
                         }
-                        return true; // Indicate success
+                        return true; // Indicate success for UI updates
                     },
                     _handleClearCalendar() {
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
