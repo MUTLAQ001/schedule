@@ -96,6 +96,10 @@
              #install-overlay.visible {
                 opacity: 1;
             }
+             .desktop-view #install-overlay { 
+                 align-items: flex-start;
+                 padding-top: 5rem;
+             }
              #install-section-container {
                 background: var(--color-card);
                 border: 1px solid var(--color-border);
@@ -106,9 +110,18 @@
                 animation: scaleIn .4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
             }
             .light #install-section-container { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); }
-            #install-header { text-align: center; margin-bottom: 2rem; }
-            #install-header i { font-size: 3rem; color: var(--color-primary); line-height: 1; margin-bottom: 0.5rem; display: block; }
-             #install-header h2 { margin: 0; font-family: var(--font-title); font-size: 1.75rem; color: var(--color-text-dark); }
+            #install-header {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
+            #install-header i {
+                font-size: 3rem; color: var(--color-primary);
+                line-height: 1; margin-bottom: 0.5rem; display: block;
+            }
+             #install-header h2 {
+                margin: 0; font-family: var(--font-title); font-size: 1.75rem;
+                color: var(--color-text-dark);
+            }
             #install-section-container p, #install-section-container li { text-align: right; color: var(--color-text-muted); line-height: 1.6;}
             .bookmarklet-button {
                 display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
@@ -129,8 +142,10 @@
              #install-section-mobile li::before {
                 content: attr(data-step);
                 position: absolute; top: -5px; right: 0;
-                width: 32px; height: 32px; border-radius: 50%;
-                background: rgba(var(--rgb-primary), 0.1); color: var(--color-primary);
+                width: 32px; height: 32px;
+                border-radius: 50%;
+                background: rgba(var(--rgb-primary), 0.1);
+                color: var(--color-primary);
                 display: flex; align-items: center; justify-content: center;
                 font-weight: 700; font-family: var(--font-title);
              }
@@ -162,26 +177,26 @@
 
             /* Desktop Styles */
             .page-wrapper { display: flex; height: 100vh; }
-            .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 1.5rem; gap: 1.5rem; }
-            .main-content-inner { flex-grow: 1; display: flex; flex-direction: column; min-height: 0; }
-            .main-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) both; padding: 0 1.5rem;}
-            .main-header h1 { font-family: var(--font-title); font-weight: 700; font-size: 2.2rem; }
-            .sidebar { width: 400px; height: 100%; background-color: var(--color-card); border-right: 1px solid var(--color-border); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
-            
+            .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 2rem; gap: 1.5rem; overflow-y: auto; }
+            .sidebar { width: 420px; height: 100%; background-color: var(--color-card); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
+            .main-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) both; }
+            .main-header h1 {
+                font-family: var(--font-title); font-weight: 700; font-size: 2.5rem;
+                background: linear-gradient(90deg,var(--color-primary-dark),var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+                background-size: 200% 200%; animation: gradient-animation 5s ease-in-out infinite;
+                display: flex; align-items: center; gap: 1rem;
+            }
             .header-actions { display: flex; gap: 0.75rem; }
             .header-actions button {
-                background: transparent; border: 1px solid var(--color-border); color: var(--color-text-muted);
-                padding: 0.5rem 1rem; border-radius: var(--radius-full); font-size: 0.9rem; font-weight: 600; cursor: pointer;
+                background: rgba(var(--rgb-primary), 0.1); border: 1px solid var(--color-border); color: var(--color-primary);
+                padding: 0.6rem 1.2rem; border-radius: var(--radius-full); font-size: 0.9rem; font-weight: 600; cursor: pointer;
                 display: inline-flex; align-items: center; gap: 0.5rem; transition: all var(--transition);
             }
-             .light .header-actions button { color: var(--color-text-dark); }
-            .header-actions button:hover { background: rgba(var(--rgb-primary), 0.1); border-color: rgba(var(--rgb-primary),0.5); color: var(--color-primary); }
-
+            .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: var(--color-primary); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
             .card { width: 100%; height: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .8s var(--transition-smooth) .2s both; }
             .light .card { box-shadow: 0 16px 40px -12px rgba(0,0,0,0.1); }
-            .schedule-tabs-container { flex-shrink: 0; padding-bottom: 1.5rem; }
-            .tabs-wrapper { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; overflow-x: auto;}
-            .light .tabs-wrapper { background: rgba(0,0,0,0.05); }
+            .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) .1s both; overflow-x: auto;}
+            .light .schedule-tabs-container { background: rgba(0,0,0,0.05); }
             .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
             .schedule-tab.active { background: var(--color-primary); color: white; box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
             .schedule-tab-name { outline: none; }
@@ -193,15 +208,15 @@
             .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
             .calendar-wrapper .card { padding: 1.5rem; }
             #calendar { height: 100%; }
-            .sidebar-header { padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+            .sidebar-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
             .sidebar-header h2 { margin: 0; font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--color-text-dark); }
             .sidebar-content-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
-            .sidebar-tabs { display: flex; padding: 0.5rem 1rem 0; }
-            .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--color-text-muted); font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition); border-bottom: 2px solid transparent; display:inline-flex; align-items: center; justify-content: center; gap: .5rem; }
+            .sidebar-tabs { display: flex; padding: 0.75rem 1rem 0; border-bottom: 1px solid var(--color-border); }
+            .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--color-text-muted); font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); border-bottom: 2px solid transparent; }
             .tab-btn.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
-            .tab-content { padding: 1.5rem; display: none; overflow-y: auto; flex-grow: 1; }
+            .tab-content { padding: 1rem; display: none; overflow-y: auto; flex-grow: 1; }
             .tab-content.active { display: block; }
-            .sidebar-footer { padding: 1rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
+            .sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
             .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition-smooth); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
             .light .course-item { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03); }
             .course-item:hover { transform: translateY(-4px); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4); }
@@ -240,6 +255,13 @@
             .my-schedule-table .course-cell .course-name { font-size: 0.8rem; color: var(--color-text-muted); }
             .my-schedule-table .section-cell .section-number { font-size: 1.1rem; font-weight: 600; }
             .my-schedule-table .section-cell .section-type { font-size: 0.8rem; color: var(--color-text-muted); }
+             #my-schedule-container .resolve-conflict-btn {
+                 background: rgba(var(--rgb-warning),0.1); color: var(--color-warning);
+                 border: 1px solid rgba(var(--rgb-warning),0.2); padding: .5rem 1rem; border-radius: var(--radius-full);
+                 font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: .5rem; transition: all .2s;
+            }
+             #my-schedule-container .resolve-conflict-btn:hover { background: rgba(var(--rgb-warning),0.2); }
+
             .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; }
             .status-badge::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; }
             .status-badge.status-open { background-color: rgba(var(--rgb-success), 0.1); color: var(--color-success); }
@@ -331,62 +353,225 @@
             
             /* Mobile-specific styles */
             .mobile-wrapper, .mobile-nav { display: none; }
+            #mobile-my-schedule-list {
+                padding: 1rem;
+                display: flex; flex-direction: column; gap: 1rem;
+            }
+            .mobile-schedule-item {
+                background: var(--color-card);
+                border: 1px solid var(--color-border);
+                border-radius: var(--radius);
+                padding: 1.25rem;
+                display: flex; flex-direction: column; gap: 1rem;
+                box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3);
+            }
+            .light .mobile-schedule-item { box-shadow: 0 8px 25px -10px rgba(0,0,0,0.1); }
+            .mobile-schedule-item.has-conflict { border-left: 4px solid var(--color-warning); }
+            .mobile-schedule-header {
+                display: flex; align-items: center; justify-content: space-between;
+                gap: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;
+            }
+            .mobile-schedule-title { display: flex; flex-direction: column; }
+            .mobile-schedule-title h3 {
+                font-family: var(--font-title); font-size: 1.1rem;
+                color: var(--color-text-dark); margin: 0;
+            }
+            .mobile-schedule-title span { font-size: 0.9rem; color: var(--color-text-muted); }
+            .mobile-conflict-icon {
+                color: var(--color-warning); font-size: 1.5rem;
+                cursor: help;
+            }
+            .mobile-schedule-details {
+                display: flex; flex-direction: column; gap: 0.75rem;
+                font-size: 0.9rem;
+            }
+            .mobile-detail-row {
+                display: flex; align-items: center; gap: 0.75rem;
+            }
+             .mobile-detail-row i {
+                color: var(--color-primary); font-size: 1.2rem;
+                min-width: 20px; text-align: center;
+             }
+             .mobile-detail-row strong { color: var(--color-text-muted); }
+             .mobile-schedule-footer {
+                 position: sticky; bottom: 0;
+                 padding: 1rem; margin: 1rem -1rem -1rem -1rem;
+                 background-color: var(--color-card);
+                 border-top: 1px solid var(--color-border);
+                 backdrop-filter: blur(8px);
+             }
+            #conflict-modal {max-width: 500px; width: 90%;}
+            #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding-right: .5rem; }
+            .conflict-item {
+                border: 1px solid var(--color-border); 
+                padding: 1rem; border-radius: var(--radius-md); 
+                margin-bottom: 1rem;
+                position: relative;
+                transition: border-color .3s, box-shadow .3s;
+            }
+            .conflict-item input[type="radio"] {
+                position: absolute; opacity: 0; width: 100%; height: 100%; top:0; left: 0; cursor: pointer;
+            }
+            .conflict-item input[type="radio"]:checked + .conflict-details {
+                 border-color: var(--color-primary);
+                 box-shadow: 0 0 20px -5px rgba(var(--rgb-primary), 0.5);
+            }
+            .conflict-details {
+                 border: 2px solid transparent; 
+                 border-radius: var(--radius-md); 
+                 padding: 1rem; margin: -1rem; /* counteract parent padding */
+                 transition: all .2s;
+            }
+
+            .conflict-details h4 {margin: 0 0 .5rem; font-family: var(--font-title); color: var(--color-text-dark);}
+            .conflict-reason {
+                font-size: 0.8rem; padding: .2rem .6rem;
+                background-color: rgba(var(--rgb-warning), 0.1);
+                color: var(--color-warning); border-radius: var(--radius-full);
+                display: inline-block; margin-left: 0.5rem;
+            }
+             #my-schedule-container .resolve-conflict-btn,
+            #mobile-my-schedule-list .resolve-conflict-btn {
+                background: rgba(var(--rgb-warning),0.1); color: var(--color-warning);
+                border: 1px solid rgba(var(--rgb-warning),0.2); padding: .5rem 1rem; border-radius: var(--radius-full);
+                font-weight: 700; margin-top: .5rem; cursor: pointer; display: inline-flex; align-items: center; gap: .5rem; transition: all .2s;
+            }
+             #my-schedule-container .resolve-conflict-btn:hover,
+             #mobile-my-schedule-list .resolve-conflict-btn:hover { background: rgba(var(--rgb-warning),0.2); }
+
+            /* --- Mobile Section Details Panel --- */
+            .mobile-section-details-overlay {
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
+                z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease;
+            }
+            .mobile-section-details-overlay.open { opacity: 1; visibility: visible; }
+            .details-panel {
+                position: absolute; bottom: 0; left: 0; right: 0;
+                background-color: var(--color-card); border-top: 1px solid var(--color-border);
+                border-top-left-radius: var(--radius); border-top-right-radius: var(--radius);
+                padding-top: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+                box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
+                transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+            .mobile-section-details-overlay.open .details-panel { transform: translateY(0); }
+             .details-panel .conflict-banner {
+                padding: .75rem 1rem; margin-bottom: 1.25rem;
+                background-color: rgba(var(--rgb-warning), 0.1);
+                color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.2);
+                border-radius: var(--radius-md);
+                display: flex; align-items: center; gap: .75rem; font-size: .9rem; font-weight: 600;
+             }
+            .details-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+            .details-header h4 { margin: 0; font-family: var(--font-title); font-size: 1.2rem; display: flex; align-items: center; gap: .75rem; }
+            .details-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+            .details-close-btn { font-size: 1.6rem; color: var(--color-text-muted); cursor: pointer; transition: transform .2s; }
+            .details-close-btn:hover { transform: scale(1.1); color: var(--color-text); }
+            .details-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 1rem; margin-bottom: 1.5rem; }
+            .detail-item { display: flex; flex-direction: column; gap: 0.25rem; }
+            .detail-item span { color: var(--color-text-muted); font-size: 0.8rem; }
+            .detail-item strong { color: var(--color-text-dark); font-weight: 600; font-size: 1rem; }
+            .detail-item[data-full-width="true"] { grid-column: 1 / -1; }
+            .details-actions-container { display: flex; gap: 0.5rem; align-items: center; }
+            .details-action-btn {
+                width: 100%; padding: 0.9rem 1.5rem; border: none; border-radius: var(--radius-md);
+                font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: white;
+                cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: .2s;
+                flex-grow: 1;
+            }
+            .details-nav-btn {
+                flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--radius-md);
+                border: 1px solid var(--color-border); background-color: transparent; color: var(--color-text-muted);
+                font-size: 1.8rem; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center;
+            }
+            .details-nav-btn:not(:disabled):hover { background-color: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); }
+            .details-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+            .details-action-btn.add { background-color: var(--color-primary); }
+            .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
+            .details-action-btn.remove { background-color: var(--color-danger); }
             
             @media (max-width: 1023px) {
-                body { overflow: auto; }
+                body { overflow: auto; --radius: 16px; --radius-md: 12px; }
                 .page-wrapper { display: none; }
-                .mobile-wrapper { display: block; position: relative; height: 100vh; width: 100vw; overflow: hidden; padding-bottom: 70px; /* Space for nav bar */ }
-                .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; background-color: var(--color-card); border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(16px); }
-                .mobile-header h1 { margin: 0; font-size: 1.2rem; font-family: var(--font-title); color: var(--color-text-dark); }
-                .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.5rem; padding: 0.5rem; }
-                .mobile-view-content { display: none; height: calc(100vh - 65px - 70px); /* Full height - header - nav */ margin-top: 65px; overflow-y: auto; }
+                .mobile-wrapper { display: block; position: relative; width: 100vw; overflow: hidden; padding-bottom: 75px; }
+                .mobile-header {
+                    display: flex; justify-content: space-between; align-items: center;
+                    padding: 0 1.25rem; height: 65px; background-color: var(--color-card);
+                    border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0;
+                    z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2);
+                }
+                .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; }
+                .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; }
+                .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
-                #mobile-calendar-view { padding: 1rem; }
-                #mobile-calendar-view .card { padding: 1rem; }
-                #mobile-courses-view, #mobile-my-schedule-view { overflow-y: auto; }
-                #mobile-my-schedule-view .card { margin: 1rem; }
-                .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background-color: var(--color-card); border-top: 1px solid var(--color-border); backdrop-filter: blur(16px); z-index: 100; }
-                .mobile-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; background: none; border: none; color: var(--color-text-muted); font-size: 0.7rem; font-weight: 600; cursor: pointer; transition: color 0.2s ease; }
-                .mobile-nav-btn i { font-size: 1.5rem; }
+                .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
+
+                #mobile-calendar-view { padding: 1rem; gap: 1rem; }
+                #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; }
+                #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
+                .mobile-calendar-scroll-wrapper {
+                    overflow-x: auto; height: 100%; -webkit-overflow-scrolling: touch; direction: ltr;
+                }
+                .mobile-calendar-scroll-wrapper::-webkit-scrollbar { height: 4px; }
+                .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track { background: transparent; }
+                .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(var(--rgb-primary), 0.5); border-radius: 4px; }
+                #mobile-calendar { min-width: 850px; direction: rtl; }
+                #mobile-courses-view { padding: 0; }
+                #mobile-courses-view .sidebar { height: 100%; border-left: none; }
+                #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
+                #mobile-courses-view .tab-content { padding: 1rem; }
+                #mobile-my-schedule-view { padding: 0; } /* Change */
+                .my-schedule-container .card { display: none; } /* Hide desktop version on mobile view */
+                #mobile-my-schedule-container {
+                    width: 100%;
+                    height: 100%;
+                    display: block; /* changed to block */
+                }
+                 .light .mobile-schedule-footer { background: rgba(0,0,0,0.03); border-color: transparent;}
+                
+                .mobile-nav {
+                    display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
+                    background-color: var(--color-card); border-top: 1px solid var(--color-border);
+                    backdrop-filter: blur(16px); z-index: 100;
+                    box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom);
+                }
+                .mobile-nav-btn {
+                    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    gap: 5px; background: none; border: none;
+                    color: var(--color-text-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: color 0.2s ease;
+                }
+                .mobile-nav-btn i { font-size: 1.6rem; }
                 .mobile-nav-btn.active { color: var(--color-primary); }
+                .mobile-nav-btn span { transition: all 0.2s ease; padding: 0.2rem 0.6rem; border-radius: 99px; }
+                .mobile-nav-btn.active span { color: white; background-color: var(--color-primary); }
                 .sidebar { width: 100%; height: 100%; border-left: none; }
                 .main-content { padding: 0; height: 100%; }
                 .my-schedule-container { display: flex; }
                 .my-schedule-section { padding: 1rem; }
-                .fc .fc-toolbar { font-size: 0.8em; }
+                .fc .fc-toolbar { padding: 0 1rem 1rem; font-size: 0.9em; }
             }
         </style>
     </head>
     <body>
         <div class="cosmic-bg-container"><div class="nebula-glow"></div><canvas id="starfield-canvas"></canvas></div>
         
-        <div class="desktop-view" id="install-section"></div>
-
-        <div id="install-overlay" class="mobile-view">
+        <div id="install-overlay">
             <div id="install-section-container"></div>
         </div>
         
         <!-- Desktop View -->
         <div class="page-wrapper">
-            <header class="main-header"><h1>QU Schedule</h1></header>
-            <div class="page-body">
-                 <aside class="sidebar">
-                    <header class="sidebar-header"><h2><i class="ri-stack-line"></i> المقررات</h2></header>
-                    <div class="sidebar-content-wrapper"><div class="sidebar-tabs"><button class="tab-btn active" data-tab="courses-tab"><i class="ri-layout-grid-line"></i> المقررات المتاحة</button><button class="tab-btn" data-tab="exams-tab"><i class="ri-file-list-3-line"></i> الاختبارات النهائية</button></div><div id="courses-tab" class="tab-content active custom-scrollbar"><div id="desktop-courses-list"><div class="no-data" id="no-data-message"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>اسحب الأداة من شريط الإشارات المرجعية وضعها في صفحة المقررات المطروحة لتظهر هنا.</p></div></div></div><div id="exams-tab" class="tab-content custom-scrollbar"><div id="desktop-exams-list"></div></div></div>
-                    <footer class="sidebar-footer"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ri-telegram-line"></i> MUTLAQ1</a></footer>
-                </aside>
-                <main class="main-content custom-scrollbar">
-                     <div class="main-content-header">
-                        <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
-                        <div class="header-actions">
-                            <button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button>
-                            <button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button>
-                        </div>
-                    </div>
-                    <div class="calendar-wrapper card"><div id='calendar'></div></div>
-                    <div class="my-schedule-container" id="my-schedule-container"></div>
-                </main>
-            </div>
+            <main class="main-content custom-scrollbar">
+                <header class="main-header"><h1><i class="ri-calendar-event-line"></i> QU Schedule</h1><div class="header-actions"><button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button><button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button></div></header>
+                <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
+                <div class="calendar-wrapper card"><div id='calendar'></div></div>
+                <div class="my-schedule-container" id="my-schedule-container"></div>
+            </main>
+            <aside class="sidebar">
+                <header class="sidebar-header"><h2><i class="ri-stack-line"></i> المقررات</h2></header>
+                <div class="sidebar-content-wrapper"><div class="sidebar-tabs"><button class="tab-btn active" data-tab="courses-tab"><i class="ri-layout-grid-line"></i> المقررات المتاحة</button><button class="tab-btn" data-tab="exams-tab"><i class="ri-file-list-3-line"></i> الاختبارات النهائية</button></div><div id="courses-tab" class="tab-content active custom-scrollbar"><div id="desktop-courses-list"><div class="no-data" id="no-data-message"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>اسحب الأداة من شريط الإشارات المرجعية وضعها في صفحة المقررات المطروحة لتظهر هنا.</p></div></div></div><div id="exams-tab" class="tab-content custom-scrollbar"><div id="desktop-exams-list"></div></div></div>
+                <footer class="sidebar-footer"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ri-telegram-line"></i> MUTLAQ1</a></footer>
+            </aside>
         </div>
 
         <!-- Mobile View -->
@@ -399,7 +584,11 @@
             <div id="mobile-calendar-view" class="mobile-view-content active">
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
-                    <div class="calendar-wrapper card"><div id='mobile-calendar'></div></div>
+                    <div class="calendar-wrapper card">
+                        <div class="mobile-calendar-scroll-wrapper">
+                            <div id='mobile-calendar'></div>
+                        </div>
+                    </div>
                 </main>
             </div>
             <div id="mobile-courses-view" class="mobile-view-content">
@@ -591,12 +780,12 @@
                             } catch (e) {
                                 console.error("Error loading courses:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
-                                if(isMobile){ this.dom.installOverlay.style.display = 'flex'; this.dom.installOverlay.classList.add('visible'); } 
-                                else { this.dom.installSection.style.display = 'block'; }
+                                this.dom.installOverlay.style.display = 'flex';
+                                this.dom.installOverlay.classList.add('visible');
                             }
                         } else {
-                             if(isMobile){ this.dom.installOverlay.style.display = 'flex'; this.dom.installOverlay.classList.add('visible'); } 
-                             else { this.dom.installSection.style.display = 'block'; }
+                            this.dom.installOverlay.style.display = 'flex';
+                            this.dom.installOverlay.classList.add('visible');
                         }
                     },
                     _listenForDataFromOpener() {
@@ -617,9 +806,8 @@
                         }
                     },
                     _processAndDisplayData(courses) {
-                        if(isMobile) { this.dom.installOverlay.style.display = 'none'; this.dom.installOverlay.classList.remove('visible'); }
-                        else { this.dom.installSection.style.display = 'none'; }
-                        
+                        this.dom.installOverlay.style.display = 'none';
+                        this.dom.installOverlay.classList.remove('visible');
                         this.state.allCoursesData = courses.map((section, index) => ({
                             ...section,
                             uniqueId: `${section.code}-${section.section}-${index}`,
@@ -751,7 +939,7 @@
                             addButton.title = 'إضافة جدول جديد';
                             addButton.addEventListener('click', () => this._addSchedule());
                             fragment.appendChild(addButton);
-                            container.innerHTML = `<div class="tabs-wrapper">${fragment.innerHTML}</div>`;
+                            container.appendChild(fragment);
                         });
                     },
                     _createCoursesListHTML() {
@@ -807,6 +995,7 @@
                         
                         return `<div class="card">
                             <div class="my-schedule-section">
+                                <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
                                 <div class="my-schedule-table-wrapper">
                                     <table class="my-schedule-table">
                                         <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>الحالة</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th><th>الإجراءات</th></tr></thead>
@@ -862,8 +1051,10 @@
                         const mobileContainer = this.dom.mobileMyScheduleContainer;
                         
                         if (desktopContainer) {
-                            desktopContainer.style.display = selectedCourses.length > 0 ? 'flex' : 'none';
-                             if (selectedCourses.length > 0) {
+                            desktopContainer.style.display = 'flex';
+                            if (selectedCourses.length === 0) {
+                                desktopContainer.innerHTML = `<div class="no-data"><i class="ri-calendar-check-line"></i><h4>جدولك فارغ</h4><p>اختر بعض المقررات لإنشاء جدولك.</p></div>`;
+                            } else {
                                 desktopContainer.innerHTML = this._createMyScheduleHTML(selectedCourses, conflictMap);
                                 desktopContainer.querySelectorAll('.resolve-conflict-btn').forEach(btn => {
                                     btn.addEventListener('click', (e) => this._handleResolveConflictClick(e.currentTarget.dataset.uniqueId));
@@ -921,7 +1112,7 @@
                     _populateDOMElements() {
                         const ids = [
                             'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
-                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'install-section', 'no-data-message', 
+                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
                             // Mobile specific
                             'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
@@ -1174,9 +1365,9 @@
                     },
                     _updateBookmarkletCode() {
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
+                        const container = this.dom.installSectionContainer;
                         
                         if (isMobile) {
-                            const container = this.dom.installSectionContainer;
                              container.innerHTML = `
                                 <div id="install-header">
                                     <i class="ri-smartphone-line"></i>
@@ -1208,11 +1399,14 @@
                                 });
                             });
                         } else {
-                            const section = this.dom.installSection;
-                            section.innerHTML = `
-                                <h3>طريقة التثبيت</h3>
-                                <p>اسحب هذا الزر إلى شريط الإشارات المرجعية:</p>
-                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;">QU Schedule</a>
+                            container.innerHTML = `
+                                <div id="install-header">
+                                    <i class="ri-drag-move-2-line"></i>
+                                    <h2>التثبيت على الكمبيوتر</h2>
+                                </div>
+                                <p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك، ثم اضغط عليه وأنت في صفحة المقررات المطروحة.</p>
+                                <br>
+                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ri-magic-line"></i> أداة QU Schedule</a>
                             `;
                         }
                     },
@@ -1446,14 +1640,12 @@
                             customClass: { popup: 'swal2-popup', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
                             didOpen: () => {
                                 const container = Swal.getPopup().querySelector('#conflict-modal-content');
-                                const radios = container.querySelectorAll('input[type="radio"]');
-                                radios.forEach(radio => {
-                                    radio.addEventListener('change', () => {
-                                        radios.forEach(r => r.closest('.conflict-item').classList.remove('selected'));
-                                        if(radio.checked) radio.closest('.conflict-item').classList.add('selected');
-                                    });
+                                container.addEventListener('change', () => {
+                                    container.querySelectorAll('.conflict-item').forEach(item => {
+                                        item.classList.toggle('selected', item.querySelector('input').checked);
+                                    })
                                 });
-                                container.querySelector('input:checked').closest('.conflict-item').classList.add('selected');
+                                container.querySelector('input:checked').parentElement.parentElement.classList.add('selected');
                             },
                             preConfirm: () => {
                                 const selected = Swal.getPopup().querySelector('input[name="conflict-resolution"]:checked');
