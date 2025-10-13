@@ -239,8 +239,6 @@
             .section-btn.no-time { border-bottom: 3px solid var(--item-color); padding-bottom: calc(0.5rem - 3px); }
             .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
             .my-schedule-container .card { animation-delay: 200ms; }
-            .conflict-summary-banner { display: none; flex-shrink: 0; padding: .75rem 1.25rem; background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); border-bottom: 1px solid var(--color-border); align-items: center; gap: .75rem; font-weight: 600; border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); }
-            .conflict-summary-banner i { font-size: 1.2rem; }
             .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
             .my-schedule-section h3 { margin: 0 0 1.5rem; font-size: 1.5rem; display: flex; align-items: center; gap: .75rem; color: var(--color-primary); flex-shrink: 0; font-family: var(--font-title); }
             .my-schedule-table-wrapper { overflow-x: auto; }
@@ -272,7 +270,7 @@
             .swal2-popup { background: var(--color-card)!important; color: var(--color-text)!important; border-radius: var(--radius)!important; border: 1px solid var(--color-border)!important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
             .swal2-popup.wide-swal { max-width: 600px; width: 95%; }
             .swal2-title { color: var(--color-text-dark)!important; font-family: var(--font-title) !important; }
-            .swal2-html-container { color: var(--color-text-muted)!important; margin: 1em 0 !important; font-size: 1em !important; display: block !important; text-align: right !important; }
+            .swal2-html-container { color: var(--color-text-muted)!important; margin: 1em 0 !important; font-size: 1em !important; display: block !important; text-align: right !important; padding: 0 0.5rem; }
             .swal2-confirm { background: var(--color-primary)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; }
             .swal2-confirm:focus { box-shadow: 0 0 0 3px rgba(var(--rgb-primary),0.5)!important }
             .swal2-cancel { background: rgba(255,255,255,0.1)!important; color: var(--color-text)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; }
@@ -344,19 +342,69 @@
             .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); }
             .action-picker-option.selected { color: var(--color-primary); font-weight: 700; background-color: transparent; }
             
-            /* Mobile-specific styles */
+            /* --- Conflict Modal Styles --- */
+            #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
+            .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; }
+            .conflict-group-title {
+                font-family: var(--font-title); font-size: 1.1rem; font-weight: 700;
+                padding: .8rem 1.2rem;
+                background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning);
+            }
+            .conflict-item { padding: .75rem; border-bottom: 1px solid var(--color-border); }
+            .conflict-item:last-child { border-bottom: none; }
+            .conflict-item-main-label {
+                display: flex; align-items: center; gap: 1rem; width: 100%; cursor: pointer;
+                padding: .5rem; border-radius: var(--radius-md); border: 2px solid transparent;
+                transition: all .2s ease;
+            }
+            .conflict-item-main-label:has(input:checked) {
+                 border-color: var(--color-primary);
+                 box-shadow: 0 0 15px rgba(var(--rgb-primary), 0.4);
+                 background-color: rgba(var(--rgb-primary), 0.05);
+            }
+            .conflict-item-flex { display: flex; align-items: center; justify-content: space-between; gap: 1rem;}
+            .conflict-item-main-label input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+            .custom-radio {
+                width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
+                border: 2px solid var(--color-text-muted); position: relative; transition: .2s;
+            }
+            .custom-radio::after {
+                content: ''; position: absolute; width: 12px; height: 12px; background-color: var(--color-primary);
+                border-radius: 50%; top: 50%; left: 50%;
+                transform: translate(-50%, -50%) scale(0); transition: .2s;
+            }
+            .conflict-item-main-label:has(input:checked) .custom-radio { border-color: var(--color-primary); }
+            .conflict-item-main-label:has(input:checked) .custom-radio::after { transform: translate(-50%, -50%) scale(1); }
+            .conflict-item-info { flex-grow: 1; text-align: right; }
+            .conflict-item-info h4 {margin: 0 0 .2rem; font-family: var(--font-title); color: var(--color-text-dark); font-size: 1.1rem; }
+            .conflict-item-info span {font-size: .85rem; color: var(--color-text-muted); }
+            .conflict-details-btn {
+                background: transparent; border: 1px solid var(--color-border);
+                color: var(--color-text-muted); padding: .4rem 1.2rem; font-size: .8rem;
+                font-weight: 600; border-radius: var(--radius-full); cursor: pointer; transition: all .2s ease; flex-shrink: 0;
+            }
+            .conflict-details-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--color-text); color: var(--color-text); }
+            .light .conflict-details-btn:hover { background: rgba(0,0,0,0.04); }
+            .conflict-extra-details {
+                max-height: 0; overflow: hidden; transition: all .3s ease;
+                font-size: .85rem;
+            }
+            .conflict-extra-details.visible { 
+                max-height: 200px; padding: .75rem 1rem .25rem; margin-top: .75rem; 
+                background: rgba(0,0,0,0.1); border-radius: var(--radius-md); 
+            }
+            .light .conflict-extra-details.visible { background: rgba(0,0,0,0.03); }
+            .conflict-extra-details div { margin-bottom: .5rem;}
+
+            /* --- Mobile Section Details Panel --- */
             .mobile-wrapper, .mobile-nav { display: none; }
             #mobile-my-schedule-list {
                 padding: 1rem;
                 display: flex; flex-direction: column; gap: 1rem;
             }
             .mobile-schedule-item {
-                background: var(--color-card);
-                border: 1px solid var(--color-border);
-                border-radius: var(--radius);
-                padding: 1.25rem;
-                display: flex; flex-direction: column; gap: 1rem;
-                box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3);
+                background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius);
+                padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3);
             }
             .light .mobile-schedule-item { box-shadow: 0 8px 25px -10px rgba(0,0,0,0.1); }
             .mobile-schedule-item.has-conflict { border-left: 4px solid var(--color-warning); }
@@ -365,70 +413,19 @@
                 gap: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;
             }
             .mobile-schedule-title { display: flex; flex-direction: column; }
-            .mobile-schedule-title h3 {
-                font-family: var(--font-title); font-size: 1.1rem;
-                color: var(--color-text-dark); margin: 0;
-            }
+            .mobile-schedule-title h3 { font-family: var(--font-title); font-size: 1.1rem; color: var(--color-text-dark); margin: 0; }
             .mobile-schedule-title span { font-size: 0.9rem; color: var(--color-text-muted); }
-            .mobile-conflict-icon {
-                color: var(--color-warning); font-size: 1.5rem;
-                cursor: help;
+            .mobile-conflict-icon { color: var(--color-warning); font-size: 1.5rem; cursor: help; }
+            .mobile-schedule-details { display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.9rem; }
+            .mobile-detail-row { display: flex; align-items: center; gap: 0.75rem; }
+            .mobile-detail-row i { color: var(--color-primary); font-size: 1.2rem; min-width: 20px; text-align: center; }
+            .mobile-detail-row strong { color: var(--color-text-muted); }
+            .mobile-schedule-footer {
+                 position: sticky; bottom: 0; padding: 1rem; margin: 1rem -1rem -1rem -1rem;
+                 background-color: var(--color-card); border-top: 1px solid var(--color-border);
+                 backdrop-filter: blur(8px); display: flex; justify-content: space-between; align-items: center;
             }
-            .mobile-schedule-details {
-                display: flex; flex-direction: column; gap: 0.75rem;
-                font-size: 0.9rem;
-            }
-            .mobile-detail-row {
-                display: flex; align-items: center; gap: 0.75rem;
-            }
-             .mobile-detail-row i {
-                color: var(--color-primary); font-size: 1.2rem;
-                min-width: 20px; text-align: center;
-             }
-             .mobile-detail-row strong { color: var(--color-text-muted); }
-             .mobile-schedule-footer {
-                 position: sticky; bottom: 0;
-                 padding: 1rem; margin: 1rem -1rem -1rem -1rem;
-                 background-color: var(--color-card);
-                 border-top: 1px solid var(--color-border);
-                 backdrop-filter: blur(8px);
-                 display: flex; justify-content: space-between; align-items: center;
-             }
-            #conflict-modal {max-width: 600px; width: 95%;}
-            .swal2-html-container { padding: 0 .5rem;}
-            .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; }
-            .conflict-group-title {
-                font-family: var(--font-title); font-size: 1.1rem; font-weight: 700;
-                padding: .8rem 1rem; border-bottom: 1px solid var(--color-border);
-                background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning);
-            }
-            #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem; text-align: right;}
-            .conflict-item { border-bottom: 1px solid var(--color-border); padding: .75rem 0;}
-            .conflict-item:last-child { border-bottom: none; }
-            .conflict-item label { display: block; cursor: pointer; padding: .25rem; }
-            .conflict-item input[type="radio"]:checked + .conflict-details-wrapper { background: rgba(var(--rgb-primary), 0.1); border-radius: var(--radius-md); }
-            .conflict-details-wrapper { transition: .2s; }
-            .conflict-item-flex { display: flex; align-items: center; gap: .75rem; }
-            .conflict-item-flex input[type="radio"] { flex-shrink: 0; margin-left: .5rem; accent-color: var(--color-primary); }
-            .conflict-item-info { flex-grow: 1; }
-            .conflict-item-info h4 {margin: 0 0 .2rem; font-family: var(--font-title); color: var(--color-text-dark); font-size: 1rem;}
-            .conflict-item-info span {font-size: .8rem; color: var(--color-text-muted); }
-            .conflict-details-btn {
-                background: transparent; border: 1px solid var(--color-border);
-                color: var(--color-text-muted); padding: .4rem .8rem; font-size: .8rem;
-                font-weight: 600; border-radius: var(--radius-full); cursor: pointer; transition: .2s;
-            }
-            .conflict-details-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--color-text); color: var(--color-text); }
-            .light .conflict-details-btn:hover { background: rgba(0,0,0,0.05); }
-            .conflict-extra-details {
-                max-height: 0; overflow: hidden; transition: max-height .3s, padding .3s, margin .3s;
-                font-size: .85rem; padding: 0 1rem; margin: 0;
-            }
-            .conflict-extra-details.visible { max-height: 200px; padding: .75rem 1rem; margin: .5rem 0 0; background: rgba(0,0,0,0.1); border-radius: var(--radius-md); }
-            .light .conflict-extra-details.visible { background: rgba(0,0,0,0.02); }
-            .conflict-extra-details div { margin-bottom: .5rem;}
             
-             /* --- Mobile Section Details Panel --- */
             .mobile-section-details-overlay {
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
@@ -444,13 +441,13 @@
                 transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1);
             }
             .mobile-section-details-overlay.open .details-panel { transform: translateY(0); }
-             .details-panel .conflict-banner {
+            .details-panel .conflict-banner {
                 padding: .75rem 1rem; margin-bottom: 1.25rem;
                 background-color: rgba(var(--rgb-warning), 0.1);
                 color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.2);
                 border-radius: var(--radius-md);
                 display: flex; align-items: center; gap: .75rem; font-size: .9rem; font-weight: 600;
-             }
+            }
             .details-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
             .details-header h4 { margin: 0; font-family: var(--font-title); font-size: 1.2rem; display: flex; align-items: center; gap: .75rem; }
             .details-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
@@ -525,14 +522,10 @@
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
                 #mobile-courses-view .tab-content { padding: 1rem; }
-                #mobile-my-schedule-view { padding: 0; } /* Change */
-                .my-schedule-container .card { display: none; } /* Hide desktop version on mobile view */
-                #mobile-my-schedule-container {
-                    width: 100%;
-                    height: 100%;
-                    display: block; /* changed to block */
-                }
-                 .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
+                #mobile-my-schedule-view { padding: 0; }
+                .my-schedule-container .card { display: none; }
+                #mobile-my-schedule-container { width: 100%; height: 100%; display: block; }
+                .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
                 
                 .mobile-nav {
                     display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
@@ -981,11 +974,10 @@
                             }
                             const examText = course.examPeriodId || "لا يوجد";
                             const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
-                            const conflictMessages = conflictMap.get(course.uniqueId);
-                            const isConflicted = !!conflictMessages;
-                            const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMessages.join('\n')}"></i>` : '';
+                            const isConflicted = conflictMap.has(course.uniqueId);
+                            const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
 
-                            return `<tr class="${isConflicted ? 'has-conflict' : ''}">
+                            return `<tr>
                                 <td class="course-cell"><div class="course-code">${conflictIconHTML} ${course.code}</div><div class="course-name">${course.name}</div></td>
                                 <td class="section-cell"><div class="section-number">${course.section}</div><div class="section-type">${course.type}</div></td>
                                 <td>${course.instructor}</td>
@@ -997,9 +989,8 @@
                             </tr>`;
                         }).join('');
 
-                        const conflictCount = conflictMap.size;
                         let conflictButtonHTML = '';
-                        if (conflictCount > 0) {
+                        if (conflictMap.size > 0) {
                             conflictButtonHTML = `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn">
                                                     <i class="ri-alert-fill"></i> حل التعارض
                                                 </button>`;
@@ -1030,9 +1021,8 @@
                                 totalCredits += parseInt(course.hours, 10) || 0;
                                 uniqueCourseCodes.add(course.code);
                             }
-                            const conflictMessages = conflictMap.get(course.uniqueId);
-                            const isConflicted = !!conflictMessages;
-                            const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="${conflictMessages.join('\n')}"></i>` : '';
+                            const isConflicted = conflictMap.has(course.uniqueId);
+                            const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
                             
                             return `<div class="mobile-schedule-item ${isConflicted ? 'has-conflict' : ''}" style="animation-delay:${i*50}ms; animation: fadeInUp .5s ease both;">
                                 <div class="mobile-schedule-header">
@@ -1051,9 +1041,8 @@
                             </div>`;
                         }).join('');
                         
-                        const conflictCount = conflictMap.size;
                         let conflictButtonHTML = '';
-                        if (conflictCount > 0) {
+                        if (conflictMap.size > 0) {
                             conflictButtonHTML = `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn">
                                                     <i class="ri-alert-fill"></i> حل التعارض
                                                 </button>`;
@@ -1639,16 +1628,16 @@
                                 while (queue.length > 0) {
                                     const currentId = queue.shift();
                                     const currentSection = selectedCourses.find(c => c.uniqueId === currentId);
-                                    group.add(currentSection);
+                                    if(currentSection) group.add(currentSection);
                                     
                                     selectedCourses.forEach(otherSection => {
-                                        if (allConflictingIds.has(otherSection.uniqueId) && !visited.has(otherSection.uniqueId) && this._isSectionConflicted(currentSection, [otherSection])) {
+                                        if (allConflictingIds.has(otherSection.uniqueId) && !visited.has(otherSection.uniqueId) && currentSection && this._isSectionConflicted(currentSection, [otherSection])) {
                                             visited.add(otherSection.uniqueId);
                                             queue.push(otherSection.uniqueId);
                                         }
                                     });
                                 }
-                                conflictGroups.push(Array.from(group));
+                                if(group.size > 0) conflictGroups.push(Array.from(group));
                             }
                         });
 
@@ -1656,21 +1645,22 @@
                             const groupItemsHTML = group.map((section, itemIndex) => {
                                 const detailsId = `details-${groupIndex}-${itemIndex}`;
                                 return `<div class="conflict-item">
-                                    <label class="conflict-details-wrapper">
-                                        <div class="conflict-item-flex">
+                                    <div class="conflict-item-flex">
+                                        <label class="conflict-item-main-label">
                                             <input type="radio" name="conflict-group-${groupIndex}" value="${section.uniqueId}" ${itemIndex === 0 ? 'checked' : ''}>
+                                            <div class="custom-radio"></div>
                                             <div class="conflict-item-info">
                                                 <h4>${section.name}</h4>
                                                 <span>${section.code} - شعبة ${section.section}</span>
                                             </div>
-                                            <button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button>
-                                        </div>
-                                        <div class="conflict-extra-details" id="${detailsId}">
-                                            <div><strong>المحاضر:</strong> ${section.instructor || 'غير محدد'}</div>
-                                            <div><strong>المواعيد:</strong> ${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div>
-                                            <div><strong>المكان:</strong> ${section.location || 'غير محدد'}</div>
-                                        </div>
-                                    </label>
+                                        </label>
+                                        <button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button>
+                                    </div>
+                                    <div class="conflict-extra-details" id="${detailsId}">
+                                        <div><strong>المحاضر:</strong> ${section.instructor || 'غير محدد'}</div>
+                                        <div><strong>المواعيد:</strong> ${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div>
+                                        <div><strong>المكان:</strong> ${section.location || 'غير محدد'}</div>
+                                    </div>
                                 </div>`;
                             }).join('');
                             
