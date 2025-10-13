@@ -279,7 +279,7 @@
             .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--color-primary); opacity: 0.5; }
             .swal2-popup { background: var(--color-card)!important; color: var(--color-text)!important; border-radius: var(--radius)!important; border: 1px solid var(--color-border)!important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
             .swal2-title { color: var(--color-text-dark)!important; font-family: var(--font-title) !important; }
-            .swal2-html-container { color: var(--color-text-muted)!important; margin: 1em 0 !important; font-size: 1em !important; display: block !important; }
+            .swal2-html-container { color: var(--color-text-muted)!important; margin: 1em 0 !important; font-size: 1em !important; display: block !important; text-align: right !important; }
             .swal2-confirm { background: var(--color-primary)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; }
             .swal2-confirm:focus { box-shadow: 0 0 0 3px rgba(var(--rgb-primary),0.5)!important }
             .swal2-cancel { background: rgba(255,255,255,0.1)!important; color: var(--color-text)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; }
@@ -401,30 +401,39 @@
                  backdrop-filter: blur(8px);
                  display: flex; justify-content: space-between; align-items: center;
              }
-            #conflict-modal {max-width: 500px; width: 90%;}
-            #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding-right: .5rem; }
-            .conflict-item {
-                border: 1px solid var(--color-border); 
-                padding: 1rem; border-radius: var(--radius-md); 
-                margin-bottom: 1rem;
-                position: relative;
-                transition: border-color .3s, box-shadow .3s;
+            #conflict-modal {max-width: 600px; width: 95%;}
+            .swal2-html-container { padding: 0 .5rem;}
+            .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; }
+            .conflict-group-title {
+                font-family: var(--font-title); font-size: 1.1rem; font-weight: 700;
+                padding: .8rem 1rem; border-bottom: 1px solid var(--color-border);
+                background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning);
             }
-            .conflict-item input[type="radio"] {
-                position: absolute; opacity: 0; width: 100%; height: 100%; top:0; left: 0; cursor: pointer;
+            #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem; text-align: right;}
+            .conflict-item { border-bottom: 1px solid var(--color-border); padding: .75rem 0;}
+            .conflict-item:last-child { border-bottom: none; }
+            .conflict-item label { display: block; cursor: pointer; padding: .25rem; }
+            .conflict-item input[type="radio"]:checked + .conflict-details-wrapper { background: rgba(var(--rgb-primary), 0.1); border-radius: var(--radius-md); }
+            .conflict-details-wrapper { transition: .2s; }
+            .conflict-item-flex { display: flex; align-items: center; gap: .75rem; }
+            .conflict-item-flex input[type="radio"] { flex-shrink: 0; margin-left: .5rem; accent-color: var(--color-primary); }
+            .conflict-item-info { flex-grow: 1; }
+            .conflict-item-info h4 {margin: 0 0 .2rem; font-family: var(--font-title); color: var(--color-text-dark); font-size: 1rem;}
+            .conflict-item-info span {font-size: .8rem; color: var(--color-text-muted); }
+            .conflict-details-btn {
+                background: transparent; border: 1px solid var(--color-border);
+                color: var(--color-text-muted); padding: .4rem .8rem; font-size: .8rem;
+                font-weight: 600; border-radius: var(--radius-full); cursor: pointer; transition: .2s;
             }
-            .conflict-item input[type="radio"]:checked + .conflict-details {
-                 border-color: var(--color-primary);
-                 box-shadow: 0 0 20px -5px rgba(var(--rgb-primary), 0.5);
+            .conflict-details-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--color-text); color: var(--color-text); }
+            .light .conflict-details-btn:hover { background: rgba(0,0,0,0.05); }
+            .conflict-extra-details {
+                max-height: 0; overflow: hidden; transition: max-height .3s, padding .3s, margin .3s;
+                font-size: .85rem; padding: 0 1rem; margin: 0;
             }
-            .conflict-details {
-                 border: 2px solid transparent; 
-                 border-radius: var(--radius-md); 
-                 padding: 1rem; margin: -1rem; /* counteract parent padding */
-                 transition: all .2s;
-            }
-
-            .conflict-details h4 {margin: 0 0 .5rem; font-family: var(--font-title); color: var(--color-text-dark);}
+            .conflict-extra-details.visible { max-height: 200px; padding: .75rem 1rem; margin: .5rem 0 0; background: rgba(0,0,0,0.1); border-radius: var(--radius-md); }
+            .light .conflict-extra-details.visible { background: rgba(0,0,0,0.02); }
+            .conflict-extra-details div { margin-bottom: .5rem;}
             .conflict-reason {
                 font-size: 0.8rem; padding: .2rem .6rem;
                 background-color: rgba(var(--rgb-warning), 0.1);
@@ -506,18 +515,6 @@
                 transition: all .2s;
             }
             .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); }
-            .conflict-summary-modal-content { text-align: right; max-height: 50vh; overflow-y: auto; padding-left: 1rem; }
-            .conflict-summary-item { border-bottom: 1px solid var(--color-border); padding: 1rem 0; }
-            .conflict-summary-item:last-child { border-bottom: none; padding-bottom: 0; }
-            .conflict-summary-item h4 { margin: 0 0 0.5rem; color: var(--color-text-dark); font-family: var(--font-title); }
-            .conflict-summary-item ul { list-style: none; padding: 0; margin: 0; color: var(--color-text-muted); font-size: 0.9rem; }
-            .conflict-summary-item li { position: relative; padding-right: 1.5rem; margin-bottom: 0.5rem; }
-            .conflict-summary-item li::before {
-                content: '\\ea02';
-                font-family: 'remixicon' !important;
-                position: absolute; right: 0; top: 2px;
-                color: var(--color-warning);
-            }
 
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
@@ -1008,7 +1005,7 @@
                             const conflictMessages = conflictMap.get(course.uniqueId);
                             const isConflicted = !!conflictMessages;
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMessages.join('\n')}"></i>` : '';
-                            const resolveBtnHTML = isConflicted ? `<button class="resolve-conflict-btn" data-unique-id="${course.uniqueId}"><i class="ri-shake-hands-line"></i> حل التعارض</button>` : '';
+                            const resolveBtnHTML = isConflicted ? `<button class="resolve-conflict-btn" data-unique-id="${course.uniqueId}"><i class="ri-shake-hands-line"></i> حل</button>` : '';
 
                             return `<tr class="${isConflicted ? 'has-conflict' : ''}">
                                 <td class="course-cell"><div class="course-code">${conflictIconHTML} ${course.code}</div><div class="course-name">${course.name}</div></td>
@@ -1027,7 +1024,7 @@
                         let conflictButtonHTML = '';
                         if (conflictCount > 0) {
                             conflictButtonHTML = `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn">
-                                                    <i class="ri-alert-fill"></i> يوجد ${this._toArabicNumerals(conflictCount)} تعارضات
+                                                    <i class="ri-alert-fill"></i> حل التعارض
                                                 </button>`;
                         }
                         
@@ -1083,7 +1080,7 @@
                         let conflictButtonHTML = '';
                         if (conflictCount > 0) {
                             conflictButtonHTML = `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn">
-                                                    <i class="ri-alert-fill"></i> ${this._toArabicNumerals(conflictCount)} تعارضات
+                                                    <i class="ri-alert-fill"></i> حل التعارض
                                                 </button>`;
                         }
 
@@ -1674,40 +1671,15 @@
                                 if (conflictDetails.exam) reasons.push('تعارض اختبار');
                              }
                              
-                             return `
-                                <div class="conflict-item">
-                                    <label>
-                                        <input type="radio" name="conflict-resolution" value="${section.uniqueId}" ${index === 0 ? 'checked' : ''}>
-                                        <div class="conflict-details">
-                                            <h4>${section.name} (${section.code} - ${section.section})</h4>
-                                            <div>${reasons.map(r => `<span class="conflict-reason">${r}</span>`).join(' ')}</div>
-                                        </div>
-                                    </label>
-                                </div>
-                             `;
+                             return `<div class="conflict-item"><label><input type="radio" name="conflict-resolution" value="${section.uniqueId}" ${index === 0 ? 'checked' : ''}><div class="conflict-details"><h4>${section.name} (${section.code} - ${section.section})</h4><div>${reasons.map(r => `<span class="conflict-reason">${r}</span>`).join(' ')}</div></div></label></div>`;
                         }).join('');
 
                         Swal.fire({
                             title: 'حل التعارض',
                             html: `<div id="conflict-modal-content" class="custom-scrollbar">${itemsHTML}</div>`,
-                            confirmButtonText: 'حفظ وإزالة الأخرى',
-                            showCancelButton: true,
-                            cancelButtonText: 'إلغاء',
+                            confirmButtonText: 'حفظ وإزالة الأخرى', showCancelButton: true, cancelButtonText: 'إلغاء',
                             customClass: { popup: 'swal2-popup', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
-                            didOpen: () => {
-                                const container = Swal.getPopup().querySelector('#conflict-modal-content');
-                                container.addEventListener('change', () => {
-                                    container.querySelectorAll('.conflict-item').forEach(item => {
-                                        item.classList.toggle('selected', item.querySelector('input').checked);
-                                    })
-                                });
-                                container.querySelector('input:checked').parentElement.parentElement.classList.add('selected');
-                            },
-                            preConfirm: () => {
-                                const selected = Swal.getPopup().querySelector('input[name="conflict-resolution"]:checked');
-                                if (selected) return selected.value;
-                                return false;
-                            }
+                            preConfirm: () => Swal.getPopup().querySelector('input[name="conflict-resolution"]:checked')?.value || false
                         }).then((result) => {
                             if (result.isConfirmed && result.value) {
                                 const sectionToKeepId = result.value;
@@ -1719,32 +1691,100 @@
                         });
                     },
                     _handleViewAllConflicts(conflictMap) {
-                        let modalHTML = `<div class="conflict-summary-modal-content custom-scrollbar">`;
-                        for (const [uniqueId, messages] of conflictMap.entries()) {
-                            const course = this.state.allCoursesData.find(c => c.uniqueId === uniqueId);
-                            if (course) {
-                                modalHTML += `
-                                    <div class="conflict-summary-item">
-                                        <h4>${course.name} (${course.code} - ${course.section})</h4>
-                                        <ul>${messages.map(msg => `<li>${msg}</li>`).join('')}</ul>
-                                    </div>
-                                `;
+                        const selectedCourses = Array.from(this.state.schedules[this.state.activeScheduleIndex].sections)
+                            .map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+
+                        const allConflictingIds = new Set(conflictMap.keys());
+                        const visited = new Set();
+                        const conflictGroups = [];
+
+                        allConflictingIds.forEach(id => {
+                            if (!visited.has(id)) {
+                                const group = new Set();
+                                const queue = [id];
+                                visited.add(id);
+                                while (queue.length > 0) {
+                                    const currentId = queue.shift();
+                                    const currentSection = selectedCourses.find(c => c.uniqueId === currentId);
+                                    group.add(currentSection);
+                                    
+                                    selectedCourses.forEach(otherSection => {
+                                        if (!visited.has(otherSection.uniqueId) && this._isSectionConflicted(currentSection, [otherSection])) {
+                                            visited.add(otherSection.uniqueId);
+                                            queue.push(otherSection.uniqueId);
+                                        }
+                                    });
+                                }
+                                conflictGroups.push(Array.from(group));
                             }
-                        }
-                        modalHTML += '</div>';
+                        });
+
+                        const modalHTML = conflictGroups.map((group, groupIndex) => {
+                            const groupItemsHTML = group.map((section, itemIndex) => {
+                                const detailsId = `details-${groupIndex}-${itemIndex}`;
+                                return `<div class="conflict-item">
+                                    <label class="conflict-details-wrapper">
+                                        <div class="conflict-item-flex">
+                                            <input type="radio" name="conflict-group-${groupIndex}" value="${section.uniqueId}" ${itemIndex === 0 ? 'checked' : ''}>
+                                            <div class="conflict-item-info">
+                                                <h4>${section.name}</h4>
+                                                <span>${section.code} - شعبة ${section.section}</span>
+                                            </div>
+                                            <button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button>
+                                        </div>
+                                        <div class="conflict-extra-details" id="${detailsId}">
+                                            <div><strong>المحاضر:</strong> ${section.instructor || 'غير محدد'}</div>
+                                            <div><strong>المواعيد:</strong> ${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div>
+                                            <div><strong>المكان:</strong> ${section.location || 'غير محدد'}</div>
+                                        </div>
+                                    </label>
+                                </div>`;
+                            }).join('');
+                            
+                            return `<div class="conflict-group-container">
+                                <div class="conflict-group-title">مجموعة التعارض ${this._toArabicNumerals(groupIndex + 1)}</div>
+                                ${groupItemsHTML}
+                            </div>`;
+                        }).join('');
 
                         Swal.fire({
-                            title: 'ملخص التعارضات',
-                            html: modalHTML,
-                            icon: 'warning',
-                            confirmButtonText: 'حسنًا',
-                            customClass: { 
-                                popup: 'swal2-popup',
-                                htmlContainer: 'swal2-html-container',
-                                confirmButton: 'swal2-confirm'
-                             },
+                            title: 'حل جميع التعارضات',
+                            html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML}</div>`,
+                            icon: 'warning', confirmButtonText: 'حفظ التغييرات',
+                            showCancelButton: true, cancelButtonText: 'إلغاء',
+                            customClass: { popup: 'swal2-popup', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel', popup: 'swal2-popup', container: 'swal-container', popup: 'wide-swal' },
+                            didOpen: (popup) => {
+                                popup.querySelectorAll('.conflict-details-btn').forEach(btn => {
+                                    btn.addEventListener('click', (e) => {
+                                        e.preventDefault();
+                                        const detailsEl = document.getElementById(btn.dataset.detailsId);
+                                        if (detailsEl) detailsEl.classList.toggle('visible');
+                                    });
+                                });
+                            },
+                            preConfirm: () => {
+                                const sectionsToRemove = [];
+                                conflictGroups.forEach((group, groupIndex) => {
+                                    const selectedId = Swal.getPopup().querySelector(`input[name="conflict-group-${groupIndex}"]:checked`).value;
+                                    group.forEach(section => {
+                                        if (section.uniqueId !== selectedId) {
+                                            sectionsToRemove.push(section.uniqueId);
+                                        }
+                                    });
+                                });
+                                return sectionsToRemove;
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed && result.value.length > 0) {
+                                const sectionsToRemove = result.value;
+                                const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                                sectionsToRemove.forEach(id => this._removeSectionAndUnlink(id, activeSchedule));
+                                this.updateFullUI();
+                                this._showToast('success', `تم حل التعارضات وإزالة ${this._toArabicNumerals(sectionsToRemove.length)} شعبة.`);
+                            }
                         });
                     },
+
                     _getConflictMessages(sectionA, sectionB) {
                         let msgs = { lecture: false, exam: false };
                         if (sectionA.timeSlots.some(sA => sectionB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
