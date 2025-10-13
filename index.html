@@ -269,7 +269,7 @@
             .status-badge.status-closed { background-color: rgba(var(--rgb-danger), 0.1); color: var(--color-danger); }
             .status-badge.status-closed::before { background-color: var(--color-danger); }
             .hours-value { font-size: 1.3rem; font-weight: 700; color: var(--color-primary); }
-            .my-schedule-footer { display: flex; justify-content: flex-end; padding-top: 1.5rem; }
+            .my-schedule-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; }
             .total-credits-summary { padding: 0.75rem 1.5rem; font-weight: 600; background: rgba(var(--rgb-primary), 0.1); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius-md); font-size: 1.1rem; color: var(--color-primary); }
             .fc { --fc-border-color: var(--color-border); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; font-family: var(--font-body); }
             .fc-theme-standard .fc-scrollgrid { border: none; }
@@ -399,6 +399,7 @@
                  background-color: var(--color-card);
                  border-top: 1px solid var(--color-border);
                  backdrop-filter: blur(8px);
+                 display: flex; justify-content: space-between; align-items: center;
              }
             #conflict-modal {max-width: 500px; width: 90%;}
             #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding-right: .5rem; }
@@ -490,6 +491,34 @@
             .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
             .details-action-btn.remove { background-color: var(--color-danger); }
             
+            .view-conflicts-btn {
+                background: rgba(var(--rgb-warning), 0.1);
+                color: var(--color-warning);
+                border: 1px solid rgba(var(--rgb-warning), 0.2);
+                padding: .75rem 1.5rem;
+                border-radius: var(--radius-md);
+                font-size: 1rem;
+                font-weight: 700;
+                cursor: pointer;
+                display: inline-flex;
+                align-items: center;
+                gap: .5rem;
+                transition: all .2s;
+            }
+            .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); }
+            .conflict-summary-modal-content { text-align: right; max-height: 50vh; overflow-y: auto; padding-left: 1rem; }
+            .conflict-summary-item { border-bottom: 1px solid var(--color-border); padding: 1rem 0; }
+            .conflict-summary-item:last-child { border-bottom: none; padding-bottom: 0; }
+            .conflict-summary-item h4 { margin: 0 0 0.5rem; color: var(--color-text-dark); font-family: var(--font-title); }
+            .conflict-summary-item ul { list-style: none; padding: 0; margin: 0; color: var(--color-text-muted); font-size: 0.9rem; }
+            .conflict-summary-item li { position: relative; padding-right: 1.5rem; margin-bottom: 0.5rem; }
+            .conflict-summary-item li::before {
+                content: '\\ea02';
+                font-family: 'remixicon' !important;
+                position: absolute; right: 0; top: 2px;
+                color: var(--color-warning);
+            }
+
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
                 .page-wrapper { display: none; }
@@ -527,7 +556,7 @@
                     height: 100%;
                     display: block; /* changed to block */
                 }
-                 .light .mobile-schedule-footer { background: rgba(0,0,0,0.03); border-color: transparent;}
+                 .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
                 
                 .mobile-nav {
                     display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
@@ -549,6 +578,7 @@
                 .my-schedule-container { display: flex; }
                 .my-schedule-section { padding: 1rem; }
                 .fc .fc-toolbar { padding: 0 1rem 1rem; font-size: 0.9em; }
+                .view-conflicts-btn { padding: .7rem 1rem; font-size: .9rem; }
             }
         </style>
     </head>
@@ -992,6 +1022,14 @@
                                 <td>${resolveBtnHTML}</td>
                             </tr>`;
                         }).join('');
+
+                        const conflictCount = conflictMap.size;
+                        let conflictButtonHTML = '';
+                        if (conflictCount > 0) {
+                            conflictButtonHTML = `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn">
+                                                    <i class="ri-alert-fill"></i> يوجد ${this._toArabicNumerals(conflictCount)} تعارضات
+                                                </button>`;
+                        }
                         
                         return `<div class="card">
                             <div class="my-schedule-section">
@@ -1003,7 +1041,8 @@
                                     </table>
                                 </div>
                                 <div class="my-schedule-footer">
-                                    <div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div>
+                                    ${conflictButtonHTML}
+                                    <div class="total-credits-summary">إجمالي الساعات: <span>${this._toArabicNumerals(totalCredits)}</span></div>
                                 </div>
                             </div>
                         </div>`;
@@ -1039,11 +1078,20 @@
                                 ${resolveBtnHTML}
                             </div>`;
                         }).join('');
+                        
+                        const conflictCount = conflictMap.size;
+                        let conflictButtonHTML = '';
+                        if (conflictCount > 0) {
+                            conflictButtonHTML = `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn">
+                                                    <i class="ri-alert-fill"></i> ${this._toArabicNumerals(conflictCount)} تعارضات
+                                                </button>`;
+                        }
 
                         return `
                             <div id="mobile-my-schedule-list">${itemsHTML}</div>
                             <div class="mobile-schedule-footer">
-                                 <div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div>
+                                 ${conflictButtonHTML}
+                                 <div class="total-credits-summary">إجمالي الساعات: <span>${this._toArabicNumerals(totalCredits)}</span></div>
                             </div>`;
                     },
                     _renderMyScheduleSummary(selectedCourses, conflictMap) {
@@ -1059,6 +1107,10 @@
                                 desktopContainer.querySelectorAll('.resolve-conflict-btn').forEach(btn => {
                                     btn.addEventListener('click', (e) => this._handleResolveConflictClick(e.currentTarget.dataset.uniqueId));
                                 });
+                                const desktopConflictBtn = desktopContainer.querySelector('#desktop-view-conflicts-btn');
+                                if (desktopConflictBtn) {
+                                    desktopConflictBtn.addEventListener('click', () => this._handleViewAllConflicts(conflictMap));
+                                }
                             }
                         }
 
@@ -1070,6 +1122,10 @@
                                 mobileContainer.querySelectorAll('.resolve-conflict-btn').forEach(btn => {
                                     btn.addEventListener('click', (e) => this._handleResolveConflictClick(e.currentTarget.dataset.uniqueId));
                                 });
+                                const mobileConflictBtn = mobileContainer.querySelector('#mobile-view-conflicts-btn');
+                                if (mobileConflictBtn) {
+                                    mobileConflictBtn.addEventListener('click', () => this._handleViewAllConflicts(conflictMap));
+                                }
                             }
                         }
                     },
@@ -1660,6 +1716,33 @@
                                 this.updateFullUI();
                                 this._showToast('success', 'تم حل التعارض بنجاح.');
                             }
+                        });
+                    },
+                    _handleViewAllConflicts(conflictMap) {
+                        let modalHTML = `<div class="conflict-summary-modal-content custom-scrollbar">`;
+                        for (const [uniqueId, messages] of conflictMap.entries()) {
+                            const course = this.state.allCoursesData.find(c => c.uniqueId === uniqueId);
+                            if (course) {
+                                modalHTML += `
+                                    <div class="conflict-summary-item">
+                                        <h4>${course.name} (${course.code} - ${course.section})</h4>
+                                        <ul>${messages.map(msg => `<li>${msg}</li>`).join('')}</ul>
+                                    </div>
+                                `;
+                            }
+                        }
+                        modalHTML += '</div>';
+
+                        Swal.fire({
+                            title: 'ملخص التعارضات',
+                            html: modalHTML,
+                            icon: 'warning',
+                            confirmButtonText: 'حسنًا',
+                            customClass: { 
+                                popup: 'swal2-popup',
+                                htmlContainer: 'swal2-html-container',
+                                confirmButton: 'swal2-confirm'
+                             },
                         });
                     },
                     _getConflictMessages(sectionA, sectionB) {
