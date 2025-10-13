@@ -248,20 +248,12 @@
             .my-schedule-table thead th { padding: 1rem; text-align: right; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); font-size: 0.9rem; }
             .my-schedule-table tbody td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
             .my-schedule-table tbody tr:last-child td { border-bottom: none; }
-            .my-schedule-table tbody tr.has-conflict { background-color: rgba(var(--rgb-warning), 0.08) !important; }
-            .my-schedule-table tbody tr:not(.has-conflict):hover { background-color: rgba(var(--rgb-primary), 0.05); }
+            .my-schedule-table tbody tr:hover { background-color: rgba(var(--rgb-primary), 0.05); }
             .my-schedule-table .course-cell .course-code { font-family: var(--font-title); font-size: 1.1rem; color: var(--color-text-dark); display: inline-flex; align-items: center; gap: 0.5rem; }
             .my-schedule-table .course-cell .conflict-icon { color: var(--color-warning); font-size: 1.2rem; cursor: help; }
             .my-schedule-table .course-cell .course-name { font-size: 0.8rem; color: var(--color-text-muted); }
             .my-schedule-table .section-cell .section-number { font-size: 1.1rem; font-weight: 600; }
             .my-schedule-table .section-cell .section-type { font-size: 0.8rem; color: var(--color-text-muted); }
-             #my-schedule-container .resolve-conflict-btn {
-                 background: rgba(var(--rgb-warning),0.1); color: var(--color-warning);
-                 border: 1px solid rgba(var(--rgb-warning),0.2); padding: .5rem 1rem; border-radius: var(--radius-full);
-                 font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: .5rem; transition: all .2s;
-            }
-             #my-schedule-container .resolve-conflict-btn:hover { background: rgba(var(--rgb-warning),0.2); }
-
             .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; }
             .status-badge::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; }
             .status-badge.status-open { background-color: rgba(var(--rgb-success), 0.1); color: var(--color-success); }
@@ -278,6 +270,7 @@
             .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--color-text-muted); }
             .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--color-primary); opacity: 0.5; }
             .swal2-popup { background: var(--color-card)!important; color: var(--color-text)!important; border-radius: var(--radius)!important; border: 1px solid var(--color-border)!important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+            .swal2-popup.wide-swal { max-width: 600px; width: 95%; }
             .swal2-title { color: var(--color-text-dark)!important; font-family: var(--font-title) !important; }
             .swal2-html-container { color: var(--color-text-muted)!important; margin: 1em 0 !important; font-size: 1em !important; display: block !important; text-align: right !important; }
             .swal2-confirm { background: var(--color-primary)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; }
@@ -434,22 +427,8 @@
             .conflict-extra-details.visible { max-height: 200px; padding: .75rem 1rem; margin: .5rem 0 0; background: rgba(0,0,0,0.1); border-radius: var(--radius-md); }
             .light .conflict-extra-details.visible { background: rgba(0,0,0,0.02); }
             .conflict-extra-details div { margin-bottom: .5rem;}
-            .conflict-reason {
-                font-size: 0.8rem; padding: .2rem .6rem;
-                background-color: rgba(var(--rgb-warning), 0.1);
-                color: var(--color-warning); border-radius: var(--radius-full);
-                display: inline-block; margin-left: 0.5rem;
-            }
-             #my-schedule-container .resolve-conflict-btn,
-            #mobile-my-schedule-list .resolve-conflict-btn {
-                background: rgba(var(--rgb-warning),0.1); color: var(--color-warning);
-                border: 1px solid rgba(var(--rgb-warning),0.2); padding: .5rem 1rem; border-radius: var(--radius-full);
-                font-weight: 700; margin-top: .5rem; cursor: pointer; display: inline-flex; align-items: center; gap: .5rem; transition: all .2s;
-            }
-             #my-schedule-container .resolve-conflict-btn:hover,
-             #mobile-my-schedule-list .resolve-conflict-btn:hover { background: rgba(var(--rgb-warning),0.2); }
-
-            /* --- Mobile Section Details Panel --- */
+            
+             /* --- Mobile Section Details Panel --- */
             .mobile-section-details-overlay {
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
@@ -1005,7 +984,6 @@
                             const conflictMessages = conflictMap.get(course.uniqueId);
                             const isConflicted = !!conflictMessages;
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMessages.join('\n')}"></i>` : '';
-                            const resolveBtnHTML = isConflicted ? `<button class="resolve-conflict-btn" data-unique-id="${course.uniqueId}"><i class="ri-shake-hands-line"></i> حل</button>` : '';
 
                             return `<tr class="${isConflicted ? 'has-conflict' : ''}">
                                 <td class="course-cell"><div class="course-code">${conflictIconHTML} ${course.code}</div><div class="course-name">${course.name}</div></td>
@@ -1016,7 +994,6 @@
                                 <td>${examText}</td>
                                 <td>${course.location}</td>
                                 <td><div class="hours-value">${course.hours}</div></td>
-                                <td>${resolveBtnHTML}</td>
                             </tr>`;
                         }).join('');
 
@@ -1033,7 +1010,7 @@
                                 <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
                                 <div class="my-schedule-table-wrapper">
                                     <table class="my-schedule-table">
-                                        <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>الحالة</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th><th>الإجراءات</th></tr></thead>
+                                        <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>الحالة</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>
                                         <tbody>${tableRowsHTML}</tbody>
                                     </table>
                                 </div>
@@ -1056,8 +1033,7 @@
                             const conflictMessages = conflictMap.get(course.uniqueId);
                             const isConflicted = !!conflictMessages;
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="${conflictMessages.join('\n')}"></i>` : '';
-                            const resolveBtnHTML = isConflicted ? `<button class="resolve-conflict-btn" data-unique-id="${course.uniqueId}"><i class="ri-shake-hands-line"></i> حل التعارضات</button>` : '';
-
+                            
                             return `<div class="mobile-schedule-item ${isConflicted ? 'has-conflict' : ''}" style="animation-delay:${i*50}ms; animation: fadeInUp .5s ease both;">
                                 <div class="mobile-schedule-header">
                                     <div class="mobile-schedule-title">
@@ -1072,7 +1048,6 @@
                                     <div class="mobile-detail-row"><i class="ri-user-line"></i> <strong>المحاضر:</strong> ${course.instructor || 'غير محدد'}</div>
                                     <div class="mobile-detail-row"><i class="ri-file-text-line"></i> <strong>الاختبار:</strong> ${course.examPeriodId || 'لا يوجد'}</div>
                                 </div>
-                                ${resolveBtnHTML}
                             </div>`;
                         }).join('');
                         
@@ -1101,9 +1076,6 @@
                                 desktopContainer.innerHTML = `<div class="no-data"><i class="ri-calendar-check-line"></i><h4>جدولك فارغ</h4><p>اختر بعض المقررات لإنشاء جدولك.</p></div>`;
                             } else {
                                 desktopContainer.innerHTML = this._createMyScheduleHTML(selectedCourses, conflictMap);
-                                desktopContainer.querySelectorAll('.resolve-conflict-btn').forEach(btn => {
-                                    btn.addEventListener('click', (e) => this._handleResolveConflictClick(e.currentTarget.dataset.uniqueId));
-                                });
                                 const desktopConflictBtn = desktopContainer.querySelector('#desktop-view-conflicts-btn');
                                 if (desktopConflictBtn) {
                                     desktopConflictBtn.addEventListener('click', () => this._handleViewAllConflicts(conflictMap));
@@ -1116,9 +1088,6 @@
                                 mobileContainer.innerHTML = `<div class="no-data" style="padding-top: 5rem;"><i class="ri-calendar-check-line"></i><h4>جدولك فارغ</h4><p>اختر بعض المقررات لإنشاء جدولك.</p></div>`;
                             } else {
                                 mobileContainer.innerHTML = this._createMobileScheduleHTML(selectedCourses, conflictMap);
-                                mobileContainer.querySelectorAll('.resolve-conflict-btn').forEach(btn => {
-                                    btn.addEventListener('click', (e) => this._handleResolveConflictClick(e.currentTarget.dataset.uniqueId));
-                                });
                                 const mobileConflictBtn = mobileContainer.querySelector('#mobile-view-conflicts-btn');
                                 if (mobileConflictBtn) {
                                     mobileConflictBtn.addEventListener('click', () => this._handleViewAllConflicts(conflictMap));
@@ -1654,42 +1623,6 @@
                     _hideMobileSectionDetails() {
                         this.dom.mobileSectionDetailsOverlay.classList.remove('open');
                     },
-                    _handleResolveConflictClick(uniqueId) {
-                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        const selectedCourses = Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-                        const mainSection = selectedCourses.find(c => c.uniqueId === uniqueId);
-                        if (!mainSection) return;
-
-                        const conflictingSections = selectedCourses.filter(s => s.uniqueId !== uniqueId && this._isSectionConflicted(mainSection, [s]));
-                        const conflictItems = [mainSection, ...conflictingSections];
-                        
-                        const itemsHTML = conflictItems.map((section, index) => {
-                             let reasons = [];
-                             if(index > 0) {
-                                const conflictDetails = this._getConflictMessages(mainSection, section);
-                                if (conflictDetails.lecture) reasons.push('تعارض محاضرة');
-                                if (conflictDetails.exam) reasons.push('تعارض اختبار');
-                             }
-                             
-                             return `<div class="conflict-item"><label><input type="radio" name="conflict-resolution" value="${section.uniqueId}" ${index === 0 ? 'checked' : ''}><div class="conflict-details"><h4>${section.name} (${section.code} - ${section.section})</h4><div>${reasons.map(r => `<span class="conflict-reason">${r}</span>`).join(' ')}</div></div></label></div>`;
-                        }).join('');
-
-                        Swal.fire({
-                            title: 'حل التعارض',
-                            html: `<div id="conflict-modal-content" class="custom-scrollbar">${itemsHTML}</div>`,
-                            confirmButtonText: 'حفظ وإزالة الأخرى', showCancelButton: true, cancelButtonText: 'إلغاء',
-                            customClass: { popup: 'swal2-popup', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
-                            preConfirm: () => Swal.getPopup().querySelector('input[name="conflict-resolution"]:checked')?.value || false
-                        }).then((result) => {
-                            if (result.isConfirmed && result.value) {
-                                const sectionToKeepId = result.value;
-                                const sectionsToRemove = conflictItems.filter(s => s.uniqueId !== sectionToKeepId);
-                                sectionsToRemove.forEach(s => this._removeSectionAndUnlink(s.uniqueId, activeSchedule));
-                                this.updateFullUI();
-                                this._showToast('success', 'تم حل التعارض بنجاح.');
-                            }
-                        });
-                    },
                     _handleViewAllConflicts(conflictMap) {
                         const selectedCourses = Array.from(this.state.schedules[this.state.activeScheduleIndex].sections)
                             .map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
@@ -1709,7 +1642,7 @@
                                     group.add(currentSection);
                                     
                                     selectedCourses.forEach(otherSection => {
-                                        if (!visited.has(otherSection.uniqueId) && this._isSectionConflicted(currentSection, [otherSection])) {
+                                        if (allConflictingIds.has(otherSection.uniqueId) && !visited.has(otherSection.uniqueId) && this._isSectionConflicted(currentSection, [otherSection])) {
                                             visited.add(otherSection.uniqueId);
                                             queue.push(otherSection.uniqueId);
                                         }
@@ -1752,7 +1685,7 @@
                             html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML}</div>`,
                             icon: 'warning', confirmButtonText: 'حفظ التغييرات',
                             showCancelButton: true, cancelButtonText: 'إلغاء',
-                            customClass: { popup: 'swal2-popup', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel', popup: 'swal2-popup', container: 'swal-container', popup: 'wide-swal' },
+                            customClass: { popup: 'swal2-popup wide-swal', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
                             didOpen: (popup) => {
                                 popup.querySelectorAll('.conflict-details-btn').forEach(btn => {
                                     btn.addEventListener('click', (e) => {
@@ -1775,16 +1708,19 @@
                                 return sectionsToRemove;
                             }
                         }).then((result) => {
-                            if (result.isConfirmed && result.value.length > 0) {
+                            if (result.isConfirmed && Array.isArray(result.value)) {
                                 const sectionsToRemove = result.value;
-                                const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                                sectionsToRemove.forEach(id => this._removeSectionAndUnlink(id, activeSchedule));
-                                this.updateFullUI();
-                                this._showToast('success', `تم حل التعارضات وإزالة ${this._toArabicNumerals(sectionsToRemove.length)} شعبة.`);
+                                if (sectionsToRemove.length > 0) {
+                                    const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                                    sectionsToRemove.forEach(id => this._removeSectionAndUnlink(id, activeSchedule));
+                                    this.updateFullUI();
+                                    this._showToast('success', `تم حل التعارضات وإزالة ${this._toArabicNumerals(sectionsToRemove.length)} شعبة.`);
+                                } else {
+                                     this._showToast('info', 'لم يتم إجراء أي تغييرات.');
+                                }
                             }
                         });
                     },
-
                     _getConflictMessages(sectionA, sectionB) {
                         let msgs = { lecture: false, exam: false };
                         if (sectionA.timeSlots.some(sA => sectionB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
