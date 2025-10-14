@@ -966,7 +966,7 @@
                             const sectionsHTML = sectionsToDisplay.map(section => {
                                 const isNoTime = section.time === 'غير محدد';
                                 const isOpen = section.status.includes('مفتوحة');
-                                const statusIndicatorHTML = this.state.userSettings.hideClosedCourses ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
+                                const statusIndicatorHTML = !this.state.userSettings.hideClosedCourses ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
                                 
                                 return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}">
                                             ${statusIndicatorHTML}
@@ -1028,7 +1028,7 @@
                                 </div>
                                 <div class="my-schedule-footer">
                                     ${conflictButtonHTML}
-                                    <div class="total-credits-summary">إجمالي الساعات: <span>${this._toArabicNumerals(totalCredits)}</span></div>
+                                    <div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div>
                                 </div>
                             </div>
                         </div>`;
@@ -1073,7 +1073,7 @@
                             <div id="mobile-my-schedule-list">${itemsHTML}</div>
                             <div class="mobile-schedule-footer">
                                  ${conflictButtonHTML}
-                                 <div class="total-credits-summary">إجمالي الساعات: <span>${this._toArabicNumerals(totalCredits)}</span></div>
+                                 <div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div>
                             </div>`;
                     },
                     _renderMyScheduleSummary(selectedCourses, conflictMap) {
