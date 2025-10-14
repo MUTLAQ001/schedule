@@ -986,6 +986,8 @@
                     _createMyScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
+                        const showStatusColumn = !this.state.userSettings.hideClosedCourses;
+                        
                         const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
                             if (!uniqueCourseCodes.has(course.code)) {
                                 totalCredits += parseInt(course.hours, 10) || 0;
@@ -996,12 +998,16 @@
                             const isConflicted = conflictMap.has(course.uniqueId);
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
 
+                            const statusCellHTML = showStatusColumn 
+                                ? `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`
+                                : '';
+
                             return `<tr>
                                 <td class="course-cell"><div class="course-code">${conflictIconHTML} ${course.code}</div><div class="course-name">${course.name}</div></td>
                                 <td class="section-cell"><div class="section-number">${course.section}</div><div class="section-type">${course.type}</div></td>
                                 <td>${course.instructor}</td>
                                 <td>${course.time.replace(/<br>/g, ' ')}</td>
-                                <td><span class="status-badge status-${statusClass}">${course.status}</span></td>
+                                ${statusCellHTML}
                                 <td>${examText}</td>
                                 <td>${course.location}</td>
                                 <td><div class="hours-value">${course.hours}</div></td>
@@ -1015,12 +1021,14 @@
                                                 </button>`;
                         }
                         
+                        const statusHeaderHTML = showStatusColumn ? '<th>الحالة</th>' : '';
+
                         return `<div class="card">
                             <div class="my-schedule-section">
                                 <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
                                 <div class="my-schedule-table-wrapper">
                                     <table class="my-schedule-table">
-                                        <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>الحالة</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>
+                                        <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th>${statusHeaderHTML}<th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>
                                         <tbody>${tableRowsHTML}</tbody>
                                     </table>
                                 </div>
@@ -1850,7 +1858,7 @@
                         const weekendToggle = this.dom.settingsModal.querySelector('#show-weekend-toggle');
                         if(weekendToggle){weekendToggle.checked=this.state.userSettings.showWeekends;weekendToggle.onchange=e=>{this.state.userSettings.showWeekends=e.target.checked;this._saveSettings();this._initializeCalendar();this.updateCalendarAndConflicts();};}
                         const closedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
-                        if(closedToggle){closedToggle.checked=this.state.userSettings.hideClosedCourses;closedToggle.onchange=e=>{this.state.userSettings.hideClosedCourses=e.target.checked;this._saveSettings();this._renderCoursesList();};}
+                        if(closedToggle){closedToggle.checked=this.state.userSettings.hideClosedCourses;closedToggle.onchange=e=>{this.state.userSettings.hideClosedCourses=e.target.checked;this._saveSettings();this._renderCoursesList();this.updateCalendarAndConflicts();};}
                     },
                     _populateAccentColorPicker() {
                         const picker = this.dom.settingsModal.querySelector('#accent-color-picker');
