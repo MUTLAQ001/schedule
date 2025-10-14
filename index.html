@@ -280,6 +280,12 @@
             .fc-event.preview-event { border-style: dashed !important; border-width: 2px !important; }
             .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--color-text-muted); }
             .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--color-primary); opacity: 0.5; }
+
+            /* --- FIX: Prevent body scroll when SweetAlert2 is open --- */
+            html.swal2-shown, body.swal2-shown {
+                overflow-y: hidden !important;
+            }
+
             .swal2-popup { background: var(--color-card)!important; color: var(--color-text)!important; border-radius: var(--radius)!important; border: 1px solid var(--color-border)!important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
             .swal2-popup.wide-swal { max-width: 600px; width: 95%; }
             .swal2-title { color: var(--color-text-dark)!important; font-family: var(--font-title) !important; }
@@ -966,6 +972,7 @@
                             const sectionsHTML = sectionsToDisplay.map(section => {
                                 const isNoTime = section.time === 'غير محدد';
                                 const isOpen = section.status.includes('مفتوحة');
+                                // MODIFICATION: Only show status dot if hideClosedCourses is FALSE
                                 const statusIndicatorHTML = !this.state.userSettings.hideClosedCourses ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
                                 
                                 return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}">
