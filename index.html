@@ -975,7 +975,7 @@
                                             <div class="section-type">${section.type || ''}</div>
                                         </div>`;
                             }).join('');
-                            return `<div class="course-item" style="animation-delay: ${i * 50}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
+                            return `<div class="course-item" style="animation-delay: ${i * 50}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} ${this.state.userSettings.hideClosedCourses ? 'شعب متاحة' : 'شعب'}</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
                         }).join('');
                     },
                     _renderCoursesList() {
