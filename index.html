@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>QU Schedule</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -241,7 +241,7 @@
             .light .sections-wrapper { background-color: rgba(0,0,0,0.02); }
             .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 1rem 1.25rem 1.25rem; }
             .section-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: transparent; transition: all var(--transition); position: relative;}
-            .section-status-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px; z-index: 2; }
+            .section-status-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px; }
             .section-status-dot.open { background-color: var(--color-success); box-shadow-color: var(--color-success); }
             .section-status-dot.closed { background-color: var(--color-danger); box-shadow-color: var(--color-danger); }
             .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
@@ -407,7 +407,6 @@
                 background: rgba(0,0,0,0.1); border-radius: var(--radius-md); 
             }
             .light .conflict-extra-details.visible { background: rgba(0,0,0,0.03); }
-            .conflict-extra-details div { margin-bottom: .5rem;}
 
             /* --- Mobile Section Details Panel --- */
             .mobile-wrapper, .mobile-nav { display: none; }
@@ -967,7 +966,7 @@
                             const sectionsHTML = sectionsToDisplay.map(section => {
                                 const isNoTime = section.time === 'غير محدد';
                                 const isOpen = section.status.includes('مفتوحة');
-                                const statusIndicatorHTML = `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>`;
+                                const statusIndicatorHTML = this.state.userSettings.hideClosedCourses ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
                                 
                                 return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}">
                                             ${statusIndicatorHTML}
@@ -975,7 +974,7 @@
                                             <div class="section-type">${section.type || ''}</div>
                                         </div>`;
                             }).join('');
-                            return `<div class="course-item" style="animation-delay: ${i * 50}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} ${this.state.userSettings.hideClosedCourses ? 'شعب متاحة' : 'شعب'}</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
+                            return `<div class="course-item" style="animation-delay: ${i * 50}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
                         }).join('');
                     },
                     _renderCoursesList() {
@@ -986,8 +985,6 @@
                     _createMyScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
-                        const showStatusColumn = !this.state.userSettings.hideClosedCourses;
-                        
                         const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
                             if (!uniqueCourseCodes.has(course.code)) {
                                 totalCredits += parseInt(course.hours, 10) || 0;
@@ -995,12 +992,9 @@
                             }
                             const examText = course.examPeriodId || "لا يوجد";
                             const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
+                            const statusCellHTML = this.state.userSettings.hideClosedCourses ? '' : `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`;
                             const isConflicted = conflictMap.has(course.uniqueId);
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
-
-                            const statusCellHTML = showStatusColumn 
-                                ? `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`
-                                : '';
 
                             return `<tr>
                                 <td class="course-cell"><div class="course-code">${conflictIconHTML} ${course.code}</div><div class="course-name">${course.name}</div></td>
@@ -1021,8 +1015,8 @@
                                                 </button>`;
                         }
                         
-                        const statusHeaderHTML = showStatusColumn ? '<th>الحالة</th>' : '';
-
+                        const statusHeaderHTML = this.state.userSettings.hideClosedCourses ? '' : '<th>الحالة</th>';
+                        
                         return `<div class="card">
                             <div class="my-schedule-section">
                                 <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
