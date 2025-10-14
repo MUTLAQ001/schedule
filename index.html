@@ -241,6 +241,9 @@
             .light .sections-wrapper { background-color: rgba(0,0,0,0.02); }
             .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 1rem 1.25rem 1.25rem; }
             .section-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: transparent; transition: all var(--transition); position: relative;}
+            .section-status-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px; }
+            .section-status-dot.open { background-color: var(--color-success); box-shadow-color: var(--color-success); }
+            .section-status-dot.closed { background-color: var(--color-danger); box-shadow-color: var(--color-danger); }
             .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
             .section-btn.selected { background-color: var(--color-primary); color: white; border-color: var(--color-primary); }
             .section-btn.conflicted { background-color: rgba(var(--rgb-danger), 0.08); border-color: rgba(var(--rgb-danger),0.5); color: var(--color-text-dark); }
@@ -963,7 +966,14 @@
                             if (sectionsToDisplay.length === 0) return '';
                             const sectionsHTML = sectionsToDisplay.map(section => {
                                 const isNoTime = section.time === 'غير محدد';
-                                return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}"><div class="section-btn-number">${section.section}</div><div class="section-type">${section.type || ''}</div></div>`;
+                                const isOpen = section.status.includes('مفتوحة');
+                                const statusIndicatorHTML = `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>`;
+                                
+                                return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}">
+                                            ${statusIndicatorHTML}
+                                            <div class="section-btn-number">${section.section}</div>
+                                            <div class="section-type">${section.type || ''}</div>
+                                        </div>`;
                             }).join('');
                             return `<div class="course-item" style="animation-delay: ${i * 50}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
                         }).join('');
