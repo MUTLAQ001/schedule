@@ -445,7 +445,13 @@
             .mobile-schedule-footer {
                  position: sticky; bottom: 0; padding: 1rem; margin: 1rem -1rem -1rem -1rem;
                  background-color: var(--color-card); border-top: 1px solid var(--color-border);
-                 backdrop-filter: blur(8px); display: flex; justify-content: space-between; align-items: center;
+                 backdrop-filter: blur(8px); display: flex; align-items: center; gap: 0.75rem;
+            }
+            .mobile-schedule-footer > .view-conflicts-btn,
+            .mobile-schedule-footer > .total-credits-summary {
+                flex: 1;
+                justify-content: center;
+                text-align: center;
             }
             
             .mobile-section-details-overlay {
@@ -526,7 +532,7 @@
                 }
                 .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; }
                 .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; }
-                .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; }
+                .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; overflow-x: hidden; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
 
