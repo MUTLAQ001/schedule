@@ -1674,153 +1674,104 @@
                     _hideMobileSectionDetails() {
                         this.dom.mobileSectionDetailsOverlay.classList.remove('open');
                     },
-                    async _handleViewAllConflicts(conflictMap) {
-                        // عرض علامة التحميل فورًا لإعطاء المستخدم ملاحظات
-                        Swal.fire({
-                            title: 'جاري تحليل التعارضات...',
-                            text: 'قد تستغرق هذه العملية بضع لحظات.',
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
+                    _handleViewAllConflicts(conflictMap) {
+                        const selectedCourses = Array.from(this.state.schedules[this.state.activeScheduleIndex].sections)
+                            .map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+
+                        const allConflictingIds = new Set(conflictMap.keys());
+                        const visited = new Set();
+                        const conflictGroups = [];
+
+                        allConflictingIds.forEach(id => {
+                            if (!visited.has(id)) {
+                                const group = new Set();
+                                const queue = [id];
+                                visited.add(id);
+                                while (queue.length > 0) {
+                                    const currentId = queue.shift();
+                                    const currentSection = selectedCourses.find(c => c.uniqueId === currentId);
+                                    if(currentSection) group.add(currentSection);
+                                    
+                                    selectedCourses.forEach(otherSection => {
+                                        if (allConflictingIds.has(otherSection.uniqueId) && !visited.has(otherSection.uniqueId) && currentSection && this._isSectionConflicted(currentSection, [otherSection])) {
+                                            visited.add(otherSection.uniqueId);
+                                            queue.push(otherSection.uniqueId);
+                                        }
+                                    });
+                                }
+                                if(group.size > 0) conflictGroups.push(Array.from(group));
                             }
                         });
 
-                        try {
-                            const selectedCourses = Array.from(this.state.schedules[this.state.activeScheduleIndex].sections)
-                                .map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-
-                            const allConflictingIds = new Set(conflictMap.keys());
-                            const visited = new Set();
-                            const conflictGroups = [];
-                            const selectedCoursesMap = new Map(selectedCourses.map(c => [c.uniqueId, c]));
-                            const conflictingCourses = selectedCourses.filter(c => allConflictingIds.has(c.uniqueId));
-
-                            // تأخير قصير للسماح بعرض شاشة التحميل قبل بدء العملية المعقدة
-                            await new Promise(resolve => setTimeout(resolve, 50));
-
-                            // بناء "خريطة" للتعارضات لتسهيل العملية
-                            const adjacencyList = new Map();
-                            for (let i = 0; i < conflictingCourses.length; i++) {
-                                const courseA = conflictingCourses[i];
-                                if (!adjacencyList.has(courseA.uniqueId)) {
-                                    adjacencyList.set(courseA.uniqueId, new Set());
-                                }
-                                for (let j = i + 1; j < conflictingCourses.length; j++) {
-                                    const courseB = conflictingCourses[j];
-                                    if (this._isSectionConflicted(courseA, [courseB])) {
-                                        if (!adjacencyList.has(courseB.uniqueId)) {
-                                            adjacencyList.set(courseB.uniqueId, new Set());
-                                        }
-                                        adjacencyList.get(courseA.uniqueId).add(courseB.uniqueId);
-                                        adjacencyList.get(courseB.uniqueId).add(courseA.uniqueId);
-                                    }
-                                }
-                            }
-                            
-                            // إيجاد مجموعات التعارض المترابطة
-                            conflictingCourses.forEach(course => {
-                                const id = course.uniqueId;
-                                if (!visited.has(id)) {
-                                    const group = new Set();
-                                    const queue = [id];
-                                    visited.add(id);
-                                    while (queue.length > 0) {
-                                        const currentId = queue.shift();
-                                        const currentSection = selectedCoursesMap.get(currentId);
-                                        if(currentSection) group.add(currentSection);
-                                        
-                                        const neighbors = adjacencyList.get(currentId) || new Set();
-                                        neighbors.forEach(neighborId => {
-                                            if (!visited.has(neighborId)) {
-                                                visited.add(neighborId);
-                                                queue.push(neighborId);
-                                            }
-                                        });
-                                    }
-                                    if (group.size > 0) {
-                                        conflictGroups.push(Array.from(group));
-                                    }
-                                }
-                            });
-
-                            if(conflictGroups.length === 0){
-                                 Swal.close();
-                                 return;
-                            }
-
-                            const modalHTML = conflictGroups.map((group, groupIndex) => {
-                                const groupItemsHTML = group.map((section, itemIndex) => {
-                                    const detailsId = `details-${groupIndex}-${itemIndex}`;
-                                    return `<div class="conflict-item">
-                                        <div class="conflict-item-flex">
-                                            <label class="conflict-item-main-label">
-                                                <input type="radio" name="conflict-group-${groupIndex}" value="${section.uniqueId}" ${itemIndex === 0 ? 'checked' : ''}>
-                                                <div class="custom-radio"></div>
-                                                <div class="conflict-item-info">
-                                                    <h4>${section.name}</h4>
-                                                    <span>${section.code} - شعبة ${section.section}</span>
-                                                </div>
-                                            </label>
-                                            <button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button>
-                                        </div>
-                                        <div class="conflict-extra-details" id="${detailsId}">
-                                            <div><strong>المحاضر:</strong> ${section.instructor || 'غير محدد'}</div>
-                                            <div><strong>المواعيد:</strong> ${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div>
-                                            <div><strong>المكان:</strong> ${section.location || 'غير محدد'}</div>
-                                        </div>
-                                    </div>`;
-                                }).join('');
-                                
-                                return `<div class="conflict-group-container">
-                                    <div class="conflict-group-title">مجموعة التعارض ${this._toArabicNumerals(groupIndex + 1)}</div>
-                                    ${groupItemsHTML}
+                        const modalHTML = conflictGroups.map((group, groupIndex) => {
+                            const groupItemsHTML = group.map((section, itemIndex) => {
+                                const detailsId = `details-${groupIndex}-${itemIndex}`;
+                                return `<div class="conflict-item">
+                                    <div class="conflict-item-flex">
+                                        <label class="conflict-item-main-label">
+                                            <input type="radio" name="conflict-group-${groupIndex}" value="${section.uniqueId}" ${itemIndex === 0 ? 'checked' : ''}>
+                                            <div class="custom-radio"></div>
+                                            <div class="conflict-item-info">
+                                                <h4>${section.name}</h4>
+                                                <span>${section.code} - شعبة ${section.section}</span>
+                                            </div>
+                                        </label>
+                                        <button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button>
+                                    </div>
+                                    <div class="conflict-extra-details" id="${detailsId}">
+                                        <div><strong>المحاضر:</strong> ${section.instructor || 'غير محدد'}</div>
+                                        <div><strong>المواعيد:</strong> ${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div>
+                                        <div><strong>المكان:</strong> ${section.location || 'غير محدد'}</div>
+                                    </div>
                                 </div>`;
                             }).join('');
+                            
+                            return `<div class="conflict-group-container">
+                                <div class="conflict-group-title">مجموعة التعارض ${this._toArabicNumerals(groupIndex + 1)}</div>
+                                ${groupItemsHTML}
+                            </div>`;
+                        }).join('');
 
-                            Swal.fire({
-                                title: 'حل جميع التعارضات',
-                                html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML}</div>`,
-                                icon: 'warning', confirmButtonText: 'حفظ التغييرات',
-                                showCancelButton: true, cancelButtonText: 'إلغاء',
-                                customClass: { popup: 'swal2-popup wide-swal', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
-                                didOpen: (popup) => {
-                                    popup.querySelectorAll('.conflict-details-btn').forEach(btn => {
-                                        btn.addEventListener('click', (e) => {
-                                            e.preventDefault();
-                                            const detailsEl = document.getElementById(btn.dataset.detailsId);
-                                            if (detailsEl) detailsEl.classList.toggle('visible');
-                                        });
+                        Swal.fire({
+                            title: 'حل جميع التعارضات',
+                            html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML}</div>`,
+                            icon: 'warning', confirmButtonText: 'حفظ التغييرات',
+                            showCancelButton: true, cancelButtonText: 'إلغاء',
+                            customClass: { popup: 'swal2-popup wide-swal', confirmButton: 'swal2-confirm', cancelButton: 'swal2-cancel' },
+                            didOpen: (popup) => {
+                                popup.querySelectorAll('.conflict-details-btn').forEach(btn => {
+                                    btn.addEventListener('click', (e) => {
+                                        e.preventDefault();
+                                        const detailsEl = document.getElementById(btn.dataset.detailsId);
+                                        if (detailsEl) detailsEl.classList.toggle('visible');
                                     });
-                                },
-                                preConfirm: () => {
-                                    const sectionsToRemove = [];
-                                    conflictGroups.forEach((group, groupIndex) => {
-                                        const selectedId = Swal.getPopup().querySelector(`input[name="conflict-group-${groupIndex}"]:checked`).value;
-                                        group.forEach(section => {
-                                            if (section.uniqueId !== selectedId) {
-                                                sectionsToRemove.push(section.uniqueId);
-                                            }
-                                        });
+                                });
+                            },
+                            preConfirm: () => {
+                                const sectionsToRemove = [];
+                                conflictGroups.forEach((group, groupIndex) => {
+                                    const selectedId = Swal.getPopup().querySelector(`input[name="conflict-group-${groupIndex}"]:checked`).value;
+                                    group.forEach(section => {
+                                        if (section.uniqueId !== selectedId) {
+                                            sectionsToRemove.push(section.uniqueId);
+                                        }
                                     });
-                                    return sectionsToRemove;
+                                });
+                                return sectionsToRemove;
+                            }
+                        }).then((result) => {
+                            if (result.isConfirmed && Array.isArray(result.value)) {
+                                const sectionsToRemove = result.value;
+                                if (sectionsToRemove.length > 0) {
+                                    const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                                    sectionsToRemove.forEach(id => this._removeSectionAndUnlink(id, activeSchedule));
+                                    this.updateFullUI();
+                                    this._showToast('success', `تم حل التعارضات وإزالة ${this._toArabicNumerals(sectionsToRemove.length)} شعبة.`);
+                                } else {
+                                     this._showToast('info', 'لم يتم إجراء أي تغييرات.');
                                 }
-                            }).then((result) => {
-                                if (result.isConfirmed && Array.isArray(result.value)) {
-                                    const sectionsToRemove = result.value;
-                                    if (sectionsToRemove.length > 0) {
-                                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                                        sectionsToRemove.forEach(id => this._removeSectionAndUnlink(id, activeSchedule));
-                                        this.updateFullUI();
-                                        this._showToast('success', `تم حل التعارضات وإزالة ${this._toArabicNumerals(sectionsToRemove.length)} شعبة.`);
-                                    } else {
-                                         this._showToast('info', 'لم يتم إجراء أي تغييرات.');
-                                    }
-                                }
-                            });
-                        } catch (error) {
-                             console.error("Error handling conflicts:", error);
-                             Swal.fire('خطأ!', 'حدث خطأ غير متوقع أثناء تحليل التعارضات.', 'error');
-                        }
+                            }
+                        });
                     },
                     _getConflictMessages(sectionA, sectionB) {
                         let msgs = { lecture: false, exam: false };
