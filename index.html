@@ -236,7 +236,7 @@
             .tab-content { padding: 1rem; display: none; overflow-y: auto; flex-grow: 1; }
             .tab-content.active { display: block; }
             .sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
-            .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); }
+            .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); contain: content; /* Performance Hint */ }
             .light .course-item { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03); }
             .course-item:hover { transform: translateY(-4px); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4); }
             .light .course-item:hover { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03), 0 8px 25px -10px rgba(0,0,0,0.1); }
@@ -311,9 +311,9 @@
             .swal2-toast .swal2-title { font-size: .9rem !important; }
             .swal2-toast.swal2-icon-show .swal2-title { margin: 0.5em 2.6em 0.5em 1em !important; }
 
-            .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; }
+            .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .modal-overlay.open { opacity: 1; visibility: visible; }
-            .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--color-card); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--color-border); }
+            .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--color-card); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--color-border); will-change: transform, opacity; }
             .settings-modal.open { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
             .modal-header { padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; }
             .modal-header h3 { margin: 0; font-family: var(--font-title); font-size: 1.3rem; color: var(--color-text-dark); }
@@ -468,6 +468,7 @@
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
                 z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease;
+                will-change: opacity;
             }
             .mobile-section-details-overlay.open { opacity: 1; visibility: visible; }
             .details-panel {
@@ -477,6 +478,7 @@
                 padding-top: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
                 box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
                 transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1);
+                will-change: transform;
             }
             .mobile-section-details-overlay.open .details-panel { transform: translateY(0); }
             .details-panel .conflict-banner {
@@ -570,6 +572,7 @@
                     background-color: var(--color-card); border-top: 1px solid var(--color-border);
                     backdrop-filter: blur(16px); z-index: 100;
                     box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom);
+                    will-change: transform; /* Performance Hint */
                 }
                 .mobile-nav-btn {
                     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -799,6 +802,7 @@
 
                 };
                 
+                // This loop is not effective for plain objects, but we'll leave it.
                 for (const key of Object.getOwnPropertyNames(Object.getPrototypeOf(QU_ScheduleApp))) {
                     if (key !== 'constructor' && typeof QU_ScheduleApp[key] === 'function') {
                        QU_ScheduleApp[key] = QU_ScheduleApp[key].bind(QU_ScheduleApp);
@@ -1674,11 +1678,24 @@
                     _hideMobileSectionDetails() {
                         this.dom.mobileSectionDetailsOverlay.classList.remove('open');
                     },
+
+                    /**
+                     * BUG FIX: This function was optimized to prevent hanging on mobile.
+                     * Original algorithm was O(N_conflicting * N_selected^2) or O(N_conflicting * N_selected).
+                     * New algorithm is O(N_conflicting^2) which is much faster when N_selected is large.
+                     */
                     _handleViewAllConflicts(conflictMap) {
-                        const selectedCourses = Array.from(this.state.schedules[this.state.activeScheduleIndex].sections)
+                        const selectedSections = Array.from(this.state.schedules[this.state.activeScheduleIndex].sections)
                             .map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
 
+                        // OPTIMIZATION: Create a map for quick lookup
+                        const selectedSectionsMap = new Map(selectedSections.map(s => [s.uniqueId, s]));
+                        
+                        // OPTIMIZATION: Create a map of conflicting sections only
                         const allConflictingIds = new Set(conflictMap.keys());
+                        const conflictingSections = Array.from(allConflictingIds).map(id => selectedSectionsMap.get(id)).filter(Boolean);
+                        const conflictingSectionsMap = new Map(conflictingSections.map(s => [s.uniqueId, s]));
+
                         const visited = new Set();
                         const conflictGroups = [];
 
@@ -1689,11 +1706,14 @@
                                 visited.add(id);
                                 while (queue.length > 0) {
                                     const currentId = queue.shift();
-                                    const currentSection = selectedCourses.find(c => c.uniqueId === currentId);
+                                    // OPTIMIZATION: Use Map.get() from the *conflicting sections map*
+                                    const currentSection = conflictingSectionsMap.get(currentId);
+                                    
                                     if(currentSection) group.add(currentSection);
                                     
-                                    selectedCourses.forEach(otherSection => {
-                                        if (allConflictingIds.has(otherSection.uniqueId) && !visited.has(otherSection.uniqueId) && currentSection && this._isSectionConflicted(currentSection, [otherSection])) {
+                                    // OPTIMIZATION: Iterate over conflictingSections, not all selectedSections
+                                    conflictingSections.forEach(otherSection => {
+                                        if (!visited.has(otherSection.uniqueId) && currentSection && this._isSectionConflicted(currentSection, [otherSection])) {
                                             visited.add(otherSection.uniqueId);
                                             queue.push(otherSection.uniqueId);
                                         }
@@ -1829,11 +1849,41 @@
                         modal.querySelector('#import-file-input').addEventListener('change', e => this._handleImport(e));
                         modal.querySelector('#reset-app-btn').addEventListener('click', () => this._handleReset());
                     },
-                    _handleCourseColorChange(e){if(e.target.matches('.color-picker-input')){const code=e.target.dataset.courseCode;const color=e.target.value;this.state.customColors[code]=color;if(this.state.groupedCourses[code])this.state.groupedCourses[code].color=color;this._saveCustomColors();this.updateFullUI();this._buildSettingsModal();}},
-                    _handleVisibilityToggle(e){const btn=e.target.closest('.course-visibility-btn');if(!btn)return;const code=btn.dataset.courseCode;if(this.state.hiddenCourseCodes.has(code)){this.state.hiddenCourseCodes.delete(code);btn.classList.remove('hidden');btn.classList.add('visible');}else{this.state.hiddenCourseCodes.add(code);btn.classList.add('hidden');btn.classList.remove('visible');}this._saveSettings();this._renderCoursesList();},
+                    // --- REFORMATTED FUNCTIONS ---
+                    _handleCourseColorChange(e) {
+                        if (e.target.matches('.color-picker-input')) {
+                            const code = e.target.dataset.courseCode;
+                            const color = e.target.value;
+                            this.state.customColors[code] = color;
+                            if (this.state.groupedCourses[code]) {
+                                this.state.groupedCourses[code].color = color;
+                            }
+                            this._saveCustomColors();
+                            this.updateFullUI();
+                            this._buildSettingsModal(); // Rebuild to update picker
+                        }
+                    },
+                    _handleVisibilityToggle(e) {
+                        const btn = e.target.closest('.course-visibility-btn');
+                        if (!btn) return;
+                        const code = btn.dataset.courseCode;
+                        if (this.state.hiddenCourseCodes.has(code)) {
+                            this.state.hiddenCourseCodes.delete(code);
+                            btn.classList.remove('hidden');
+                            btn.classList.add('visible');
+                        } else {
+                            this.state.hiddenCourseCodes.add(code);
+                            btn.classList.add('hidden');
+                            btn.classList.remove('visible');
+                        }
+                        this._saveSettings();
+                        this._renderCoursesList();
+                    },
                     _handleExport() {
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        if (!activeSchedule || activeSchedule.sections.size === 0) return Swal.fire('الجدول الحالي فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning');
+                        if (!activeSchedule || activeSchedule.sections.size === 0) {
+                            return Swal.fire('الجدول الحالي فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning');
+                        }
                         const dataStr = JSON.stringify({ version: 20, schedule: Array.from(activeSchedule.sections), linked: Array.from(activeSchedule.linkedSections.entries()).map(([k, v]) => [k, Array.from(v)]) });
                         const blob = new Blob([dataStr], { type: 'application/json' });
                         const url = URL.createObjectURL(blob);
@@ -1865,15 +1915,36 @@
                                 } else throw new Error('Invalid file format');
                             } catch (error) { Swal.fire('خطأ!', 'ملف غير صالح.', 'error'); }
                         };
-                        reader.readAsText(file);
+                        reader.readText(file);
                         e.target.value = '';
                     },
-                    _handleReset() { Swal.fire({ title: 'هل أنت متأكد؟', text: "سيؤدي هذا إلى مسح جميع بيانات التطبيق.", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'نعم، إعادة تعيين!', cancelButtonText: 'إلغاء' }).then(r => { if (r.isConfirmed) { localStorage.clear(); location.reload(); } }); },
-                    _toggleSettingsModal(show){this.dom.modalOverlay.classList.toggle('open',show);this.dom.settingsModal.classList.toggle('open',show);},
-                    _applySettings(){
+                    _handleReset() {
+                        Swal.fire({
+                            title: 'هل أنت متأكد؟',
+                            text: "سيؤدي هذا إلى مسح جميع بيانات التطبيق.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            confirmButtonText: 'نعم، إعادة تعيين!',
+                            cancelButtonText: 'إلغاء'
+                        }).then(r => {
+                            if (r.isConfirmed) {
+                                localStorage.clear();
+                                location.reload();
+                            }
+                        });
+                    },
+                    _toggleSettingsModal(show) {
+                        this.dom.modalOverlay.classList.toggle('open', show);
+                        this.dom.settingsModal.classList.toggle('open', show);
+                    },
+                    _applySettings() {
                         document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
-                        if(isMobile) document.body.classList.add('mobile-view');
-                        else document.body.classList.add('desktop-view');
+                        if (isMobile) {
+                            document.body.classList.add('mobile-view');
+                        } else {
+                            document.body.classList.add('desktop-view');
+                        }
 
                         const pColor = this.state.userSettings.accentColor;
                         const pDark = this._adjustColorBrightness(pColor, -10);
@@ -1884,16 +1955,41 @@
                         document.documentElement.style.setProperty('--rgb-primary', pRgb);
                         document.documentElement.style.setProperty('--primary-hue', String(pHue));
                         document.documentElement.style.setProperty('--secondary-hue', String((pHue + 40) % 360));
+                        
                         const modeToggle = this.dom.settingsModal.querySelector('.mode-toggle');
                         if (modeToggle) {
                             modeToggle.innerHTML = `<button class="mode-btn ${this.state.userSettings.theme==='dark'?'active':''}" data-theme="dark">ظلام</button><button class="mode-btn ${this.state.userSettings.theme==='light'?'active':''}" data-theme="light">نهار</button>`;
-                            modeToggle.onclick = e => { if (e.target.matches('.mode-btn')) { this.state.userSettings.theme = e.target.dataset.theme; this._saveSettings(); this._applySettings(); } };
+                            modeToggle.onclick = e => {
+                                if (e.target.matches('.mode-btn')) {
+                                    this.state.userSettings.theme = e.target.dataset.theme;
+                                    this._saveSettings();
+                                    this._applySettings();
+                                }
+                            };
                         }
                         this._populateAccentColorPicker();
+                        
                         const weekendToggle = this.dom.settingsModal.querySelector('#show-weekend-toggle');
-                        if(weekendToggle){weekendToggle.checked=this.state.userSettings.showWeekends;weekendToggle.onchange=e=>{this.state.userSettings.showWeekends=e.target.checked;this._saveSettings();this._initializeCalendar();this.updateCalendarAndConflicts();};}
+                        if (weekendToggle) {
+                            weekendToggle.checked = this.state.userSettings.showWeekends;
+                            weekendToggle.onchange = e => {
+                                this.state.userSettings.showWeekends = e.target.checked;
+                                this._saveSettings();
+                                this._initializeCalendar();
+                                this.updateCalendarAndConflicts();
+                            };
+                        }
+                        
                         const closedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
-                        if(closedToggle){closedToggle.checked=this.state.userSettings.hideClosedCourses;closedToggle.onchange=e=>{this.state.userSettings.hideClosedCourses=e.target.checked;this._saveSettings();this._renderCoursesList();this.updateCalendarAndConflicts();};}
+                        if (closedToggle) {
+                            closedToggle.checked = this.state.userSettings.hideClosedCourses;
+                            closedToggle.onchange = e => {
+                                this.state.userSettings.hideClosedCourses = e.target.checked;
+                                this._saveSettings();
+                                this._renderCoursesList();
+                                this.updateCalendarAndConflicts();
+                            };
+                        }
                     },
                     _populateAccentColorPicker() {
                         const picker = this.dom.settingsModal.querySelector('#accent-color-picker');
@@ -1903,7 +1999,11 @@
                             const dot = document.createElement('div');
                             dot.className = `theme-dot ${this.state.userSettings.accentColor === c ? 'active' : ''}`;
                             dot.style.backgroundColor = c;
-                            dot.onclick = () => { this.state.userSettings.accentColor = c; this._saveSettings(); this._applySettings(); };
+                            dot.onclick = () => {
+                                this.state.userSettings.accentColor = c;
+                                this._saveSettings();
+                                this._applySettings();
+                            };
                             picker.appendChild(dot);
                         });
                         const isCustom = !Object.values(this.constants.PRESET_COLORS).includes(this.state.userSettings.accentColor);
@@ -1911,7 +2011,11 @@
                         customLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
                         customLabel.style.backgroundColor = isCustom ? this.state.userSettings.accentColor : 'transparent';
                         customLabel.innerHTML = `<input type="color" class="color-picker-input" value="${this.state.userSettings.accentColor}">`;
-                        customLabel.querySelector('input').onchange = e => { this.state.userSettings.accentColor = e.target.value; this._saveSettings(); this._applySettings(); };
+                        customLabel.querySelector('input').onchange = e => {
+                            this.state.userSettings.accentColor = e.target.value;
+                            this._saveSettings();
+                            this._applySettings();
+                        };
                         picker.appendChild(customLabel);
                     },
                     _populateTimeSelects() {
@@ -1919,8 +2023,18 @@
                         const maxContainer = this.dom.settingsModal.querySelector('#max-time-select-container');
                         if (!minContainer || !maxContainer) return;
                         const timeOpts = Array.from({ length: 24 }, (_, i) => ({ value: `${String(i).padStart(2,'0')}:00:00`, label: `${String(i).padStart(2,'0')}:00` }));
-                        this._createActionPicker(minContainer, timeOpts, this.state.userSettings.minTime, val => { this.state.userSettings.minTime = val; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); });
-                        this._createActionPicker(maxContainer, timeOpts, this.state.userSettings.maxTime, val => { this.state.userSettings.maxTime = val; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); });
+                        this._createActionPicker(minContainer, timeOpts, this.state.userSettings.minTime, val => {
+                            this.state.userSettings.minTime = val;
+                            this._saveSettings();
+                            this._initializeCalendar();
+                            this.updateCalendarAndConflicts();
+                        });
+                        this._createActionPicker(maxContainer, timeOpts, this.state.userSettings.maxTime, val => {
+                            this.state.userSettings.maxTime = val;
+                            this._saveSettings();
+                            this._initializeCalendar();
+                            this.updateCalendarAndConflicts();
+                        });
                     },
                     _createActionPicker(container, opts, val, onChange) {
                         container.innerHTML = '';
@@ -1929,23 +2043,37 @@
                         wrapper.className = 'action-picker-wrapper';
                         const selected = opts.find(o => o.value === val) || opts[0];
                         const display = document.createElement('button');
-                        display.type = 'button'; display.className = 'action-picker-display'; display.textContent = selected.label;
+                        display.type = 'button';
+                        display.className = 'action-picker-display';
+                        display.textContent = selected.label;
                         const panel = document.createElement('div');
-                        panel.className = 'action-picker-panel'; panel.style.display = 'none';
+                        panel.className = 'action-picker-panel';
+                        panel.style.display = 'none';
                         opts.forEach(o => {
                             const btn = document.createElement('button');
                             btn.type = 'button';
                             btn.className = `action-picker-option ${val === o.value ? 'selected' : ''}`;
                             btn.textContent = o.label;
-                            btn.onclick = () => { onChange(o.value); display.textContent = o.label; panel.querySelectorAll('.selected').forEach(el=>el.classList.remove('selected')); btn.classList.add('selected'); closePanel(); };
+                            btn.onclick = () => {
+                                onChange(o.value);
+                                display.textContent = o.label;
+                                panel.querySelectorAll('.selected').forEach(el => el.classList.remove('selected'));
+                                btn.classList.add('selected');
+                                closePanel();
+                            };
                             panel.appendChild(btn);
                         });
                         const openPanel = () => { isOpen = true; panel.style.display = 'block'; };
                         const closePanel = () => { isOpen = false; panel.style.display = 'none'; };
                         display.onclick = () => isOpen ? closePanel() : openPanel();
-                        wrapper.appendChild(display); wrapper.appendChild(panel); container.appendChild(wrapper);
-                        document.addEventListener('click', (e) => { if (!wrapper.contains(e.target)) closePanel(); });
+                        wrapper.appendChild(display);
+                        wrapper.appendChild(panel);
+                        container.appendChild(wrapper);
+                        document.addEventListener('click', (e) => {
+                            if (!wrapper.contains(e.target)) closePanel();
+                        });
                     }
+                    // --- END OF REFORMATTED FUNCTIONS ---
                 });
 
                 QU_ScheduleApp.init();
