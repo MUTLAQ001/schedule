@@ -1335,29 +1335,57 @@
                         if(this._isSectionConflicted(section, tempSelectedDetails)) {
                              if(isMobile){ this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.'); }
                         }
-                        
-                        schedule.sections.add(sectionId);
+const allConflictingIds = new Set(conflictMap.keys());
+                        const visited = new Set();
+                        const conflictGroups = [];
+                        const selectedCoursesMap = new Map(selectedCourses.map(c => [c.uniqueId, c]));
 
-                        const linkedGroup = this.state.linkedCourseGroups[section.name];
-                        if (linkedGroup) {
-                            const otherCourseCodes = linkedGroup.filter(code => code !== section.code);
-                            for (const otherCode of otherCourseCodes) {
-                                const correspondingSection = this.state.groupedCourses[otherCode]?.sections.find(s => s.section === section.section);
-                                if (!correspondingSection || schedule.sections.has(correspondingSection.uniqueId)) continue;
-                                 if (this.state.userSettings.hideClosedCourses && correspondingSection.status.includes('مغلقة')) {
-                                    this._showToast('info', `الشعبة المرتبطة ${correspondingSection.code}-${correspondingSection.section} مغلقة.`);
-                                    continue;
+                        // Pre-build conflict graph (adjacency list) for efficiency
+                        const adjacencyList = new Map();
+                        const conflictingCourses = selectedCourses.filter(c => allConflictingIds.has(c.uniqueId));
+
+                        for (let i = 0; i < conflictingCourses.length; i++) {
+                            const courseA = conflictingCourses[i];
+                            if (!adjacencyList.has(courseA.uniqueId)) {
+                                adjacencyList.set(courseA.uniqueId, new Set());
+                            }
+                            for (let j = i + 1; j < conflictingCourses.length; j++) {
+                                const courseB = conflictingCourses[j];
+                                if (this._isSectionConflicted(courseA, [courseB])) {
+                                    if (!adjacencyList.has(courseB.uniqueId)) {
+                                        adjacencyList.set(courseB.uniqueId, new Set());
+                                    }
+                                    adjacencyList.get(courseA.uniqueId).add(courseB.uniqueId);
+                                    adjacencyList.get(courseB.uniqueId).add(courseA.uniqueId);
                                 }
-                                schedule.sections.add(correspondingSection.uniqueId);
-                                if (this.state.linkedSections) {
-                                    if(!schedule.linkedSections.has(sectionId)) schedule.linkedSections.set(sectionId, new Set());
-                                    schedule.linkedSections.get(sectionId).add(correspondingSection.uniqueId);
-                                }
-                                this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
                             }
                         }
-                        return true; 
-                    },
+                        
+                        // Find connected components (groups of conflicts) using the graph
+                        conflictingCourses.forEach(course => {
+                            const id = course.uniqueId;
+                            if (!visited.has(id)) {
+                                const group = new Set();
+                                const queue = [id];
+                                visited.add(id);
+                                while (queue.length > 0) {
+                                    const currentId = queue.shift();
+                                    const currentSection = selectedCoursesMap.get(currentId);
+                                    if(currentSection) group.add(currentSection);
+                                    
+                                    const neighbors = adjacencyList.get(currentId) || new Set();
+                                    neighbors.forEach(neighborId => {
+                                        if (!visited.has(neighborId)) {
+                                            visited.add(neighborId);
+                                            queue.push(neighborId);
+                                        }
+                                    });
+                                }
+                                if (group.size > 0) {
+                                    conflictGroups.push(Array.from(group));
+                                }
+                            }
+                        });
                     _removeSectionAndUnlink(sectionId, schedule) {
                         schedule.sections.delete(sectionId);
                         if (schedule.linkedSections.has(sectionId)) {
