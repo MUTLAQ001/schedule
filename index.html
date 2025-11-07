@@ -1349,10 +1349,8 @@
                                     continue;
                                 }
                                 schedule.sections.add(correspondingSection.uniqueId);
-                                if (this.state.linkedSections) {
-                                    if(!schedule.linkedSections.has(sectionId)) schedule.linkedSections.set(sectionId, new Set());
-                                    schedule.linkedSections.get(sectionId).add(correspondingSection.uniqueId);
-                                }
+                                if(!schedule.linkedSections.has(sectionId)) schedule.linkedSections.set(sectionId, new Set());
+                                schedule.linkedSections.get(sectionId).add(correspondingSection.uniqueId);
                                 this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
                             }
                         }
