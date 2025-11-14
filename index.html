@@ -560,6 +560,122 @@
                 font-size: 1.3rem;
             }
             .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); }
+            
+            /* --- NEW/IMPROVED CSS --- */
+            /* كرت جدول المواد */
+            .my-schedule-card {
+                backdrop-filter: blur(20px);
+                border-radius: 20px;
+                border: 1px solid rgba(255,255,255,0.06);
+                box-shadow: 0 18px 40px rgba(0,0,0,0.55);
+            }
+
+            /* الهيدر مع حبة الساعات */
+            .card-header-inline {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .total-credits-pill {
+                padding: 0.35rem 0.9rem;
+                border-radius: 999px;
+                background: linear-gradient(120deg, rgba(139,92,246,0.25), rgba(56,189,248,0.18));
+                font-size: 0.85rem;
+                color: var(--color-text-dark);
+                flex-shrink: 0;
+            }
+
+            .total-credits-pill span {
+                font-weight: 700;
+            }
+
+            /* صفوف الجدول */
+            .my-schedule-table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.85rem;
+            }
+
+            .my-schedule-table thead th {
+                background: rgba(255,255,255,0.02);
+                padding: 0.75rem 0.6rem;
+                border-bottom: 1px solid rgba(255,255,255,0.08);
+                white-space: nowrap;
+            }
+
+            .my-schedule-table tbody td {
+                padding: 0.6rem;
+                border-bottom: 1px solid rgba(255,255,255,0.04);
+            }
+
+            .my-schedule-table .schedule-row.has-conflict {
+                background: rgba(239,68,68,0.06);
+            }
+            
+            .my-schedule-table .course-code span {
+                font-weight: 600;
+            }
+
+            /* موبايل: كروت الجدول */
+            .mobile-my-schedule {
+                display: flex;
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .mobile-schedule-item {
+                border-radius: 16px;
+                border: 1px solid rgba(255,255,255,0.06);
+                background: radial-gradient(circle at top left,
+                        rgba(139,92,246,0.1) 0,
+                        rgba(15,23,42,0.1) 40%,
+                        rgba(15,23,42,0.1) 100%);
+                padding: 1rem;
+            }
+
+            .light .mobile-schedule-item {
+                background: transparent;
+            }
+
+            .mobile-schedule-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                gap: 0.75rem;
+            }
+
+            .mobile-schedule-title h3 {
+                margin: 0;
+                font-size: 0.95rem;
+            }
+
+            .mobile-schedule-title span {
+                font-size: 0.8rem;
+                color: var(--color-text-muted);
+            }
+
+            .mobile-detail-row {
+                font-size: 0.8rem;
+                margin-top: 0.35rem;
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+            }
+
+            .mobile-detail-row i {
+                font-size: 1rem;
+                color: var(--color-primary);
+            }
+
+            /* زر حل التعارض */
+            .view-conflicts-btn {
+                border-radius: 999px;
+                padding: 0.4rem 0.9rem;
+                font-size: 0.85rem;
+            }
 
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
@@ -626,7 +742,6 @@
                 .my-schedule-container { display: flex; }
                 .my-schedule-section { padding: 1rem; }
                 .fc .fc-toolbar { padding: 0 1rem 1rem; font-size: 0.9em; }
-                /* تم حذف القاعدة التالية لأنها كانت تؤثر على حجم الزر في الكمبيوتر وتتعارض مع تصميم الجوال المخصص */
             }
         </style>
     </head>
@@ -929,6 +1044,9 @@
                             } catch (e) {
                                 console.error("Error loading schedules:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.SCHEDULES);
+                                // [FIX]: Restore to a clean state if parsing fails
+                                this._addSchedule(null, true);
+                                this._saveSchedules();
                             }
                         }
                         if (this.state.schedules.length === 0) {
@@ -1052,53 +1170,87 @@
                     _createMyScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
-                        const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
-                            if (!uniqueCourseCodes.has(course.code)) {
-                                totalCredits += parseInt(course.hours, 10) || 0;
-                                uniqueCourseCodes.add(course.code);
-                            }
-                            const examText = course.examPeriodId || "لا يوجد";
-                            const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
-                            const statusCellHTML = this.state.userSettings.hideClosedCourses ? '' : `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`;
-                            const isConflicted = conflictMap.has(course.uniqueId);
-                            const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
 
-                            return `<tr>
-                                <td class="course-cell"><div class="course-code">${conflictIconHTML} ${course.code}</div><div class="course-name">${course.name}</div></td>
-                                <td class="section-cell"><div class="section-number">${course.section}</div><div class="section-type">${course.type}</div></td>
-                                <td>${course.instructor}</td>
-                                <td>${course.time.replace(/<br>/g, ' ')}</td>
-                                ${statusCellHTML}
-                                <td>${examText}</td>
-                                <td>${course.location}</td>
-                                <td><div class="hours-value">${course.hours}</div></td>
-                            </tr>`;
-                        }).join('');
+                        const rows = selectedCourses
+                            .sort((a, b) => a.code.localeCompare(b.code))
+                            .map(course => {
+                                if (!uniqueCourseCodes.has(course.code)) {
+                                    totalCredits += parseInt(course.hours, 10) || 0;
+                                    uniqueCourseCodes.add(course.code);
+                                }
 
-                        let conflictButtonHTML = '';
-                        if (conflictMap.size > 0) {
-                            conflictButtonHTML = `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn">
-                                                    <i class="ri-alert-fill"></i> حل التعارض
-                                                </button>`;
-                        }
-                        
+                                const examText = course.examPeriodId || "لا يوجد";
+                                const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
+                                const statusCellHTML = this.state.userSettings.hideClosedCourses
+                                    ? ''
+                                    : `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`;
+
+                                const isConflicted = conflictMap.has(course.uniqueId);
+                                const conflictIconHTML = isConflicted
+                                    ? `<i class="ri-alert-fill conflict-icon" title="${conflictMap.get(course.uniqueId).join('\\n')}"></i>`
+                                    : '';
+
+                                return `
+                                    <tr class="schedule-row ${isConflicted ? 'has-conflict' : ''}">
+                                        <td class="course-cell">
+                                            <div class="course-code">
+                                                ${conflictIconHTML}
+                                                <span>${course.code}</span>
+                                            </div>
+                                            <div class="course-name">${course.name}</div>
+                                        </td>
+                                        <td class="section-cell">
+                                            <div class="section-number">${course.section}</div>
+                                            <div class="section-type">${course.type}</div>
+                                        </td>
+                                        <td class="instructor-cell">${course.instructor}</td>
+                                        <td class="time-cell">${course.time.replace(/<br>/g, ' ')}</td>
+                                        ${statusCellHTML}
+                                        <td class="exam-cell">${examText}</td>
+                                        <td class="location-cell">${course.location}</td>
+                                        <td class="hours-cell"><span class="hours-value">${course.hours}</span></td>
+                                    </tr>
+                                `;
+                            }).join('');
+
+                        const conflictButtonHTML = conflictMap.size > 0
+                            ? `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn">
+                                <i class="ri-alert-fill"></i> حل التعارض
+                            </button>`
+                            : '';
+
                         const statusHeaderHTML = this.state.userSettings.hideClosedCourses ? '' : '<th>الحالة</th>';
-                        
-                        return `<div class="card">
-                            <div class="my-schedule-section">
-                                <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
-                                <div class="my-schedule-table-wrapper">
-                                    <table class="my-schedule-table">
-                                        <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th>${statusHeaderHTML}<th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>
-                                        <tbody>${tableRowsHTML}</tbody>
-                                    </table>
-                                </div>
-                                <div class="my-schedule-footer">
-                                    ${conflictButtonHTML}
-                                    <div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div>
+
+                        return `
+                            <div class="card my-schedule-card">
+                                <div class="my-schedule-section">
+                                    <div class="card-header-inline">
+                                        <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
+                                        <div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div>
+                                    </div>
+                                    <div class="my-schedule-table-wrapper">
+                                        <table class="my-schedule-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>المقرر</th>
+                                                    <th>الشعبة</th>
+                                                    <th>المحاضر</th>
+                                                    <th>المواعيد</th>
+                                                    ${statusHeaderHTML}
+                                                    <th>فترة الاختبار</th>
+                                                    <th>المكان</th>
+                                                    <th>الساعات</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>${rows}</tbody>
+                                        </table>
+                                    </div>
+                                    <div class="my-schedule-footer">
+                                        ${conflictButtonHTML}
+                                    </div>
                                 </div>
                             </div>
-                        </div>`;
+                        `;
                     },
                     _createMobileScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
@@ -1137,11 +1289,16 @@
                         }
 
                         return `
-                            <div id="mobile-my-schedule-list">${itemsHTML}</div>
-                            <div class="mobile-schedule-footer">
-                                 ${conflictButtonHTML}
-                                 <div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div>
-                            </div>`;
+                            <div class="mobile-my-schedule">
+                                <div id="mobile-my-schedule-list">${itemsHTML}</div>
+                                <div class="mobile-schedule-footer">
+                                    ${conflictButtonHTML}
+                                    <div class="total-credits-summary">
+                                        إجمالي الساعات: <span>${totalCredits}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
                     },
                     _renderMyScheduleSummary(selectedCourses, conflictMap) {
                         const desktopContainer = this.dom.myScheduleContainer;
@@ -1237,7 +1394,8 @@
                         for (let i = 0; i < selectedCourses.length; i++) {
                             for (let j = i + 1; j < selectedCourses.length; j++) {
                                 const cA = selectedCourses[i], cB = selectedCourses[j];
-                                const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || [];
+                                // [FIX]: Use spread operator to prevent array mutation issues
+                                const msgA = [...(conflictMap.get(cA.uniqueId) || [])], msgB = [...(conflictMap.get(cB.uniqueId) || [])];
                                 if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
                                     msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`);
                                     msgB.push(`تعارض وقت محاضرة مع ${cA.name} (${cA.code})`);
@@ -1246,8 +1404,8 @@
                                     msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`);
                                     msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`);
                                 }
-                                if (msgA.length > 0) conflictMap.set(cA.uniqueId, msgA);
-                                if (msgB.length > 0) conflictMap.set(cB.uniqueId, msgB);
+                                if (msgA.length > (conflictMap.get(cA.uniqueId) || []).length) conflictMap.set(cA.uniqueId, msgA);
+                                if (msgB.length > (conflictMap.get(cB.uniqueId) || []).length) conflictMap.set(cB.uniqueId, msgB);
                             }
                         }
                         return conflictMap;
@@ -1295,25 +1453,29 @@
                         if (period.includes('ص') && h === 12) h = 0;
                         return `${String(h).padStart(2, '0')}:${m}:00`;
                     },
-                     _setupEventListeners() {
+                    _setupEventListeners() {
                         this.dom.clearCalendarBtn?.addEventListener('click', () => this._handleClearCalendar());
                         this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
-                        this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
-                        this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
+                        this.dom.modalOverlay?.addEventListener('click', () => this._toggleSettingsModal(false));
+                        
+                        if (this.dom.tabButtons && this.dom.tabButtons.forEach) {
+                            this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
+                        }
                         
                         const courseLists = [this.dom.desktopCoursesList, this.dom.mobileCoursesList];
                         courseLists.forEach(list => {
-                            if(list) {
-                                list.addEventListener('click', e => this._handleCourseListClick(e));
-                                list.addEventListener('mouseover', e => this._handleSectionHover(e, true));
-                                list.addEventListener('mouseout', e => this._handleSectionHover(e, false));
-                            }
+                            if(!list) return;
+                            list.addEventListener('click', e => this._handleCourseListClick(e));
+                            list.addEventListener('mouseover', e => this._handleSectionHover(e, true));
+                            list.addEventListener('mouseout', e => this._handleSectionHover(e, false));
                         });
 
                         if(isMobile) {
-                            this.dom.mobileNavButtons.forEach(btn => btn.addEventListener('click', () => this._handleMobileNav(btn)));
-                            this.dom.mobileSectionDetailsOverlay.addEventListener('click', (e) => {
+                            if (this.dom.mobileNavButtons && this.dom.mobileNavButtons.forEach) {
+                                this.dom.mobileNavButtons.forEach(btn => btn.addEventListener('click', () => this._handleMobileNav(btn)));
+                            }
+                            this.dom.mobileSectionDetailsOverlay?.addEventListener('click', (e) => {
                                 if(e.target === this.dom.mobileSectionDetailsOverlay) {
                                     this._hideMobileSectionDetails();
                                 }
