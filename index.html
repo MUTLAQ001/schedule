@@ -444,6 +444,16 @@
 
             /* --- Mobile Section Details Panel --- */
             .mobile-wrapper, .mobile-nav { display: none; }
+            
+            #mobile-my-schedule-list {
+                padding: 1rem;
+                display: flex; 
+                flex-direction: column; 
+                gap: 1rem;
+                flex-grow: 1;
+                overflow-y: auto;
+                min-height: 0;
+            }
 
             .mobile-schedule-item {
                 background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius);
@@ -462,10 +472,10 @@
             .mobile-detail-row { display: flex; align-items: center; gap: 0.75rem; }
             .mobile-detail-row i { color: var(--color-primary); font-size: 1.2rem; min-width: 20px; text-align: center; }
             .mobile-detail-row strong { color: var(--color-text-muted); }
-            
             .mobile-schedule-footer {
-                 padding: 1rem;
-                 margin: 0; 
+                 position: relative; /* Changed from sticky */
+                 flex-shrink: 0; /* Prevent footer from shrinking */
+                 padding: 1rem; margin: 0; /* Reset margins */
                  background-color: var(--color-card); border-top: 1px solid var(--color-border);
                  backdrop-filter: blur(8px); display: flex; align-items: center; gap: 0.75rem;
             }
@@ -577,27 +587,17 @@
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
                 #mobile-courses-view .tab-content { padding: 1rem; }
                 
-                .my-schedule-container .card { display: none; }
-                
-                /* --- FINAL FIX: Sticky Footer in "My Schedule" View --- */
                 #mobile-my-schedule-view {
                     padding: 0;
                     overflow: hidden; /* This prevents the entire view from scrolling */
                 }
+                .my-schedule-container .card { display: none; }
                 #mobile-my-schedule-container {
                     display: flex;
                     flex-direction: column;
-                    height: 100%;
+                    width: 100%; 
+                    height: 100%; 
                 }
-                #mobile-my-schedule-list {
-                    flex-grow: 1; /* Make the list fill available space */
-                    overflow-y: auto; /* Allow ONLY the list to scroll */
-                    min-height: 0; /* A flexbox hack to make scrolling work correctly */
-                }
-                .mobile-schedule-footer {
-                    flex-shrink: 0; /* Prevent the footer from shrinking */
-                }
-
                 .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
                 
                 .mobile-nav {
