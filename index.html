@@ -184,14 +184,11 @@
             .custom-scrollbar::-webkit-scrollbar-button { display: none; }
             .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(var(--rgb-primary), 0.3) transparent; }
             
-            /* Hide scrollbar in desktop sidebar */
-            .page-wrapper .sidebar .custom-scrollbar::-webkit-scrollbar {
-                display: none;
-            }
             .page-wrapper .sidebar .custom-scrollbar {
-                -ms-overflow-style: none;  /* IE and Edge */
-                scrollbar-width: none;  /* Firefox */
+                -ms-overflow-style: none;
+                scrollbar-width: none;
             }
+            .page-wrapper .sidebar .custom-scrollbar::-webkit-scrollbar { display: none; }
 
             /* Desktop Styles */
             .page-wrapper { display: flex; height: 100vh; }
@@ -235,10 +232,14 @@
             .tab-content { padding: 1rem; display: none; overflow-y: auto; flex-grow: 1; }
             .tab-content.active { display: block; }
             .sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
-            .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: fadeInUp .5s ease both; overflow: hidden; transition: var(--transition); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); contain: content; /* Performance Hint */ }
-            .light .course-item { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03); }
-            .course-item:hover { transform: translateY(-4px); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4); }
-            .light .course-item:hover { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03), 0 8px 25px -10px rgba(0,0,0,0.1); }
+            
+            .course-item { 
+                margin-bottom: 0.75rem; 
+                animation: fadeInUp .5s ease both; 
+                overflow: hidden; 
+                contain: content;
+            }
+
             .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; }
             .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
             .course-info { flex-grow: 1; }
@@ -261,27 +262,17 @@
             .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
             .my-schedule-container .card { animation-delay: 200ms; }
             .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
-            .my-schedule-section h3 { margin: 0 0 1.5rem; font-size: 1.5rem; display: flex; align-items: center; gap: .75rem; color: var(--color-primary); flex-shrink: 0; font-family: var(--font-title); }
+            
             .my-schedule-table-wrapper { overflow-x: auto; }
-            .my-schedule-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-            .my-schedule-table thead th { padding: 1rem; text-align: center; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); font-size: 0.9rem; }
-            .my-schedule-table tbody td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; text-align: center; }
-            .my-schedule-table tbody tr:last-child td { border-bottom: none; }
-            .my-schedule-table tbody tr:hover { background-color: rgba(var(--rgb-primary), 0.05); }
-            .my-schedule-table .course-cell .course-code { font-family: var(--font-title); font-size: 1.1rem; color: var(--color-text-dark); display: inline-flex; align-items: center; gap: 0.5rem; }
-            .my-schedule-table .course-cell .conflict-icon { color: var(--color-warning); font-size: 1.2rem; cursor: help; }
-            .my-schedule-table .course-cell .course-name { font-size: 0.8rem; color: var(--color-text-muted); }
-            .my-schedule-table .section-cell .section-number { font-size: 1.1rem; font-weight: 600; }
-            .my-schedule-table .section-cell .section-type { font-size: 0.8rem; color: var(--color-text-muted); }
             .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; }
             .status-badge::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; }
             .status-badge.status-open { background-color: rgba(var(--rgb-success), 0.1); color: var(--color-success); }
             .status-badge.status-open::before { background-color: var(--color-success); }
             .status-badge.status-closed { background-color: rgba(var(--rgb-danger), 0.1); color: var(--color-danger); }
             .status-badge.status-closed::before { background-color: var(--color-danger); }
-            .hours-value { font-size: 1.3rem; font-weight: 700; color: var(--color-primary); }
+            
             .my-schedule-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; }
-            .total-credits-summary { padding: 0.8rem 1.8rem; font-weight: 700; background: rgba(var(--rgb-primary), 0.1); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius-md); font-size: 1.3rem; color: var(--color-primary); }
+            
             .fc { --fc-border-color: var(--color-border); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; font-family: var(--font-body); }
             .fc-theme-standard .fc-scrollgrid { border: none; }
             .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
@@ -289,11 +280,11 @@
             .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--color-text-muted); }
             .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--color-primary); opacity: 0.5; }
 
-            /* --- FIX: Prevent body scroll when SweetAlert2 is open --- */
-            html.swal2-shown, body.swal2-shown {
-                overflow: hidden !important;
-            }
-
+            /* --- SweetAlert2 Styles --- */
+            html.swal2-shown, body.swal2-shown { overflow: hidden !important; }
+            .swal2-container { z-index: 4000 !important; }
+            .swal2-container.swal2-top, .swal2-container.swal2-center, .swal2-container.swal2-bottom { pointer-events: none; }
+            .swal2-popup, .swal2-toast { pointer-events: all; }
             .swal2-popup { background: var(--color-card)!important; color: var(--color-text)!important; border-radius: var(--radius)!important; border: 1px solid var(--color-border)!important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
             .swal2-popup.wide-swal { max-width: 600px; width: 95%; }
             .swal2-title { color: var(--color-text-dark)!important; font-family: var(--font-title) !important; }
@@ -304,26 +295,12 @@
             .light .swal2-cancel { background: rgba(0,0,0,0.1)!important; }
             .swal-popup-animation-in { animation: swal-scale-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
-            
-            /* --- MOBILE CONFLICT FIX --- */
-            .swal2-container {
-                z-index: 4000 !important;
-            }
-
-            .swal2-container.swal2-top, .swal2-container.swal2-center, .swal2-container.swal2-bottom { pointer-events: none; }
-            
-            /* Re-enable pointer events for the modal and toasts */
-            .swal2-popup,
-            .swal2-toast {
-                pointer-events: all;
-            }
-
             .swal2-container .swal2-toast { width: auto !important; max-width: calc(100% - 2rem); box-shadow: 0 5px 20px rgba(0,0,0,0.3) !important; }
-            
             .light .swal2-container .swal2-toast { box-shadow: 0 5px 20px rgba(0,0,0,0.1) !important; }
             .swal2-toast .swal2-title { font-size: .9rem !important; }
             .swal2-toast.swal2-icon-show .swal2-title { margin: 0.5em 2.6em 0.5em 1em !important; }
-
+            
+            /* --- Modals Styles --- */
             .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .modal-overlay.open { opacity: 1; visibility: visible; }
             .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--color-card); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--color-border); will-change: transform, opacity; }
@@ -377,8 +354,7 @@
             .course-visibility-btn.visible:hover { background-color: rgba(var(--item-color-rgb), 0.15); }
             .course-visibility-btn.hidden { border-color: var(--color-border); color: var(--color-text-muted); opacity: 0.6; }
             .course-visibility-btn.hidden .color-dot { background-color: var(--color-text-muted); opacity: 0.5; }
-            .course-visibility-btn.hidden:hover { background-color: rgba(255, 255, 
-255, 0.05); opacity: 1; }
+            .course-visibility-btn.hidden:hover { background-color: rgba(255,255,255, 0.05); opacity: 1; }
             .light .course-visibility-btn.hidden:hover { background-color: rgba(0, 0, 0, 0.05); opacity: 1; }
             .action-picker-wrapper { position: relative; }
             .action-picker-display { width: 100%; padding: .5rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text); background: rgba(0,0,0,0.3); border: 1px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: all var(--transition); text-align: center; }
@@ -390,7 +366,6 @@
             .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); }
             .action-picker-option.selected { color: var(--color-primary); font-weight: 700; background-color: transparent; }
             
-            /* --- Conflict Modal Styles --- */
             #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
             .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; }
             .conflict-group-title {
@@ -400,71 +375,30 @@
             }
             .conflict-item { padding: .75rem; border-bottom: 1px solid var(--color-border); }
             .conflict-item:last-child { border-bottom: none; }
-            .conflict-item-main-label {
-                display: flex; align-items: center; gap: 1rem; width: 100%; cursor: pointer;
-                padding: .5rem; border-radius: var(--radius-md); border: 2px solid transparent;
-                transition: all .2s ease;
-            }
-            .conflict-item-main-label:has(input:checked) {
-                 border-color: var(--color-primary);
-                 box-shadow: 0 0 15px rgba(var(--rgb-primary), 0.4);
-                 background-color: rgba(var(--rgb-primary), 0.05);
-            }
+            .conflict-item-main-label { display: flex; align-items: center; gap: 1rem; width: 100%; cursor: pointer; padding: .5rem; border-radius: var(--radius-md); border: 2px solid transparent; transition: all .2s ease; }
+            .conflict-item-main-label:has(input:checked) { border-color: var(--color-primary); box-shadow: 0 0 15px rgba(var(--rgb-primary), 0.4); background-color: rgba(var(--rgb-primary), 0.05); }
             .conflict-item-flex { display: flex; align-items: center; justify-content: space-between; gap: 1rem;}
             .conflict-item-main-label input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
-            .custom-radio {
-                width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
-                border: 2px solid var(--color-text-muted); position: relative; transition: .2s;
-            }
-            .custom-radio::after {
-                content: ''; position: absolute; width: 12px; height: 12px; background-color: var(--color-primary);
-                border-radius: 50%; top: 50%; left: 50%;
-                transform: translate(-50%, -50%) scale(0); transition: .2s;
-            }
+            .custom-radio { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--color-text-muted); position: relative; transition: .2s; }
+            .custom-radio::after { content: ''; position: absolute; width: 12px; height: 12px; background-color: var(--color-primary); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); transition: .2s; }
             .conflict-item-main-label:has(input:checked) .custom-radio { border-color: var(--color-primary); }
             .conflict-item-main-label:has(input:checked) .custom-radio::after { transform: translate(-50%, -50%) scale(1); }
             .conflict-item-info { flex-grow: 1; text-align: right; }
             .conflict-item-info h4 {margin: 0 0 .2rem; font-family: var(--font-title); color: var(--color-text-dark); font-size: 1.1rem; }
             .conflict-item-info span {font-size: .85rem; color: var(--color-text-muted); }
-            .conflict-details-btn {
-                background: transparent; border: 1px solid var(--color-border);
-                color: var(--color-text-muted); padding: .4rem 1.2rem; font-size: .8rem;
-                font-weight: 600; border-radius: var(--radius-full); cursor: pointer; transition: all .2s ease; flex-shrink: 0;
-            }
+            .conflict-details-btn { background: transparent; border: 1px solid var(--color-border); color: var(--color-text-muted); padding: .4rem 1.2rem; font-size: .8rem; font-weight: 600; border-radius: var(--radius-full); cursor: pointer; transition: all .2s ease; flex-shrink: 0; }
             .conflict-details-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--color-text); color: var(--color-text); }
             .light .conflict-details-btn:hover { background: rgba(0,0,0,0.04); }
-            .conflict-extra-details {
-                max-height: 0; overflow: hidden; transition: all .3s ease;
-                font-size: .85rem;
-            }
-            .conflict-extra-details.visible { 
-                max-height: 200px; padding: .75rem 1rem .25rem; margin-top: .75rem; 
-                background: rgba(0,0,0,0.1); border-radius: var(--radius-md); 
-            }
+            .conflict-extra-details { max-height: 0; overflow: hidden; transition: all .3s ease; font-size: .85rem; }
+            .conflict-extra-details.visible { max-height: 200px; padding: .75rem 1rem .25rem; margin-top: .75rem; background: rgba(0,0,0,0.1); border-radius: var(--radius-md); }
             .light .conflict-extra-details.visible { background: rgba(0,0,0,0.03); }
 
-            /* --- Mobile Section Details Panel --- */
+            /* Mobile UI Styles */
             .mobile-wrapper, .mobile-nav { display: none; }
-            
-            #mobile-my-schedule-list {
-                padding: 1rem;
-                display: flex; 
-                flex-direction: column; 
-                gap: 1rem;
-                flex-grow: 1;
-                overflow-y: auto;
-                min-height: 0;
-            }
-
-            .mobile-schedule-item {
-                background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius);
-                padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3);
-            }
+            #mobile-my-schedule-list { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; flex-grow: 1; overflow-y: auto; min-height: 0; }
+            .mobile-schedule-item { background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3); }
             .light .mobile-schedule-item { box-shadow: 0 8px 25px -10px rgba(0,0,0,0.1); }
-            .mobile-schedule-header {
-                display: flex; align-items: center; justify-content: space-between;
-                gap: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;
-            }
+            .mobile-schedule-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; }
             .mobile-schedule-title { display: flex; flex-direction: column; }
             .mobile-schedule-title h3 { font-family: var(--font-title); font-size: 1.1rem; color: var(--color-text-dark); margin: 0; }
             .mobile-schedule-title span { font-size: 0.9rem; color: var(--color-text-muted); }
@@ -473,49 +407,13 @@
             .mobile-detail-row { display: flex; align-items: center; gap: 0.75rem; }
             .mobile-detail-row i { color: var(--color-primary); font-size: 1.2rem; min-width: 20px; text-align: center; }
             .mobile-detail-row strong { color: var(--color-text-muted); }
-            .mobile-schedule-footer {
-                 position: relative; /* Changed from sticky */
-                 flex-shrink: 0; /* Prevent footer from shrinking */
-                 padding: 1rem; margin: 0; /* Reset margins */
-                 background-color: var(--color-card); border-top: 1px solid var(--color-border);
-                 backdrop-filter: blur(8px); display: flex; align-items: center; gap: 0.75rem;
-            }
-            
-            .mobile-schedule-footer > .view-conflicts-btn,
-            .mobile-schedule-footer > .total-credits-summary {
-                flex-grow: 1;
-                flex-basis: 0;
-                justify-content: center;
-                text-align: center;
-                padding: 0.75rem 1rem;
-                font-size: 1rem;
-                font-weight: 700;
-            }
-            
-            .mobile-section-details-overlay {
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
-                z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease;
-                will-change: opacity;
-            }
+            .mobile-schedule-footer { position: relative; flex-shrink: 0; padding: 1rem; margin: 0; background-color: var(--color-card); border-top: 1px solid var(--color-border); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 0.75rem; }
+            .mobile-schedule-footer > .view-conflicts-btn, .mobile-schedule-footer > .total-credits-summary { flex-grow: 1; flex-basis: 0; justify-content: center; text-align: center; padding: 0.75rem 1rem; font-size: 1rem; font-weight: 700; }
+            .mobile-section-details-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .mobile-section-details-overlay.open { opacity: 1; visibility: visible; }
-            .details-panel {
-                position: absolute; bottom: 0; left: 0; right: 0;
-                background-color: var(--color-card); border-top: 1px solid var(--color-border);
-                border-top-left-radius: var(--radius); border-top-right-radius: var(--radius);
-                padding-top: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
-                box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
-                transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1);
-                will-change: transform;
-            }
+            .details-panel { position: absolute; bottom: 0; left: 0; right: 0; background-color: var(--color-card); border-top: 1px solid var(--color-border); border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); padding-top: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
             .mobile-section-details-overlay.open .details-panel { transform: translateY(0); }
-            .details-panel .conflict-banner {
-                padding: .75rem 1rem; margin-bottom: 1.25rem;
-                background-color: rgba(var(--rgb-warning), 0.1);
-                color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.2);
-                border-radius: var(--radius-md);
-                display: flex; align-items: center; gap: .75rem; font-size: .9rem; font-weight: 600;
-            }
+            .details-panel .conflict-banner { padding: .75rem 1rem; margin-bottom: 1.25rem; background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.2); border-radius: var(--radius-md); display: flex; align-items: center; gap: .75rem; font-size: .9rem; font-weight: 600; }
             .details-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
             .details-header h4 { margin: 0; font-family: var(--font-title); font-size: 1.2rem; display: flex; align-items: center; gap: .75rem; }
             .details-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
@@ -527,109 +425,44 @@
             .detail-item strong { color: var(--color-text-dark); font-weight: 600; font-size: 1rem; }
             .detail-item[data-full-width="true"] { grid-column: 1 / -1; }
             .details-actions-container { display: flex; gap: 0.5rem; align-items: center; }
-            .details-action-btn {
-                width: 100%; padding: 0.9rem 1.5rem; border: none; border-radius: var(--radius-md);
-                font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: white;
-                cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: .2s;
-                flex-grow: 1;
-            }
-            .details-nav-btn {
-                flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--radius-md);
-                border: 1px solid var(--color-border); background-color: transparent; color: var(--color-text-muted);
-                font-size: 1.8rem; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center;
-            }
+            .details-action-btn { width: 100%; padding: 0.9rem 1.5rem; border: none; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: .2s; flex-grow: 1; }
+            .details-nav-btn { flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background-color: transparent; color: var(--color-text-muted); font-size: 1.8rem; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; }
             .details-nav-btn:not(:disabled):hover { background-color: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); }
             .details-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
             .details-action-btn.add { background-color: var(--color-primary); }
             .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
             .details-action-btn.remove { background-color: var(--color-danger); }
-            
-            .view-conflicts-btn {
-                background: rgba(var(--rgb-warning), 0.1);
-                color: var(--color-warning);
-                border: 1px solid rgba(var(--rgb-warning), 0.2);
-                border-radius: var(--radius-md);
-                cursor: pointer;
-                display: inline-flex;
-                align-items: center;
-                gap: .5rem;
-                transition: all .2s;
-                /* الخصائص المضافة لجعل الزر بنفس حجم زر إجمالي الساعات في الكمبيوتر */
-                padding: 0.8rem 1.8rem;
-                font-weight: 700;
-                font-size: 1.3rem;
-            }
+            .view-conflicts-btn { background: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.2); border-radius: var(--radius-md); cursor: pointer; display: inline-flex; align-items: center; gap: .5rem; transition: all .2s; padding: 0.8rem 1.8rem; font-weight: 700; font-size: 1.3rem; }
             .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); }
             
-            /* --- NEW/IMPROVED CSS (DESKTOP) --- */
-            .my-schedule-card {
-                backdrop-filter: blur(20px);
-                border: 1px solid rgba(255,255,255,0.06);
-            }
-
-            .card-header-inline {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 1rem;
-                margin-bottom: 1.5rem;
-            }
-             .card-header-inline h3 {
-                 margin: 0;
-             }
-
-            .total-credits-pill {
-                padding: 0.35rem 1rem;
-                border-radius: 999px;
-                background: rgba(var(--rgb-primary), 0.15);
-                border: 1px solid rgba(var(--rgb-primary), 0.2);
-                font-size: 0.9rem;
-                color: var(--color-primary);
-                flex-shrink: 0;
-            }
-
-            .total-credits-pill span {
-                font-weight: 700;
-                font-family: var(--font-title);
-            }
-            .my-schedule-table { font-size: 0.9rem; }
-            .my-schedule-table thead th {
-                background: rgba(255,255,255,0.03);
-                padding: 0.8rem;
-            }
-
-            .my-schedule-table tbody td { padding: 1rem; }
-            .my-schedule-table .schedule-row.has-conflict {
-                background: rgba(var(--rgb-danger),0.08);
-                box-shadow: inset 3px 0 0 0 var(--color-danger);
-            }
-            
-            .my-schedule-table .course-code span {
-                font-weight: 600;
-            }
+            /* --- Desktop: My Schedule Card --- */
+            .my-schedule-card { backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
+            .card-header-inline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+            .card-header-inline h3 { margin: 0; }
+            .total-credits-pill { padding: 0.35rem 1rem; border-radius: 999px; background: rgba(var(--rgb-primary), 0.15); border: 1px solid rgba(var(--rgb-primary), 0.2); font-size: 0.9rem; color: var(--color-primary); flex-shrink: 0; }
+            .total-credits-pill span { font-weight: 700; font-family: var(--font-title); }
+            .my-schedule-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+            .my-schedule-table thead th { background: rgba(255,255,255,0.03); padding: 0.8rem; text-align: center; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); }
+            .my-schedule-table tbody td { padding: 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; text-align: center;}
+            .my-schedule-table .course-cell .course-code { font-size: 1rem; font-weight: 600;}
+            .my-schedule-table .section-cell .section-number { font-size: 1rem; font-weight: 600; }
+            .hours-value { font-size: 1.2rem; font-weight: 700; color: var(--color-primary); }
+            .my-schedule-table .schedule-row.has-conflict { background-color: rgba(var(--rgb-danger), 0.1); box-shadow: inset 4px 0 0 0 var(--color-danger); }
 
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
                 .page-wrapper { display: none; }
                 .mobile-wrapper { display: block; position: relative; width: 100vw; overflow: hidden; padding-bottom: 75px; }
-                .mobile-header {
-                    display: flex; justify-content: space-between; align-items: center;
-                    padding: 0 1.25rem; height: 65px; background-color: var(--color-card);
-                    border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0;
-                    z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2);
-                }
+                .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 0 1.25rem; height: 65px; background-color: var(--color-card); border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2); }
                 .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; }
                 .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; }
                 .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; overflow-x: hidden; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
-
                 #mobile-calendar-view { padding: 1rem; gap: 1rem; }
                 #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; }
                 #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
-                .mobile-calendar-scroll-wrapper {
-                    overflow-x: auto; height: 100%; -webkit-overflow-scrolling: touch; direction: ltr;
-                }
+                .mobile-calendar-scroll-wrapper { overflow-x: auto; height: 100%; -webkit-overflow-scrolling: touch; direction: ltr; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar { height: 4px; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track { background: transparent; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(var(--rgb-primary), 0.5); border-radius: 4px; }
@@ -638,32 +471,12 @@
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
                 #mobile-courses-view .tab-content { padding: 1rem; }
-                
-                #mobile-my-schedule-view {
-                    padding: 0;
-                    overflow: hidden; /* This prevents the entire view from scrolling */
-                }
+                #mobile-my-schedule-view { padding: 0; overflow: hidden; }
                 .my-schedule-container .card { display: none; }
-                #mobile-my-schedule-container {
-                    display: flex;
-                    flex-direction: column;
-                    width: 100%; 
-                    height: 100%; 
-                }
+                #mobile-my-schedule-container { display: flex; flex-direction: column; width: 100%; height: 100%; }
                 .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
-                
-                .mobile-nav {
-                    display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
-                    background-color: var(--color-card); border-top: 1px solid var(--color-border);
-                    backdrop-filter: blur(16px); z-index: 100;
-                    box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom);
-                    will-change: transform; /* Performance Hint */
-                }
-                .mobile-nav-btn {
-                    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    gap: 5px; background: none; border: none;
-                    color: var(--color-text-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: color 0.2s ease;
-                }
+                .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--color-card); border-top: 1px solid var(--color-border); backdrop-filter: blur(16px); z-index: 100; box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom); will-change: transform; }
+                .mobile-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; background: none; border: none; color: var(--color-text-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: color 0.2s ease; }
                 .mobile-nav-btn i { font-size: 1.6rem; }
                 .mobile-nav-btn.active { color: var(--color-primary); }
                 .mobile-nav-btn span { transition: all 0.2s ease; padding: 0.2rem 0.6rem; border-radius: 99px; }
@@ -674,45 +487,45 @@
                 .my-schedule-section { padding: 1rem; }
                 .fc .fc-toolbar { padding: 0 1rem 1rem; font-size: 0.9em; }
             }
-            
-            /* === Animation & Design Polish === */
+
+            /* === Animation & Soft Design Polish === */
             @keyframes sectionFadeUp {
-                from {
-                    opacity: 0;
-                    transform: translateY(10px);
+                from { 
+                    opacity: 0; 
+                    transform: translateY(8px) scale(0.98); 
                 }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
+                to { 
+                    opacity: 1; 
+                    transform: translateY(0) scale(1);
                 }
             }
-
-            .course-item .section-btn {
-                opacity: 0; /* Hidden by default */
-            }
-
             .course-item.open .section-btn {
-                animation: sectionFadeUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+                animation: sectionFadeUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            }
+            .course-item .section-btn {
+                opacity: 0;
+                transform: translateY(8px) scale(0.98);
             }
             .sidebar {
                 background: radial-gradient(circle at 50% 0%, rgba(var(--rgb-primary), 0.08), transparent 40%), var(--color-card);
             }
             .course-item {
                 background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
-                border: 1px solid transparent;
-                border-image: linear-gradient(to bottom right, rgba(var(--rgb-primary), 0.4), rgba(255, 255, 255, 0.1)) 1;
-                transition: all 0.4s var(--transition-smooth);
-            }
-            .light .course-item {
-                 border-image: linear-gradient(to bottom right, rgba(var(--rgb-primary), 0.4), rgba(0, 0, 0, 0.1)) 1;
+                border: 1px solid var(--color-border);
+                box-shadow: inset 0 1px 1px rgba(255,255,255,0.03); /* Soft inner shadow */
+                border-radius: var(--radius-md);
+                transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
             }
             .course-item:hover {
-                transform: translateY(-4px) scale(1.02);
-                border-image: linear-gradient(to bottom right, rgba(var(--rgb-primary), 0.8), rgba(255, 255, 255, 0.2)) 1;
-                box-shadow: 0 10px 30px -15px rgba(0,0,0,0.5);
+                transform: translateY(-5px);
+                border-color: rgba(var(--rgb-primary), 0.5);
+                box-shadow: 0 10px 25px -5px rgba(var(--rgb-primary), 0.15), 0 8px 10px -6px rgba(0,0,0,0.3);
+            }
+            .light .course-item {
+                 box-shadow: inset 0 1px 1px rgba(0,0,0,0.03);
             }
              .light .course-item:hover {
-                box-shadow: 0 10px 30px -15px rgba(0,0,0,0.15);
+                box-shadow: 0 10px 25px -5px rgba(var(--rgb-primary), 0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
              }
             .course-item-header {
                 transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -722,17 +535,8 @@
                 background-color: rgba(var(--rgb-primary), 0.05);
                 border-bottom-color: rgba(var(--rgb-primary), 0.3);
             }
-            .section-btn {
-                box-shadow: 0 0 0 rgba(var(--rgb-primary), 0);
-                transform: scale(1);
-                transition: all 0.3s var(--transition);
-            }
-            .section-btn:hover {
-                transform: scale(1.05);
-                box-shadow: 0 0 15px rgba(var(--rgb-primary), 0.5);
-            }
             .section-btn.selected {
-                box-shadow: 0 0 15px rgba(var(--rgb-primary), 0.5);
+                 background-image: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
             }
             .schedule-tab.active {
                 background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
@@ -948,10 +752,6 @@
                     },
 
                 };
-                
-                // --- FIX: Removed incorrect and non-functional binding loop ---
-                // The loop that was here was iterating over Object.prototype
-                // and was not necessary for the app to function.
 
                 Object.assign(QU_ScheduleApp, {
                     _loadDataFromStorage() {
@@ -1162,7 +962,6 @@
                     _createMyScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
-
                         const rows = selectedCourses
                             .sort((a, b) => a.code.localeCompare(b.code))
                             .map(course => {
@@ -1170,49 +969,33 @@
                                     totalCredits += parseInt(course.hours, 10) || 0;
                                     uniqueCourseCodes.add(course.code);
                                 }
-
                                 const examText = course.examPeriodId || "لا يوجد";
                                 const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
                                 const statusCellHTML = this.state.userSettings.hideClosedCourses
-                                    ? ''
-                                    : `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`;
-
+                                    ? '' : `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`;
                                 const isConflicted = conflictMap.has(course.uniqueId);
                                 const conflictIconHTML = isConflicted
-                                    ? `<i class="ri-alert-fill conflict-icon" title="${conflictMap.get(course.uniqueId).join('\\n')}"></i>`
-                                    : '';
+                                    ? `<i class="ri-alert-fill conflict-icon" title="${conflictMap.get(course.uniqueId).join('\\n')}"></i>` : '';
 
                                 return `
                                     <tr class="schedule-row ${isConflicted ? 'has-conflict' : ''}">
                                         <td class="course-cell">
-                                            <div class="course-code">
-                                                ${conflictIconHTML}
-                                                <span>${course.code}</span>
-                                            </div>
+                                            <div class="course-code">${conflictIconHTML} <span>${course.code}</span></div>
                                             <div class="course-name">${course.name}</div>
                                         </td>
-                                        <td class="section-cell">
-                                            <div class="section-number">${course.section}</div>
-                                            <div class="section-type">${course.type}</div>
-                                        </td>
+                                        <td class="section-cell"><div class="section-number">${course.section}</div><div class="section-type">${course.type}</div></td>
                                         <td class="instructor-cell">${course.instructor}</td>
                                         <td class="time-cell">${course.time.replace(/<br>/g, ' ')}</td>
                                         ${statusCellHTML}
                                         <td class="exam-cell">${examText}</td>
                                         <td class="location-cell">${course.location}</td>
-                                        <td class="hours-cell"><span class="hours-value">${course.hours}</span></td>
+                                        <td class="hours-cell"><div class="hours-value">${course.hours}</div></td>
                                     </tr>
                                 `;
                             }).join('');
-
                         const conflictButtonHTML = conflictMap.size > 0
-                            ? `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn">
-                                <i class="ri-alert-fill"></i> حل التعارض
-                            </button>`
-                            : '';
-
+                            ? `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn"><i class="ri-alert-fill"></i> حل التعارض</button>` : '';
                         const statusHeaderHTML = this.state.userSettings.hideClosedCourses ? '' : '<th>الحالة</th>';
-
                         return `
                             <div class="card my-schedule-card">
                                 <div class="my-schedule-section">
@@ -1222,25 +1005,11 @@
                                     </div>
                                     <div class="my-schedule-table-wrapper">
                                         <table class="my-schedule-table">
-                                            <thead>
-                                                <tr>
-                                                    <th>المقرر</th>
-                                                    <th>الشعبة</th>
-                                                    <th>المحاضر</th>
-                                                    <th>المواعيد</th>
-                                                    ${statusHeaderHTML}
-                                                    <th>فترة الاختبار</th>
-                                                    <th>المكان</th>
-                                                    <th>الساعات</th>
-                                                </tr>
-                                            </thead>
+                                            <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th>${statusHeaderHTML}<th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>
                                             <tbody>${rows}</tbody>
                                         </table>
                                     </div>
-                                    <div class="my-schedule-footer">
-                                        ${conflictButtonHTML}
-                                        <div class="total-credits-summary" style="display: none;">إجمالي الساعات: <span>${totalCredits}</span></div>
-                                    </div>
+                                    <div class="my-schedule-footer">${conflictButtonHTML}<div class="total-credits-summary" style="display:none;"></div></div>
                                 </div>
                             </div>
                         `;
@@ -1276,9 +1045,7 @@
                         
                         let conflictButtonHTML = '';
                         if (conflictMap.size > 0) {
-                            conflictButtonHTML = `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn">
-                                                    <i class="ri-alert-fill"></i> حل التعارض
-                                                </button>`;
+                            conflictButtonHTML = `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn"><i class="ri-alert-fill"></i> حل التعارض</button>`;
                         }
 
                         return `
@@ -1358,7 +1125,6 @@
                             'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
                             'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
-                            // Mobile specific
                             'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
                             'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
                             'mobile-section-details-overlay', 'details-panel'
@@ -1366,7 +1132,6 @@
                         ids.forEach(id => {
                             this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
                         });
-                        
                         if (isMobile) {
                             this.dom.tabButtons = document.querySelectorAll('#mobile-courses-view .tab-btn');
                             this.dom.tabContents = document.querySelectorAll('#mobile-courses-view .tab-content');
@@ -1515,11 +1280,10 @@
                             const courseItem = header.parentElement;
                             const isOpening = !courseItem.classList.contains('open');
                             courseItem.classList.toggle('open');
-
                             if (isOpening) {
                                 const sections = courseItem.querySelectorAll('.section-btn');
                                 sections.forEach((section, index) => {
-                                    section.style.animationDelay = `${index * 35}ms`;
+                                    section.style.animationDelay = `${index * 25}ms`;
                                 });
                             }
                         }
