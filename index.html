@@ -802,12 +802,9 @@
 
                 };
                 
-                // This loop is not effective for plain objects, but we'll leave it.
-                for (const key of Object.getOwnPropertyNames(Object.getPrototypeOf(QU_ScheduleApp))) {
-                    if (key !== 'constructor' && typeof QU_ScheduleApp[key] === 'function') {
-                       QU_ScheduleApp[key] = QU_ScheduleApp[key].bind(QU_ScheduleApp);
-                    }
-                }
+                // --- FIX: Removed incorrect and non-functional binding loop ---
+                // The loop that was here was iterating over Object.prototype
+                // and was not necessary for the app to function.
 
                 Object.assign(QU_ScheduleApp, {
                     _loadDataFromStorage() {
@@ -1793,16 +1790,7 @@
                             }
                         });
                     },
-                    _getConflictMessages(sectionA, sectionB) {
-                        let msgs = { lecture: false, exam: false };
-                        if (sectionA.timeSlots.some(sA => sectionB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) {
-                           msgs.lecture = true;
-                        }
-                        if (sectionA.code !== sectionB.code && sectionA.examPeriodId && sectionB.examPeriodId && sectionA.examPeriodId === sectionB.examPeriodId) {
-                           msgs.exam = true;
-                        }
-                        return msgs;
-                    },
+                    // --- FIX: Removed unused function _getConflictMessages ---
                     _loadSettings() {
                         const saved = localStorage.getItem(this.constants.STORAGE_KEYS.SETTINGS);
                         if (saved) {
