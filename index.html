@@ -254,7 +254,6 @@
             .section-status-dot.open { background-color: var(--color-success); box-shadow-color: var(--color-success); }
             .section-status-dot.closed { background-color: var(--color-danger); box-shadow-color: var(--color-danger); }
             .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
-            .section-btn.selected { background-color: var(--color-primary); color: white; border-color: var(--color-primary); }
             .section-btn.conflicted { background-color: rgba(var(--rgb-danger), 0.08); border-color: rgba(var(--rgb-danger),0.5); color: var(--color-text-dark); }
             .section-btn .section-type { font-size: 0.7rem; color: var(--color-text-muted); }
             .section-btn.selected .section-type { color: rgba(255,255,255,0.8); }
@@ -447,7 +446,6 @@
             .my-schedule-table .course-cell .course-code { font-size: 1rem; font-weight: 600;}
             .my-schedule-table .section-cell .section-number { font-size: 1rem; font-weight: 600; }
             .hours-value { font-size: 1.2rem; font-weight: 700; color: var(--color-primary); }
-            .my-schedule-table .schedule-row.has-conflict { background-color: rgba(var(--rgb-danger), 0.1); box-shadow: inset 4px 0 0 0 var(--color-danger); }
 
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
@@ -535,11 +533,33 @@
                 background-color: rgba(var(--rgb-primary), 0.05);
                 border-bottom-color: rgba(var(--rgb-primary), 0.3);
             }
-            .section-btn.selected {
-                 background-image: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
+            .my-schedule-table .schedule-row.has-conflict {
+                background-color: rgba(var(--rgb-danger), 0.1);
+                box-shadow: inset 4px 0 0 0 var(--color-danger); /* خط جانبي واضح */
             }
+            /* --- NEW: Shimmering Gradient Animation --- */
+            @keyframes shimmer {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+
+            .section-btn.selected {
+                color: white;
+                border-color: transparent; /* إخفاء الحدود لإظهار التدرج بشكل كامل */
+                /* التدرج اللوني الجذاب والمتحرك */
+                background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, #a855f7 100%);
+                background-size: 200% 200%; /* حجم أكبر للخلفية للسماح بالحركة */
+                animation: shimmer 4s ease infinite; /* تطبيق حركة التدرج */
+                box-shadow: 0 2px 20px rgba(var(--rgb-primary), 0.4); /* تأثير التوهج */
+                transform: scale(1.05); /* تكبير بسيط لإبراز الزر */
+            }
+
+            /* تطبيق نفس التأثير على تبويب الجدول النشط */
             .schedule-tab.active {
-                background: linear-gradient(90deg, var(--color-primary-dark), var(--color-primary));
+                background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+                background-size: 200% 200%;
+                animation: shimmer 5s ease infinite;
             }
         </style>
     </head>
