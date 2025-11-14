@@ -304,8 +304,17 @@
             .light .swal2-cancel { background: rgba(0,0,0,0.1)!important; }
             .swal-popup-animation-in { animation: swal-scale-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+            
             .swal2-container.swal2-top, .swal2-container.swal2-center, .swal2-container.swal2-bottom { pointer-events: none; }
-            .swal2-container .swal2-toast { pointer-events: all; width: auto !important; max-width: calc(100% - 2rem); box-shadow: 0 5px 20px rgba(0,0,0,0.3) !important; }
+            
+            /* Re-enable pointer events for the modal and toasts */
+            .swal2-popup,
+            .swal2-toast {
+                pointer-events: all;
+            }
+
+            .swal2-container .swal2-toast { width: auto !important; max-width: calc(100% - 2rem); box-shadow: 0 5px 20px rgba(0,0,0,0.3) !important; }
+            
             .light .swal2-container .swal2-toast { box-shadow: 0 5px 20px rgba(0,0,0,0.1) !important; }
             .swal2-toast .swal2-title { font-size: .9rem !important; }
             .swal2-toast.swal2-icon-show .swal2-title { margin: 0.5em 2.6em 0.5em 1em !important; }
