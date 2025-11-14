@@ -281,7 +281,7 @@
             .status-badge.status-closed::before { background-color: var(--color-danger); }
             .hours-value { font-size: 1.3rem; font-weight: 700; color: var(--color-primary); }
             .my-schedule-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; }
-            .total-credits-summary { padding: 0.75rem 1.5rem; font-weight: 600; background: rgba(var(--rgb-primary), 0.1); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius-md); font-size: 1.1rem; color: var(--color-primary); }
+            .total-credits-summary { padding: 0.8rem 1.8rem; font-weight: 700; background: rgba(var(--rgb-primary), 0.1); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius-md); font-size: 1.3rem; color: var(--color-primary); }
             .fc { --fc-border-color: var(--color-border); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; font-family: var(--font-body); }
             .fc-theme-standard .fc-scrollgrid { border: none; }
             .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
@@ -377,7 +377,8 @@
             .course-visibility-btn.visible:hover { background-color: rgba(var(--item-color-rgb), 0.15); }
             .course-visibility-btn.hidden { border-color: var(--color-border); color: var(--color-text-muted); opacity: 0.6; }
             .course-visibility-btn.hidden .color-dot { background-color: var(--color-text-muted); opacity: 0.5; }
-            .course-visibility-btn.hidden:hover { background-color: rgba(255, 255, 255, 0.05); opacity: 1; }
+            .course-visibility-btn.hidden:hover { background-color: rgba(255, 255, 
+255, 0.05); opacity: 1; }
             .light .course-visibility-btn.hidden:hover { background-color: rgba(0, 0, 0, 0.05); opacity: 1; }
             .action-picker-wrapper { position: relative; }
             .action-picker-display { width: 100%; padding: .5rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text); background: rgba(0,0,0,0.3); border: 1px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: all var(--transition); text-align: center; }
@@ -553,6 +554,10 @@
                 align-items: center;
                 gap: .5rem;
                 transition: all .2s;
+                /* الخصائص المضافة لجعل الزر بنفس حجم زر إجمالي الساعات في الكمبيوتر */
+                padding: 0.8rem 1.8rem;
+                font-weight: 700;
+                font-size: 1.3rem;
             }
             .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); }
 
@@ -621,7 +626,7 @@
                 .my-schedule-container { display: flex; }
                 .my-schedule-section { padding: 1rem; }
                 .fc .fc-toolbar { padding: 0 1rem 1rem; font-size: 0.9em; }
-                .view-conflicts-btn { padding: .7rem 1rem; font-size: .9rem; }
+                /* تم حذف القاعدة التالية لأنها كانت تؤثر على حجم الزر في الكمبيوتر وتتعارض مع تصميم الجوال المخصص */
             }
         </style>
     </head>
