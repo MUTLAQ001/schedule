@@ -444,15 +444,11 @@
 
             /* --- Mobile Section Details Panel --- */
             .mobile-wrapper, .mobile-nav { display: none; }
-            
             #mobile-my-schedule-list {
                 padding: 1rem;
                 display: flex; 
                 flex-direction: column; 
                 gap: 1rem;
-                flex-grow: 1;
-                overflow-y: auto;
-                min-height: 0;
             }
 
             .mobile-schedule-item {
@@ -473,9 +469,8 @@
             .mobile-detail-row i { color: var(--color-primary); font-size: 1.2rem; min-width: 20px; text-align: center; }
             .mobile-detail-row strong { color: var(--color-text-muted); }
             .mobile-schedule-footer {
-                 position: relative; /* Changed from sticky */
-                 flex-shrink: 0; /* Prevent footer from shrinking */
-                 padding: 1rem; margin: 0; /* Reset margins */
+                 padding: 1rem; 
+                 margin: 0; /* Remove negative margins */
                  background-color: var(--color-card); border-top: 1px solid var(--color-border);
                  backdrop-filter: blur(8px); display: flex; align-items: center; gap: 0.75rem;
             }
@@ -568,11 +563,11 @@
                 }
                 .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; }
                 .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; }
-                .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; overflow-x: hidden; }
+                .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-x: hidden; } /* Removed overflow-y */
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
 
-                #mobile-calendar-view { padding: 1rem; gap: 1rem; }
+                #mobile-calendar-view { padding: 1rem; gap: 1rem; overflow-y: auto; } /* Re-added for calendar */
                 #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; }
                 #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
                 .mobile-calendar-scroll-wrapper {
@@ -582,22 +577,24 @@
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track { background: transparent; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(var(--rgb-primary), 0.5); border-radius: 4px; }
                 #mobile-calendar { min-width: 850px; direction: rtl; }
-                #mobile-courses-view { padding: 0; }
+                #mobile-courses-view { padding: 0; overflow-y: auto; } /* Re-added for courses */
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
                 #mobile-courses-view .tab-content { padding: 1rem; }
                 
+                /* --- FINAL FIX for Sticky Footer in "My Schedule" View --- */
                 #mobile-my-schedule-view {
                     padding: 0;
-                    overflow: hidden; /* This prevents the entire view from scrolling */
+                    overflow: hidden; 
                 }
-                .my-schedule-container .card { display: none; }
                 #mobile-my-schedule-container {
                     display: flex;
                     flex-direction: column;
                     width: 100%; 
                     height: 100%; 
                 }
+                .my-schedule-container .card { display: none; }
+                
                 .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
                 
                 .mobile-nav {
