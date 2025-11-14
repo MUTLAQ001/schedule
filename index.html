@@ -305,6 +305,11 @@
             .swal-popup-animation-in { animation: swal-scale-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
             
+            /* --- MOBILE CONFLICT FIX --- */
+            .swal2-container {
+                z-index: 4000 !important;
+            }
+
             .swal2-container.swal2-top, .swal2-container.swal2-center, .swal2-container.swal2-bottom { pointer-events: none; }
             
             /* Re-enable pointer events for the modal and toasts */
