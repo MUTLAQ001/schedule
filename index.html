@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
     <head>
         <meta charset="UTF-8">
@@ -185,6 +186,7 @@
                 padding: 0.1rem 0.4rem; border-radius: 4px; font-weight: 600;
             }
 
+            .custom-scrollbar { scroll-behavior: smooth; }
             .custom-scrollbar::-webkit-scrollbar { width: 8px; }
             .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
             .custom-scrollbar::-webkit-scrollbar-thumb { background-color: rgba(var(--rgb-primary), 0.3); border-radius: 10px; border: 2px solid transparent; background-clip: content-box; }
@@ -206,35 +208,36 @@
                 display: flex; justify-content: space-between; align-items: center; 
                 flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) both; 
                 position: sticky;
-                top: -2rem;
+                top: 0;
                 margin: -2rem -2rem 0;
                 padding: 2rem 2rem 1.5rem;
                 z-index: 100;
                 background-color: rgba(10, 10, 10, 0.5);
                 -webkit-backdrop-filter: blur(12px);
                 backdrop-filter: blur(12px);
-                transition: box-shadow .25s ease;
+                transition: box-shadow .25s ease, background-color .25s ease, border-color .25s ease;
                 border-bottom: 1px solid transparent;
+            }
+            .main-header.scrolled {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             }
             .light .main-header {
                  background-color: rgba(244, 244, 245, 0.6);
+            }
+            .light .main-header.scrolled {
                  border-bottom: 1px solid var(--color-border);
             }
-            .main-content:not([scrollTop="0"]) .main-header {
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            }
-            .main-content[scrollTop="0"] .main-header {
+            .main-header:not(.scrolled) {
                  background-color: transparent;
                  -webkit-backdrop-filter: none;
                  backdrop-filter: none;
             }
 
-
             .main-header h1 {
                 font-family: var(--font-title); font-weight: 700; font-size: 2.5rem;
                 background: linear-gradient(90deg,var(--color-primary-dark),var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
                 background-size: 200% 200%; animation: gradient-animation 5s ease-in-out infinite;
-                display: flex; align-items: center; gap: 1rem;
+                display: flex; align-items: center; gap: 1rem; margin: 0;
             }
             .header-actions { display: flex; gap: 0.75rem; }
             .header-actions button {
@@ -264,7 +267,7 @@
             .light .schedule-tabs-container { background: rgba(0,0,0,0.05); }
             .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
             .schedule-tab.active { background: var(--color-primary); color: white; box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
-            .schedule-tab-name { outline: none; }
+            .schedule-tab-name { outline: none; border: none; background: transparent; color: inherit; font-family: inherit; font-size: inherit; font-weight: inherit; padding: 0; text-align: right; }
             .schedule-tab .delete-schedule-btn { font-size: 1.1rem; color: rgba(255,255,255,0.6); background: none; border: none; padding: 0; margin-right: -5px; display: none; cursor: pointer; }
             .schedule-tab.active .delete-schedule-btn { display: inline-block; }
             .schedule-tab.active .delete-schedule-btn:hover { color: white; }
@@ -331,7 +334,6 @@
             .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--color-text-muted); }
             .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--color-primary); opacity: 0.5; }
 
-            /* --- SweetAlert2 Styles --- */
             html.swal2-shown, body.swal2-shown { overflow: hidden !important; }
             .swal2-container { z-index: 4000 !important; }
             .swal2-container.swal2-top, .swal2-container.swal2-center, .swal2-container.swal2-bottom { pointer-events: none; }
@@ -351,7 +353,6 @@
             .swal2-toast .swal2-title { font-size: .9rem !important; }
             .swal2-toast.swal2-icon-show .swal2-title { margin: 0.5em 2.6em 0.5em 1em !important; }
             
-            /* --- Modals Styles --- */
             .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .modal-overlay.open { opacity: 1; visibility: visible; }
             .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--color-card); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--color-border); will-change: transform, opacity; }
@@ -444,7 +445,6 @@
             .conflict-extra-details.visible { max-height: 200px; padding: .75rem 1rem .25rem; margin-top: .75rem; background: rgba(0,0,0,0.1); border-radius: var(--radius-md); }
             .light .conflict-extra-details.visible { background: rgba(0,0,0,0.03); }
 
-            /* Mobile UI Styles */
             .mobile-wrapper, .mobile-nav { display: none; }
             #mobile-my-schedule-list { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; flex-grow: 1; overflow-y: auto; min-height: 0; }
             .mobile-schedule-item { background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3); }
@@ -486,7 +486,6 @@
             .view-conflicts-btn { background: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.2); border-radius: var(--radius-md); cursor: pointer; display: inline-flex; align-items: center; gap: .5rem; transition: all .2s; padding: 0.8rem 1.8rem; font-weight: 700; font-size: 1.3rem; }
             .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); }
             
-            /* --- Desktop: My Schedule Card --- */
             .my-schedule-card { backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
             .card-header-inline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
             .card-header-inline h3 { margin: 0; }
@@ -502,11 +501,11 @@
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
                 .page-wrapper { display: none; }
-                .mobile-wrapper { display: block; position: relative; width: 100vw; overflow: hidden; padding-bottom: 75px; }
-                .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 0 1.25rem; height: 65px; background-color: var(--color-card); border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2); }
+                .mobile-wrapper { display: flex; flex-direction: column; height: 100vh; }
+                .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 0 1.25rem; height: 65px; background-color: var(--color-card); border-bottom: 1px solid var(--color-border); flex-shrink: 0; z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2); }
                 .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; }
                 .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; }
-                .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; overflow-x: hidden; }
+                .mobile-view-content { display: none; flex-grow: 1; min-height: 0; overflow-y: auto; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
                 #mobile-calendar-view { padding: 1rem; gap: 1rem; }
@@ -525,7 +524,7 @@
                 .my-schedule-container .card { display: none; }
                 #mobile-my-schedule-container { display: flex; flex-direction: column; width: 100%; height: 100%; }
                 .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
-                .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--color-card); border-top: 1px solid var(--color-border); backdrop-filter: blur(16px); z-index: 100; box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom); will-change: transform; }
+                .mobile-nav { display: flex; height: 75px; background-color: var(--color-card); border-top: 1px solid var(--color-border); backdrop-filter: blur(16px); z-index: 100; box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom); will-change: transform; flex-shrink: 0; }
                 .mobile-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; background: none; border: none; color: var(--color-text-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: color 0.2s ease; }
                 .mobile-nav-btn i { font-size: 1.6rem; }
                 .mobile-nav-btn.active { color: var(--color-primary); }
@@ -538,7 +537,6 @@
                 .fc .fc-toolbar { padding: 0 1rem 1rem; font-size: 0.9em; }
             }
 
-            /* === Animation & Soft Design Polish === */
             @keyframes sectionFadeUp {
                 from { 
                     opacity: 0; 
@@ -652,24 +650,21 @@
 
         <div class="mobile-wrapper">
             <header class="mobile-header">
-                <h1 id="mobile-header-title"></h1>
+                <h1 id="mobile-header-title">الجدول</h1>
                 <button id="mobile-settings-btn"><i class="ri-settings-3-line"></i></button>
             </header>
             
             <div id="mobile-calendar-view" class="mobile-view-content active">
-                <main class="main-content">
-                    <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
-                    <div class="calendar-wrapper card">
-                        <div class="mobile-calendar-scroll-wrapper">
-                            <div id='mobile-calendar'></div>
-                        </div>
+                <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
+                <div class="calendar-wrapper card">
+                    <div class="mobile-calendar-scroll-wrapper">
+                        <div id='mobile-calendar'></div>
                     </div>
-                </main>
+                </div>
             </div>
             <div id="mobile-courses-view" class="mobile-view-content">
                 <aside class="sidebar">
-                    <header class="sidebar-header"><h2><i class="ri-stack-line"></i> المقررات</h2></header>
-                    <div class="sidebar-content-wrapper"><div class="sidebar-tabs"><button class="tab-btn active" data-tab="mobile-courses-tab"><i class="ri-layout-grid-line"></i> المقررات</button><button class="tab-btn" data-tab="mobile-exams-tab"><i class="ri-file-list-3-line"></i> الاختبارات</button></div><div id="mobile-courses-tab" class="tab-content active custom-scrollbar"><div id="mobile-courses-list"></div></div><div id="mobile-exams-tab" class="tab-content custom-scrollbar"><div id="mobile-exams-list"></div></div></div>
+                    <div class="sidebar-content-wrapper"><div class="sidebar-tabs" style="display:none;"><button class="tab-btn active" data-tab="mobile-courses-tab"></button><button class="tab-btn" data-tab="mobile-exams-tab"></button></div><div id="mobile-courses-tab" class="tab-content active custom-scrollbar"><div id="mobile-courses-list"></div></div><div id="mobile-exams-tab" class="tab-content custom-scrollbar"><div id="mobile-exams-list"></div></div></div>
                 </aside>
             </div>
             <div id="mobile-my-schedule-view" class="mobile-view-content">
@@ -781,21 +776,6 @@
         document.addEventListener('DOMContentLoaded', () => {
                 initStarfield();
 
-                const mainContent = document.querySelector('.main-content');
-                if(mainContent) {
-                    mainContent.addEventListener('scroll', () => {
-                        mainContent.setAttribute('scrollTop', mainContent.scrollTop);
-                    });
-                }
-
-
-                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024;
-                if (isMobile) {
-                    document.body.classList.add('mobile-view');
-                } else {
-                    document.body.classList.add('desktop-view');
-                }
-
                 const QU_ScheduleApp = {
                     state: {
                         calendar: null,
@@ -814,7 +794,8 @@
                             maxTime: '22:00:00',
                             hiddenCourseCodes: [],
                             hideClosedCourses: true
-                        }
+                        },
+                        isMobileView: window.innerWidth < 1024
                     },
                     constants: {
                         PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316' },
@@ -839,11 +820,67 @@
                         this._loadDataFromStorage();
                         this._listenForDataFromOpener();
                         this._updateBookmarkletCode();
+                        this._handleResize();
+                    },
+                    _populateDOMElements() {
+                        const ids = [
+                            'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
+                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 
+                            'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
+                            'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
+                            'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
+                            'mobile-section-details-overlay', 'details-panel', 'main-content'
+                        ];
+                        ids.forEach(id => {
+                            this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
+                        });
+                        this.dom.sidebarTabButtons = document.querySelectorAll('.page-wrapper .sidebar .tab-btn');
+                        this.dom.sidebarTabContents = document.querySelectorAll('.page-wrapper .sidebar .tab-content');
+                        this.dom.mobileNavButtons = document.querySelectorAll('.mobile-nav-btn');
+                        this.dom.mobileViewContents = document.querySelectorAll('.mobile-view-content');
+                    },
+                    _setupEventListeners() {
+                        this.dom.clearCalendarBtn?.addEventListener('click', () => this._handleClearCalendar());
+                        this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
+                        this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
+                        this.dom.modalOverlay?.addEventListener('click', () => this._toggleSettingsModal(false));
+                        
+                        this.dom.sidebarTabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
+                        
+                        [this.dom.desktopCoursesList, this.dom.mobileCoursesList].forEach(list => {
+                            if(!list) return;
+                            list.addEventListener('click', e => this._handleCourseListClick(e));
+                            list.addEventListener('mouseover', e => this._handleSectionHover(e, true));
+                            list.addEventListener('mouseout', e => this._handleSectionHover(e, false));
+                        });
+
+                        this.dom.mobileNavButtons.forEach(btn => btn.addEventListener('click', () => this._handleMobileNav(btn)));
+                        
+                        this.dom.mobileSectionDetailsOverlay?.addEventListener('click', (e) => {
+                            if(e.target === this.dom.mobileSectionDetailsOverlay) this._hideMobileSectionDetails();
+                        });
+
+                        this.dom.mainContent.addEventListener('scroll', () => {
+                            this.dom.mainContent.parentElement.querySelector('.main-header').classList.toggle('scrolled', this.dom.mainContent.scrollTop > 0);
+                        });
+
+                        let resizeTimer;
+                        window.addEventListener('resize', () => {
+                            clearTimeout(resizeTimer);
+                            resizeTimer = setTimeout(() => this._handleResize(), 250);
+                        });
+                    },
+                    _handleResize() {
+                        const wasMobile = this.state.isMobileView;
+                        this.state.isMobileView = window.innerWidth < 1024;
+
+                        if (wasMobile !== this.state.isMobileView) {
+                            this._initializeCalendar();
+                            this.updateCalendarAndConflicts();
+                        }
+                        this._updateBookmarkletCode();
                     },
 
-                };
-
-                Object.assign(QU_ScheduleApp, {
                     _loadDataFromStorage() {
                         const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
                         if (storedCourses) {
@@ -853,14 +890,11 @@
                                 this._loadSchedules();
                                 this.updateFullUI();
                             } catch (e) {
-                                console.error("Error loading courses:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
-                                this.dom.installOverlay.style.display = 'flex';
-                                this.dom.installOverlay.classList.add('visible');
+                                this._showInstallOverlay();
                             }
                         } else {
-                            this.dom.installOverlay.style.display = 'flex';
-                            this.dom.installOverlay.classList.add('visible');
+                            this._showInstallOverlay();
                         }
                     },
                     _listenForDataFromOpener() {
@@ -880,14 +914,20 @@
                             window.opener.postMessage('request_schedule_data', '*');
                         }
                     },
+                    _showInstallOverlay() {
+                        this.dom.installOverlay.style.display = 'flex';
+                        setTimeout(() => this.dom.installOverlay.classList.add('visible'), 10);
+                    },
                     _processAndDisplayData(courses) {
-                        this.dom.installOverlay.style.display = 'none';
                         this.dom.installOverlay.classList.remove('visible');
+                        this.dom.installOverlay.style.display = 'none';
+
                         this.state.allCoursesData = courses.map((section, index) => ({
                             ...section,
                             uniqueId: `${section.code}-${section.section}-${index}`,
                             timeSlots: this._parseTimeEntries(section.time)
                         }));
+
                         const coursesByName = {};
                         this.state.groupedCourses = this.state.allCoursesData.reduce((acc, course) => {
                             if (!acc[course.code]) {
@@ -898,17 +938,19 @@
                             acc[course.code].sections.push(course);
                             return acc;
                         }, {});
+
                         this.state.linkedCourseGroups = {};
                         for (const name in coursesByName) {
                             if (coursesByName[name].length > 1) {
                                 this.state.linkedCourseGroups[name] = [...new Set(coursesByName[name])];
                             }
                         }
+
                         let colorIndex = 0;
                         Object.values(this.state.groupedCourses).forEach(group => {
                             group.color = this.state.customColors[group.code] || this.constants.COLOR_PALETTE[colorIndex++ % this.constants.COLOR_PALETTE.length];
                         });
-                        document.getElementById('no-data-message').style.display = 'none';
+                        this.dom.noDataMessage.style.display = 'none';
                         this._renderCoursesList();
                         this._buildSettingsModal();
                     },
@@ -926,7 +968,6 @@
                                     this.state.activeScheduleIndex = parsed.activeScheduleIndex < parsed.schedules.length ? parsed.activeScheduleIndex : 0;
                                 }
                             } catch (e) {
-                                console.error("Error loading schedules:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.SCHEDULES);
                                 this._addSchedule(null, true);
                                 this._saveSchedules();
@@ -959,7 +1000,7 @@
                     updateFullUI() {
                         this._renderScheduleTabs();
                         this.updateCalendarAndConflicts();
-                        if (isMobile) {
+                        if (this.state.isMobileView) {
                             this._updateMobileHeader();
                         }
                     },
@@ -968,11 +1009,15 @@
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
                         this.state.calendar.removeAllEvents();
-                        document.querySelectorAll('.section-btn').forEach(btn => {
-                            btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
+
+                        document.querySelectorAll('.section-btn.selected').forEach(btn => btn.classList.remove('selected'));
+                        selectedSections.forEach(id => {
+                            document.querySelectorAll(`.section-btn[data-unique-id='${id}']`).forEach(btn => btn.classList.add('selected'));
                         });
+                        
                         const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
                         const conflictMap = this._calculateConflicts(selectedCourseDetails);
+                        
                         selectedCourseDetails.forEach(section => {
                             const group = this.state.groupedCourses[section.code];
                             if (group && !this.state.hiddenCourseCodes.has(section.code)) {
@@ -980,6 +1025,7 @@
                                 this.state.calendar.addEventSource(lectureEvents);
                             }
                         });
+
                         this._renderFinalExams(selectedCourseDetails);
                         this._renderMyScheduleSummary(selectedCourseDetails, conflictMap);
                         this._updateAvailableSectionsUI(selectedCourseDetails);
@@ -1001,12 +1047,18 @@
                                 const tab = document.createElement('button');
                                 tab.className = `schedule-tab ${index === this.state.activeScheduleIndex ? 'active' : ''}`;
                                 tab.dataset.index = index;
-                                tab.innerHTML = `<span class="schedule-tab-name" contenteditable="false">${schedule.name}</span><i class="ri-close-line delete-schedule-btn"></i>`;
+                                tab.innerHTML = `<input class="schedule-tab-name" value="${schedule.name}" readonly><i class="ri-close-line delete-schedule-btn"></i>`;
                                 tab.addEventListener('click', () => this._switchSchedule(index));
-                                const nameSpan = tab.querySelector('.schedule-tab-name');
-                                tab.addEventListener('dblclick', () => { nameSpan.contentEditable = true; nameSpan.focus(); });
-                                nameSpan.addEventListener('blur', () => { nameSpan.contentEditable = false; this._renameSchedule(index, nameSpan.textContent); });
-                                nameSpan.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); nameSpan.blur(); } });
+                                const nameInput = tab.querySelector('.schedule-tab-name');
+                                tab.addEventListener('dblclick', () => { 
+                                    nameInput.readOnly = false; 
+                                    nameInput.select(); 
+                                });
+                                nameInput.addEventListener('blur', () => { 
+                                    nameInput.readOnly = true; 
+                                    this._renameSchedule(index, nameInput.value); 
+                                });
+                                nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); nameInput.blur(); } });
                                 tab.querySelector('.delete-schedule-btn').addEventListener('click', (e) => { e.stopPropagation(); this._deleteSchedule(index); });
                                 fragment.appendChild(tab);
                             });
@@ -1210,28 +1262,6 @@
                             });
                         });
                     },
-                    _populateDOMElements() {
-                        const ids = [
-                            'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
-                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 
-                            'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
-                            'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
-                            'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
-                            'mobile-section-details-overlay', 'details-panel'
-                        ];
-                        ids.forEach(id => {
-                            this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
-                        });
-                        if (isMobile) {
-                            this.dom.tabButtons = document.querySelectorAll('#mobile-courses-view .tab-btn');
-                            this.dom.tabContents = document.querySelectorAll('#mobile-courses-view .tab-content');
-                            this.dom.mobileNavButtons = document.querySelectorAll('.mobile-nav-btn');
-                            this.dom.mobileViewContents = document.querySelectorAll('.mobile-view-content');
-                        } else {
-                            this.dom.tabButtons = document.querySelectorAll('.page-wrapper .sidebar .tab-btn');
-                            this.dom.tabContents = document.querySelectorAll('.page-wrapper .sidebar .tab-content');
-                        }
-                    },
                     _calculateConflicts(selectedCourses) {
                         const conflictMap = new Map();
                         for (let i = 0; i < selectedCourses.length; i++) {
@@ -1295,37 +1325,8 @@
                         if (period.includes('ص') && h === 12) h = 0;
                         return `${String(h).padStart(2, '0')}:${m}:00`;
                     },
-                     _setupEventListeners() {
-                        this.dom.clearCalendarBtn?.addEventListener('click', () => this._handleClearCalendar());
-                        this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
-                        this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
-                        this.dom.modalOverlay?.addEventListener('click', () => this._toggleSettingsModal(false));
-                        
-                        if (this.dom.tabButtons && this.dom.tabButtons.forEach) {
-                           this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
-                        }
-                        
-                        const courseLists = [this.dom.desktopCoursesList, this.dom.mobileCoursesList];
-                        courseLists.forEach(list => {
-                            if(!list) return;
-                            list.addEventListener('click', e => this._handleCourseListClick(e));
-                            list.addEventListener('mouseover', e => this._handleSectionHover(e, true));
-                            list.addEventListener('mouseout', e => this._handleSectionHover(e, false));
-                        });
-
-                        if(isMobile) {
-                            if (this.dom.mobileNavButtons && this.dom.mobileNavButtons.forEach) {
-                                this.dom.mobileNavButtons.forEach(btn => btn.addEventListener('click', () => this._handleMobileNav(btn)));
-                            }
-                            this.dom.mobileSectionDetailsOverlay?.addEventListener('click', (e) => {
-                                if(e.target === this.dom.mobileSectionDetailsOverlay) {
-                                    this._hideMobileSectionDetails();
-                                }
-                            });
-                        }
-                    },
                     _handleSectionHover(event, isHovering) {
-                        if (isMobile) return;
+                        if (this.state.isMobileView) return;
                         const sectionBtn = event.target.closest('.section-btn');
                         if (!sectionBtn) return;
                         if (isHovering) {
@@ -1356,7 +1357,7 @@
                             const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                             if (!activeSchedule) return;
 
-                            if (isMobile) {
+                            if (this.state.isMobileView) {
                                 this._showMobileSectionDetails(section, group);
                             } else {
                                 if (activeSchedule.sections.has(uniqueId)) {
@@ -1384,7 +1385,7 @@
                         
                         const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
                         if(this._isSectionConflicted(section, tempSelectedDetails)) {
-                             if(isMobile){ this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.'); }
+                             if(this.state.isMobileView){ this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.'); }
                         }
                         
                         schedule.sections.add(sectionId);
@@ -1452,7 +1453,7 @@
 
                          Swal.fire({ 
                             toast: true, 
-                            position: isMobile ? 'bottom' : 'bottom-end', 
+                            position: this.state.isMobileView ? 'bottom' : 'bottom-end', 
                             icon: icon, 
                             title: title, 
                             showConfirmButton: false, 
@@ -1473,25 +1474,19 @@
                         const view = button.dataset.view;
                         this.dom.mobileNavButtons.forEach(btn => btn.classList.remove('active'));
                         button.classList.add('active');
-                        this.dom.mobileViewContents.forEach(content => {
-                           content.style.display = 'none';
-                           content.classList.remove('active');
-                        });
+                        this.dom.mobileViewContents.forEach(content => content.classList.remove('active'));
                         const targetView = document.getElementById(view);
-                        if(targetView) {
-                            targetView.style.display = 'flex';
-                            targetView.classList.add('active');
-                        }
+                        if(targetView) targetView.classList.add('active');
                         this._updateMobileHeader();
                         if (view === 'mobile-calendar-view') {
-                           setTimeout(() => this.state.calendar.updateSize(), 50);
+                           setTimeout(() => this.state.calendar?.updateSize(), 50);
                         }
                     },
                     _updateBookmarkletCode() {
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
                         const container = this.dom.installSectionContainer;
                         
-                        if (isMobile) {
+                        if (this.state.isMobileView) {
                              container.innerHTML = `
                                 <div id="install-header">
                                     <i class="ri-smartphone-line"></i>
@@ -1512,15 +1507,11 @@
                                     </div>
                                 </div>
                             `;
-                            const copyBtn = container.querySelector('#copy-code-btn');
-                            copyBtn.addEventListener('click', (e) => {
+                            container.querySelector('#copy-code-btn').addEventListener('click', (e) => {
                                 e.preventDefault();
                                 navigator.clipboard.writeText(code).then(() => {
                                     this._showToast('success', 'تم نسخ الكود بنجاح!');
-                                }).catch(err => {
-                                    console.error('Failed to copy text: ', err);
-                                    this._showToast('error', 'فشل النسخ!');
-                                });
+                                }).catch(() => this._showToast('error', 'فشل النسخ!'));
                             });
                         } else {
                             container.innerHTML = `
@@ -1535,11 +1526,12 @@
                         }
                     },
                     _initializeCalendar() {
-                        if (this.state.calendar) this.state.calendar.destroy();
-                        const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
+                        this.state.calendar?.destroy();
+                        const calendarEl = document.getElementById(this.state.isMobileView ? 'mobile-calendar' : 'calendar');
+                        if (!calendarEl) return;
                         const calendarOptions = {
                             initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false, 
-                            events: [], dir: 'rtl', dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, 
+                            events: [], dir: 'rtl', dayHeaderFormat: { weekday: this.state.isMobileView ? 'short' : 'long' }, 
                             slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
                             hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false,
                             dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; },
@@ -1550,7 +1542,9 @@
                                 wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ri-map-pin-line"></i> ${props.location}</small>`;
                                 return { domNodes: [wrapper] };
                             },
-                            windowResize: () => { this.state.calendar.updateSize(); }
+                            windowResize: (view) => {
+                                setTimeout(() => view.updateSize(), 100);
+                            }
                         };
                         this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
                         this.state.calendar.render();
@@ -1563,7 +1557,7 @@
                         let scheduleName = name;
                         if (!name) {
                             const scheduleNumber = this.state.schedules.length + 1;
-                            const formattedNumber = isMobile ? this._toArabicNumerals(scheduleNumber) : scheduleNumber;
+                            const formattedNumber = this.state.isMobileView ? this._toArabicNumerals(scheduleNumber) : scheduleNumber;
                             scheduleName = `جدول ${formattedNumber}`;
                         }
                         this.state.schedules.push({ name: scheduleName, sections: new Set(), linkedSections: new Map() });
@@ -1597,18 +1591,18 @@
                     },
                     _renameSchedule(index, newName) {
                         const trimmedName = newName.trim();
-                        if (trimmedName) {
+                        if (trimmedName && this.state.schedules[index]) {
                             this.state.schedules[index].name = trimmedName;
                             this._saveSchedules();
-                            if (isMobile) this._updateMobileHeader();
-                        } else {
-                            const tabNameSpan = document.querySelector(`.schedule-tab[data-index='${index}'] .schedule-tab-name`);
-                            if(tabNameSpan) tabNameSpan.textContent = this.state.schedules[index].name;
+                            if (this.state.isMobileView) this._updateMobileHeader();
+                        } else if (this.state.schedules[index]) {
+                            const query = `.schedule-tab[data-index='${index}'] .schedule-tab-name`;
+                            document.querySelectorAll(query).forEach(input => input.value = this.state.schedules[index].name);
                         }
                     },
                     _updateMobileHeader() {
                         const activeNavBtn = document.querySelector('.mobile-nav-btn.active');
-                        if (!activeNavBtn) return;
+                        if (!activeNavBtn || !this.dom.mobileHeaderTitle) return;
                         const currentView = activeNavBtn.dataset.view;
                         if (currentView === 'mobile-calendar-view' || currentView === 'mobile-my-schedule-view') {
                              this.dom.mobileHeaderTitle.textContent = this.state.schedules[this.state.activeScheduleIndex]?.name || 'الجدول';
@@ -1961,11 +1955,6 @@
                     },
                     _applySettings() {
                         document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
-                        if (isMobile) {
-                            document.body.classList.add('mobile-view');
-                        } else {
-                            document.body.classList.add('desktop-view');
-                        }
 
                         const pColor = this.state.userSettings.accentColor;
                         const pDark = this._adjustColorBrightness(pColor, -10);
@@ -2094,7 +2083,7 @@
                             if (!wrapper.contains(e.target)) closePanel();
                         });
                     }
-                });
+                };
 
                 QU_ScheduleApp.init();
             });
