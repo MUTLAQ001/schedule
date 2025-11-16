@@ -57,6 +57,15 @@
             @keyframes gradient-animation { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
             @keyframes swal-scale-in { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
             @keyframes swal-scale-out { from { transform: scale(1); opacity: 1; } to { transform: scale(0.9); opacity: 0; } }
+            
+            /* -- IMPROVEMENT: Keyframe for table row entry -- */
+            @keyframes rowIn {
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+
 
             *, *::before, *::after { 
                 box-sizing: border-box; 
@@ -194,7 +203,36 @@
             .page-wrapper { display: flex; height: 100vh; }
             .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 2rem; gap: 1.5rem; overflow-y: auto; }
             .sidebar { width: 420px; height: 100%; background-color: var(--color-card); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
-            .main-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) both; }
+            
+            /* -- IMPROVEMENT: Sticky Header with blur effect -- */
+            .main-header { 
+                display: flex; justify-content: space-between; align-items: center; 
+                flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) both; 
+                position: sticky;
+                top: -2rem; /* Adjust based on padding of main-content */
+                margin: -2rem -2rem 0; /* Counteract padding of main-content */
+                padding: 2rem 2rem 1.5rem;
+                z-index: 100;
+                background-color: rgba(10, 10, 10, 0.5);
+                -webkit-backdrop-filter: blur(12px);
+                backdrop-filter: blur(12px);
+                transition: box-shadow .25s ease;
+                border-bottom: 1px solid transparent;
+            }
+            .light .main-header {
+                 background-color: rgba(244, 244, 245, 0.6);
+                 border-bottom: 1px solid var(--color-border);
+            }
+            .main-content:not([scrollTop="0"]) .main-header {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            .main-content[scrollTop="0"] .main-header {
+                 background-color: transparent;
+                 -webkit-backdrop-filter: none;
+                 backdrop-filter: none;
+            }
+
+
             .main-header h1 {
                 font-family: var(--font-title); font-weight: 700; font-size: 2.5rem;
                 background: linear-gradient(90deg,var(--color-primary-dark),var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -208,8 +246,24 @@
                 display: inline-flex; align-items: center; gap: 0.5rem; transition: all var(--transition);
             }
             .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: var(--color-primary); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
-            .card { width: 100%; height: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: scaleIn .8s var(--transition-smooth) .2s both; }
+            
+            /* -- IMPROVEMENT: Card hover effect -- */
+            .card { 
+                width: 100%; height: 100%; background-color: var(--color-card); 
+                border: 1px solid var(--color-border); border-radius: var(--radius); 
+                display: flex; flex-direction: column; backdrop-filter: blur(16px); 
+                box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; 
+                animation: scaleIn .8s var(--transition-smooth) .2s both; 
+                transition: transform 0.25s ease, box-shadow 0.25s ease;
+            }
+            .card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 45px -15px rgba(0,0,0,0.5);
+            }
+
             .light .card { box-shadow: 0 16px 40px -12px rgba(0,0,0,0.1); }
+            .light .card:hover { box-shadow: 0 20px 45px -15px rgba(0,0,0,0.15); }
+
             .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) .1s both; overflow-x: auto;}
             .light .schedule-tabs-container { background: rgba(0,0,0,0.05); }
             .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
@@ -259,7 +313,10 @@
             .section-btn.selected .section-type { color: rgba(255,255,255,0.8); }
             .section-btn.no-time { border-bottom: 3px solid var(--item-color); padding-bottom: calc(0.5rem - 3px); }
             .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
-            .my-schedule-container .card { animation-delay: 200ms; }
+            /* -- IMPROVEMENT: Add animation to the schedule card container */
+            .my-schedule-container .my-schedule-card { 
+                animation: scaleIn .8s var(--transition-smooth) .2s both;
+            }
             .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
             
             .my-schedule-table-wrapper { overflow-x: auto; }
@@ -442,7 +499,7 @@
             .total-credits-pill span { font-weight: 700; font-family: var(--font-title); }
             .my-schedule-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
             .my-schedule-table thead th { background: rgba(255,255,255,0.03); padding: 0.8rem; text-align: center; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); }
-            .my-schedule-table tbody td { padding: 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; text-align: center;}
+            .my-schedule-table tbody td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; text-align: center;}
             .my-schedule-table .course-cell .course-code { font-size: 1rem; font-weight: 600;}
             .my-schedule-table .section-cell .section-number { font-size: 1rem; font-weight: 600; }
             .hours-value { font-size: 1.2rem; font-weight: 700; color: var(--color-primary); }
@@ -533,6 +590,24 @@
                 background-color: rgba(var(--rgb-primary), 0.05);
                 border-bottom-color: rgba(var(--rgb-primary), 0.3);
             }
+
+            /* -- IMPROVEMENT: Table row stagger animation -- */
+            .my-schedule-table .schedule-row {
+              opacity: 0;
+              transform: translateY(6px);
+              animation: rowIn 0.35s ease-out forwards;
+            }
+            .my-schedule-table .schedule-row:nth-child(1) { animation-delay: 0.05s; }
+            .my-schedule-table .schedule-row:nth-child(2) { animation-delay: 0.1s; }
+            .my-schedule-table .schedule-row:nth-child(3) { animation-delay: 0.15s; }
+            .my-schedule-table .schedule-row:nth-child(4) { animation-delay: 0.2s; }
+            .my-schedule-table .schedule-row:nth-child(5) { animation-delay: 0.25s; }
+            .my-schedule-table .schedule-row:nth-child(6) { animation-delay: 0.3s; }
+            .my-schedule-table .schedule-row:nth-child(7) { animation-delay: 0.35s; }
+            .my-schedule-table .schedule-row:nth-child(8) { animation-delay: 0.4s; }
+            .my-schedule-table .schedule-row:nth-child(9) { animation-delay: 0.45s; }
+            .my-schedule-table .schedule-row:nth-child(10) { animation-delay: 0.5s; }
+
             .my-schedule-table .schedule-row.has-conflict {
                 background-color: rgba(var(--rgb-danger), 0.1);
                 box-shadow: inset 4px 0 0 0 var(--color-danger); /* خط جانبي واضح */
@@ -718,6 +793,15 @@
 
         document.addEventListener('DOMContentLoaded', () => {
                 initStarfield();
+
+                // IMPROVEMENT: Logic for sticky header scroll tracking
+                const mainContent = document.querySelector('.main-content');
+                if(mainContent) {
+                    mainContent.addEventListener('scroll', () => {
+                        mainContent.setAttribute('scrollTop', mainContent.scrollTop);
+                    });
+                }
+
 
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024;
                 if (isMobile) {
