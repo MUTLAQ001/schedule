@@ -53,7 +53,6 @@
             --color-text-dark: #18181b;
         }
         
-        /* IMPROVED ANIMATION: A smoother, more graceful entrance animation */
         @keyframes graceful-enter {
           from {
             opacity: 0;
@@ -85,11 +84,11 @@
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
-            -ms-overflow-style: none;  /* IE and Edge */
-            scrollbar-width: none;  /* Firefox */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         body::-webkit-scrollbar {
-            display: none; /* Safari and Chrome */
+            display: none;
         }
 
         .cosmic-bg-container { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; overflow: hidden }
@@ -198,7 +197,6 @@
         .page-wrapper .sidebar .custom-scrollbar::-webkit-scrollbar { display: none; }
         .page-wrapper .sidebar .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Desktop Styles */
         .page-wrapper { display: flex; height: 100vh; }
         .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 2rem; gap: 1.5rem; overflow-y: auto; }
         .sidebar { width: 420px; height: 100%; background-color: var(--color-card); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
@@ -247,7 +245,7 @@
         .course-item:hover { transform: translateY(-4px) scale(1.01); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4); }
         .light .course-item:hover { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03), 0 8px 25px -10px rgba(0,0,0,0.1); }
         .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; }
-        .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
+        .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
         .course-info { flex-grow: 1; }
         .course-info h3 { margin: 0; font-family: var(--font-title); font-size: 1.1rem; font-weight: 400; color: var(--color-text-dark); }
         .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--color-text-muted); }
@@ -299,7 +297,6 @@
         .no-data .cta-button { margin-top: 1.5rem; background: var(--color-primary); color: white; padding: .7rem 1.5rem; border-radius: var(--radius-full); border: none; font-weight: 700; cursor: pointer; transition: all .2s ease; box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);}
         .no-data .cta-button:hover { background: var(--color-primary-dark); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(var(--rgb-primary), 0.3);}
         
-        /* --- FIX: Prevent body scroll when SweetAlert2 is open --- */
         html.swal2-shown, body.swal2-shown {
             overflow: hidden !important;
         }
@@ -386,7 +383,6 @@
         .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); }
         .action-picker-option.selected { color: var(--color-primary); font-weight: 700; background-color: transparent; }
         
-        /* --- Conflict Modal Styles --- */
         #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
         .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; }
         .conflict-group-title {
@@ -439,7 +435,6 @@
         }
         .light .conflict-extra-details.visible { background: rgba(0,0,0,0.03); }
 
-        /* --- Mobile Section Details Panel --- */
         .mobile-wrapper, .mobile-nav { display: none; }
         #mobile-my-schedule-list {
             padding: 1rem;
@@ -584,7 +579,7 @@
                 background-color: var(--color-card); border-top: 1px solid var(--color-border);
                 backdrop-filter: blur(16px); z-index: 100;
                 box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom);
-                will-change: transform; /* Performance Hint */
+                will-change: transform;
             }
             .mobile-nav-btn {
                 flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -812,7 +807,6 @@
                     this._updateBookmarkletCode();
                 },
 
-                // This empty object is assigned methods below to keep the code organized.
             };
             
             Object.assign(QU_ScheduleApp, {
@@ -827,11 +821,12 @@
                         } catch (e) {
                             console.error("Error loading courses:", e);
                             localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
-                            this._showToast('error', 'خطأ في تحميل بيانات المقررات المخزنة.');
-                            // Do not show the overlay here; let the empty state guide the user.
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'خطأ في البيانات',
+                                text: 'حدث خطأ أثناء تحميل بيانات المقررات المخزنة. قد تكون البيانات تالفة. سيتم تجاهلها.'
+                            });
                         }
-                    } else {
-                        // Don't immediately show the install overlay. The empty state with the CTA is better UX.
                     }
                 },
                 _listenForDataFromOpener() {
@@ -881,8 +876,7 @@
                         group.color = this.state.customColors[group.code] || this.constants.COLOR_PALETTE[colorIndex++ % this.constants.COLOR_PALETTE.length];
                     });
                     
-                    const noDataMessageEl = document.getElementById('no-data-message');
-                    if (noDataMessageEl) noDataMessageEl.style.display = 'none';
+                    if (this.dom.noDataMessage) this.dom.noDataMessage.style.display = 'none';
                     
                     this._renderCoursesList();
                     this._buildSettingsModal();
@@ -992,19 +986,26 @@
                         container.appendChild(fragment);
                     });
                 },
-                _createCoursesListHTML() {
-                    if(Object.keys(this.state.groupedCourses).length === 0) {
-                        return `<div class="no-data" id="no-data-message"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>استخدم الأداة من شريط الإشارات المرجعية في صفحة المقررات المطروحة لتحميل بيانات المواد.</p><button id="load-data-cta" class="cta-button">كيفية تحميل البيانات؟</button></div>`;
+                _renderCoursesList() {
+                    const container = this.dom.desktopCoursesList;
+                    if (!container) return;
+                    
+                    const visibleCourses = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code));
+                    
+                    // Clear only course items, not the no-data message
+                    Array.from(container.children).forEach(child => {
+                        if (child.classList.contains('course-item')) {
+                            child.remove();
+                        }
+                    });
+
+                    if (Object.keys(this.state.groupedCourses).length > 0 && visibleCourses.length === 0) {
+                        container.innerHTML = `<div class="no-data"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
+                        return;
                     }
 
                     const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
-                    const visibleCourses = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code));
-                    
-                    if (visibleCourses.length === 0) {
-                        return `<div class="no-data"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
-                    }
-
-                    return visibleCourses.sort((a, b) => a.code.localeCompare(b.code)).map((group, i) => {
+                    const coursesHTML = visibleCourses.sort((a, b) => a.code.localeCompare(b.code)).map((group, i) => {
                         const sectionsToDisplay = this.state.userSettings.hideClosedCourses
                             ? group.sections.filter(section => !section.status.includes('مغلقة'))
                             : group.sections;
@@ -1022,20 +1023,8 @@
                         }).join('');
                         return `<div class="course-item" style="animation-delay: ${i * 50}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color}; box-shadow: 0 0 10px 1px ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
                     }).join('');
-                },
-                _renderCoursesList() {
-                    const html = this._createCoursesListHTML();
-                    if (this.dom.desktopCoursesList) {
-                        this.dom.desktopCoursesList.innerHTML = html;
-                        const ctaButton = this.dom.desktopCoursesList.querySelector('#load-data-cta');
-                        if (ctaButton) ctaButton.addEventListener('click', () => {
-                           this.dom.installOverlay.style.display = 'flex';
-                           this.dom.installOverlay.classList.add('visible');
-                        });
-                    }
-                    if (this.dom.mobileCoursesList) {
-                         this.dom.mobileCoursesList.innerHTML = html;
-                    }
+
+                    container.insertAdjacentHTML('beforeend', coursesHTML);
                 },
                 _createMyScheduleHTML(selectedCourses, conflictMap) {
                     let totalCredits = 0;
@@ -1199,12 +1188,11 @@
                 _populateDOMElements() {
                     const ids = [
                         'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
-                        'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 
+                        'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message',
                         'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
-                        // Mobile specific
                         'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
                         'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
-                        'mobile-section-details-overlay', 'details-panel'
+                        'mobile-section-details-overlay', 'details-panel', 'load-data-cta'
                     ];
                     ids.forEach(id => {
                         this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
@@ -1298,6 +1286,13 @@
                             list.addEventListener('mouseout', e => this._handleSectionHover(e, false));
                         }
                     });
+
+                    if (this.dom.loadDataCta) {
+                        this.dom.loadDataCta.addEventListener('click', () => {
+                            this.dom.installOverlay.style.display = 'flex';
+                            this.dom.installOverlay.classList.add('visible');
+                        });
+                    }
 
                     if(isMobile) {
                         this.dom.mobileNavButtons.forEach(btn => btn.addEventListener('click', () => this._handleMobileNav(btn)));
@@ -1701,9 +1696,6 @@
                 _hideMobileSectionDetails() {
                     this.dom.mobileSectionDetailsOverlay.classList.remove('open');
                 },
-
-                // This is the CRITICAL bug fix. Kept from original source analysis.
-                // It prevents hanging on mobile by smartly calculating conflict groups.
                 _handleViewAllConflicts(conflictMap) {
                     const selectedSections = Array.from(this.state.schedules[this.state.activeScheduleIndex].sections)
                         .map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
