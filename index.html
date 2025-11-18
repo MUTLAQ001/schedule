@@ -571,34 +571,21 @@
                 .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 0 1.25rem; height: 65px; background-color: var(--color-card); border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2); }
                 .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; }
                 .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; }
-                .mobile-view-content { display: none; height: 100vh; padding-top: 65px; padding-bottom: 75px; overflow-y: auto; overflow-x: hidden; }
+                .mobile-view-content { display: none; height: 100vh; padding: 65px 0 75px; overflow-y: auto; overflow-x: hidden; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
-                
-                /* START: Fix for content overlap */
-                #mobile-calendar-view {
-                    padding-left: 1rem;
-                    padding-right: 1rem;
-                    padding-bottom: 1rem; /* Added for spacing */
-                    gap: 1rem;
-                }
-                #mobile-courses-view {
-                    padding-left: 1rem;
-                    padding-right: 1rem;
-                }
-                #mobile-my-schedule-view {
-                    overflow: hidden; /* Removed padding:0 override */
-                }
-                 /* END: Fix for content overlap */
 
-                #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; margin-top: 1rem; }
+                #mobile-calendar-view .main-content { padding: 1rem; }
+                #mobile-calendar-view .schedule-tabs-container { margin-top: 0; }
+                #mobile-courses-view { padding-left: 1rem; padding-right: 1rem; }
+
                 #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
                 .mobile-calendar-scroll-wrapper { overflow-x: auto; height: 100%; -webkit-overflow-scrolling: touch; direction: ltr; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar { height: 4px; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track { background: transparent; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(var(--rgb-primary), 0.5); border-radius: 4px; }
                 #mobile-calendar { min-width: 850px; direction: rtl; }
-                
+
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
                 #mobile-courses-view .tab-content { padding: 0; }
@@ -2003,6 +1990,11 @@
                                         </div>
                                         <button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين</button>
                                     </div>
+                                </div>
+                                <div style="text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--color-border); margin-top: .5rem;">
+                                    <a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit">
+                                        <i class="ri-telegram-line"></i> MUTLAQ1
+                                    </a>
                                 </div>
                             </div>`;
                         this._attachModalEventListeners();
