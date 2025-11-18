@@ -574,31 +574,35 @@
                 .mobile-view-content { display: none; height: 100vh; padding-top: 65px; padding-bottom: 75px; overflow-y: auto; overflow-x: hidden; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
+                
+                /* START: Fix for content overlap */
                 #mobile-calendar-view {
                     padding-left: 1rem;
                     padding-right: 1rem;
-                    padding-top: 1rem;
+                    padding-bottom: 1rem; /* Added for spacing */
                     gap: 1rem;
                 }
-                #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; }
+                #mobile-courses-view {
+                    padding-left: 1rem;
+                    padding-right: 1rem;
+                }
+                #mobile-my-schedule-view {
+                    overflow: hidden; /* Removed padding:0 override */
+                }
+                 /* END: Fix for content overlap */
+
+                #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; margin-top: 1rem; }
                 #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
                 .mobile-calendar-scroll-wrapper { overflow-x: auto; height: 100%; -webkit-overflow-scrolling: touch; direction: ltr; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar { height: 4px; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track { background: transparent; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(var(--rgb-primary), 0.5); border-radius: 4px; }
                 #mobile-calendar { min-width: 850px; direction: rtl; }
-                #mobile-courses-view {
-                    padding-left: 1rem;
-                    padding-right: 1rem;
-                    padding-top: 1rem;
-                    padding-bottom: 0;
-                }
+                
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
-                #mobile-courses-view .tab-content { padding: 0; } /* Remove tab-content padding */
-                #mobile-my-schedule-view {
-                    overflow: hidden;
-                }
+                #mobile-courses-view .tab-content { padding: 0; }
+                
                 .my-schedule-container .card { display: none; }
                 #mobile-my-schedule-container { display: flex; flex-direction: column; width: 100%; height: 100%; }
                 .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
