@@ -56,7 +56,7 @@
             @keyframes graceful-enter {
                 from {
                     opacity: 0;
-                    transform: translateY(20px) scale(0.98);
+                    transform: translateY(15px) scale(0.98);
                 }
                 to {
                     opacity: 1;
@@ -68,8 +68,25 @@
             @keyframes swal-scale-in { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
             @keyframes swal-scale-out { from { transform: scale(1); opacity: 1; } to { transform: scale(0.9); opacity: 0; } }
 
-            *, *::before, *::after { 
-                box-sizing: border-box; 
+            @keyframes swal-toast-enter {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px) scale(0.9);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            @keyframes swal-toast-exit {
+                to {
+                    opacity: 0;
+                    transform: translateY(20px) scale(0.9);
+                }
+            }
+
+            *, *::before, *::after {
+                box-sizing: border-box;
                 -webkit-tap-highlight-color: transparent;
                 -webkit-touch-callout: none;
             }
@@ -105,7 +122,7 @@
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
                 z-index: 2000;
-                display: none; 
+                display: none;
                 align-items: center; justify-content: center;
                 padding: 1rem;
                 opacity: 0;
@@ -114,7 +131,7 @@
             #install-overlay.visible {
                 opacity: 1;
             }
-            .desktop-view #install-overlay { 
+            .desktop-view #install-overlay {
                 align-items: flex-start;
                 padding-top: 5rem;
             }
@@ -149,9 +166,9 @@
             .bookmarklet-button:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 25px rgba(var(--rgb-primary), 0.3); }
             .bookmarklet-button i { font-size: 1.2rem; }
             #install-section-mobile ol { list-style: none; padding: 0; margin: 0 0 1.5rem 0;}
-            #install-section-mobile li { 
-                position: relative; 
-                padding-right: 2.5rem; margin-bottom: 1.25rem; 
+            #install-section-mobile li {
+                position: relative;
+                padding-right: 2.5rem; margin-bottom: 1.25rem;
                 font-size: 0.95rem; font-weight: 500;
             }
             #install-section-mobile li::before {
@@ -168,14 +185,14 @@
             .code-container pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); font-size: 0.8rem; white-space: pre-wrap; word-wrap: break-word; text-align: left; direction: ltr; }
             .light .code-container pre { background: rgba(0,0,0,0.04); }
             .code-container pre .highlight { color: var(--color-primary); font-weight: 700; }
-            #copy-code-btn { 
-                display: block; width: 100%; background: var(--color-primary); color: white; padding: 0.8rem; 
+            #copy-code-btn {
+                display: block; width: 100%; background: var(--color-primary); color: white; padding: 0.8rem;
                 border-radius: var(--radius-md); border: none; font-weight: 700; font-size: 1rem;
                 cursor: pointer; transition: all .2s ease;
                 box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);
             }
             #copy-code-btn:hover { background: var(--color-primary-dark); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(var(--rgb-primary), 0.3); }
-            .js-warning { 
+            .js-warning {
                 border-top: 1px solid var(--color-border); padding-top: 1rem; margin-top: 1.5rem;
                 font-size: 0.85rem; text-align: center; color: var(--color-text-muted);
             }
@@ -190,14 +207,14 @@
             .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(var(--rgb-primary), 0.5); }
             .custom-scrollbar::-webkit-scrollbar-button { display: none; }
             .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(var(--rgb-primary), 0.3) transparent; }
-            
+
             .page-wrapper .sidebar .custom-scrollbar::-webkit-scrollbar { display: none; }
             .page-wrapper .sidebar .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
             .page-wrapper { display: flex; height: 100vh; }
             .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 2rem; gap: 1.5rem; overflow-y: auto; }
             .sidebar { width: 420px; height: 100%; background-color: var(--color-card); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
-            .main-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; animation: graceful-enter .8s var(--transition-smooth) both; }
+            .main-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; animation: graceful-enter .5s var(--transition-smooth) both; }
             .main-header h1 {
                 font-family: var(--font-title); font-weight: 700; font-size: 2.5rem;
                 background: linear-gradient(90deg,var(--color-primary-dark),var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -211,9 +228,9 @@
                 display: inline-flex; align-items: center; gap: 0.5rem; transition: all var(--transition);
             }
             .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: rgba(var(--rgb-primary), 0.8); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
-            .card { width: 100%; height: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: graceful-enter .8s var(--transition-smooth) .2s both; will-change: transform, opacity; }
+            .card { width: 100%; height: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: graceful-enter .6s var(--transition-smooth) .2s both; will-change: transform, opacity; }
             .light .card { box-shadow: 0 16px 40px -12px rgba(0,0,0,0.1); }
-            .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: graceful-enter .8s var(--transition-smooth) .1s both; overflow-x: auto;}
+            .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: graceful-enter .5s var(--transition-smooth) .1s both; overflow-x: auto;}
             .light .schedule-tabs-container { background: rgba(0,0,0,0.05); }
             .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
             .schedule-tab.active { background: var(--color-primary); color: white; box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
@@ -293,7 +310,7 @@
             .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--color-primary); opacity: 0.5; }
             .no-data .cta-button { margin-top: 1.5rem; background: var(--color-primary); color: white; padding: .7rem 1.5rem; border-radius: var(--radius-full); border: none; font-weight: 700; cursor: pointer; transition: all .2s ease; box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);}
             .no-data .cta-button:hover { background: var(--color-primary-dark); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(var(--rgb-primary), 0.3);}
-            
+
             html.swal2-shown, body.swal2-shown {
                 overflow: hidden !important;
             }
@@ -310,16 +327,26 @@
             .swal-popup-animation-in { animation: swal-scale-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
 
-            /* FIX: This rule was making the modals unclickable. It has been removed. */
-            /*
-            .swal2-container.swal2-top, .swal2-container.swal2-center, .swal2-container.swal2-bottom { 
-                pointer-events: none; 
+            .swal-toast-enter { animation: swal-toast-enter .3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+            .swal-toast-exit { animation: swal-toast-exit .3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+            .swal2-container .swal2-toast {
+                pointer-events: all;
+                width: auto !important;
+                max-width: calc(100% - 2rem);
+                box-shadow: 0 10px 30px -5px rgba(0,0,0,0.3) !important;
+                background: var(--color-card)!important;
+                border-radius: var(--radius-md) !important;
+                border: 1px solid var(--color-border) !important;
+                backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
             }
-            */
-
-            .swal2-container .swal2-toast { pointer-events: all; width: auto !important; max-width: calc(100% - 2rem); box-shadow: 0 5px 20px rgba(0,0,0,0.3) !important; }
-            .light .swal2-container .swal2-toast { box-shadow: 0 5px 20px rgba(0,0,0,0.1) !important; }
-            .swal2-toast .swal2-title { font-size: .9rem !important; }
+            .light .swal2-container .swal2-toast { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1) !important; }
+            .swal2-toast .swal2-title { font-size: 1em !important; font-weight: 600; color: var(--color-text-dark) !important; margin: 0.5em 1em !important; }
+            .swal2-toast .swal2-icon {
+                margin: 1em !important;
+                grid-column: 1 !important;
+                grid-row: 1/span 2 !important;
+                align-self: center !important;
+            }
             .swal2-toast.swal2-icon-show .swal2-title { margin: 0.5em 2.6em 0.5em 1em !important; }
 
             .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
@@ -359,6 +386,18 @@
             .color-picker-label:hover { transform: scale(1.2); }
             .color-picker-label.active { border-color: #fff; transform: scale(1.1); }
             .light .color-picker-label.active { border-color: var(--color-text-dark); }
+            .color-picker-label.is-placeholder {
+                background-color: rgba(255,255,255,0.05);
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(255,255,255,0.4)' d='M13.208 15.61c.421.133.858.21 1.306.21a4.25 4.25 0 0 0 4.157-5.361 4.253 4.253 0 0 0-4.442-3.153c-1.282.1-2.5.83-3.116 2.01l-4.706 9.112a2.25 2.25 0 0 0 .506 2.922c.792.71 1.99.638 2.68-.172l3.615-5.568zM17.5 7.75a2.75 2.75 0 1 1 0 5.5 2.75 2.75 0 0 1 0-5.5z'/%3E%3C/svg%3E");
+                background-size: 16px 16px;
+                background-repeat: no-repeat;
+                background-position: center;
+                border-style: dashed;
+            }
+            .light .color-picker-label.is-placeholder {
+                background-color: rgba(0,0,0,0.05);
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(0,0,0,0.4)' d='M13.208 15.61c.421.133.858.21 1.306.21a4.25 4.25 0 0 0 4.157-5.361 4.253 4.253 0 0 0-4.442-3.153c-1.282.1-2.5.83-3.116 2.01l-4.706 9.112a2.25 2.25 0 0 0 .506 2.922c.792.71 1.99.638 2.68-.172l3.615-5.568zM17.5 7.75a2.75 2.75 0 1 1 0 5.5 2.75 2.75 0 0 1 0-5.5z'/%3E%3C/svg%3E");
+            }
             .color-picker-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; padding: 0; cursor: pointer; }
             .time-range-selects { display: flex; gap: 0.5rem; }
             #course-colors-list .settings-item-label { flex-grow: 1; }
@@ -386,7 +425,7 @@
             .action-picker-option { width: 100%; padding: 0.7rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text-muted); background-color: transparent; border-radius: var(--radius-full); border: none; cursor: pointer; transition: all var(--transition); text-align: center; }
             .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); }
             .action-picker-option.selected { color: var(--color-primary); font-weight: 700; background-color: transparent; }
-            
+
             #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
             .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; }
             .conflict-group-title {
@@ -433,9 +472,9 @@
                 max-height: 0; overflow: hidden; transition: all .3s ease;
                 font-size: .85rem;
             }
-            .conflict-extra-details.visible { 
-                max-height: 200px; padding: .75rem 1rem .25rem; margin-top: .75rem; 
-                background: rgba(0,0,0,0.1); border-radius: var(--radius-md); 
+            .conflict-extra-details.visible {
+                max-height: 200px; padding: .75rem 1rem .25rem; margin-top: .75rem;
+                background: rgba(0,0,0,0.1); border-radius: var(--radius-md);
             }
             .light .conflict-extra-details.visible { background: rgba(0,0,0,0.03); }
 
@@ -473,7 +512,7 @@
                 justify-content: center;
                 text-align: center;
             }
-            
+
             .mobile-section-details-overlay {
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
@@ -526,7 +565,7 @@
             .details-action-btn.add:hover { background-color: var(--color-primary-dark); transform: scale(1.02); }
             .details-action-btn.remove { background-color: var(--color-danger); }
             .details-action-btn.remove:hover { filter: brightness(1.1); transform: scale(1.02); }
-            
+
             .view-conflicts-btn {
                 background: rgba(var(--rgb-warning), 0.1);
                 color: var(--color-warning);
@@ -577,7 +616,7 @@
                 .my-schedule-container .card { display: none; }
                 #mobile-my-schedule-container { width: 100%; height: 100%; display: block; }
                 .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
-                
+
                 .mobile-nav {
                     display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
                     background-color: var(--color-card); border-top: 1px solid var(--color-border);
@@ -605,11 +644,11 @@
     </head>
     <body>
         <div class="cosmic-bg-container"><div class="nebula-glow"></div><canvas id="starfield-canvas"></canvas></div>
-        
+
         <div id="install-overlay">
             <div id="install-section-container"></div>
         </div>
-        
+
         <!-- Desktop View -->
         <div class="page-wrapper">
             <main class="main-content custom-scrollbar">
@@ -631,7 +670,7 @@
                 <h1 id="mobile-header-title"></h1>
                 <button id="mobile-settings-btn"><i class="ri-settings-3-line"></i></button>
             </header>
-            
+
             <div id="mobile-calendar-view" class="mobile-view-content active">
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
@@ -683,7 +722,7 @@
 
             const stars = [];
             const shootingStars = [];
-            const numStars = 250; 
+            const numStars = 250;
             const numShootingStars = 3;
 
             class Star {
@@ -743,7 +782,7 @@
                     }
                 }
             }
-            
+
             for (let i = 0; i < numStars; i++) stars.push(new Star());
             for (let i = 0; i < numShootingStars; i++) shootingStars.push(new ShootingStar());
 
@@ -791,9 +830,9 @@
                         COLOR_PALETTE: ['#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f97316', '#ef4444', '#06b6d4', '#d946ef'],
                         DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
                         STORAGE_KEYS: {
-                            SETTINGS: 'quScheduleSettings_v20', 
+                            SETTINGS: 'quScheduleSettings_v20',
                             COURSES: 'quScheduleCourses_v20',
-                            SCHEDULES: 'quScheduleSchedules_v20', 
+                            SCHEDULES: 'quScheduleSchedules_v20',
                             COLORS: 'quScheduleColors_v20'
                         },
                         EXTRACTOR_URL: 'https://mutlaq001.github.io/schedule/extractor.js'
@@ -811,7 +850,7 @@
                         this._updateBookmarkletCode();
                     },
                 };
-                
+
                 Object.assign(QU_ScheduleApp, {
                     _loadDataFromStorage() {
                         const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
@@ -903,7 +942,7 @@
                             try {
                                 const parsed = JSON.parse(stored);
                                 if (parsed && Array.isArray(parsed.schedules)) {
-                                    this.state.schedules = parsed.schedules.map(s => ({ 
+                                    this.state.schedules = parsed.schedules.map(s => ({
                                         name: s.name || `جدول`,
                                         sections: new Set(s.sections),
                                         linkedSections: new Map((s.linkedSections || []).map(([key, value]) => [key, new Set(value)]))
@@ -922,8 +961,8 @@
                     _saveSchedules() {
                         const serializableSchedules = {
                            activeScheduleIndex: this.state.activeScheduleIndex,
-                           schedules: this.state.schedules.map(s => ({ 
-                               name: s.name, 
+                           schedules: this.state.schedules.map(s => ({
+                               name: s.name,
                                sections: Array.from(s.sections),
                                linkedSections: Array.from(s.linkedSections.entries()).map(([key, value]) => [key, Array.from(value)])
                            }))
@@ -953,7 +992,7 @@
 
                         const selectedSections = activeSchedule.sections;
                         this.state.calendar.removeAllEvents();
-                        
+
                         document.querySelectorAll('.section-btn').forEach(btn => {
                             btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
                         });
@@ -961,9 +1000,9 @@
                         const selectedCourseDetails = Array.from(selectedSections)
                             .map(id => this.state.allCoursesData.find(c => c.uniqueId === id))
                             .filter(Boolean);
-                        
+
                         const conflictMap = this._calculateConflicts(selectedCourseDetails);
-                        
+
                         selectedCourseDetails.forEach(section => {
                             const group = this.state.groupedCourses[section.code];
                             if (group && !this.state.hiddenCourseCodes.has(section.code)) {
@@ -997,10 +1036,10 @@
                                     }
                                 });
                                 const nameSpan = tab.querySelector('.schedule-tab-name');
-                                tab.addEventListener('dblclick', () => { 
+                                tab.addEventListener('dblclick', () => {
                                     if(tab.classList.contains('active')) {
-                                        nameSpan.contentEditable = true; 
-                                        nameSpan.focus(); 
+                                        nameSpan.contentEditable = true;
+                                        nameSpan.focus();
                                         document.execCommand('selectAll', false, null);
                                     }
                                 });
@@ -1015,7 +1054,7 @@
                             addButton.title = 'إضافة جدول جديد';
                             addButton.addEventListener('click', () => this._addSchedule());
                             fragment.appendChild(addButton);
-                            
+
                             container.appendChild(fragment);
                         });
                     },
@@ -1026,7 +1065,7 @@
                         if (Object.keys(this.state.groupedCourses).length > 0 && visibleCourses.length === 0) {
                             return `<div class="no-data" style="height: auto; padding: 2rem 1rem;"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
                         }
-                        
+
                         if(visibleCourses.length === 0) return ''; // Will keep the default no-data message
 
                         return visibleCourses.sort((a, b) => a.code.localeCompare(b.code)).map((group, i) => {
@@ -1039,7 +1078,7 @@
                                 const isNoTime = section.time === 'غير محدد';
                                 const isOpen = section.status.includes('مفتوحة');
                                 const statusIndicatorHTML = !this.state.userSettings.hideClosedCourses ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
-                                
+
                                 return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}">
                                             ${statusIndicatorHTML}
                                             <div class="section-btn-number">${section.section}</div>
@@ -1068,7 +1107,7 @@
                     _renderMyScheduleSummary(selectedCourses, conflictMap) {
                         const desktopContainer = this.dom.myScheduleContainer;
                         const mobileContainer = this.dom.mobileMyScheduleContainer;
-                        
+
                         if (desktopContainer) {
                             desktopContainer.style.display = 'flex';
                             if (selectedCourses.length === 0) {
@@ -1126,9 +1165,9 @@
                                                     <i class="ri-alert-fill"></i> حل التعارض
                                                 </button>`;
                         }
-                        
+
                         const statusHeaderHTML = this.state.userSettings.hideClosedCourses ? '' : '<th>الحالة</th>';
-                        
+
                         return `<div class="card">
                             <div class="my-schedule-section">
                                 <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
@@ -1156,7 +1195,7 @@
                             }
                             const isConflicted = conflictMap.has(course.uniqueId);
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
-                            
+
                             return `<div class="mobile-schedule-item" style="animation-delay:${i*30}ms;">
                                 <div class="mobile-schedule-header">
                                     <div class="mobile-schedule-title">
@@ -1173,7 +1212,7 @@
                                 </div>
                             </div>`;
                         }).join('');
-                        
+
                         let conflictButtonHTML = '';
                         if (conflictMap.size > 0) {
                             conflictButtonHTML = `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn">
@@ -1197,8 +1236,8 @@
                             if (this.dom.mobileExamsList) this.dom.mobileExamsList.innerHTML = html;
                             return;
                         }
-                        
-                        const html = uniqueExams.sort((a, b) => parseInt(a.examPeriodId, 10) - parseInt(b.examPeriodId, 10)).map(exam => 
+
+                        const html = uniqueExams.sort((a, b) => parseInt(a.examPeriodId, 10) - parseInt(b.examPeriodId, 10)).map(exam =>
                             `<div class="course-item">
                                 <div class="course-item-header" style="cursor:default;">
                                     <div class="course-info">
@@ -1228,18 +1267,18 @@
                     },
                     _populateDOMElements() {
                         const ids = [
-                            'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
-                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 
+                            'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn',
+                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message',
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
                             // Mobile specific
-                            'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
+                            'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title',
                             'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
                             'mobile-section-details-overlay', 'details-panel'
                         ];
                         ids.forEach(id => {
                             this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
                         });
-                        
+
                         if (isMobile) {
                             this.dom.tabButtons = document.querySelectorAll('#mobile-courses-view .tab-btn');
                             this.dom.tabContents = document.querySelectorAll('#mobile-courses-view .tab-content');
@@ -1319,7 +1358,7 @@
                         this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
                         this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
-                        
+
                         const courseLists = [this.dom.desktopCoursesList, this.dom.mobileCoursesList];
                         courseLists.forEach(list => {
                             if(list) {
@@ -1388,12 +1427,12 @@
                      _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return false;
-                        
+
                         const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
                         if(this._isSectionConflicted(section, tempSelectedDetails)) {
                              if(isMobile){ this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.'); }
                         }
-                        
+
                         schedule.sections.add(sectionId);
 
                         const linkedGroup = this.state.linkedCourseGroups[section.name];
@@ -1407,14 +1446,14 @@
                                     continue;
                                 }
                                 schedule.sections.add(correspondingSection.uniqueId);
-                                
+
                                 if(!schedule.linkedSections.has(sectionId)) schedule.linkedSections.set(sectionId, new Set());
                                 schedule.linkedSections.get(sectionId).add(correspondingSection.uniqueId);
 
                                 this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
                             }
                         }
-                        return true; 
+                        return true;
                     },
                     _removeSectionAndUnlink(sectionId, schedule) {
                         schedule.sections.delete(sectionId);
@@ -1431,7 +1470,7 @@
                                 linkedIds.forEach(id => schedule.sections.delete(id)); // remove all siblings
                                 schedule.linkedSections.delete(triggerId); // clean up map
                                 this._showToast('info', 'تمت إزالة المجموعة المرتبطة.');
-                                break; 
+                                break;
                             }
                         }
                         return true;
@@ -1455,19 +1494,17 @@
                         });
                     },
                     _showToast(icon, title) {
-                         const customClass = {popup: 'swal2-toast'};
-                         if(icon === 'warning') customClass.icon = 'swal2-icon-warning';
-
-                         Swal.fire({ 
-                            toast: true, 
-                            position: isMobile ? 'bottom' : 'bottom-end', 
-                            icon: icon, 
-                            title: title, 
-                            showConfirmButton: false, 
-                            timer: 3000, 
+                         Swal.fire({
+                            toast: true,
+                            position: isMobile ? 'bottom' : 'bottom-end',
+                            icon: icon,
+                            title: title,
+                            showConfirmButton: false,
+                            timer: 3000,
                             timerProgressBar: true,
-                            customClass: customClass,
-                            showClass: { popup: 'swal2-show', backdrop: 'swal2-backdrop-show', icon: 'swal2-icon-show' }
+                            customClass: {popup: 'swal2-toast'},
+                            showClass: { popup: 'swal-toast-enter' },
+                            hideClass: { popup: 'swal-toast-exit' }
                         });
                     },
                     _handleTabClick(button) {
@@ -1492,15 +1529,15 @@
                         }
                         this._updateMobileHeader();
                         if (view === 'mobile-calendar-view') {
-                           setTimeout(() => { 
-                               if(this.state.calendar) this.state.calendar.updateSize() 
+                           setTimeout(() => {
+                               if(this.state.calendar) this.state.calendar.updateSize()
                            }, 50);
                         }
                     },
                     _updateBookmarkletCode() {
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
                         const container = this.dom.installSectionContainer;
-                        
+
                         if (isMobile) {
                              container.innerHTML = `
                                 <div id="install-header">
@@ -1548,8 +1585,8 @@
                         if (this.state.calendar) this.state.calendar.destroy();
                         const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
                         const calendarOptions = {
-                            initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false, 
-                            events: [], dir: 'rtl', dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, 
+                            initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
+                            events: [], dir: 'rtl', dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' },
                             slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
                             hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false,
                             dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; },
@@ -1597,13 +1634,13 @@
                             if (result.isConfirmed) {
                                 this.state.schedules.splice(index, 1);
                                 if (this.state.schedules.length === 0) {
-                                    this._addSchedule(null, true); 
+                                    this._addSchedule(null, true);
                                 }
-                                
+
                                 if (this.state.activeScheduleIndex >= index) {
                                     this.state.activeScheduleIndex = Math.max(0, this.state.schedules.length - 1);
                                 }
-                                
+
                                 this.updateFullUI();
                                 this._showToast('success', 'تم حذف الجدول');
                             }
@@ -1661,10 +1698,10 @@
                         const panel = this.dom.detailsPanel;
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const isSelected = activeSchedule.sections.has(section.uniqueId);
-                        
+
                         const tempSelectedDetails = Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
                         const isConflicted = !isSelected && this._isSectionConflicted(section, tempSelectedDetails);
-                        
+
                         const conflictBanner = isConflicted ? `<div class="conflict-banner"><i class="ri-alert-fill"></i> شعبة متعارضة مع جدولك الحالي</div>` : '';
 
                         const courseSections = group.sections.filter(s => !this.state.userSettings.hideClosedCourses || !s.status.includes('مغلقة')).sort((a, b) => a.section.localeCompare(b.section, undefined, {numeric: true}));
@@ -1699,14 +1736,14 @@
                             const btn = panel.querySelector('#details-action-btn');
                             btn.className = `details-action-btn ${actionBtnClass}`;
                             btn.innerHTML = `<i class="${actionBtnIcon}"></i> ${actionBtnText}`;
-                            
+
                             const oldBanner = panel.querySelector('.conflict-banner');
                             if(oldBanner) oldBanner.remove();
                             if(conflictBanner) panel.insertAdjacentHTML('afterbegin', conflictBanner);
                         }
-                        
+
                         panel.querySelector('.details-close-btn').onclick = () => this._hideMobileSectionDetails();
-                        
+
                         panel.querySelector('#details-action-btn').onclick = () => {
                              let success = false;
                              if (activeSchedule.sections.has(section.uniqueId)) {
@@ -1714,19 +1751,19 @@
                              } else {
                                  success = this._addSectionAndLink(section.uniqueId, activeSchedule);
                              }
-                            
+
                              if (success) {
                                  this.updateCalendarAndConflicts();
                                  this._showMobileSectionDetails(section, group, false); // Re-render details without rebuilding panel
                              }
                         };
-                        
+
                         const prevBtn = panel.querySelector('#details-prev-btn');
                         if (prevBtn) {
                            prevBtn.disabled = currentIndex <= 0;
                            prevBtn.onclick = () => { if(currentIndex > 0) this._showMobileSectionDetails(courseSections[currentIndex - 1], group, true)};
                         }
-                        
+
                         const nextBtn = panel.querySelector('#details-next-btn');
                         if (nextBtn) {
                            nextBtn.disabled = currentIndex >= courseSections.length - 1;
@@ -1743,7 +1780,7 @@
                     _handleViewAllConflicts(conflictMap) {
                         const allConflictingIds = new Set(conflictMap.keys());
                         const conflictingSections = Array.from(allConflictingIds).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-                        
+
                         const visited = new Set();
                         const conflictGroups = [];
 
@@ -1752,7 +1789,7 @@
                                 const group = new Set([section]);
                                 visited.add(section.uniqueId);
                                 const queue = [section];
-                                
+
                                 while(queue.length > 0) {
                                     const current = queue.shift();
                                     conflictingSections.forEach(other => {
@@ -1791,7 +1828,7 @@
                                     </div>
                                 </div>`;
                             }).join('');
-                            
+
                             return `<div class="conflict-group-container">
                                 <div class="conflict-group-title">مجموعة التعارض ${this._toArabicNumerals(groupIndex + 1)}</div>
                                 ${groupItemsHTML}
@@ -2007,7 +2044,7 @@
                         document.documentElement.style.setProperty('--rgb-primary', pRgb);
                         document.documentElement.style.setProperty('--primary-hue', String(pHue));
                         document.documentElement.style.setProperty('--secondary-hue', String((pHue + 40) % 360));
-                        
+
                         const modeToggle = this.dom.settingsModal.querySelector('.mode-toggle');
                         if (modeToggle) {
                             modeToggle.innerHTML = `<button class="mode-btn ${this.state.userSettings.theme==='dark'?'active':''}" data-theme="dark">ظلام</button><button class="mode-btn ${this.state.userSettings.theme==='light'?'active':''}" data-theme="light">نهار</button>`;
@@ -2020,7 +2057,7 @@
                             };
                         }
                         this._populateAccentColorPicker();
-                        
+
                         const weekendToggle = this.dom.settingsModal.querySelector('#show-weekend-toggle');
                         if (weekendToggle) {
                             weekendToggle.checked = this.state.userSettings.showWeekends;
@@ -2031,7 +2068,7 @@
                                 this.updateCalendarAndConflicts();
                             };
                         }
-                        
+
                         const closedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
                         if (closedToggle) {
                             closedToggle.checked = this.state.userSettings.hideClosedCourses;
@@ -2062,7 +2099,7 @@
                         const customLabel = document.createElement('label');
                         customLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
                         customLabel.style.backgroundColor = isCustom ? this.state.userSettings.accentColor : 'transparent';
-                        customLabel.style.backgroundImage = isCustom ? 'none' : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)';
+                        customLabel.classList.toggle('is-placeholder', !isCustom);
                         customLabel.innerHTML = `<input type="color" class="color-picker-input" value="${this.state.userSettings.accentColor}">`;
                         customLabel.querySelector('input').oninput = e => {
                             this.state.userSettings.accentColor = e.target.value;
