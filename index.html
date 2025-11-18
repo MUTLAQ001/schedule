@@ -150,9 +150,6 @@
             }
             .bookmarklet-button:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 25px rgba(var(--rgb-primary), 0.3); }
             .bookmarklet-button i { font-size: 1.2rem; }
-            .install-actions { display: flex; flex-direction: column; gap: 1rem; text-align: center;}
-            .or-divider { color: var(--color-text-muted); font-weight: 600; margin: 0.5rem 0;}
-
              #install-section-mobile ol { list-style: none; padding: 0; margin: 0 0 1.5rem 0;}
              #install-section-mobile li { 
                 position: relative; 
@@ -247,8 +244,7 @@
                 display: inline-flex; align-items: center; gap: 0.5rem; transition: all var(--transition);
             }
             .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: var(--color-primary); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
-            .demo-badge { font-size: .8rem; font-weight: 700; padding: .2rem .7rem; border-radius: 99px; background: rgba(var(--rgb-warning), 0.15); color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.3); }
-
+            
             .card { 
                 width: 100%; height: 100%; background-color: var(--color-card); 
                 border: 1px solid var(--color-border); border-radius: var(--radius); 
@@ -350,7 +346,7 @@
             .swal-popup-animation-in { animation: swal-scale-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
             
-            /* START: Toast Improvement */
+            
             .swal2-toast {
                 border-radius: var(--radius-md) !important;
                 border: 1px solid var(--color-border) !important;
@@ -383,7 +379,6 @@
             .swal2-icon.swal2-warning .swal2-icon-content {
                 font-size: 2.2rem !important;
             }
-            /* END: Toast Improvement */
             .swal2-timer-progress-bar { background: linear-gradient(to right, var(--color-primary), var(--color-primary-dark)); height: 4px !important; }
 
 
@@ -452,7 +447,6 @@
             .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); }
             .action-picker-option.selected { color: var(--color-primary); font-weight: 700; background-color: transparent; }
             
-            /* Styles for Data Management Buttons */
             .data-actions-group { display: flex; gap: 0.5rem; }
             .data-btn {
                 background: rgba(255, 255, 255, 0.05); border: 1px solid var(--color-border);
@@ -502,7 +496,7 @@
             .light .conflict-extra-details.visible { background: rgba(0,0,0,0.03); }
 
             .mobile-wrapper, .mobile-nav { display: none; }
-            #mobile-my-schedule-list { padding: 1rem; padding-bottom: calc(1rem + 65px); /* Space for sticky footer */ display: flex; flex-direction: column; gap: 1rem; flex-grow: 1; overflow-y: auto; min-height: 0; }
+            #mobile-my-schedule-list { padding: 1rem; padding-bottom: calc(1rem + 65px); display: flex; flex-direction: column; gap: 1rem; flex-grow: 1; overflow-y: auto; min-height: 0; }
             .mobile-schedule-item { background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3); }
             .light .mobile-schedule-item { box-shadow: 0 8px 25px -10px rgba(0,0,0,0.1); }
             .mobile-schedule-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; }
@@ -515,7 +509,7 @@
             .mobile-detail-row i { color: var(--color-primary); font-size: 1.2rem; min-width: 20px; text-align: center; }
             .mobile-detail-row strong { color: var(--color-text-muted); }
             .mobile-schedule-footer {
-                position: fixed; bottom: 75px; /* Sits above the main nav */
+                position: fixed; bottom: 75px; 
                 left: 0; right: 0; z-index: 90;
                 padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom) - env(safe-area-inset-bottom));
                 background-color: var(--color-card);
@@ -524,7 +518,7 @@
                 display: flex; align-items: center; gap: 0.75rem;
                 box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2);
                 transition: transform 0.3s ease;
-                transform: translateY(200%); /* Hidden by default */
+                transform: translateY(200%); 
             }
             #mobile-my-schedule-container:not(.empty) .mobile-schedule-footer {
                 transform: translateY(0);
@@ -582,8 +576,6 @@
                 #mobile-calendar-view .main-content { padding: 1rem; }
                 #mobile-calendar-view .schedule-tabs-container { margin-top: 0; }
                 #mobile-courses-view { padding-left: 1rem; padding-right: 1rem; }
-                .schedule-tabs-container .demo-badge { margin-right: auto; margin-left: 0.5rem;}
-
 
                 #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
                 .mobile-calendar-scroll-wrapper { overflow-x: auto; height: 100%; -webkit-overflow-scrolling: touch; direction: ltr; }
@@ -712,14 +704,14 @@
         
         <div class="page-wrapper">
             <main class="main-content custom-scrollbar">
-                <header class="main-header"><div id="main-header-title-wrapper"><h1><i class="ri-calendar-event-line"></i> QU Schedule</h1></div><div class="header-actions"><button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button><button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button></div></header>
+                <header class="main-header"><h1><i class="ri-calendar-event-line"></i> QU Schedule</h1><div class="header-actions"><button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button><button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button></div></header>
                 <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
                 <div class="calendar-wrapper card"><div id='calendar'></div></div>
                 <div class="my-schedule-container" id="my-schedule-container"></div>
             </main>
             <aside class="sidebar">
                 <header class="sidebar-header"><h2><i class="ri-stack-line"></i> المقررات</h2></header>
-                <div class="sidebar-content-wrapper"><div class="sidebar-tabs"><button class="tab-btn active" data-tab="courses-tab"><i class="ri-layout-grid-line"></i> المقررات المتاحة</button><button class="tab-btn" data-tab="exams-tab"><i class="ri-file-list-3-line"></i> الاختبارات النهائية</button></div><div id="courses-tab" class="tab-content active custom-scrollbar"><div id="desktop-courses-list"><div class="no-data" id="no-data-message"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>اسحب الأداة من شريط الإشارات المرجعية وضعها في صفحة المقررات المطروحة لتظهر هنا.</p></div></div></div><div id="exams-tab" class="tab-content custom-scrollbar"><div id="desktop-exams-list"></div></div></div>
+                <div class="sidebar-content-wrapper"><div class="sidebar-tabs"><button class="tab-btn active" data-tab="courses-tab"><i class="ri-layout-grid-line"></i> المقررات المتاحة</button><button class="tab-btn" data-tab="exams-tab"><i class="ri-file-list-3-line"></i> الاختبارات النهائية</button></div><div id="courses-tab" class="tab-content active custom-scrollbar"><div id="desktop-courses-list"><div class="no-data" id="no-data-message"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>اسحب QU Schedule من شريط الإشارات المرجعية وضعها في صفحة المقررات المطروحة لتظهر هنا.</p></div></div></div><div id="exams-tab" class="tab-content custom-scrollbar"><div id="desktop-exams-list"></div></div></div>
                 <footer class="sidebar-footer"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ri-telegram-line"></i> MUTLAQ1</a></footer>
             </aside>
         </div>
@@ -743,7 +735,7 @@
             <div id="mobile-courses-view" class="mobile-view-content">
                 <aside class="sidebar">
                     <header class="sidebar-header"><h2><i class="ri-stack-line"></i> المقررات</h2></header>
-                    <div class="sidebar-content-wrapper"><div class="sidebar-tabs"><button class="tab-btn active" data-tab="mobile-courses-tab"><i class="ri-layout-grid-line"></i> المقررات</button><button class="tab-btn" data-tab="mobile-exams-tab"><i class="ri-file-list-3-line"></i> الاختبارات</button></div><div id="mobile-courses-tab" class="tab-content active custom-scrollbar"><div id="mobile-courses-list"></div></div><div id="mobile-exams-tab" class="tab-content custom-scrollbar"><div id="mobile-exams-list"></div></div></div>
+                    <div class="sidebar-content-wrapper"><div class="sidebar-tabs"><button class="tab-btn" data-tab="mobile-courses-tab"><i class="ri-layout-grid-line"></i> المقررات</button><button class="tab-btn" data-tab="mobile-exams-tab"><i class="ri-file-list-3-line"></i> الاختبارات</button></div><div id="mobile-courses-tab" class="tab-content active custom-scrollbar"><div id="mobile-courses-list"></div></div><div id="mobile-exams-tab" class="tab-content custom-scrollbar"><div id="mobile-exams-list"></div></div></div>
                 </aside>
             </div>
             <div id="mobile-my-schedule-view" class="mobile-view-content">
@@ -892,7 +884,6 @@
                         activeScheduleIndex: 0,
                         hiddenCourseCodes: new Set(),
                         customColors: {},
-                        isDemoMode: false,
                         userSettings: {
                             theme: 'dark',
                             accentColor: '#8b5cf6',
@@ -938,7 +929,6 @@
                                 const courses = JSON.parse(storedCourses);
                                 if (!Array.isArray(courses)) throw new Error("Stored data is not a valid array.");
                                 
-                                this.state.isDemoMode = false;
                                 this._processAndDisplayData(courses);
                                 this._loadSchedules();
                                 this.updateFullUI();
@@ -956,7 +946,6 @@
                     _listenForDataFromOpener() {
                         window.addEventListener('message', (event) => {
                             if (event.data && event.data.type === 'universityCoursesData') {
-                                this.state.isDemoMode = false;
                                 const courses = event.data.data;
                                 localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
                                 
@@ -1009,11 +998,10 @@
                         document.getElementById('no-data-message').style.display = 'none';
                         this._renderCoursesList();
                         this._buildSettingsModal();
-                        this._toggleDemoBadge();
                     },
                     _loadSchedules() {
                         const stored = localStorage.getItem(this.constants.STORAGE_KEYS.SCHEDULES);
-                        if (stored && !this.state.isDemoMode) {
+                        if (stored) {
                             try {
                                 const parsed = JSON.parse(stored);
                                 if (parsed && Array.isArray(parsed.schedules) && parsed.schedules.length > 0) {
@@ -1038,7 +1026,6 @@
                         }
                     },
                     _saveSchedules() {
-                        if (this.state.isDemoMode) return;
                         const serializableSchedules = {
                            activeScheduleIndex: this.state.activeScheduleIndex,
                            schedules: this.state.schedules.map(s => ({ 
@@ -1051,12 +1038,11 @@
                     },
                     _loadCustomColors() {
                         const stored = localStorage.getItem(this.constants.STORAGE_KEYS.COLORS);
-                        if (stored && !this.state.isDemoMode) {
+                        if (stored) {
                             try { this.state.customColors = JSON.parse(stored); } catch (e) { localStorage.removeItem(this.constants.STORAGE_KEYS.COLORS); }
                         }
                     },
                     _saveCustomColors() {
-                        if (this.state.isDemoMode) return;
                         localStorage.setItem(this.constants.STORAGE_KEYS.COLORS, JSON.stringify(this.state.customColors));
                     },
                     updateFullUI() {
@@ -1118,13 +1104,6 @@
                                 tab.querySelector('.delete-schedule-btn').addEventListener('click', (e) => { e.stopPropagation(); this._deleteSchedule(index); });
                                 fragment.appendChild(tab);
                             });
-                             
-                             if (this.state.isDemoMode) {
-                                const demoBadge = document.createElement('div');
-                                demoBadge.className = 'demo-badge';
-                                demoBadge.textContent = 'وضع المعاينة';
-                                fragment.appendChild(demoBadge);
-                             }
 
                             const addButton = document.createElement('button');
                             addButton.id = 'add-schedule-btn';
@@ -1168,7 +1147,7 @@
                             this.dom.desktopCoursesList.innerHTML = html || '';
                         }
                         if (this.dom.mobileCoursesList) {
-                            this.dom.mobileCoursesList.innerHTML = html || `<div class="no-data"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>استخدم الأداة لتحميل بيانات المواد.</p></div>`;;
+                            this.dom.mobileCoursesList.innerHTML = html || `<div class="no-data"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>استخدم QU Schedule لتحميل بيانات المواد.</p></div>`;;
                         }
                     },
                     _renderMyScheduleSummary(selectedCourses, conflictMap) {
@@ -1339,8 +1318,7 @@
                         const ids = [
                             'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
                             'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 
-                            'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper',
-                            // Mobile specific
+                            'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
                             'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
                             'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
                             'mobile-section-details-overlay', 'details-panel'
@@ -1607,8 +1585,6 @@
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
                         const container = this.dom.installSectionContainer;
                         
-                        const demoBtn = `<button class="data-btn" id="demo-mode-btn"><i class="ri-eye-line"></i> ألقِ نظرة</button>`;
-                        
                         if (isMobile) {
                              container.innerHTML = `
                                 <div id="install-header">
@@ -1621,21 +1597,16 @@
                                         <li data-step="2">اذهب لصفحة "المقررات المطروحة" في موقع الجامعة.</li>
                                         <li data-step="3">الصق الكود في شريط العنوان ثم اضغط "اذهب".</li>
                                     </ol>
-                                    <div class="install-actions">
-                                        <div class="code-container">
-                                            <pre><span class="highlight">javascript:</span>!function(){...}();</pre>
-                                        </div>
-                                        <button id="copy-code-btn"><i class="ri-clipboard-line"></i> نسخ الكود</button>
-                                        <div class="or-divider">أو</div>
-                                        ${demoBtn}
+                                    <div class="code-container">
+                                        <pre><span class="highlight">javascript:</span>!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();</pre>
                                     </div>
+                                    <button id="copy-code-btn"><i class="ri-clipboard-line"></i> نسخ الكود</button>
                                     <div class="js-warning">
                                         قد يحذف المتصفح <code>javascript:</code> تأكد من إعادتها يدوياً.
                                     </div>
                                 </div>
                             `;
                             const copyBtn = container.querySelector('#copy-code-btn');
-                            copyBtn.previousElementSibling.querySelector('pre').textContent = code; // Update code in pre tag safely
                             copyBtn.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 navigator.clipboard.writeText(code).then(() => {
@@ -1652,15 +1623,10 @@
                                     <h2>التثبيت على الكمبيوتر</h2>
                                 </div>
                                 <p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك، ثم اضغط عليه وأنت في صفحة المقررات المطروحة.</p>
-                                <div class="install-actions">
-                                   <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ri-magic-line"></i> أداة QU Schedule</a>
-                                   <div class="or-divider">أو</div>
-                                   ${demoBtn}
-                                </div>
+                                <br>
+                                <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ri-magic-line"></i> QU Schedule</a>
                             `;
                         }
-
-                        document.getElementById('demo-mode-btn')?.addEventListener('click', () => this._startDemoMode());
                     },
                     _initializeCalendar() {
                         if (this.state.calendar) this.state.calendar.destroy();
@@ -1702,10 +1668,6 @@
                         }
                     },
                     _deleteSchedule(index) {
-                        if(this.state.schedules.length <= 1){
-                             this._showToast('error', 'لا يمكن حذف الجدول الوحيد.');
-                             return;
-                        }
                         const scheduleName = this.state.schedules[index].name;
                         Swal.fire({
                             title: `حذف "${scheduleName}"؟`, text: "لا يمكن التراجع عن هذا الإجراء.", icon: 'warning',
@@ -1713,9 +1675,14 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 this.state.schedules.splice(index, 1);
+                                if (this.state.schedules.length === 0) {
+                                    this._addSchedule(null, true); 
+                                }
+                                
                                 if (this.state.activeScheduleIndex >= index) {
                                     this.state.activeScheduleIndex = Math.max(0, this.state.activeScheduleIndex - 1);
                                 }
+                                
                                 this.updateFullUI();
                                 this._showToast('success', 'تم حذف الجدول');
                             }
@@ -1981,7 +1948,6 @@
                         this._applySettings();
                     },
                     _saveSettings() {
-                         if (this.state.isDemoMode) return;
                         this.state.userSettings.hiddenCourseCodes = Array.from(this.state.hiddenCourseCodes);
                         localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS, JSON.stringify(this.state.userSettings));
                     },
@@ -2076,9 +2042,6 @@
                         if (!activeSchedule || activeSchedule.sections.size === 0) {
                             return Swal.fire('الجدول الحالي فارغ!', 'الرجاء اختيار بعض الشعب أولاً.', 'warning');
                         }
-                        if(this.state.isDemoMode){
-                            return Swal.fire('لا يمكن التصدير!', 'لا يمكنك تصدير الجدول في وضع المعاينة.', 'info');
-                        }
                         const dataStr = JSON.stringify({ version: 20, schedule: Array.from(activeSchedule.sections), linked: Array.from(activeSchedule.linkedSections.entries()).map(([k, v]) => [k, Array.from(v)]) });
                         const blob = new Blob([dataStr], { type: 'application/json' });
                         const url = URL.createObjectURL(blob);
@@ -2098,7 +2061,6 @@
                              e.target.value = '';
                              return;
                         }
-                        if(this.state.isDemoMode) this.state.isDemoMode = false;
                         const reader = new FileReader();
                         reader.onload = (event) => {
                             try {
@@ -2300,42 +2262,6 @@
                         document.addEventListener('click', (e) => {
                             if (!wrapper.contains(e.target)) closePanel();
                         });
-                    },
-                     _startDemoMode() {
-                        this.state.isDemoMode = true;
-                        const demoCourses = [
-                            {"code":"ACCT 221","name":"مبادئ المحاسبة المتوسطة","hours":"3","section":"200","type":"محاضرة","status":"مفتوحة","instructor":"سارة عبدالله","time":"الأحد: 09:30 ص - 10:45 ص<br>الثلاثاء: 09:30 ص - 10:45 ص","location":"مبنى A - قاعة 101","examPeriodId":"5"},
-                            {"code":"CS 101","name":"مقدمة في علوم الحاسب","hours":"3","section":"201","type":"محاضرة","status":"مفتوحة","instructor":"أحمد خالد","time":"الأحد: 08:00 ص - 09:15 ص<br>الثلاثاء: 08:00 ص - 09:15 ص","location":"مبنى C - قاعة 204","examPeriodId":"3"},
-                            {"code":"CS 101","name":"مقدمة في علوم الحاسب","hours":"0","section":"202","type":"عملي","status":"مفتوحة","instructor":"علي محمد","time":"الأربعاء: 10:00 ص - 11:50 ص","location":"مبنى C - معمل 1","examPeriodId":null},
-                            {"code":"MKT 201","name":"مبادئ التسويق","hours":"3","section":"205","type":"محاضرة","status":"مفتوحة","instructor":"فاطمة الزهراء","time":"الاثنين: 11:00 ص - 12:15 م<br>الأربعاء: 11:00 ص - 12:15 م","location":"مبنى B - قاعة 302","examPeriodId":"8"},
-                            {"code":"ENG 110","name":"كتابة إنجليزية","hours":"3","section":"210","type":"محاضرة","status":"مفتوحة","instructor":"John Smith","time":"الاثنين: 02:00 م - 03:15 م<br>الخميس: 02:00 م - 03:15 م","location":"مبنى اللغات - L20","examPeriodId":"5"},
-                            {"code":"FIN 220","name":"مبادئ التمويل","hours":"3","section":"215","type":"محاضرة","status":"مغلقة","instructor":"عبدالرحمن عمر","time":"الأحد: 01:00 م - 02:15 م<br>الثلاثاء: 01:00 م - 02:15 م","location":"مبنى B - قاعة 303","examPeriodId":"7"}
-                        ];
-                        this.state.schedules = [];
-                        this.state.customColors = {};
-                        this._addSchedule("الجدول التجريبي", true);
-                        this._processAndDisplayData(demoCourses);
-                        this.updateFullUI();
-                        this._showToast('info', 'مرحباً بك في وضع المعاينة!');
-                    },
-                    _toggleDemoBadge(){
-                        if(isMobile) {
-                             this._renderScheduleTabs(); // handles badge logic internally
-                        } else {
-                            const wrapper = this.dom.mainHeaderTitleWrapper;
-                            if(!wrapper) return;
-                             let badge = wrapper.querySelector('.demo-badge');
-                            if(this.state.isDemoMode) {
-                                if(!badge){
-                                     badge = document.createElement('div');
-                                     badge.className = 'demo-badge';
-                                     badge.textContent = 'وضع المعاينة';
-                                     wrapper.appendChild(badge);
-                                }
-                            } else {
-                                if(badge) badge.remove();
-                            }
-                        }
                     }
                 });
 
