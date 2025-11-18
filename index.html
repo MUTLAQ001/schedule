@@ -66,6 +66,23 @@
               }
             }
 
+            @keyframes swal-toast-enter {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px) scale(0.95);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0) scale(1);
+                }
+            }
+            @keyframes swal-toast-exit {
+                to {
+                    opacity: 0;
+                    transform: translateY(20px) scale(0.95);
+                }
+            }
+
 
             *, *::before, *::after { 
                 box-sizing: border-box; 
@@ -333,8 +350,6 @@
 
             html.swal2-shown, body.swal2-shown { overflow: hidden !important; }
             .swal2-container { z-index: 4000 !important; }
-            .swal2-container.swal2-top, .swal2-container.swal2-center, .swal2-container.swal2-bottom { pointer-events: none; }
-            .swal2-popup, .swal2-toast { pointer-events: all; }
             .swal2-popup { background: var(--color-card)!important; color: var(--color-text)!important; border-radius: var(--radius)!important; border: 1px solid var(--color-border)!important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
             .swal2-popup.wide-swal { max-width: 600px; width: 95%; }
             .swal2-title { color: var(--color-text-dark)!important; font-family: var(--font-title) !important; }
@@ -345,11 +360,51 @@
             .light .swal2-cancel { background: rgba(0,0,0,0.1)!important; }
             .swal-popup-animation-in { animation: swal-scale-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
-            .swal2-container .swal2-toast { width: auto !important; max-width: calc(100% - 2rem); box-shadow: 0 5px 20px rgba(0,0,0,0.3) !important; }
-            .light .swal2-container .swal2-toast { box-shadow: 0 5px 20px rgba(0,0,0,0.1) !important; }
-            .swal2-toast .swal2-title { font-size: .9rem !important; }
-            .swal2-toast.swal2-icon-show .swal2-title { margin: 0.5em 2.6em 0.5em 1em !important; }
+            .swal-toast-enter { animation: swal-toast-enter .3s cubic-bezier(0.2, 0.8, 0.2, 1); }
+            .swal-toast-exit { animation: swal-toast-exit .3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
             
+            .swal2-container .swal2-toast {
+                padding: 1rem 1.25rem;
+                background: var(--color-card)!important;
+                border-radius: var(--radius-md) !important;
+                border: 1px solid var(--color-border) !important;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 10px 30px -5px rgba(0,0,0,0.3) !important;
+                width: auto !important;
+                max-width: 380px;
+            }
+            .light .swal2-container .swal2-toast { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1) !important; }
+            .swal2-toast .swal2-title {
+                font-size: 1rem !important;
+                font-weight: 600;
+                color: var(--color-text-dark) !important;
+                margin: 0 !important;
+            }
+            .swal2-toast .swal2-icon {
+                margin: 0 0 0 1em !important;
+                grid-column: 2 !important;
+                grid-row: 1/span 1 !important;
+                align-self: center !important;
+            }
+            .swal2-toast.swal2-icon-show .swal2-title {
+                 margin-right: 3.2em !important;
+            }
+            .swal2-timer-progress-bar-container {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                overflow: hidden;
+                border-bottom-left-radius: var(--radius-md);
+                border-bottom-right-radius: var(--radius-md);
+            }
+            .swal2-timer-progress-bar {
+                background: var(--color-primary) !important;
+                height: 4px !important;
+            }
+
+
             .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .modal-overlay.open { opacity: 1; visibility: visible; }
             .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--color-card); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--color-border); will-change: transform, opacity; }
@@ -396,15 +451,14 @@
             .course-visibility-btn.visible .color-dot { background-color: var(--item-color); box-shadow: 0 0 8px var(--item-color); }
             .course-visibility-btn.visible:hover { background-color: rgba(var(--item-color-rgb), 0.15); }
             
-            /* -- UPDATED STYLE for HIDDEN COURSES -- */
             .course-visibility-btn.hidden {
-                background-color: #2a2a2e; /* Dark background */
-                border-color: #3f3f46; /* Slightly lighter border */
+                background-color: #2a2a2e;
+                border-color: #3f3f46;
                 color: var(--color-text-muted);
             }
             .course-visibility-btn.hidden .color-dot {
                 background-color: var(--color-text-muted);
-                opacity: 0.5; /* Dim the color dot */
+                opacity: 0.5;
             }
             .course-visibility-btn.hidden:hover {
                 background-color: #343438;
@@ -1482,9 +1536,6 @@
                         });
                     },
                     _showToast(icon, title) {
-                         const customClass = {popup: 'swal2-toast'};
-                         if(icon === 'warning') customClass.icon = 'swal2-icon-warning';
-
                          Swal.fire({ 
                             toast: true, 
                             position: isMobile ? 'bottom' : 'bottom-end', 
@@ -1493,8 +1544,9 @@
                             showConfirmButton: false, 
                             timer: 3000, 
                             timerProgressBar: true,
-                            customClass: customClass,
-                            showClass: { popup: 'swal2-show', backdrop: 'swal2-backdrop-show', icon: 'swal2-icon-show' }
+                            customClass: { popup: 'swal2-toast' },
+                            showClass: { popup: 'swal-toast-enter' },
+                            hideClass: { popup: 'swal-toast-exit' },
                         });
                     },
                     _handleTabClick(button) {
@@ -1691,7 +1743,7 @@
                         const tempSelectedDetails = Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
                         const isConflicted = !isSelected && this._isSectionConflicted(section, tempSelectedDetails);
                         
-                        const conflictBanner = isConflicted ? `<div class="conflict-banner"><i class="ri-alert-fill"></i> شعبة متعارضة مع جدولك الحالي</div>` : '';
+                        const conflictBanner = isConflicted ? `<div class="conflict-banner"><i class="ri-alert-fill"></i> شعبة متعارضة مع جدولك الحالي</div>` : ``;
 
                         const courseSections = group.sections.filter(s => !this.state.userSettings.hideClosedCourses || !s.status.includes('مغلقة')).sort((a, b) => a.section.localeCompare(b.section, undefined, {numeric: true}));
                         const currentIndex = courseSections.findIndex(s => s.uniqueId === section.uniqueId);
@@ -2087,8 +2139,10 @@
                         const isCustom = !Object.values(this.constants.PRESET_COLORS).includes(this.state.userSettings.accentColor);
                         const customLabel = document.createElement('label');
                         customLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
+                        
                         customLabel.style.backgroundColor = isCustom ? this.state.userSettings.accentColor : 'transparent';
                         customLabel.style.backgroundImage = isCustom ? 'none' : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)';
+
                         customLabel.innerHTML = `<input type="color" class="color-picker-input" value="${this.state.userSettings.accentColor}">`;
                         customLabel.querySelector('input').oninput = e => {
                             this.state.userSettings.accentColor = e.target.value;
