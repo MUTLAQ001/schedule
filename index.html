@@ -273,7 +273,7 @@
 
             .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) .1s both; overflow-x: auto;}
             .light .schedule-tabs-container { background: rgba(0,0,0,0.05); }
-            .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
+            .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
             .schedule-tab-name { outline: none; }
             .schedule-tab .delete-schedule-btn { font-size: 1.1rem; color: rgba(255,255,255,0.6); background: none; border: none; padding: 0; margin-right: -5px; display: none; cursor: pointer; }
             .schedule-tab.active .delete-schedule-btn { display: inline-block; }
@@ -366,16 +366,16 @@
                 -webkit-backdrop-filter: blur(10px);
                 box-shadow: 0 10px 30px -10px rgba(0,0,0,0.4);
                 border-radius: var(--radius-md);
-                padding: 0.75rem 1rem;
+                padding: 0.7rem 1.2rem;
             }
             .light .swal2-container .custom-toast.swal2-toast {
                  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
             }
             .custom-toast.swal2-toast .swal2-title {
                 color: var(--color-text-dark);
-                font-size: 0.95rem !important;
+                font-size: 0.9rem !important;
                 font-weight: 600;
-                margin: 0.5em 2.4em 0.5em 1em !important;
+                margin: 0.5em 2.5em 0.5em 1em !important;
             }
             .custom-toast.swal2-toast .swal2-timer-progress-bar {
                 background: var(--color-primary);
@@ -675,6 +675,7 @@
             }
 
             .schedule-tab.active {
+                color: white;
                 background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
                 background-size: 200% 200%;
                 animation: shimmer 5s ease infinite;
@@ -1800,6 +1801,18 @@
                     _hideMobileSectionDetails() {
                         this.dom.mobileSectionDetailsOverlay.classList.remove('open');
                     },
+                    _getPluralizedSectionString(count) {
+                        if (count === 1) {
+                            return "شعبة واحدة";
+                        }
+                        if (count === 2) {
+                            return "شعبتين";
+                        }
+                        if (count >= 3 && count <= 10) {
+                            return `${count} شعب`;
+                        }
+                        return `${count} شعبة`;
+                    },
                     _handleViewAllConflicts(conflictMap) {
                         const allConflictingIds = new Set(conflictMap.keys());
                         const conflictingSections = Array.from(allConflictingIds).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
@@ -1895,7 +1908,9 @@
                                     const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                                     sectionsToRemove.forEach(id => this._removeSectionAndUnlink(id, activeSchedule));
                                     this.updateFullUI();
-                                    this._showToast('success', `تم حل التعارضات وإزالة ${sectionsToRemove.length} شعبة.`);
+                                    const removedCount = sectionsToRemove.length;
+                                    const pluralizedString = this._getPluralizedSectionString(removedCount);
+                                    this._showToast('success', `تم حل التعارضات وإزالة ${pluralizedString}.`);
                                 } else {
                                      this._showToast('info', 'لم يتم إجراء أي تغييرات.');
                                 }
