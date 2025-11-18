@@ -53,40 +53,22 @@
                 --color-text-dark: #18181b;
             }
 
-            @keyframes graceful-enter {
-                from {
-                    opacity: 0;
-                    transform: translateY(15px) scale(0.98);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0) scale(1);
-                }
-            }
-
+            @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px) } to { opacity: 1; transform: translateY(0) } }
+            @keyframes scaleIn { from { opacity: 0; transform: scale(.95) } to { opacity: 1; transform: scale(1) } }
             @keyframes gradient-animation { 0% { background-position: 0% 50% } 50% { background-position: 100% 50% } 100% { background-position: 0% 50% } }
             @keyframes swal-scale-in { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
             @keyframes swal-scale-out { from { transform: scale(1); opacity: 1; } to { transform: scale(0.9); opacity: 0; } }
-
-            @keyframes swal-toast-enter {
-                from {
-                    opacity: 0;
-                    transform: translateY(20px) scale(0.9);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0) scale(1);
-                }
-            }
-            @keyframes swal-toast-exit {
-                to {
-                    opacity: 0;
-                    transform: translateY(20px) scale(0.9);
-                }
+            
+            @keyframes rowIn {
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
             }
 
-            *, *::before, *::after {
-                box-sizing: border-box;
+
+            *, *::before, *::after { 
+                box-sizing: border-box; 
                 -webkit-tap-highlight-color: transparent;
                 -webkit-touch-callout: none;
             }
@@ -122,35 +104,38 @@
                 position: fixed; top: 0; left: 0; width: 100%; height: 100%;
                 background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
                 z-index: 2000;
-                display: none;
+                display: none; 
                 align-items: center; justify-content: center;
                 padding: 1rem;
                 opacity: 0;
                 transition: opacity 0.3s ease;
             }
-            #install-overlay.visible {
+             #install-overlay.visible {
                 opacity: 1;
             }
-            .desktop-view #install-overlay {
-                align-items: flex-start;
-                padding-top: 5rem;
-            }
-            #install-section-container {
+             .desktop-view #install-overlay { 
+                 align-items: flex-start;
+                 padding-top: 5rem;
+             }
+             #install-section-container {
                 background: var(--color-card);
                 border: 1px solid var(--color-border);
                 border-radius: var(--radius);
                 padding: 2rem;
                 width: 90%; max-width: 500px;
                 box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
-                animation: graceful-enter .5s var(--transition-smooth) both;
+                animation: scaleIn .4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
             }
             .light #install-section-container { box-shadow: 0 25px 50px -12px rgba(0,0,0,0.1); }
-            #install-header { text-align: center; margin-bottom: 2rem; }
+            #install-header {
+                text-align: center;
+                margin-bottom: 2rem;
+            }
             #install-header i {
                 font-size: 3rem; color: var(--color-primary);
                 line-height: 1; margin-bottom: 0.5rem; display: block;
             }
-            #install-header h2 {
+             #install-header h2 {
                 margin: 0; font-family: var(--font-title); font-size: 1.75rem;
                 color: var(--color-text-dark);
             }
@@ -161,17 +146,17 @@
                 color: white; padding: 0.8rem 1.8rem; border-radius: var(--radius-full);
                 font-weight: 700; text-decoration: none; cursor: grab;
                 transition: transform .2s ease, box-shadow .2s ease;
-                box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);
+                 box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);
             }
             .bookmarklet-button:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 8px 25px rgba(var(--rgb-primary), 0.3); }
             .bookmarklet-button i { font-size: 1.2rem; }
-            #install-section-mobile ol { list-style: none; padding: 0; margin: 0 0 1.5rem 0;}
-            #install-section-mobile li {
-                position: relative;
-                padding-right: 2.5rem; margin-bottom: 1.25rem;
+             #install-section-mobile ol { list-style: none; padding: 0; margin: 0 0 1.5rem 0;}
+             #install-section-mobile li { 
+                position: relative; 
+                padding-right: 2.5rem; margin-bottom: 1.25rem; 
                 font-size: 0.95rem; font-weight: 500;
-            }
-            #install-section-mobile li::before {
+             }
+             #install-section-mobile li::before {
                 content: attr(data-step);
                 position: absolute; top: -5px; right: 0;
                 width: 32px; height: 32px;
@@ -180,19 +165,19 @@
                 color: var(--color-primary);
                 display: flex; align-items: center; justify-content: center;
                 font-weight: 700; font-family: var(--font-title);
-            }
+             }
             .code-container { margin-bottom: 1rem; }
             .code-container pre { background: rgba(0,0,0,0.3); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--color-border); font-size: 0.8rem; white-space: pre-wrap; word-wrap: break-word; text-align: left; direction: ltr; }
             .light .code-container pre { background: rgba(0,0,0,0.04); }
             .code-container pre .highlight { color: var(--color-primary); font-weight: 700; }
-            #copy-code-btn {
-                display: block; width: 100%; background: var(--color-primary); color: white; padding: 0.8rem;
+            #copy-code-btn { 
+                display: block; width: 100%; background: var(--color-primary); color: white; padding: 0.8rem; 
                 border-radius: var(--radius-md); border: none; font-weight: 700; font-size: 1rem;
                 cursor: pointer; transition: all .2s ease;
-                box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);
+                 box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);
             }
             #copy-code-btn:hover { background: var(--color-primary-dark); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(var(--rgb-primary), 0.3); }
-            .js-warning {
+            .js-warning { 
                 border-top: 1px solid var(--color-border); padding-top: 1rem; margin-top: 1.5rem;
                 font-size: 0.85rem; text-align: center; color: var(--color-text-muted);
             }
@@ -207,14 +192,44 @@
             .custom-scrollbar::-webkit-scrollbar-thumb:hover { background-color: rgba(var(--rgb-primary), 0.5); }
             .custom-scrollbar::-webkit-scrollbar-button { display: none; }
             .custom-scrollbar { scrollbar-width: thin; scrollbar-color: rgba(var(--rgb-primary), 0.3) transparent; }
-
+            
+            .page-wrapper .sidebar .custom-scrollbar {
+                -ms-overflow-style: none;
+                scrollbar-width: none;
+            }
             .page-wrapper .sidebar .custom-scrollbar::-webkit-scrollbar { display: none; }
-            .page-wrapper .sidebar .custom-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
             .page-wrapper { display: flex; height: 100vh; }
             .main-content { flex-grow: 1; height: 100%; display: flex; flex-direction: column; padding: 2rem; gap: 1.5rem; overflow-y: auto; }
             .sidebar { width: 420px; height: 100%; background-color: var(--color-card); border-left: 1px solid var(--color-border); display: flex; flex-direction: column; flex-shrink: 0; backdrop-filter: blur(16px); }
-            .main-header { display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; animation: graceful-enter .5s var(--transition-smooth) both; }
+            
+            .main-header { 
+                display: flex; justify-content: space-between; align-items: center; 
+                flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) both; 
+                position: sticky;
+                top: -2rem;
+                margin: -2rem -2rem 0;
+                padding: 2rem 2rem 1.5rem;
+                z-index: 100;
+                background-color: rgba(10, 10, 10, 0.5);
+                -webkit-backdrop-filter: blur(12px);
+                backdrop-filter: blur(12px);
+                transition: box-shadow .25s ease;
+                border-bottom: 1px solid transparent;
+            }
+            .light .main-header {
+                 background-color: rgba(244, 244, 245, 0.6);
+                 border-bottom: 1px solid var(--color-border);
+            }
+            .main-content:not([scrollTop="0"]) .main-header {
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            .main-content[scrollTop="0"] .main-header {
+                 background-color: transparent;
+                 -webkit-backdrop-filter: none;
+                 backdrop-filter: none;
+            }
+
             .main-header h1 {
                 font-family: var(--font-title); font-weight: 700; font-size: 2.5rem;
                 background: linear-gradient(90deg,var(--color-primary-dark),var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -227,39 +242,55 @@
                 padding: 0.6rem 1.2rem; border-radius: var(--radius-full); font-size: 0.9rem; font-weight: 600; cursor: pointer;
                 display: inline-flex; align-items: center; gap: 0.5rem; transition: all var(--transition);
             }
-            .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: rgba(var(--rgb-primary), 0.8); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
-            .card { width: 100%; height: 100%; background-color: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); display: flex; flex-direction: column; backdrop-filter: blur(16px); box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; animation: graceful-enter .6s var(--transition-smooth) .2s both; will-change: transform, opacity; }
+            .header-actions button:hover { background: rgba(var(--rgb-primary), 0.2); border-color: var(--color-primary); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
+            
+            .card { 
+                width: 100%; height: 100%; background-color: var(--color-card); 
+                border: 1px solid var(--color-border); border-radius: var(--radius); 
+                display: flex; flex-direction: column; backdrop-filter: blur(16px); 
+                box-shadow: 0 16px 40px -12px rgba(0,0,0,0.4); overflow: hidden; 
+                animation: scaleIn .8s var(--transition-smooth) .2s both; 
+                transition: transform 0.25s ease, box-shadow 0.25s ease;
+            }
+            .card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 20px 45px -15px rgba(0,0,0,0.5);
+            }
+
             .light .card { box-shadow: 0 16px 40px -12px rgba(0,0,0,0.1); }
-            .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: graceful-enter .5s var(--transition-smooth) .1s both; overflow-x: auto;}
+            .light .card:hover { box-shadow: 0 20px 45px -15px rgba(0,0,0,0.15); }
+
+            .schedule-tabs-container { display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: var(--radius); flex-shrink: 0; animation: fadeInUp .8s var(--transition-smooth) .1s both; overflow-x: auto;}
             .light .schedule-tabs-container { background: rgba(0,0,0,0.05); }
             .schedule-tab { padding: 0.6rem 1.2rem; border: none; border-radius: var(--radius-md); background: transparent; color: var(--color-text-muted); font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; }
-            .schedule-tab.active { background: var(--color-primary); color: white; box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2); }
             .schedule-tab-name { outline: none; }
             .schedule-tab .delete-schedule-btn { font-size: 1.1rem; color: rgba(255,255,255,0.6); background: none; border: none; padding: 0; margin-right: -5px; display: none; cursor: pointer; }
             .schedule-tab.active .delete-schedule-btn { display: inline-block; }
             .schedule-tab.active .delete-schedule-btn:hover { color: white; }
             #add-schedule-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); border: 1px solid var(--color-border); font-size: 1.5rem; cursor: pointer; transition: var(--transition); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-            #add-schedule-btn:hover { background: var(--color-primary); color: white; transform: rotate(90deg) scale(1.05); }
+            #add-schedule-btn:hover { background: var(--color-primary); color: white; transform: rotate(90deg); }
             .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
             .calendar-wrapper .card { padding: 1.5rem; }
             #calendar { height: 100%; }
-            .sidebar-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; background-color: rgba(0,0,0,0.1); }
-            .light .sidebar-header { background-color: rgba(0,0,0,0.02); }
+            .sidebar-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
             .sidebar-header h2 { margin: 0; font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--color-text-dark); }
             .sidebar-content-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
             .sidebar-tabs { display: flex; padding: 0.75rem 1rem 0; border-bottom: 1px solid var(--color-border); }
-            .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--color-text-muted); font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); border-bottom: 3px solid transparent; }
+            .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--color-text-muted); font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); border-bottom: 2px solid transparent; }
             .tab-btn.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
             .tab-content { padding: 1rem; display: none; overflow-y: auto; flex-grow: 1; }
             .tab-content.active { display: block; }
-            .sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; background-color: rgba(0,0,0,0.1); }
-            .light .sidebar-footer { background-color: rgba(0,0,0,0.02); }
-            .course-item { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 0.75rem; background-color: transparent; animation: graceful-enter .5s ease both; overflow: hidden; transition: var(--transition); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07); will-change: transform, border-color, box-shadow; contain: content; }
-            .light .course-item { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03); }
-            .course-item:hover { transform: translateY(-4px) scale(1.01); border-color: rgba(var(--rgb-primary), 0.5); box-shadow: inset 0 1px 0 rgba(255,255,255,0.07), 0 8px 25px -10px rgba(0,0,0,0.4); }
-            .light .course-item:hover { box-shadow: inset 0 1px 0 rgba(0,0,0,0.03), 0 8px 25px -10px rgba(0,0,0,0.1); }
+            .sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
+            
+            .course-item { 
+                margin-bottom: 0.75rem; 
+                animation: fadeInUp .5s ease both; 
+                overflow: hidden; 
+                contain: content;
+            }
+
             .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; }
-            .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+            .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
             .course-info { flex-grow: 1; }
             .course-info h3 { margin: 0; font-family: var(--font-title); font-size: 1.1rem; font-weight: 400; color: var(--color-text-dark); }
             .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--color-text-muted); }
@@ -271,84 +302,53 @@
             .section-status-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px; }
             .section-status-dot.open { background-color: var(--color-success); box-shadow-color: var(--color-success); }
             .section-status-dot.closed { background-color: var(--color-danger); box-shadow-color: var(--color-danger); }
-            .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); transform: scale(1.05); }
-            .section-btn.selected { background-color: var(--color-primary); color: white; border-color: var(--color-primary); }
+            .section-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
             .section-btn.conflicted { background-color: rgba(var(--rgb-danger), 0.08); border-color: rgba(var(--rgb-danger),0.5); color: var(--color-text-dark); }
             .section-btn .section-type { font-size: 0.7rem; color: var(--color-text-muted); }
             .section-btn.selected .section-type { color: rgba(255,255,255,0.8); }
             .section-btn.no-time { border-bottom: 3px solid var(--item-color); padding-bottom: calc(0.5rem - 3px); }
             .my-schedule-container { flex-shrink: 0; display: none; flex-direction: column; }
-            .my-schedule-container .card { animation-delay: 200ms; }
+            .my-schedule-container .my-schedule-card { 
+                animation: scaleIn .8s var(--transition-smooth) .2s both;
+            }
             .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
-            .my-schedule-section h3 { margin: 0 0 1.5rem; font-size: 1.5rem; display: flex; align-items: center; gap: .75rem; color: var(--color-primary); flex-shrink: 0; font-family: var(--font-title); }
+            
             .my-schedule-table-wrapper { overflow-x: auto; }
-            .my-schedule-table { width: 100%; border-collapse: collapse; white-space: nowrap; }
-            .my-schedule-table thead th { padding: 1rem; text-align: center; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); font-size: 0.9rem; }
-            .my-schedule-table tbody td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; text-align: center; }
-            .my-schedule-table tbody tr:last-child td { border-bottom: none; }
-            .my-schedule-table tbody tr:hover { background-color: rgba(var(--rgb-primary), 0.05); }
-            .my-schedule-table .course-cell .course-code { font-family: var(--font-title); font-size: 1.1rem; color: var(--color-text-dark); display: inline-flex; align-items: center; gap: 0.5rem; }
-            .my-schedule-table .course-cell .conflict-icon { color: var(--color-warning); font-size: 1.2rem; cursor: help; }
-            .my-schedule-table .course-cell .course-name { font-size: 0.8rem; color: var(--color-text-muted); }
-            .my-schedule-table .section-cell .section-number { font-size: 1.1rem; font-weight: 600; }
-            .my-schedule-table .section-cell .section-type { font-size: 0.8rem; color: var(--color-text-muted); }
             .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; }
             .status-badge::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; }
             .status-badge.status-open { background-color: rgba(var(--rgb-success), 0.1); color: var(--color-success); }
             .status-badge.status-open::before { background-color: var(--color-success); }
             .status-badge.status-closed { background-color: rgba(var(--rgb-danger), 0.1); color: var(--color-danger); }
             .status-badge.status-closed::before { background-color: var(--color-danger); }
-            .hours-value { font-size: 1.3rem; font-weight: 700; color: var(--color-primary); }
+            
             .my-schedule-footer { display: flex; justify-content: space-between; align-items: center; padding-top: 1.5rem; }
-            .total-credits-summary { padding: 0.75rem 1.5rem; font-weight: 600; background: rgba(var(--rgb-primary), 0.1); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius-md); font-size: 1.1rem; color: var(--color-primary); }
+            
             .fc { --fc-border-color: var(--color-border); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; font-family: var(--font-body); }
             .fc-theme-standard .fc-scrollgrid { border: none; }
-            .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; transition: background-color .2s ease; }
-            .fc-event:hover { filter: brightness(1.2); }
+            .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
             .fc-event.preview-event { border-style: dashed !important; border-width: 2px !important; }
             .no-data { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding: 2rem; color: var(--color-text-muted); }
             .no-data i { font-size: 4rem; margin-bottom: 1.5rem; color: var(--color-primary); opacity: 0.5; }
-            .no-data .cta-button { margin-top: 1.5rem; background: var(--color-primary); color: white; padding: .7rem 1.5rem; border-radius: var(--radius-full); border: none; font-weight: 700; cursor: pointer; transition: all .2s ease; box-shadow: 0 4px 15px rgba(var(--rgb-primary), 0.2);}
-            .no-data .cta-button:hover { background: var(--color-primary-dark); transform: translateY(-2px); box-shadow: 0 8px 20px rgba(var(--rgb-primary), 0.3);}
 
-            html.swal2-shown, body.swal2-shown {
-                overflow: hidden !important;
-            }
-
+            html.swal2-shown, body.swal2-shown { overflow: hidden !important; }
+            .swal2-container { z-index: 4000 !important; }
+            .swal2-container.swal2-top, .swal2-container.swal2-center, .swal2-container.swal2-bottom { pointer-events: none; }
+            .swal2-popup, .swal2-toast { pointer-events: all; }
             .swal2-popup { background: var(--color-card)!important; color: var(--color-text)!important; border-radius: var(--radius)!important; border: 1px solid var(--color-border)!important; backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
             .swal2-popup.wide-swal { max-width: 600px; width: 95%; }
             .swal2-title { color: var(--color-text-dark)!important; font-family: var(--font-title) !important; }
             .swal2-html-container { color: var(--color-text-muted)!important; margin: 1em 0 !important; font-size: 1em !important; display: block !important; text-align: right !important; padding: 0 0.5rem; }
-            .swal2-confirm { background: var(--color-primary)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; transition: all .2s ease !important; }
-            .swal2-confirm:hover { transform: translateY(-2px); filter: brightness(1.1); }
+            .swal2-confirm { background: var(--color-primary)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; }
             .swal2-confirm:focus { box-shadow: 0 0 0 3px rgba(var(--rgb-primary),0.5)!important }
             .swal2-cancel { background: rgba(255,255,255,0.1)!important; color: var(--color-text)!important; border-radius: var(--radius-full)!important; padding: .6rem 1.5rem!important; font-family: var(--font-body)!important; }
             .light .swal2-cancel { background: rgba(0,0,0,0.1)!important; }
             .swal-popup-animation-in { animation: swal-scale-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
-
-            .swal-toast-enter { animation: swal-toast-enter .3s cubic-bezier(0.2, 0.8, 0.2, 1); }
-            .swal-toast-exit { animation: swal-toast-exit .3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-            .swal2-container .swal2-toast {
-                pointer-events: all;
-                width: auto !important;
-                max-width: calc(100% - 2rem);
-                box-shadow: 0 10px 30px -5px rgba(0,0,0,0.3) !important;
-                background: var(--color-card)!important;
-                border-radius: var(--radius-md) !important;
-                border: 1px solid var(--color-border) !important;
-                backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-            }
-            .light .swal2-container .swal2-toast { box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1) !important; }
-            .swal2-toast .swal2-title { font-size: 1em !important; font-weight: 600; color: var(--color-text-dark) !important; margin: 0.5em 1em !important; }
-            .swal2-toast .swal2-icon {
-                margin: 1em !important;
-                grid-column: 1 !important;
-                grid-row: 1/span 2 !important;
-                align-self: center !important;
-            }
+            .swal2-container .swal2-toast { width: auto !important; max-width: calc(100% - 2rem); box-shadow: 0 5px 20px rgba(0,0,0,0.3) !important; }
+            .light .swal2-container .swal2-toast { box-shadow: 0 5px 20px rgba(0,0,0,0.1) !important; }
+            .swal2-toast .swal2-title { font-size: .9rem !important; }
             .swal2-toast.swal2-icon-show .swal2-title { margin: 0.5em 2.6em 0.5em 1em !important; }
-
+            
             .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .modal-overlay.open { opacity: 1; visibility: visible; }
             .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--color-card); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--color-border); will-change: transform, opacity; }
@@ -386,26 +386,14 @@
             .color-picker-label:hover { transform: scale(1.2); }
             .color-picker-label.active { border-color: #fff; transform: scale(1.1); }
             .light .color-picker-label.active { border-color: var(--color-text-dark); }
-            .color-picker-label.is-placeholder {
-                background-color: rgba(255,255,255,0.05);
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(255,255,255,0.4)' d='M13.208 15.61c.421.133.858.21 1.306.21a4.25 4.25 0 0 0 4.157-5.361 4.253 4.253 0 0 0-4.442-3.153c-1.282.1-2.5.83-3.116 2.01l-4.706 9.112a2.25 2.25 0 0 0 .506 2.922c.792.71 1.99.638 2.68-.172l3.615-5.568zM17.5 7.75a2.75 2.75 0 1 1 0 5.5 2.75 2.75 0 0 1 0-5.5z'/%3E%3C/svg%3E");
-                background-size: 16px 16px;
-                background-repeat: no-repeat;
-                background-position: center;
-                border-style: dashed;
-            }
-            .light .color-picker-label.is-placeholder {
-                background-color: rgba(0,0,0,0.05);
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='rgba(0,0,0,0.4)' d='M13.208 15.61c.421.133.858.21 1.306.21a4.25 4.25 0 0 0 4.157-5.361 4.253 4.253 0 0 0-4.442-3.153c-1.282.1-2.5.83-3.116 2.01l-4.706 9.112a2.25 2.25 0 0 0 .506 2.922c.792.71 1.99.638 2.68-.172l3.615-5.568zM17.5 7.75a2.75 2.75 0 1 1 0 5.5 2.75 2.75 0 0 1 0-5.5z'/%3E%3C/svg%3E");
-            }
             .color-picker-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; padding: 0; cursor: pointer; }
             .time-range-selects { display: flex; gap: 0.5rem; }
             #course-colors-list .settings-item-label { flex-grow: 1; }
             .data-management-zone { border: 1px solid rgba(var(--rgb-warning), 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-top: 1rem; background: rgba(var(--rgb-warning), 0.05); }
             .data-btn { width: 100%; background: transparent; border: 1px solid var(--color-border); color: var(--color-text); padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
             .data-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
-            .data-btn.danger { border-color: rgba(var(--rgb-danger), 0.5); color: var(--color-danger); background: rgba(var(--rgb-danger), 0.1); }
-            .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.2); color: var(--color-danger); border-color: var(--color-danger); }
+            .data-btn.danger { border-color: rgba(var(--rgb-danger), 0.5); color: var(--color-danger); }
+            .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.1); color: var(--color-danger); }
             .course-visibility-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
             .course-visibility-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; border: 1px solid; border-radius: var(--radius-md); text-align: right; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
             .course-visibility-btn .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; transition: all 0.2s; }
@@ -414,18 +402,18 @@
             .course-visibility-btn.visible:hover { background-color: rgba(var(--item-color-rgb), 0.15); }
             .course-visibility-btn.hidden { border-color: var(--color-border); color: var(--color-text-muted); opacity: 0.6; }
             .course-visibility-btn.hidden .color-dot { background-color: var(--color-text-muted); opacity: 0.5; }
-            .course-visibility-btn.hidden:hover { background-color: rgba(255, 255, 255, 0.05); opacity: 1; }
+            .course-visibility-btn.hidden:hover { background-color: rgba(255,255,255, 0.05); opacity: 1; }
             .light .course-visibility-btn.hidden:hover { background-color: rgba(0, 0, 0, 0.05); opacity: 1; }
             .action-picker-wrapper { position: relative; }
             .action-picker-display { width: 100%; padding: .5rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text); background: rgba(0,0,0,0.3); border: 1px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: all var(--transition); text-align: center; }
             .action-picker-display:hover { border-color: var(--color-primary); }
             .light .action-picker-display { background: rgba(0,0,0,0.04); }
-            .action-picker-panel { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; z-index: 3500; background-color: rgba(30,30,32,0.9); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: graceful-enter 0.2s ease-out; transform-origin: bottom center; max-height: 200px; overflow-y: auto; }
+            .action-picker-panel { position: absolute; bottom: calc(100% + 8px); left: 0; right: 0; z-index: 3500; background-color: rgba(30,30,32,0.9); border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.3); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); animation: scaleIn 0.2s ease-out; transform-origin: bottom center; max-height: 200px; overflow-y: auto; }
             .light .action-picker-panel { background-color: rgba(250,250,250,0.9); }
             .action-picker-option { width: 100%; padding: 0.7rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text-muted); background-color: transparent; border-radius: var(--radius-full); border: none; cursor: pointer; transition: all var(--transition); text-align: center; }
-            .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); }
+            .action-picker-option:hover { background-color: rgba(var(--rgb-primary), 0.1); }
             .action-picker-option.selected { color: var(--color-primary); font-weight: 700; background-color: transparent; }
-
+            
             #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
             .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; }
             .conflict-group-title {
@@ -435,64 +423,29 @@
             }
             .conflict-item { padding: .75rem; border-bottom: 1px solid var(--color-border); }
             .conflict-item:last-child { border-bottom: none; }
-            .conflict-item-main-label {
-                display: flex; align-items: center; gap: 1rem; width: 100%; cursor: pointer;
-                padding: .5rem; border-radius: var(--radius-md); border: 2px solid transparent;
-                transition: all .2s ease;
-            }
-            .conflict-item-main-label:has(input:checked) {
-                border-color: var(--color-primary);
-                box-shadow: 0 0 15px rgba(var(--rgb-primary), 0.4);
-                background-color: rgba(var(--rgb-primary), 0.05);
-            }
+            .conflict-item-main-label { display: flex; align-items: center; gap: 1rem; width: 100%; cursor: pointer; padding: .5rem; border-radius: var(--radius-md); border: 2px solid transparent; transition: all .2s ease; }
+            .conflict-item-main-label:has(input:checked) { border-color: var(--color-primary); box-shadow: 0 0 15px rgba(var(--rgb-primary), 0.4); background-color: rgba(var(--rgb-primary), 0.05); }
             .conflict-item-flex { display: flex; align-items: center; justify-content: space-between; gap: 1rem;}
             .conflict-item-main-label input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
-            .custom-radio {
-                width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0;
-                border: 2px solid var(--color-text-muted); position: relative; transition: .2s;
-            }
-            .custom-radio::after {
-                content: ''; position: absolute; width: 12px; height: 12px; background-color: var(--color-primary);
-                border-radius: 50%; top: 50%; left: 50%;
-                transform: translate(-50%, -50%) scale(0); transition: .2s;
-            }
+            .custom-radio { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--color-text-muted); position: relative; transition: .2s; }
+            .custom-radio::after { content: ''; position: absolute; width: 12px; height: 12px; background-color: var(--color-primary); border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); transition: .2s; }
             .conflict-item-main-label:has(input:checked) .custom-radio { border-color: var(--color-primary); }
             .conflict-item-main-label:has(input:checked) .custom-radio::after { transform: translate(-50%, -50%) scale(1); }
             .conflict-item-info { flex-grow: 1; text-align: right; }
             .conflict-item-info h4 {margin: 0 0 .2rem; font-family: var(--font-title); color: var(--color-text-dark); font-size: 1.1rem; }
             .conflict-item-info span {font-size: .85rem; color: var(--color-text-muted); }
-            .conflict-details-btn {
-                background: transparent; border: 1px solid var(--color-border);
-                color: var(--color-text-muted); padding: .4rem 1.2rem; font-size: .8rem;
-                font-weight: 600; border-radius: var(--radius-full); cursor: pointer; transition: all .2s ease; flex-shrink: 0;
-            }
+            .conflict-details-btn { background: transparent; border: 1px solid var(--color-border); color: var(--color-text-muted); padding: .4rem 1.2rem; font-size: .8rem; font-weight: 600; border-radius: var(--radius-full); cursor: pointer; transition: all .2s ease; flex-shrink: 0; }
             .conflict-details-btn:hover { background: rgba(255,255,255,0.08); border-color: var(--color-text); color: var(--color-text); }
             .light .conflict-details-btn:hover { background: rgba(0,0,0,0.04); }
-            .conflict-extra-details {
-                max-height: 0; overflow: hidden; transition: all .3s ease;
-                font-size: .85rem;
-            }
-            .conflict-extra-details.visible {
-                max-height: 200px; padding: .75rem 1rem .25rem; margin-top: .75rem;
-                background: rgba(0,0,0,0.1); border-radius: var(--radius-md);
-            }
+            .conflict-extra-details { max-height: 0; overflow: hidden; transition: all .3s ease; font-size: .85rem; }
+            .conflict-extra-details.visible { max-height: 200px; padding: .75rem 1rem .25rem; margin-top: .75rem; background: rgba(0,0,0,0.1); border-radius: var(--radius-md); }
             .light .conflict-extra-details.visible { background: rgba(0,0,0,0.03); }
 
             .mobile-wrapper, .mobile-nav { display: none; }
-            #mobile-my-schedule-list {
-                padding: 1rem;
-                display: flex; flex-direction: column; gap: 1rem;
-            }
-            .mobile-schedule-item {
-                background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius);
-                padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3);
-                animation: graceful-enter .5s ease both; will-change: transform, opacity;
-            }
+            #mobile-my-schedule-list { padding: 1rem; display: flex; flex-direction: column; gap: 1rem; flex-grow: 1; overflow-y: auto; min-height: 0; }
+            .mobile-schedule-item { background: var(--color-card); border: 1px solid var(--color-border); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3); }
             .light .mobile-schedule-item { box-shadow: 0 8px 25px -10px rgba(0,0,0,0.1); }
-            .mobile-schedule-header {
-                display: flex; align-items: center; justify-content: space-between;
-                gap: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem;
-            }
+            .mobile-schedule-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--color-border); padding-bottom: 1rem; }
             .mobile-schedule-title { display: flex; flex-direction: column; }
             .mobile-schedule-title h3 { font-family: var(--font-title); font-size: 1.1rem; color: var(--color-text-dark); margin: 0; }
             .mobile-schedule-title span { font-size: 0.9rem; color: var(--color-text-muted); }
@@ -501,42 +454,13 @@
             .mobile-detail-row { display: flex; align-items: center; gap: 0.75rem; }
             .mobile-detail-row i { color: var(--color-primary); font-size: 1.2rem; min-width: 20px; text-align: center; }
             .mobile-detail-row strong { color: var(--color-text-muted); }
-            .mobile-schedule-footer {
-                position: sticky; bottom: 0; padding: 1rem; margin: 1rem -1rem -1rem -1rem;
-                background-color: var(--color-card); border-top: 1px solid var(--color-border);
-                backdrop-filter: blur(8px); display: flex; align-items: center; gap: 0.75rem;
-            }
-            .mobile-schedule-footer > .view-conflicts-btn,
-            .mobile-schedule-footer > .total-credits-summary {
-                flex: 1;
-                justify-content: center;
-                text-align: center;
-            }
-
-            .mobile-section-details-overlay {
-                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                background: rgba(0,0,0,0.5); backdrop-filter: blur(8px);
-                z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease;
-                will-change: opacity;
-            }
+            .mobile-schedule-footer { position: relative; flex-shrink: 0; padding: 1rem; margin: 0; background-color: var(--color-card); border-top: 1px solid var(--color-border); backdrop-filter: blur(8px); display: flex; align-items: center; gap: 0.75rem; }
+            .mobile-schedule-footer > .view-conflicts-btn, .mobile-schedule-footer > .total-credits-summary { flex-grow: 1; flex-basis: 0; justify-content: center; text-align: center; padding: 0.75rem 1rem; font-size: 1rem; font-weight: 700; }
+            .mobile-section-details-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .mobile-section-details-overlay.open { opacity: 1; visibility: visible; }
-            .details-panel {
-                position: absolute; bottom: 0; left: 0; right: 0;
-                background-color: var(--color-card); border-top: 1px solid var(--color-border);
-                border-top-left-radius: var(--radius); border-top-right-radius: var(--radius);
-                padding-top: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
-                box-shadow: 0 -10px 40px rgba(0,0,0,0.3);
-                transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1);
-                will-change: transform;
-            }
+            .details-panel { position: absolute; bottom: 0; left: 0; right: 0; background-color: var(--color-card); border-top: 1px solid var(--color-border); border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); padding-top: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
             .mobile-section-details-overlay.open .details-panel { transform: translateY(0); }
-            .details-panel .conflict-banner {
-                padding: .75rem 1rem; margin-bottom: 1.25rem;
-                background-color: rgba(var(--rgb-warning), 0.1);
-                color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.2);
-                border-radius: var(--radius-md);
-                display: flex; align-items: center; gap: .75rem; font-size: .9rem; font-weight: 600;
-            }
+            .details-panel .conflict-banner { padding: .75rem 1rem; margin-bottom: 1.25rem; background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.2); border-radius: var(--radius-md); display: flex; align-items: center; gap: .75rem; font-size: .9rem; font-weight: 600; }
             .details-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
             .details-header h4 { margin: 0; font-family: var(--font-title); font-size: 1.2rem; display: flex; align-items: center; gap: .75rem; }
             .details-header .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
@@ -548,62 +472,42 @@
             .detail-item strong { color: var(--color-text-dark); font-weight: 600; font-size: 1rem; }
             .detail-item[data-full-width="true"] { grid-column: 1 / -1; }
             .details-actions-container { display: flex; gap: 0.5rem; align-items: center; }
-            .details-action-btn {
-                width: 100%; padding: 0.9rem 1.5rem; border: none; border-radius: var(--radius-md);
-                font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: white;
-                cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: .2s;
-                flex-grow: 1;
-            }
-            .details-nav-btn {
-                flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--radius-md);
-                border: 1px solid var(--color-border); background-color: transparent; color: var(--color-text-muted);
-                font-size: 1.8rem; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center;
-            }
+            .details-action-btn { width: 100%; padding: 0.9rem 1.5rem; border: none; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: .2s; flex-grow: 1; }
+            .details-nav-btn { flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background-color: transparent; color: var(--color-text-muted); font-size: 1.8rem; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; }
             .details-nav-btn:not(:disabled):hover { background-color: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); }
             .details-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
             .details-action-btn.add { background-color: var(--color-primary); }
-            .details-action-btn.add:hover { background-color: var(--color-primary-dark); transform: scale(1.02); }
+            .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
             .details-action-btn.remove { background-color: var(--color-danger); }
-            .details-action-btn.remove:hover { filter: brightness(1.1); transform: scale(1.02); }
-
-            .view-conflicts-btn {
-                background: rgba(var(--rgb-warning), 0.1);
-                color: var(--color-warning);
-                border: 1px solid rgba(var(--rgb-warning), 0.2);
-                padding: .75rem 1.5rem;
-                border-radius: var(--radius-md);
-                font-size: 1rem;
-                font-weight: 700;
-                cursor: pointer;
-                display: inline-flex;
-                align-items: center;
-                gap: .5rem;
-                transition: all .2s;
-            }
-            .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); transform: translateY(-2px); }
+            .view-conflicts-btn { background: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); border: 1px solid rgba(var(--rgb-warning), 0.2); border-radius: var(--radius-md); cursor: pointer; display: inline-flex; align-items: center; gap: .5rem; transition: all .2s; padding: 0.8rem 1.8rem; font-weight: 700; font-size: 1.3rem; }
+            .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); }
+            
+            .my-schedule-card { backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
+            .card-header-inline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+            .card-header-inline h3 { margin: 0; }
+            .total-credits-pill { padding: 0.35rem 1rem; border-radius: 999px; background: rgba(var(--rgb-primary), 0.15); border: 1px solid rgba(var(--rgb-primary), 0.2); font-size: 0.9rem; color: var(--color-primary); flex-shrink: 0; }
+            .total-credits-pill span { font-weight: 700; font-family: var(--font-title); }
+            .my-schedule-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+            .my-schedule-table thead th { background: rgba(255,255,255,0.03); padding: 0.8rem; text-align: center; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); }
+            .my-schedule-table tbody td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; text-align: center;}
+            .my-schedule-table .course-cell .course-code { font-size: 1rem; font-weight: 600;}
+            .my-schedule-table .section-cell .section-number { font-size: 1rem; font-weight: 600; }
+            .hours-value { font-size: 1.2rem; font-weight: 700; color: var(--color-primary); }
 
             @media (max-width: 1023px) {
                 body { overflow: auto; --radius: 16px; --radius-md: 12px; }
                 .page-wrapper { display: none; }
                 .mobile-wrapper { display: block; position: relative; width: 100vw; overflow: hidden; padding-bottom: 75px; }
-                .mobile-header {
-                    display: flex; justify-content: space-between; align-items: center;
-                    padding: 0 1.25rem; height: 65px; background-color: var(--color-card);
-                    border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0;
-                    z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2);
-                }
+                .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 0 1.25rem; height: 65px; background-color: var(--color-card); border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2); }
                 .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; }
                 .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; }
                 .mobile-view-content { display: none; height: calc(100vh - 65px - 75px); margin-top: 65px; overflow-y: auto; overflow-x: hidden; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
-
                 #mobile-calendar-view { padding: 1rem; gap: 1rem; }
                 #mobile-calendar-view .schedule-tabs-container { flex-shrink: 0; }
                 #mobile-calendar-view .card { padding: 0; overflow: hidden; flex-grow: 1; height: auto; }
-                .mobile-calendar-scroll-wrapper {
-                    overflow-x: auto; height: 100%; -webkit-overflow-scrolling: touch; direction: ltr;
-                }
+                .mobile-calendar-scroll-wrapper { overflow-x: auto; height: 100%; -webkit-overflow-scrolling: touch; direction: ltr; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar { height: 4px; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track { background: transparent; }
                 .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb { background: rgba(var(--rgb-primary), 0.5); border-radius: 4px; }
@@ -612,23 +516,12 @@
                 #mobile-courses-view .sidebar { height: 100%; border-left: none; }
                 #mobile-courses-view .sidebar-header, #mobile-courses-view .sidebar-tabs { display: none; }
                 #mobile-courses-view .tab-content { padding: 1rem; }
-                #mobile-my-schedule-view { padding: 0; }
+                #mobile-my-schedule-view { padding: 0; overflow: hidden; }
                 .my-schedule-container .card { display: none; }
-                #mobile-my-schedule-container { width: 100%; height: 100%; display: block; }
+                #mobile-my-schedule-container { display: flex; flex-direction: column; width: 100%; height: 100%; }
                 .light .mobile-schedule-footer { background: rgba(255,255,255,0.7); border-color: transparent;}
-
-                .mobile-nav {
-                    display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px;
-                    background-color: var(--color-card); border-top: 1px solid var(--color-border);
-                    backdrop-filter: blur(16px); z-index: 100;
-                    box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom);
-                    will-change: transform;
-                }
-                .mobile-nav-btn {
-                    flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    gap: 5px; background: none; border: none;
-                    color: var(--color-text-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: color 0.2s ease;
-                }
+                .mobile-nav { display: flex; position: fixed; bottom: 0; left: 0; right: 0; height: 75px; background-color: var(--color-card); border-top: 1px solid var(--color-border); backdrop-filter: blur(16px); z-index: 100; box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); padding-bottom: env(safe-area-inset-bottom); will-change: transform; }
+                .mobile-nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; background: none; border: none; color: var(--color-text-muted); font-size: 0.75rem; font-weight: 700; cursor: pointer; transition: color 0.2s ease; }
                 .mobile-nav-btn i { font-size: 1.6rem; }
                 .mobile-nav-btn.active { color: var(--color-primary); }
                 .mobile-nav-btn span { transition: all 0.2s ease; padding: 0.2rem 0.6rem; border-radius: 99px; }
@@ -638,17 +531,105 @@
                 .my-schedule-container { display: flex; }
                 .my-schedule-section { padding: 1rem; }
                 .fc .fc-toolbar { padding: 0 1rem 1rem; font-size: 0.9em; }
-                .view-conflicts-btn { padding: .7rem 1rem; font-size: .9rem; }
+            }
+
+            @keyframes sectionFadeUp {
+                from { 
+                    opacity: 0; 
+                    transform: translateY(8px) scale(0.98); 
+                }
+                to { 
+                    opacity: 1; 
+                    transform: translateY(0) scale(1);
+                }
+            }
+            .course-item.open .section-btn {
+                animation: sectionFadeUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            }
+            .course-item .section-btn {
+                opacity: 0;
+                transform: translateY(8px) scale(0.98);
+            }
+            .sidebar {
+                background: radial-gradient(circle at 50% 0%, rgba(var(--rgb-primary), 0.08), transparent 40%), var(--color-card);
+            }
+            .course-item {
+                background: linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+                border: 1px solid var(--color-border);
+                box-shadow: inset 0 1px 1px rgba(255,255,255,0.03);
+                border-radius: var(--radius-md);
+                transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+            }
+            .course-item:hover {
+                transform: translateY(-5px);
+                border-color: rgba(var(--rgb-primary), 0.5);
+                box-shadow: 0 10px 25px -5px rgba(var(--rgb-primary), 0.15), 0 8px 10px -6px rgba(0,0,0,0.3);
+            }
+            .light .course-item {
+                 box-shadow: inset 0 1px 1px rgba(0,0,0,0.03);
+            }
+             .light .course-item:hover {
+                box-shadow: 0 10px 25px -5px rgba(var(--rgb-primary), 0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+             }
+            .course-item-header {
+                transition: background-color 0.3s ease, border-color 0.3s ease;
+                border-bottom: 1px solid transparent;
+            }
+            .course-item.open .course-item-header {
+                background-color: rgba(var(--rgb-primary), 0.05);
+                border-bottom-color: rgba(var(--rgb-primary), 0.3);
+            }
+
+            .my-schedule-table .schedule-row {
+              opacity: 0;
+              transform: translateY(6px);
+              animation: rowIn 0.35s ease-out forwards;
+            }
+            .my-schedule-table .schedule-row:nth-child(1) { animation-delay: 0.05s; }
+            .my-schedule-table .schedule-row:nth-child(2) { animation-delay: 0.1s; }
+            .my-schedule-table .schedule-row:nth-child(3) { animation-delay: 0.15s; }
+            .my-schedule-table .schedule-row:nth-child(4) { animation-delay: 0.2s; }
+            .my-schedule-table .schedule-row:nth-child(5) { animation-delay: 0.25s; }
+            .my-schedule-table .schedule-row:nth-child(6) { animation-delay: 0.3s; }
+            .my-schedule-table .schedule-row:nth-child(7) { animation-delay: 0.35s; }
+            .my-schedule-table .schedule-row:nth-child(8) { animation-delay: 0.4s; }
+            .my-schedule-table .schedule-row:nth-child(9) { animation-delay: 0.45s; }
+            .my-schedule-table .schedule-row:nth-child(10) { animation-delay: 0.5s; }
+
+            .my-schedule-table .schedule-row.has-conflict {
+                background-color: rgba(var(--rgb-danger), 0.1);
+                box-shadow: inset 4px 0 0 0 var(--color-danger);
+            }
+            @keyframes shimmer {
+                0% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+                100% { background-position: 0% 50%; }
+            }
+
+            .section-btn.selected {
+                color: white;
+                border-color: transparent;
+                background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, #a855f7 100%);
+                background-size: 200% 200%;
+                animation: shimmer 4s ease infinite;
+                box-shadow: 0 2px 20px rgba(var(--rgb-primary), 0.4);
+                transform: scale(1.05);
+            }
+
+            .schedule-tab.active {
+                background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary));
+                background-size: 200% 200%;
+                animation: shimmer 5s ease infinite;
             }
         </style>
     </head>
     <body>
         <div class="cosmic-bg-container"><div class="nebula-glow"></div><canvas id="starfield-canvas"></canvas></div>
-
+        
         <div id="install-overlay">
             <div id="install-section-container"></div>
         </div>
-
+        
         <!-- Desktop View -->
         <div class="page-wrapper">
             <main class="main-content custom-scrollbar">
@@ -670,7 +651,7 @@
                 <h1 id="mobile-header-title"></h1>
                 <button id="mobile-settings-btn"><i class="ri-settings-3-line"></i></button>
             </header>
-
+            
             <div id="mobile-calendar-view" class="mobile-view-content active">
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
@@ -706,7 +687,6 @@
         </div>
 
         <script>
-        // Starfield and Shooting Star background script
         function initStarfield() {
             const canvas = document.getElementById('starfield-canvas');
             if (!canvas) return;
@@ -722,7 +702,7 @@
 
             const stars = [];
             const shootingStars = [];
-            const numStars = 250;
+            const numStars = 250; 
             const numShootingStars = 3;
 
             class Star {
@@ -782,7 +762,7 @@
                     }
                 }
             }
-
+            
             for (let i = 0; i < numStars; i++) stars.push(new Star());
             for (let i = 0; i < numShootingStars; i++) shootingStars.push(new ShootingStar());
 
@@ -797,6 +777,14 @@
 
         document.addEventListener('DOMContentLoaded', () => {
                 initStarfield();
+
+                const mainContent = document.querySelector('.main-content');
+                if(mainContent) {
+                    mainContent.addEventListener('scroll', () => {
+                        mainContent.setAttribute('scrollTop', mainContent.scrollTop);
+                    });
+                }
+
 
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024;
                 if (isMobile) {
@@ -830,9 +818,9 @@
                         COLOR_PALETTE: ['#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f97316', '#ef4444', '#06b6d4', '#d946ef'],
                         DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
                         STORAGE_KEYS: {
-                            SETTINGS: 'quScheduleSettings_v20',
+                            SETTINGS: 'quScheduleSettings_v20', 
                             COURSES: 'quScheduleCourses_v20',
-                            SCHEDULES: 'quScheduleSchedules_v20',
+                            SCHEDULES: 'quScheduleSchedules_v20', 
                             COLORS: 'quScheduleColors_v20'
                         },
                         EXTRACTOR_URL: 'https://mutlaq001.github.io/schedule/extractor.js'
@@ -849,6 +837,7 @@
                         this._listenForDataFromOpener();
                         this._updateBookmarkletCode();
                     },
+
                 };
 
                 Object.assign(QU_ScheduleApp, {
@@ -857,42 +846,35 @@
                         if (storedCourses) {
                             try {
                                 const courses = JSON.parse(storedCourses);
-                                if (!Array.isArray(courses)) throw new Error("Stored courses is not an array");
+                                if (!Array.isArray(courses)) throw new Error("Stored data is not a valid array.");
+                                
                                 this._processAndDisplayData(courses);
                                 this._loadSchedules();
                                 this.updateFullUI();
                             } catch (e) {
-                                console.error("Error loading courses:", e);
+                                console.error("Error loading or parsing course data:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
-                                this._showDataErrorAndPrompt();
+                                this.dom.installOverlay.style.display = 'flex';
+                                this.dom.installOverlay.classList.add('visible');
                             }
                         } else {
-                            // This is the default state, no courses loaded yet.
+                            this.dom.installOverlay.style.display = 'flex';
+                            this.dom.installOverlay.classList.add('visible');
                         }
-                    },
-                    _showDataErrorAndPrompt() {
-                         Swal.fire({
-                            title: 'خطأ في تحميل البيانات',
-                            text: 'البيانات المخزنة للمقررات تالفة وقد تم حذفها. يرجى إعادة استيرادها باستخدام الأداة مرة أخرى.',
-                            icon: 'error',
-                            confirmButtonText: 'فهمت'
-                        }).then(() => {
-                           document.getElementById('no-data-message').style.display = 'flex';
-                        });
                     },
                     _listenForDataFromOpener() {
                         window.addEventListener('message', (event) => {
                             if (event.data && event.data.type === 'universityCoursesData') {
                                 const courses = event.data.data;
                                 localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
-                                this.state.schedules = [];
+                                
+                                this.state.schedules = []; 
                                 this._addSchedule(null, true);
                                 this.state.activeScheduleIndex = 0;
                                 this._saveSchedules();
+                                
                                 this._processAndDisplayData(courses);
                                 this.updateFullUI();
-                                this.dom.installOverlay.style.display = 'none';
-                                this.dom.installOverlay.classList.remove('visible');
                             }
                         }, false);
                         if (window.opener) {
@@ -931,7 +913,7 @@
                         Object.values(this.state.groupedCourses).forEach(group => {
                             group.color = this.state.customColors[group.code] || this.constants.COLOR_PALETTE[colorIndex++ % this.constants.COLOR_PALETTE.length];
                         });
-
+                        
                         document.getElementById('no-data-message').style.display = 'none';
                         this._renderCoursesList();
                         this._buildSettingsModal();
@@ -941,17 +923,21 @@
                         if (stored) {
                             try {
                                 const parsed = JSON.parse(stored);
-                                if (parsed && Array.isArray(parsed.schedules)) {
-                                    this.state.schedules = parsed.schedules.map(s => ({
-                                        name: s.name || `جدول`,
+                                if (parsed && Array.isArray(parsed.schedules) && parsed.schedules.length > 0) {
+                                    this.state.schedules = parsed.schedules.map(s => ({ 
+                                        name: s.name || 'جدول', 
                                         sections: new Set(s.sections),
                                         linkedSections: new Map((s.linkedSections || []).map(([key, value]) => [key, new Set(value)]))
                                     }));
-                                    this.state.activeScheduleIndex = parsed.activeScheduleIndex < this.state.schedules.length ? parsed.activeScheduleIndex : 0;
+                                    this.state.activeScheduleIndex = Math.min(parsed.activeScheduleIndex, this.state.schedules.length - 1);
+                                } else {
+                                    throw new Error("No valid schedules found in storage.");
                                 }
                             } catch (e) {
-                                console.error("Error loading schedules:", e);
+                                console.error("Error loading schedules, resetting:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.SCHEDULES);
+                                this.state.schedules = [];
+                                this._addSchedule(null, true);
                             }
                         }
                         if (this.state.schedules.length === 0) {
@@ -961,8 +947,8 @@
                     _saveSchedules() {
                         const serializableSchedules = {
                            activeScheduleIndex: this.state.activeScheduleIndex,
-                           schedules: this.state.schedules.map(s => ({
-                               name: s.name,
+                           schedules: this.state.schedules.map(s => ({ 
+                               name: s.name, 
                                sections: Array.from(s.sections),
                                linkedSections: Array.from(s.linkedSections.entries()).map(([key, value]) => [key, Array.from(value)])
                            }))
@@ -987,20 +973,18 @@
                     },
                     updateCalendarAndConflicts() {
                         if (!this.state.calendar) return;
+
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        if (!activeSchedule) return; // Safeguard if schedules array is empty
-
-                        const selectedSections = activeSchedule.sections;
+                        const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
+                        
                         this.state.calendar.removeAllEvents();
-
+                        
                         document.querySelectorAll('.section-btn').forEach(btn => {
                             btn.classList.toggle('selected', selectedSections.has(btn.dataset.uniqueId));
                         });
 
-                        const selectedCourseDetails = Array.from(selectedSections)
-                            .map(id => this.state.allCoursesData.find(c => c.uniqueId === id))
-                            .filter(Boolean);
-
+                        const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+                        
                         const conflictMap = this._calculateConflicts(selectedCourseDetails);
 
                         selectedCourseDetails.forEach(section => {
@@ -1027,24 +1011,16 @@
                                 tab.className = `schedule-tab ${index === this.state.activeScheduleIndex ? 'active' : ''}`;
                                 tab.dataset.index = index;
                                 tab.innerHTML = `<span class="schedule-tab-name" contenteditable="false">${schedule.name}</span><i class="ri-close-line delete-schedule-btn"></i>`;
-                                tab.addEventListener('click', (e) => {
-                                    if (e.target.classList.contains('delete-schedule-btn')) {
-                                        e.stopPropagation();
-                                        this._deleteSchedule(index);
-                                    } else {
-                                        this._switchSchedule(index);
-                                    }
-                                });
+                                
                                 const nameSpan = tab.querySelector('.schedule-tab-name');
-                                tab.addEventListener('dblclick', () => {
-                                    if(tab.classList.contains('active')) {
-                                        nameSpan.contentEditable = true;
-                                        nameSpan.focus();
-                                        document.execCommand('selectAll', false, null);
-                                    }
+                                tab.addEventListener('click', (e) => {
+                                    if (e.target.classList.contains('delete-schedule-btn')) return;
+                                    this._switchSchedule(index);
                                 });
+                                tab.addEventListener('dblclick', () => { if (tab.classList.contains('active')) { nameSpan.contentEditable = true; nameSpan.focus(); document.execCommand('selectAll', false, null); } });
                                 nameSpan.addEventListener('blur', () => { nameSpan.contentEditable = false; this._renameSchedule(index, nameSpan.textContent); });
                                 nameSpan.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); nameSpan.blur(); } });
+                                tab.querySelector('.delete-schedule-btn').addEventListener('click', (e) => { e.stopPropagation(); this._deleteSchedule(index); });
                                 fragment.appendChild(tab);
                             });
 
@@ -1054,20 +1030,16 @@
                             addButton.title = 'إضافة جدول جديد';
                             addButton.addEventListener('click', () => this._addSchedule());
                             fragment.appendChild(addButton);
-
                             container.appendChild(fragment);
                         });
                     },
                     _createCoursesListHTML() {
                         const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
                         const visibleCourses = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code));
-
                         if (Object.keys(this.state.groupedCourses).length > 0 && visibleCourses.length === 0) {
                             return `<div class="no-data" style="height: auto; padding: 2rem 1rem;"><i class="ri-eye-off-line"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
                         }
-
-                        if(visibleCourses.length === 0) return ''; // Will keep the default no-data message
-
+                        if(visibleCourses.length === 0) return '';
                         return visibleCourses.sort((a, b) => a.code.localeCompare(b.code)).map((group, i) => {
                             const sectionsToDisplay = this.state.userSettings.hideClosedCourses
                                 ? group.sections.filter(section => !section.status.includes('مغلقة'))
@@ -1078,36 +1050,29 @@
                                 const isNoTime = section.time === 'غير محدد';
                                 const isOpen = section.status.includes('مفتوحة');
                                 const statusIndicatorHTML = !this.state.userSettings.hideClosedCourses ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
-
+                                
                                 return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color : ''}">
                                             ${statusIndicatorHTML}
                                             <div class="section-btn-number">${section.section}</div>
                                             <div class="section-type">${section.type || ''}</div>
                                         </div>`;
                             }).join('');
-
                             return `<div class="course-item" style="animation-delay: ${i * 30}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color}; box-shadow: 0 0 10px 1px ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
                         }).join('');
                     },
                     _renderCoursesList() {
                         const html = this._createCoursesListHTML();
                         if (this.dom.desktopCoursesList) {
-                            // This replaces only course items, keeping the #no-data-message intact.
-                            const tempDiv = document.createElement('div');
-                            tempDiv.innerHTML = html;
-                            // Clear old items
-                            this.dom.desktopCoursesList.querySelectorAll('.course-item, .no-data:not(#no-data-message)').forEach(el => el.remove());
-                            // Append new items
-                            Array.from(tempDiv.children).forEach(child => this.dom.desktopCoursesList.appendChild(child));
+                            this.dom.desktopCoursesList.innerHTML = html || '';
                         }
                         if (this.dom.mobileCoursesList) {
-                            this.dom.mobileCoursesList.innerHTML = html || `<div class="no-data" id="no-data-message-mobile"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>استخدم الأداة من شريط الإشارات المرجعية في صفحة المقررات المطروحة لتحميل بيانات المواد.</p></div>`;;
+                            this.dom.mobileCoursesList.innerHTML = html || `<div class="no-data"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>استخدم الأداة لتحميل بيانات المواد.</p></div>`;;
                         }
                     },
                     _renderMyScheduleSummary(selectedCourses, conflictMap) {
                         const desktopContainer = this.dom.myScheduleContainer;
                         const mobileContainer = this.dom.mobileMyScheduleContainer;
-
+                        
                         if (desktopContainer) {
                             desktopContainer.style.display = 'flex';
                             if (selectedCourses.length === 0) {
@@ -1147,7 +1112,7 @@
                             const isConflicted = conflictMap.has(course.uniqueId);
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
 
-                            return `<tr>
+                            return `<tr class="schedule-row ${isConflicted ? 'has-conflict' : ''}">
                                 <td class="course-cell"><div class="course-code">${conflictIconHTML} ${course.code}</div><div class="course-name">${course.name}</div></td>
                                 <td class="section-cell"><div class="section-number">${course.section}</div><div class="section-type">${course.type}</div></td>
                                 <td>${course.instructor}</td>
@@ -1165,12 +1130,15 @@
                                                     <i class="ri-alert-fill"></i> حل التعارض
                                                 </button>`;
                         }
-
+                        
                         const statusHeaderHTML = this.state.userSettings.hideClosedCourses ? '' : '<th>الحالة</th>';
-
-                        return `<div class="card">
+                        
+                        return `<div class="card my-schedule-card">
                             <div class="my-schedule-section">
-                                <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
+                                <div class="card-header-inline">
+                                    <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
+                                    <div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div>
+                                </div>
                                 <div class="my-schedule-table-wrapper">
                                     <table class="my-schedule-table">
                                         <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th>${statusHeaderHTML}<th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>
@@ -1179,7 +1147,6 @@
                                 </div>
                                 <div class="my-schedule-footer">
                                     ${conflictButtonHTML}
-                                    <div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div>
                                 </div>
                             </div>
                         </div>`;
@@ -1195,7 +1162,7 @@
                             }
                             const isConflicted = conflictMap.has(course.uniqueId);
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
-
+                            
                             return `<div class="mobile-schedule-item" style="animation-delay:${i*30}ms;">
                                 <div class="mobile-schedule-header">
                                     <div class="mobile-schedule-title">
@@ -1212,7 +1179,7 @@
                                 </div>
                             </div>`;
                         }).join('');
-
+                        
                         let conflictButtonHTML = '';
                         if (conflictMap.size > 0) {
                             conflictButtonHTML = `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn">
@@ -1236,8 +1203,8 @@
                             if (this.dom.mobileExamsList) this.dom.mobileExamsList.innerHTML = html;
                             return;
                         }
-
-                        const html = uniqueExams.sort((a, b) => parseInt(a.examPeriodId, 10) - parseInt(b.examPeriodId, 10)).map(exam =>
+                        
+                        const html = uniqueExams.sort((a, b) => parseInt(a.examPeriodId, 10) - parseInt(b.examPeriodId, 10)).map(exam => 
                             `<div class="course-item">
                                 <div class="course-item-header" style="cursor:default;">
                                     <div class="course-info">
@@ -1267,18 +1234,18 @@
                     },
                     _populateDOMElements() {
                         const ids = [
-                            'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn',
-                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message',
+                            'my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 
+                            'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list',
                             // Mobile specific
-                            'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title',
+                            'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
                             'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
                             'mobile-section-details-overlay', 'details-panel'
                         ];
                         ids.forEach(id => {
                             this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
                         });
-
+                        
                         if (isMobile) {
                             this.dom.tabButtons = document.querySelectorAll('#mobile-courses-view .tab-btn');
                             this.dom.tabContents = document.querySelectorAll('#mobile-courses-view .tab-content');
@@ -1358,7 +1325,7 @@
                         this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
                         this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
-
+                        
                         const courseLists = [this.dom.desktopCoursesList, this.dom.mobileCoursesList];
                         courseLists.forEach(list => {
                             if(list) {
@@ -1421,18 +1388,26 @@
                                 this.updateCalendarAndConflicts();
                             }
                         } else if (header) {
-                            header.parentElement.classList.toggle('open');
+                            const courseItem = header.parentElement;
+                            const isOpening = !courseItem.classList.contains('open');
+                            courseItem.classList.toggle('open');
+                            if (isOpening) {
+                                const sections = courseItem.querySelectorAll('.section-btn');
+                                sections.forEach((section, index) => {
+                                    section.style.animationDelay = `${index * 25}ms`;
+                                });
+                            }
                         }
                     },
                      _addSectionAndLink(sectionId, schedule) {
                         const section = this.state.allCoursesData.find(s => s.uniqueId === sectionId);
                         if (!section) return false;
-
+                        
                         const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
                         if(this._isSectionConflicted(section, tempSelectedDetails)) {
                              if(isMobile){ this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.'); }
                         }
-
+                        
                         schedule.sections.add(sectionId);
 
                         const linkedGroup = this.state.linkedCourseGroups[section.name];
@@ -1446,14 +1421,14 @@
                                     continue;
                                 }
                                 schedule.sections.add(correspondingSection.uniqueId);
-
+                                
                                 if(!schedule.linkedSections.has(sectionId)) schedule.linkedSections.set(sectionId, new Set());
                                 schedule.linkedSections.get(sectionId).add(correspondingSection.uniqueId);
 
                                 this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
                             }
                         }
-                        return true;
+                        return true; 
                     },
                     _removeSectionAndUnlink(sectionId, schedule) {
                         schedule.sections.delete(sectionId);
@@ -1463,14 +1438,13 @@
                             schedule.linkedSections.delete(sectionId);
                             if(linkedIds.size > 0) this._showToast('info', 'تمت إزالة الشعب المرتبطة.');
                         }
-                        // Also check if this section was a LINKED section
                         for (const [triggerId, linkedIds] of schedule.linkedSections.entries()) {
                             if (linkedIds.has(sectionId)) {
-                                schedule.sections.delete(triggerId); // remove the parent
-                                linkedIds.forEach(id => schedule.sections.delete(id)); // remove all siblings
-                                schedule.linkedSections.delete(triggerId); // clean up map
+                                schedule.sections.delete(triggerId);
+                                linkedIds.forEach(id => schedule.sections.delete(id));
+                                schedule.linkedSections.delete(triggerId);
                                 this._showToast('info', 'تمت إزالة المجموعة المرتبطة.');
-                                break;
+                                break; 
                             }
                         }
                         return true;
@@ -1494,17 +1468,19 @@
                         });
                     },
                     _showToast(icon, title) {
-                         Swal.fire({
-                            toast: true,
-                            position: isMobile ? 'bottom' : 'bottom-end',
-                            icon: icon,
-                            title: title,
-                            showConfirmButton: false,
-                            timer: 3000,
+                         const customClass = {popup: 'swal2-toast'};
+                         if(icon === 'warning') customClass.icon = 'swal2-icon-warning';
+
+                         Swal.fire({ 
+                            toast: true, 
+                            position: isMobile ? 'bottom' : 'bottom-end', 
+                            icon: icon, 
+                            title: title, 
+                            showConfirmButton: false, 
+                            timer: 3000, 
                             timerProgressBar: true,
-                            customClass: {popup: 'swal2-toast'},
-                            showClass: { popup: 'swal-toast-enter' },
-                            hideClass: { popup: 'swal-toast-exit' }
+                            customClass: customClass,
+                            showClass: { popup: 'swal2-show', backdrop: 'swal2-backdrop-show', icon: 'swal2-icon-show' }
                         });
                     },
                     _handleTabClick(button) {
@@ -1529,15 +1505,15 @@
                         }
                         this._updateMobileHeader();
                         if (view === 'mobile-calendar-view') {
-                           setTimeout(() => {
-                               if(this.state.calendar) this.state.calendar.updateSize()
+                           setTimeout(() => { 
+                               if(this.state.calendar) this.state.calendar.updateSize() 
                            }, 50);
                         }
                     },
                     _updateBookmarkletCode() {
                         const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
                         const container = this.dom.installSectionContainer;
-
+                        
                         if (isMobile) {
                              container.innerHTML = `
                                 <div id="install-header">
@@ -1585,8 +1561,8 @@
                         if (this.state.calendar) this.state.calendar.destroy();
                         const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
                         const calendarOptions = {
-                            initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false,
-                            events: [], dir: 'rtl', dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' },
+                            initialView: 'timeGridWeek', locale: 'ar', headerToolbar: false, allDaySlot: false, 
+                            events: [], dir: 'rtl', dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, 
                             slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
                             hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false,
                             dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; },
@@ -1634,13 +1610,13 @@
                             if (result.isConfirmed) {
                                 this.state.schedules.splice(index, 1);
                                 if (this.state.schedules.length === 0) {
-                                    this._addSchedule(null, true);
+                                    this._addSchedule(null, true); 
                                 }
-
+                                
                                 if (this.state.activeScheduleIndex >= index) {
-                                    this.state.activeScheduleIndex = Math.max(0, this.state.schedules.length - 1);
+                                    this.state.activeScheduleIndex = Math.max(0, this.state.activeScheduleIndex - 1);
                                 }
-
+                                
                                 this.updateFullUI();
                                 this._showToast('success', 'تم حذف الجدول');
                             }
@@ -1653,7 +1629,6 @@
                             this._saveSchedules();
                             if (isMobile) this._updateMobileHeader();
                         } else {
-                            // Revert to old name if new name is empty
                             this._renderScheduleTabs();
                         }
                     },
@@ -1698,10 +1673,10 @@
                         const panel = this.dom.detailsPanel;
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                         const isSelected = activeSchedule.sections.has(section.uniqueId);
-
+                        
                         const tempSelectedDetails = Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
                         const isConflicted = !isSelected && this._isSectionConflicted(section, tempSelectedDetails);
-
+                        
                         const conflictBanner = isConflicted ? `<div class="conflict-banner"><i class="ri-alert-fill"></i> شعبة متعارضة مع جدولك الحالي</div>` : '';
 
                         const courseSections = group.sections.filter(s => !this.state.userSettings.hideClosedCourses || !s.status.includes('مغلقة')).sort((a, b) => a.section.localeCompare(b.section, undefined, {numeric: true}));
@@ -1736,14 +1711,14 @@
                             const btn = panel.querySelector('#details-action-btn');
                             btn.className = `details-action-btn ${actionBtnClass}`;
                             btn.innerHTML = `<i class="${actionBtnIcon}"></i> ${actionBtnText}`;
-
+                            
                             const oldBanner = panel.querySelector('.conflict-banner');
                             if(oldBanner) oldBanner.remove();
                             if(conflictBanner) panel.insertAdjacentHTML('afterbegin', conflictBanner);
                         }
-
+                        
                         panel.querySelector('.details-close-btn').onclick = () => this._hideMobileSectionDetails();
-
+                        
                         panel.querySelector('#details-action-btn').onclick = () => {
                              let success = false;
                              if (activeSchedule.sections.has(section.uniqueId)) {
@@ -1751,19 +1726,19 @@
                              } else {
                                  success = this._addSectionAndLink(section.uniqueId, activeSchedule);
                              }
-
+                            
                              if (success) {
                                  this.updateCalendarAndConflicts();
-                                 this._showMobileSectionDetails(section, group, false); // Re-render details without rebuilding panel
+                                 this._showMobileSectionDetails(section, group, false);
                              }
                         };
-
+                        
                         const prevBtn = panel.querySelector('#details-prev-btn');
                         if (prevBtn) {
                            prevBtn.disabled = currentIndex <= 0;
                            prevBtn.onclick = () => { if(currentIndex > 0) this._showMobileSectionDetails(courseSections[currentIndex - 1], group, true)};
                         }
-
+                        
                         const nextBtn = panel.querySelector('#details-next-btn');
                         if (nextBtn) {
                            nextBtn.disabled = currentIndex >= courseSections.length - 1;
@@ -1780,7 +1755,7 @@
                     _handleViewAllConflicts(conflictMap) {
                         const allConflictingIds = new Set(conflictMap.keys());
                         const conflictingSections = Array.from(allConflictingIds).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-
+                        
                         const visited = new Set();
                         const conflictGroups = [];
 
@@ -1789,7 +1764,7 @@
                                 const group = new Set([section]);
                                 visited.add(section.uniqueId);
                                 const queue = [section];
-
+                                
                                 while(queue.length > 0) {
                                     const current = queue.shift();
                                     conflictingSections.forEach(other => {
@@ -1828,7 +1803,7 @@
                                     </div>
                                 </div>`;
                             }).join('');
-
+                            
                             return `<div class="conflict-group-container">
                                 <div class="conflict-group-title">مجموعة التعارض ${this._toArabicNumerals(groupIndex + 1)}</div>
                                 ${groupItemsHTML}
@@ -2044,7 +2019,7 @@
                         document.documentElement.style.setProperty('--rgb-primary', pRgb);
                         document.documentElement.style.setProperty('--primary-hue', String(pHue));
                         document.documentElement.style.setProperty('--secondary-hue', String((pHue + 40) % 360));
-
+                        
                         const modeToggle = this.dom.settingsModal.querySelector('.mode-toggle');
                         if (modeToggle) {
                             modeToggle.innerHTML = `<button class="mode-btn ${this.state.userSettings.theme==='dark'?'active':''}" data-theme="dark">ظلام</button><button class="mode-btn ${this.state.userSettings.theme==='light'?'active':''}" data-theme="light">نهار</button>`;
@@ -2057,7 +2032,7 @@
                             };
                         }
                         this._populateAccentColorPicker();
-
+                        
                         const weekendToggle = this.dom.settingsModal.querySelector('#show-weekend-toggle');
                         if (weekendToggle) {
                             weekendToggle.checked = this.state.userSettings.showWeekends;
@@ -2068,7 +2043,7 @@
                                 this.updateCalendarAndConflicts();
                             };
                         }
-
+                        
                         const closedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
                         if (closedToggle) {
                             closedToggle.checked = this.state.userSettings.hideClosedCourses;
@@ -2099,9 +2074,9 @@
                         const customLabel = document.createElement('label');
                         customLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
                         customLabel.style.backgroundColor = isCustom ? this.state.userSettings.accentColor : 'transparent';
-                        customLabel.classList.toggle('is-placeholder', !isCustom);
+                        customLabel.style.backgroundImage = isCustom ? 'none' : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)';
                         customLabel.innerHTML = `<input type="color" class="color-picker-input" value="${this.state.userSettings.accentColor}">`;
-                        customLabel.querySelector('input').oninput = e => {
+                        customLabel.querySelector('input').onchange = e => {
                             this.state.userSettings.accentColor = e.target.value;
                             this._saveSettings();
                             this._applySettings();
