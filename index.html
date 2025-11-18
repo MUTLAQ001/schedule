@@ -357,39 +357,58 @@
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
             
             /* --- Improved Toast Styles --- */
-            .toast-in-animation { animation: toastIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
-            .toast-out-animation { animation: toastOut 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
-            .swal2-container .custom-toast.swal2-toast {
-                background: var(--color-card);
+            .toast-in-animation { animation: toastIn 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+            .toast-out-animation { animation: toastOut 0.4s cubic-bezier(0.5, 0, 0.75, 0) forwards; }
+            .swal2-container .swal2-toast.custom-toast {
+                padding: 0;
+                background: rgba(30, 30, 32, 0.8);
                 border: 1px solid var(--color-border);
                 backdrop-filter: blur(10px);
                 -webkit-backdrop-filter: blur(10px);
                 box-shadow: 0 10px 30px -10px rgba(0,0,0,0.4);
                 border-radius: var(--radius-md);
-                padding: 0.7rem 1.2rem;
+                overflow: hidden;
             }
-            .light .swal2-container .custom-toast.swal2-toast {
+             .swal2-container .swal2-toast.custom-toast::before {
+                content: '';
+                position: absolute;
+                top: 0; right: 0; bottom: 0;
+                width: 4px;
+            }
+            .light .swal2-container .swal2-toast.custom-toast {
                  box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+                 background: rgba(250, 250, 250, 0.8);
             }
-            .custom-toast.swal2-toast .swal2-title {
-                color: var(--color-text-dark);
-                font-size: 0.9rem !important;
+            .swal2-container .swal2-toast.custom-toast.toast-success::before,
+            .swal2-container .swal2-toast.custom-toast.toast-success .swal2-timer-progress-bar { background-color: var(--color-success); }
+            .swal2-container .swal2-toast.custom-toast.toast-warning::before,
+            .swal2-container .swal2-toast.custom-toast.toast-warning .swal2-timer-progress-bar { background-color: var(--color-warning); }
+            .swal2-container .swal2-toast.custom-toast.toast-info::before,
+            .swal2-container .swal2-toast.custom-toast.toast-info .swal2-timer-progress-bar { background-color: var(--color-primary); }
+            .swal2-container .swal2-toast.custom-toast.toast-error::before,
+            .swal2-container .swal2-toast.custom-toast.toast-error .swal2-timer-progress-bar { background-color: var(--color-danger); }
+
+            .toast-content-wrapper {
+                display: flex;
+                align-items: center;
+                padding: 12px 20px 12px 16px;
+                gap: 12px;
+            }
+            .toast-icon { font-size: 1.5rem; line-height: 1; }
+            .toast-icon.success { color: var(--color-success); }
+            .toast-icon.warning { color: var(--color-warning); }
+            .toast-icon.info { color: var(--color-primary); }
+            .toast-icon.error { color: var(--color-danger); }
+            
+            .toast-message {
+                flex-grow: 1;
+                font-size: 0.9rem;
                 font-weight: 600;
-                margin: 0.5em 2.5em 0.5em 1em !important;
+                color: var(--color-text);
+                text-align: right;
             }
-            .custom-toast.swal2-toast .swal2-timer-progress-bar {
-                background: var(--color-primary);
-            }
-            .custom-toast.swal2-toast .swal2-icon.swal2-success .swal2-success-line-tip,
-            .custom-toast.swal2-toast .swal2-icon.swal2-success .swal2-success-line-long {
-                stroke: var(--color-success);
-            }
-            .custom-toast.swal2-toast .swal2-icon.swal2-warning { color: var(--color-warning); border-color: rgba(var(--rgb-warning), 0.5); }
-            .custom-toast.swal2-toast .swal2-icon.swal2-info { color: var(--color-primary); border-color: rgba(var(--rgb-primary), 0.5); }
-            .custom-toast.swal2-toast .swal2-icon.swal2-error .swal2-x-mark-line-left,
-            .custom-toast.swal2-toast .swal2-icon.swal2-error .swal2-x-mark-line-right {
-                background-color: var(--color-danger);
-            }
+             .swal2-timer-progress-bar { height: 4px; }
+
 
             .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .modal-overlay.open { opacity: 1; visibility: visible; }
@@ -1523,16 +1542,27 @@
                             }
                         });
                     },
-                    _showToast(icon, title) {
-                         Swal.fire({ 
+                    _showToast(type, message) {
+                        const toastConfig = {
+                            success: { iconClass: 'ri-checkbox-circle-fill' },
+                            error:   { iconClass: 'ri-close-circle-fill' },
+                            warning: { iconClass: 'ri-error-warning-fill' },
+                            info:    { iconClass: 'ri-information-fill' }
+                        };
+
+                        const config = toastConfig[type] || toastConfig.info;
+
+                        Swal.fire({ 
                             toast: true, 
                             position: isMobile ? 'bottom' : 'bottom-end', 
-                            icon: icon, 
-                            title: title, 
                             showConfirmButton: false, 
-                            timer: 3000, 
+                            timer: 3500, 
                             timerProgressBar: true,
-                            customClass: { popup: 'custom-toast' },
+                            html: `<div class="toast-content-wrapper">
+                                       <i class="toast-icon ${type} ${config.iconClass}"></i>
+                                       <span class="toast-message">${message}</span>
+                                   </div>`,
+                            customClass: { popup: `custom-toast toast-${type}` },
                             showClass: { popup: 'toast-in-animation' },
                             hideClass: { popup: 'toast-out-animation' }
                         });
