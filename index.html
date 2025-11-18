@@ -230,6 +230,7 @@
                  backdrop-filter: none;
             }
 
+
             .main-header h1 {
                 font-family: var(--font-title); font-weight: 700; font-size: 2.5rem;
                 background: linear-gradient(90deg,var(--color-primary-dark),var(--color-primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
@@ -387,6 +388,11 @@
             .color-picker-label.active { border-color: #fff; transform: scale(1.1); }
             .light .color-picker-label.active { border-color: var(--color-text-dark); }
             .color-picker-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; padding: 0; cursor: pointer; }
+            .color-picker-label.is-placeholder {
+                background-image: none !important;
+                background-color: transparent !important;
+                border-style: dashed;
+            }
             .time-range-selects { display: flex; gap: 0.5rem; }
             #course-colors-list .settings-item-label { flex-grow: 1; }
             .data-management-zone { border: 1px solid rgba(var(--rgb-warning), 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-top: 1rem; background: rgba(var(--rgb-warning), 0.05); }
@@ -630,7 +636,6 @@
             <div id="install-section-container"></div>
         </div>
         
-        <!-- Desktop View -->
         <div class="page-wrapper">
             <main class="main-content custom-scrollbar">
                 <header class="main-header"><h1><i class="ri-calendar-event-line"></i> QU Schedule</h1><div class="header-actions"><button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button><button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button></div></header>
@@ -645,7 +650,6 @@
             </aside>
         </div>
 
-        <!-- Mobile View -->
         <div class="mobile-wrapper">
             <header class="mobile-header">
                 <h1 id="mobile-header-title"></h1>
@@ -679,7 +683,6 @@
             </nav>
         </div>
 
-        <!-- Modals and Overlays (shared) -->
         <div class="modal-overlay" id="modal-overlay"></div>
         <div class="settings-modal" id="settings-modal"></div>
         <div class="mobile-section-details-overlay" id="mobile-section-details-overlay">
@@ -2073,8 +2076,15 @@
                         const isCustom = !Object.values(this.constants.PRESET_COLORS).includes(this.state.userSettings.accentColor);
                         const customLabel = document.createElement('label');
                         customLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
-                        customLabel.style.backgroundColor = isCustom ? this.state.userSettings.accentColor : 'transparent';
-                        customLabel.style.backgroundImage = isCustom ? 'none' : 'conic-gradient(red, yellow, lime, aqua, blue, magenta, red)';
+                        
+                        customLabel.classList.toggle('is-placeholder', !isCustom);
+                        if (isCustom) {
+                            customLabel.style.backgroundColor = this.state.userSettings.accentColor;
+                        } else {
+                            // Let the CSS class handle the placeholder style
+                            customLabel.style.backgroundColor = 'transparent';
+                        }
+                        
                         customLabel.innerHTML = `<input type="color" class="color-picker-input" value="${this.state.userSettings.accentColor}">`;
                         customLabel.querySelector('input').onchange = e => {
                             this.state.userSettings.accentColor = e.target.value;
