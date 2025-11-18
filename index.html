@@ -388,28 +388,39 @@
             .color-picker-label.active { border-color: #fff; transform: scale(1.1); }
             .light .color-picker-label.active { border-color: var(--color-text-dark); }
             .color-picker-input { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; border: none; padding: 0; cursor: pointer; }
-            .color-picker-label.is-placeholder {
-                background-image: none !important;
-                background-color: transparent !important;
-                border-style: dashed;
-            }
-            .time-range-selects { display: flex; gap: 0.5rem; }
-            #course-colors-list .settings-item-label { flex-grow: 1; }
-            .data-management-zone { border: 1px solid rgba(var(--rgb-warning), 0.3); border-radius: var(--radius-md); padding: 1.25rem; margin-top: 1rem; background: rgba(var(--rgb-warning), 0.05); }
-            .data-btn { width: 100%; background: transparent; border: 1px solid var(--color-border); color: var(--color-text); padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 0.75rem; }
-            .data-btn:hover { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
-            .data-btn.danger { border-color: rgba(var(--rgb-danger), 0.5); color: var(--color-danger); }
-            .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.1); color: var(--color-danger); }
+            
             .course-visibility-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; }
             .course-visibility-btn { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0.8rem; border: 1px solid; border-radius: var(--radius-md); text-align: right; cursor: pointer; transition: all 0.2s; font-size: 0.9rem; }
             .course-visibility-btn .color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; transition: all 0.2s; }
             .course-visibility-btn.visible { border-color: var(--item-color); background-color: rgba(var(--item-color-rgb), 0.1); color: var(--color-text-dark); }
             .course-visibility-btn.visible .color-dot { background-color: var(--item-color); box-shadow: 0 0 8px var(--item-color); }
             .course-visibility-btn.visible:hover { background-color: rgba(var(--item-color-rgb), 0.15); }
-            .course-visibility-btn.hidden { border-color: var(--color-border); color: var(--color-text-muted); opacity: 0.6; }
-            .course-visibility-btn.hidden .color-dot { background-color: var(--color-text-muted); opacity: 0.5; }
-            .course-visibility-btn.hidden:hover { background-color: rgba(255,255,255, 0.05); opacity: 1; }
-            .light .course-visibility-btn.hidden:hover { background-color: rgba(0, 0, 0, 0.05); opacity: 1; }
+            
+            /* -- UPDATED STYLE for HIDDEN COURSES -- */
+            .course-visibility-btn.hidden {
+                background-color: #2a2a2e; /* Dark background */
+                border-color: #3f3f46; /* Slightly lighter border */
+                color: var(--color-text-muted);
+            }
+            .course-visibility-btn.hidden .color-dot {
+                background-color: var(--color-text-muted);
+                opacity: 0.5; /* Dim the color dot */
+            }
+            .course-visibility-btn.hidden:hover {
+                background-color: #343438;
+                border-color: var(--color-text-muted);
+            }
+            .light .course-visibility-btn.hidden {
+                 background-color: #e4e4e7;
+                 border-color: #d4d4d8;
+                 color: #a1a1aa;
+            }
+             .light .course-visibility-btn.hidden:hover {
+                background-color: #e7e7ea;
+                border-color: #b8b8be;
+             }
+
+
             .action-picker-wrapper { position: relative; }
             .action-picker-display { width: 100%; padding: .5rem 1rem; font-family: var(--font-body); font-size: 0.9rem; color: var(--color-text); background: rgba(0,0,0,0.3); border: 1px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: all var(--transition); text-align: center; }
             .action-picker-display:hover { border-color: var(--color-primary); }
@@ -2005,15 +2016,8 @@
                         this.dom.modalOverlay.classList.toggle('open', show);
                         this.dom.settingsModal.classList.toggle('open', show);
                     },
-                    _applySettings() {
-                        document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
-                        if (isMobile) {
-                            document.body.classList.add('mobile-view');
-                        } else {
-                            document.body.classList.add('desktop-view');
-                        }
-
-                        const pColor = this.state.userSettings.accentColor;
+                    _applyAccentColorStyles(color) {
+                        const pColor = color;
                         const pDark = this._adjustColorBrightness(pColor, -10);
                         const pRgb = this._hexToRgb(pColor);
                         const pHue = this._hexToHue(pColor);
@@ -2022,6 +2026,16 @@
                         document.documentElement.style.setProperty('--rgb-primary', pRgb);
                         document.documentElement.style.setProperty('--primary-hue', String(pHue));
                         document.documentElement.style.setProperty('--secondary-hue', String((pHue + 40) % 360));
+                    },
+                    _applySettings() {
+                        document.body.className = this.state.userSettings.theme === 'light' ? 'light' : '';
+                        if (isMobile) {
+                            document.body.classList.add('mobile-view');
+                        } else {
+                            document.body.classList.add('desktop-view');
+                        }
+
+                        this._applyAccentColorStyles(this.state.userSettings.accentColor);
                         
                         const modeToggle = this.dom.settingsModal.querySelector('.mode-toggle');
                         if (modeToggle) {
@@ -2077,20 +2091,30 @@
                         const customLabel = document.createElement('label');
                         customLabel.className = `color-picker-label ${isCustom ? 'active' : ''}`;
                         
-                        customLabel.classList.toggle('is-placeholder', !isCustom);
                         if (isCustom) {
                             customLabel.style.backgroundColor = this.state.userSettings.accentColor;
+                            customLabel.style.backgroundImage = 'none';
                         } else {
-                            // Let the CSS class handle the placeholder style
                             customLabel.style.backgroundColor = 'transparent';
+                            const dashedCircleSVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='%23888888' stroke-width='8' stroke-dasharray='15 10' stroke-linecap='round'/></svg>`;
+                            customLabel.style.backgroundImage = `url("data:image/svg+xml,${encodeURIComponent(dashedCircleSVG)}")`;
                         }
-                        
+
                         customLabel.innerHTML = `<input type="color" class="color-picker-input" value="${this.state.userSettings.accentColor}">`;
-                        customLabel.querySelector('input').onchange = e => {
+                        const input = customLabel.querySelector('input');
+                        
+                        input.addEventListener('input', e => {
+                            customLabel.style.backgroundColor = e.target.value;
+                            customLabel.style.backgroundImage = 'none';
+                            this._applyAccentColorStyles(e.target.value);
+                        });
+                        
+                        input.addEventListener('change', e => {
                             this.state.userSettings.accentColor = e.target.value;
                             this._saveSettings();
-                            this._applySettings();
-                        };
+                            this._populateAccentColorPicker(); 
+                        });
+
                         picker.appendChild(customLabel);
                     },
                     _populateTimeSelects() {
