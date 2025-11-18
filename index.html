@@ -65,6 +65,16 @@
                 transform: translateY(0);
               }
             }
+            
+            @keyframes toastIn {
+                from { opacity: 0; transform: translateY(20px) scale(0.95); }
+                to { opacity: 1; transform: translateY(0) scale(1); }
+            }
+
+            @keyframes toastOut {
+                from { opacity: 1; transform: translateY(0) scale(1); }
+                to { opacity: 0; transform: translateY(20px) scale(0.95); }
+            }
 
 
             *, *::before, *::after { 
@@ -345,11 +355,42 @@
             .light .swal2-cancel { background: rgba(0,0,0,0.1)!important; }
             .swal-popup-animation-in { animation: swal-scale-in 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
             .swal-popup-animation-out { animation: swal-scale-out 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
-            .swal2-container .swal2-toast { width: auto !important; max-width: calc(100% - 2rem); box-shadow: 0 5px 20px rgba(0,0,0,0.3) !important; }
-            .light .swal2-container .swal2-toast { box-shadow: 0 5px 20px rgba(0,0,0,0.1) !important; }
-            .swal2-toast .swal2-title { font-size: .9rem !important; }
-            .swal2-toast.swal2-icon-show .swal2-title { margin: 0.5em 2.6em 0.5em 1em !important; }
             
+            /* --- Improved Toast Styles --- */
+            .toast-in-animation { animation: toastIn 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+            .toast-out-animation { animation: toastOut 0.3s cubic-bezier(0.25, 0.8, 0.25, 1) forwards; }
+            .swal2-container .custom-toast.swal2-toast {
+                background: var(--color-card);
+                border: 1px solid var(--color-border);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                box-shadow: 0 10px 30px -10px rgba(0,0,0,0.4);
+                border-radius: var(--radius-md);
+                padding: 0.75rem 1rem;
+            }
+            .light .swal2-container .custom-toast.swal2-toast {
+                 box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1);
+            }
+            .custom-toast.swal2-toast .swal2-title {
+                color: var(--color-text-dark);
+                font-size: 0.95rem !important;
+                font-weight: 600;
+                margin: 0.5em 2.4em 0.5em 1em !important;
+            }
+            .custom-toast.swal2-toast .swal2-timer-progress-bar {
+                background: var(--color-primary);
+            }
+            .custom-toast.swal2-toast .swal2-icon.swal2-success .swal2-success-line-tip,
+            .custom-toast.swal2-toast .swal2-icon.swal2-success .swal2-success-line-long {
+                stroke: var(--color-success);
+            }
+            .custom-toast.swal2-toast .swal2-icon.swal2-warning { color: var(--color-warning); border-color: rgba(var(--rgb-warning), 0.5); }
+            .custom-toast.swal2-toast .swal2-icon.swal2-info { color: var(--color-primary); border-color: rgba(var(--rgb-primary), 0.5); }
+            .custom-toast.swal2-toast .swal2-icon.swal2-error .swal2-x-mark-line-left,
+            .custom-toast.swal2-toast .swal2-icon.swal2-error .swal2-x-mark-line-right {
+                background-color: var(--color-danger);
+            }
+
             .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(10px); z-index: 2999; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .modal-overlay.open { opacity: 1; visibility: visible; }
             .settings-modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.95); width: 90%; max-width: 550px; background-color: var(--color-card); border-radius: var(--radius); box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 3000; opacity: 0; visibility: hidden; transition: all 0.3s; border: 1px solid var(--color-border); will-change: transform, opacity; }
@@ -1482,9 +1523,6 @@
                         });
                     },
                     _showToast(icon, title) {
-                         const customClass = {popup: 'swal2-toast'};
-                         if(icon === 'warning') customClass.icon = 'swal2-icon-warning';
-
                          Swal.fire({ 
                             toast: true, 
                             position: isMobile ? 'bottom' : 'bottom-end', 
@@ -1493,8 +1531,9 @@
                             showConfirmButton: false, 
                             timer: 3000, 
                             timerProgressBar: true,
-                            customClass: customClass,
-                            showClass: { popup: 'swal2-show', backdrop: 'swal2-backdrop-show', icon: 'swal2-icon-show' }
+                            customClass: { popup: 'custom-toast' },
+                            showClass: { popup: 'toast-in-animation' },
+                            hideClass: { popup: 'toast-out-animation' }
                         });
                     },
                     _handleTabClick(button) {
@@ -1592,16 +1631,11 @@
                         this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
                         this.state.calendar.render();
                     },
-                     _toArabicNumerals(num) {
-                        const arabicNumerals = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
-                        return String(num).replace(/[0-9]/g, d => arabicNumerals[parseInt(d)]);
-                    },
                     _addSchedule(name, isDefault = false) {
                         let scheduleName = name;
                         if (!name) {
                             const scheduleNumber = this.state.schedules.length + 1;
-                            const formattedNumber = this._toArabicNumerals(scheduleNumber);
-                            scheduleName = `جدول ${formattedNumber}`;
+                            scheduleName = `جدول ${scheduleNumber}`;
                         }
                         this.state.schedules.push({ name: scheduleName, sections: new Set(), linkedSections: new Map() });
                         if(!isDefault){
@@ -1819,7 +1853,7 @@
                             }).join('');
                             
                             return `<div class="conflict-group-container">
-                                <div class="conflict-group-title">مجموعة التعارض ${this._toArabicNumerals(groupIndex + 1)}</div>
+                                <div class="conflict-group-title">مجموعة التعارض ${groupIndex + 1}</div>
                                 ${groupItemsHTML}
                             </div>`;
                         }).join('');
@@ -1861,7 +1895,7 @@
                                     const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
                                     sectionsToRemove.forEach(id => this._removeSectionAndUnlink(id, activeSchedule));
                                     this.updateFullUI();
-                                    this._showToast('success', `تم حل التعارضات وإزالة ${this._toArabicNumerals(sectionsToRemove.length)} شعبة.`);
+                                    this._showToast('success', `تم حل التعارضات وإزالة ${sectionsToRemove.length} شعبة.`);
                                 } else {
                                      this._showToast('info', 'لم يتم إجراء أي تغييرات.');
                                 }
@@ -2096,7 +2130,7 @@
                             customLabel.style.backgroundImage = 'none';
                         } else {
                             customLabel.style.backgroundColor = 'transparent';
-                            const dashedCircleSVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='%23888888' stroke-width='8' stroke-dasharray='15 10' stroke-linecap='round'/></svg>`;
+                            const dashedCircleSVG = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='8' stroke-dasharray='15 10' stroke-linecap='round'/></svg>`;
                             customLabel.style.backgroundImage = `url("data:image/svg+xml,${encodeURIComponent(dashedCircleSVG)}")`;
                         }
 
