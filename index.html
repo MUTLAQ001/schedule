@@ -9,6 +9,7 @@
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
         <meta name="theme-color" content="#0a0a0a">
         <style>
@@ -275,8 +276,8 @@
             #add-schedule-btn { width: 40px; height: 40px; border-radius: 50%; background: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); border: 1px solid var(--color-border); font-size: 1.5rem; cursor: pointer; transition: var(--transition); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
             #add-schedule-btn:hover { background: var(--color-primary); color: white; transform: rotate(90deg); }
             .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
-            .calendar-wrapper .card { padding: 1.5rem; }
-            #calendar { height: 100%; }
+            .calendar-wrapper .card { padding: 1.5rem; display: flex; flex-direction: column;}
+            #calendar { height: 100%; flex-grow: 1;}
             .sidebar-header { padding: 1.5rem 2rem; border-bottom: 1px solid var(--color-border); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
             .sidebar-header h2 { margin: 0; font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--color-text-dark); }
             .sidebar-content-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
@@ -698,6 +699,101 @@
                 background-size: 200% 200%;
                 animation: shimmer 5s ease infinite;
             }
+            
+            .section-status-dot {
+                width: 10px !important;
+                height: 10px !important;
+                border: none;
+                background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), var(--dot-color));
+                box-shadow: 
+                    0 0 10px var(--dot-color), 
+                    inset 0 0 4px rgba(0,0,0,0.5),
+                    inset 1px 1px 2px rgba(255,255,255,0.8);
+                backdrop-filter: blur(2px);
+                transition: transform 0.3s ease;
+            }
+
+            .section-status-dot.open { --dot-color: #00ff66; }
+            .section-status-dot.closed { --dot-color: #ff3333; }
+
+            .course-item .color-dot {
+                background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.8), var(--bg-color, currentColor));
+                box-shadow: 0 0 12px var(--bg-color, currentColor);
+                border: 1px solid rgba(255,255,255,0.4);
+            }
+
+            .section-btn {
+                background: rgba(255, 255, 255, 0.03) !important;
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.08) !important;
+                box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+                border-radius: var(--radius-full); 
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            }
+
+            .section-btn:hover {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border-color: rgba(255, 255, 255, 0.3) !important;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+                transform: translateY(-2px);
+            }
+
+            .section-btn.selected {
+                background: rgba(var(--rgb-primary), 0.25) !important;
+                border: 1px solid rgba(var(--rgb-primary), 0.5) !important;
+                box-shadow: 
+                    0 0 20px rgba(var(--rgb-primary), 0.3),
+                    inset 0 0 10px rgba(var(--rgb-primary), 0.2);
+                color: #fff !important;
+                animation: none;
+                transform: scale(1.02);
+            }
+            
+            .fc-event {
+                backdrop-filter: blur(5px) !important;
+                opacity: 0.9;
+                border: 1px solid rgba(255, 255, 255, 0.3) !important;
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+                transition: all 0.2s;
+            }
+            
+            .fc-event:hover {
+                transform: translateY(-2px) scale(1.02);
+                box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+                z-index: 50;
+            }
+
+            .card, .sidebar {
+                background-color: rgba(20, 20, 22, 0.4) !important;
+                backdrop-filter: blur(20px) !important;
+                -webkit-backdrop-filter: blur(20px) !important;
+                border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            }
+            
+            .glassy-pill {
+                padding: 6px 14px;
+                border-radius: 99px;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.1);
+                backdrop-filter: blur(5px);
+                font-size: 0.85rem;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                color: var(--color-text-muted);
+            }
+            .calendar-wrapper .card {
+                display: flex;
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+            .calendar-wrapper .card #stats-bar {
+                padding-bottom: 1.5rem;
+            }
+            .calendar-wrapper .card #calendar {
+                flex-grow: 1;
+            }
         </style>
     </head>
     <body>
@@ -709,9 +805,23 @@
         
         <div class="page-wrapper">
             <main class="main-content custom-scrollbar">
-                <header class="main-header"><div id="main-header-title-wrapper"><h1><i class="ri-calendar-event-line"></i> QU Schedule</h1></div><div class="header-actions"><button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button><button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button></div></header>
+                <header class="main-header">
+                    <div id="main-header-title-wrapper"><h1><i class="ri-calendar-event-line"></i> QU Schedule</h1></div>
+                    <div class="header-actions">
+                        <button id="download-img-btn"><i class="ri-camera-3-line"></i> حفظ صورة</button>
+                        <button id="share-text-btn"><i class="ri-whatsapp-line"></i> مشاركة نصية</button>
+                        <button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button>
+                        <button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button>
+                    </div>
+                </header>
                 <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
-                <div class="calendar-wrapper card"><div id='calendar'></div></div>
+                <div class="calendar-wrapper card">
+                    <div id="stats-bar" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap;">
+                        <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count" style="font-weight:bold; color:var(--color-success)">-</span></div>
+                        <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count" style="font-weight:bold; color:var(--color-warning)">-</span></div>
+                    </div>
+                    <div id='calendar'></div>
+                </div>
                 <div class="my-schedule-container" id="my-schedule-container"></div>
             </main>
             <aside class="sidebar">
@@ -731,7 +841,11 @@
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
                     <div class="calendar-wrapper card">
-                        <div class="mobile-calendar-scroll-wrapper">
+                        <div id="stats-bar-mobile" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap; padding: 1.5rem 1.5rem 0.5rem 1.5rem;">
+                            <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count-mobile" style="font-weight:bold; color:var(--color-success)">-</span></div>
+                            <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count-mobile" style="font-weight:bold; color:var(--color-warning)">-</span></div>
+                        </div>
+                        <div class="mobile-calendar-scroll-wrapper" style="padding: 0 1.5rem 1.5rem 1.5rem;">
                             <div id='mobile-calendar'></div>
                         </div>
                     </div>
@@ -901,7 +1015,7 @@
                         }
                     },
                     constants: {
-                        PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316' },
+                        PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316', red: '#ef4444' },
                         COLOR_PALETTE: ['#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f97316', '#ef4444', '#06b6d4', '#d946ef'],
                         DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
                         STORAGE_KEYS: {
@@ -925,9 +1039,6 @@
                         this._updateBookmarkletCode();
                     },
 
-                };
-
-                Object.assign(QU_ScheduleApp, {
                     _loadDataFromStorage() {
                         const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
                         if (storedCourses) {
@@ -940,7 +1051,6 @@
                                 this._loadSchedules();
                                 this.updateFullUI();
                             } catch (e) {
-                                console.error("Error loading or parsing course data:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
                                 this.dom.installOverlay.style.display = 'flex';
                                 this.dom.installOverlay.classList.add('visible');
@@ -1024,7 +1134,6 @@
                                     throw new Error("No valid schedules found in storage.");
                                 }
                             } catch (e) {
-                                console.error("Error loading schedules, resetting:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.SCHEDULES);
                                 this.state.schedules = [];
                                 this._addSchedule(null, true);
@@ -1087,10 +1196,67 @@
                             }
                         });
 
+                        this._calculateSmartStats();
                         this._renderFinalExams(selectedCourseDetails);
                         this._renderMyScheduleSummary(selectedCourseDetails, conflictMap);
                         this._updateAvailableSectionsUI(selectedCourseDetails);
                         this._saveSchedules();
+                    },
+                    _calculateSmartStats() {
+                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                        const daysOffEl = document.getElementById('days-off-count');
+                        const maxGapEl = document.getElementById('max-gap-count');
+                        
+                        if (!activeSchedule || activeSchedule.sections.size === 0) {
+                            if (daysOffEl) daysOffEl.innerText = "كل الأيام!";
+                            if (maxGapEl) maxGapEl.innerText = "-";
+                            return;
+                        }
+
+                        const daysMap = {0:[], 1:[], 2:[], 3:[], 4:[]};
+                        const sections = Array.from(activeSchedule.sections)
+                            .map(id => this.state.allCoursesData.find(c => c.uniqueId === id))
+                            .filter(Boolean);
+
+                        sections.forEach(sec => {
+                            sec.timeSlots.forEach(slot => {
+                                if(daysMap[slot.day] !== undefined) {
+                                    const startMins = parseInt(slot.start.split(':')[0])*60 + parseInt(slot.start.split(':')[1]);
+                                    const endMins = parseInt(slot.end.split(':')[0])*60 + parseInt(slot.end.split(':')[1]);
+                                    daysMap[slot.day].push({s: startMins, e: endMins});
+                                }
+                            });
+                        });
+
+                        let daysOff = 0;
+                        let maxGap = 0; 
+                        
+                        const relevantDays = [0,1,2,3,4]; 
+                        relevantDays.forEach(d => {
+                            const slots = daysMap[d].sort((a,b) => a.s - b.s);
+                            
+                            if (slots.length === 0) {
+                                daysOff++;
+                            } else {
+                                for(let i=0; i < slots.length -1; i++) {
+                                    const currentEnd = slots[i].e;
+                                    const nextStart = slots[i+1].s;
+                                    const gap = nextStart - currentEnd;
+                                    if (gap > maxGap) maxGap = gap;
+                                }
+                            }
+                        });
+
+                        if (daysOffEl) daysOffEl.innerText = daysOff > 0 ? `${daysOff} أيام` : "لا يوجد";
+                        if (maxGapEl) {
+                            let gapText = "لا يوجد";
+                            if (maxGap > 0) {
+                                const h = Math.floor(maxGap / 60);
+                                const m = maxGap % 60;
+                                gapText = h > 0 ? `${h} ساعة ${m > 0 ? `و ${m} دقيقة` : ''}` : `${m} دقيقة`;
+                            }
+                            maxGapEl.innerText = gapText;
+                        }
                     },
                     _renderScheduleTabs() {
                         const containers = [this.dom.scheduleTabsContainer, this.dom.mobileScheduleTabsContainer].filter(Boolean);
@@ -1156,7 +1322,7 @@
                                             <div class="section-type">${section.type || ''}</div>
                                         </div>`;
                             }).join('');
-                            return `<div class="course-item" style="animation-delay: ${i * 30}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color}; box-shadow: 0 0 10px 1px ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
+                            return `<div class="course-item" style="animation-delay: ${i * 30}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color}; --bg-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
                         }).join('');
                     },
                     _renderCoursesList() {
@@ -1339,7 +1505,7 @@
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper',
                             'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
                             'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
-                            'mobile-section-details-overlay', 'details-panel'
+                            'mobile-section-details-overlay', 'details-panel', 'share-text-btn', 'download-img-btn'
                         ];
                         ids.forEach(id => {
                             this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
@@ -1424,6 +1590,8 @@
                         this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
                         this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
+                        this.dom.shareTextBtn?.addEventListener('click', () => this._handleShareAsText());
+                        this.dom.downloadImgBtn?.addEventListener('click', () => this._handleDownloadImage());
                         
                         const courseLists = [this.dom.desktopCoursesList, this.dom.mobileCoursesList];
                         courseLists.forEach(list => {
@@ -1442,6 +1610,71 @@
                                 }
                             });
                         }
+                    },
+                    _handleShareAsText() {
+                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+                        if (!activeSchedule || activeSchedule.sections.size === 0) {
+                            this._showToast('warning', 'الجدول فارغ! اختر مواد أولاً.');
+                            return;
+                        }
+
+                        const selectedDetails = Array.from(activeSchedule.sections)
+                            .map(id => this.state.allCoursesData.find(c => c.uniqueId === id))
+                            .filter(Boolean)
+                            .sort((a, b) => a.code.localeCompare(b.code));
+
+                        let textOutput = `📅 *${activeSchedule.name}*\n\n`;
+
+                        selectedDetails.forEach(c => {
+                            textOutput += `📘 *${c.name}* (${c.code})\n`;
+                            textOutput += `🔢 شعبة: ${c.section} | 👨‍🏫 ${c.instructor}\n`;
+                            textOutput += `📍 ${c.location}\n`;
+                            textOutput += `⏰ ${c.time.replace(/<br>/g, '\n      ')}\n`;
+                            textOutput += `──────────────────\n`;
+                        });
+                        
+                        const totalCredits = selectedDetails.reduce((acc, curr) => acc + (parseInt(curr.hours) || 0), 0);
+                        textOutput += `📊 إجمالي الساعات: ${totalCredits}`;
+
+                        navigator.clipboard.writeText(textOutput).then(() => {
+                            Swal.fire({
+                                title: 'تم النسخ!',
+                                text: 'تم نسخ جدولك كنص مرتب، يمكنك لصقه الآن في واتساب أو الملاحظات.',
+                                icon: 'success',
+                                confirmButtonText: 'ممتاز'
+                            });
+                        }).catch(err => {
+                            this._showToast('error', 'حدث خطأ أثناء النسخ');
+                        });
+                    },
+                    _handleDownloadImage() {
+                        const calendarEl = document.querySelector('.calendar-wrapper .card');
+                        if (!calendarEl || typeof html2canvas === 'undefined') {
+                            this._showToast('error', 'خطأ في تحميل أدوات التصوير.');
+                            return;
+                        }
+
+                        const btn = this.dom.downloadImgBtn;
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> جاري الحفظ...';
+
+                        html2canvas(calendarEl, {
+                            backgroundColor: document.body.classList.contains('light') ? '#f4f4f5' : '#0a0a0a',
+                            scale: 2,
+                            useCORS: true
+                        }).then(canvas => {
+                            const link = document.createElement('a');
+                            link.download = `QU_Schedule_${this.state.schedules[this.state.activeScheduleIndex].name}_${new Date().getTime()}.png`;
+                            link.href = canvas.toDataURL();
+                            link.click();
+                            
+                            btn.innerHTML = originalText;
+                            
+                            this._showToast('success', 'تم حفظ الصورة بنجاح');
+                        }).catch(e => {
+                            btn.innerHTML = originalText;
+                            this._showToast('error', 'فشل حفظ الصورة.');
+                        });
                     },
                     _handleSectionHover(event, isHovering) {
                         if (isMobile) return;
@@ -1637,7 +1870,6 @@
                                 navigator.clipboard.writeText(code).then(() => {
                                     this._showToast('success', 'تم نسخ الكود بنجاح!');
                                 }).catch(err => {
-                                    console.error('Failed to copy text: ', err);
                                     this._showToast('error', 'فشل النسخ!');
                                 });
                             });
@@ -1705,7 +1937,7 @@
                         const scheduleName = this.state.schedules[index].name;
                         Swal.fire({
                             title: `حذف "${scheduleName}"؟`, text: "لا يمكن التراجع عن هذا الإجراء.", icon: 'warning',
-                            showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'نعم، احذفه!', cancelButtonText: 'إلغاء'
+                            showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'نعم، احذفه!', cancelButtonText: 'إلغاء',
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 this.state.schedules.splice(index, 1);
@@ -1970,7 +2202,6 @@
                                 this.state.userSettings = { ...this.state.userSettings, ...JSON.parse(saved) };
                                 this.state.hiddenCourseCodes = new Set(this.state.userSettings.hiddenCourseCodes || []);
                             } catch (e) {
-                                console.error("Could not load settings:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.SETTINGS);
                             }
                         }
@@ -2333,7 +2564,7 @@
                             }
                         }
                     }
-                });
+                };
 
                 QU_ScheduleApp.init();
             });
