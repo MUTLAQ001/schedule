@@ -555,7 +555,7 @@
             .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); }
             
             .my-schedule-card { backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
-            .card-header-inline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
+            .card-header-inline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
             .card-header-inline h3 { margin: 0; }
             .total-credits-pill { padding: 0.35rem 1rem; border-radius: 999px; background: rgba(var(--rgb-primary), 0.15); border: 1px solid rgba(var(--rgb-primary), 0.2); font-size: 0.9rem; color: var(--color-primary); flex-shrink: 0; }
             .total-credits-pill span { font-weight: 700; font-family: var(--font-title); }
@@ -782,14 +782,12 @@
                 align-items: center;
                 gap: 8px;
                 color: var(--color-text-muted);
+                white-space: nowrap;
             }
             .calendar-wrapper .card {
                 display: flex;
                 flex-direction: column;
                 padding: 1.5rem;
-            }
-            .calendar-wrapper .card #stats-bar {
-                padding-bottom: 1.5rem;
             }
             .calendar-wrapper .card #calendar {
                 flex-grow: 1;
@@ -816,9 +814,12 @@
                 </header>
                 <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
                 <div class="calendar-wrapper card">
-                    <div id="stats-bar" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap;">
-                        <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count" style="font-weight:bold; color:var(--color-success)">-</span></div>
-                        <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count" style="font-weight:bold; color:var(--color-warning)">-</span></div>
+                    <div class="card-header-inline" style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--color-border);">
+                        <h3><i class="ri-time-line"></i> الجدول الزمني</h3>
+                        <div id="stats-bar" style="display: flex; gap: 0.75rem;">
+                            <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count" style="font-weight:bold; color:var(--color-success)">-</span></div>
+                            <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count" style="font-weight:bold; color:var(--color-warning)">-</span></div>
+                        </div>
                     </div>
                     <div id='calendar'></div>
                 </div>
@@ -841,11 +842,14 @@
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
                     <div class="calendar-wrapper card">
-                        <div id="stats-bar-mobile" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap; padding: 1.5rem 1.5rem 0.5rem 1.5rem;">
-                            <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count-mobile" style="font-weight:bold; color:var(--color-success)">-</span></div>
-                            <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count-mobile" style="font-weight:bold; color:var(--color-warning)">-</span></div>
+                        <div class="card-header-inline" style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--color-border);">
+                             <h3 style="font-size: 1.1rem; margin: 0;"><i class="ri-time-line"></i> الجدول</h3>
+                            <div id="stats-bar-mobile" style="display: flex; gap: 0.5rem; flex-shrink: 0;">
+                                <div class="stat-pill glassy-pill" style="padding: 4px 10px; font-size: 0.7rem;"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count-mobile" style="font-weight:bold; color:var(--color-success)">-</span></div>
+                                <div class="stat-pill glassy-pill" style="padding: 4px 10px; font-size: 0.7rem;"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count-mobile" style="font-weight:bold; color:var(--color-warning)">-</span></div>
+                            </div>
                         </div>
-                        <div class="mobile-calendar-scroll-wrapper" style="padding: 0 1.5rem 1.5rem 1.5rem;">
+                        <div class="mobile-calendar-scroll-wrapper" style="padding: 1rem;">
                             <div id='mobile-calendar'></div>
                         </div>
                     </div>
@@ -1367,11 +1371,14 @@
                     _createMyScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
-                        const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
+                        selectedCourses.forEach(course => {
                             if (!uniqueCourseCodes.has(course.code)) {
                                 totalCredits += parseInt(course.hours, 10) || 0;
                                 uniqueCourseCodes.add(course.code);
                             }
+                        });
+
+                        const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
                             const examText = course.examPeriodId || "لا يوجد";
                             const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
                             const statusCellHTML = this.state.userSettings.hideClosedCourses ? '' : `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`;
@@ -1401,7 +1408,7 @@
                         
                         return `<div class="card my-schedule-card">
                             <div class="my-schedule-section">
-                                <div class="card-header-inline">
+                                <div class="card-header-inline" style="margin-bottom: 1.5rem;">
                                     <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
                                     <div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div>
                                 </div>
@@ -1420,12 +1427,14 @@
                     _createMobileScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
-
-                        const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => {
+                         selectedCourses.forEach(course => {
                             if (!uniqueCourseCodes.has(course.code)) {
                                 totalCredits += parseInt(course.hours, 10) || 0;
                                 uniqueCourseCodes.add(course.code);
                             }
+                        });
+
+                        const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => {
                             const isConflicted = conflictMap.has(course.uniqueId);
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
                             
@@ -1622,6 +1631,15 @@
                             .map(id => this.state.allCoursesData.find(c => c.uniqueId === id))
                             .filter(Boolean)
                             .sort((a, b) => a.code.localeCompare(b.code));
+                            
+                        let totalCredits = 0;
+                        const uniqueCourseCodes = new Set();
+                         selectedDetails.forEach(course => {
+                            if (!uniqueCourseCodes.has(course.code)) {
+                                totalCredits += parseInt(course.hours, 10) || 0;
+                                uniqueCourseCodes.add(course.code);
+                            }
+                        });
 
                         let textOutput = `📅 *${activeSchedule.name}*\n\n`;
 
@@ -1633,7 +1651,6 @@
                             textOutput += `──────────────────\n`;
                         });
                         
-                        const totalCredits = selectedDetails.reduce((acc, curr) => acc + (parseInt(curr.hours) || 0), 0);
                         textOutput += `📊 إجمالي الساعات: ${totalCredits}`;
 
                         navigator.clipboard.writeText(textOutput).then(() => {
