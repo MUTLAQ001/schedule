@@ -319,7 +319,13 @@
             }
             .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
             
-            .my-schedule-table-wrapper { overflow-x: auto; }
+            .my-schedule-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+            .my-schedule-table thead th { background: rgba(255,255,255,0.03); padding: 0.8rem; text-align: center; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); }
+            .my-schedule-table tbody td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; text-align: center;}
+            .my-schedule-table .course-cell .course-code { font-size: 1rem; font-weight: 600;}
+            .my-schedule-table .section-cell .section-number { font-size: 1rem; font-weight: 600; }
+            .hours-value { font-size: 1.2rem; font-weight: 700; color: var(--color-primary); }
+
             .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; }
             .status-badge::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; }
             .status-badge.status-open { background-color: rgba(var(--rgb-success), 0.1); color: var(--color-success); }
@@ -472,7 +478,7 @@
             .light .data-btn.danger { background: rgba(var(--rgb-danger), 0.1); border-color: rgba(var(--rgb-danger), 0.2); }
             .light .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.2); border-color: rgba(var(--rgb-danger), 0.4); color: #fff; }
             
-            #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
+            .conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
             .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; }
             .conflict-group-title {
                 font-family: var(--font-title); font-size: 1.1rem; font-weight: 700;
@@ -527,7 +533,7 @@
             #mobile-my-schedule-container:not(.empty) .mobile-schedule-footer {
                 transform: translateY(0);
             }
-            .mobile-schedule-footer > .view-conflicts-btn, .mobile-schedule-footer > .total-credits-summary { flex-grow: 1; flex-basis: 0; justify-content: center; text-align: center; padding: 0.75rem 1rem; font-size: 1rem; font-weight: 700; }
+            .mobile-schedule-footer > .view-conflicts-btn, .mobile-schedule-footer > .total-credits-summary { flex-grow: 1; flex-basis: 0; justify-content: center; text-align: center; padding: 0.75rem 1.8rem; font-size: 1.3rem; font-weight: 700; }
             .mobile-section-details-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .mobile-section-details-overlay.open { opacity: 1; visibility: visible; }
             .details-panel { position: absolute; bottom: 0; left: 0; right: 0; background-color: var(--color-card); border-top: 1px solid var(--color-border); border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); padding-top: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
@@ -545,9 +551,6 @@
             .detail-item[data-full-width="true"] { grid-column: 1 / -1; }
             .details-actions-container { display: flex; gap: 0.5rem; align-items: center; }
             .details-action-btn { width: 100%; padding: 0.9rem 1.5rem; border: none; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: .2s; flex-grow: 1; }
-            .details-nav-btn { flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background-color: transparent; color: var(--color-text-muted); font-size: 1.8rem; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; }
-            .details-nav-btn:not(:disabled):hover { background-color: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); }
-            .details-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
             .details-action-btn.add { background-color: var(--color-primary); }
             .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
             .details-action-btn.remove { background-color: var(--color-danger); }
@@ -555,7 +558,7 @@
             .view-conflicts-btn:hover { background: rgba(var(--rgb-warning), 0.2); }
             
             .my-schedule-card { backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); }
-            .card-header-inline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+            .card-header-inline { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; }
             .card-header-inline h3 { margin: 0; }
             .total-credits-pill { padding: 0.35rem 1rem; border-radius: 999px; background: rgba(var(--rgb-primary), 0.15); border: 1px solid rgba(var(--rgb-primary), 0.2); font-size: 0.9rem; color: var(--color-primary); flex-shrink: 0; }
             .total-credits-pill span { font-weight: 700; font-family: var(--font-title); }
@@ -782,12 +785,14 @@
                 align-items: center;
                 gap: 8px;
                 color: var(--color-text-muted);
-                white-space: nowrap;
             }
             .calendar-wrapper .card {
                 display: flex;
                 flex-direction: column;
                 padding: 1.5rem;
+            }
+            .calendar-wrapper .card #stats-bar {
+                padding-bottom: 1.5rem;
             }
             .calendar-wrapper .card #calendar {
                 flex-grow: 1;
@@ -814,14 +819,7 @@
                 </header>
                 <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
                 <div class="calendar-wrapper card">
-                    <div class="card-header-inline" style="margin-bottom: 1.25rem; padding-bottom: 1.25rem; border-bottom: 1px solid var(--color-border);">
-                        <h3><i class="ri-time-line"></i> الجدول الزمني</h3>
-                        <div id="stats-bar" style="display: flex; gap: 0.75rem;">
-                            <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count" style="font-weight:bold; color:var(--color-success)">-</span></div>
-                            <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count" style="font-weight:bold; color:var(--color-warning)">-</span></div>
-                        </div>
-                    </div>
-                    <div id='calendar'></div>
+                    <div id="calendar"></div>
                 </div>
                 <div class="my-schedule-container" id="my-schedule-container"></div>
             </main>
@@ -842,14 +840,11 @@
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
                     <div class="calendar-wrapper card">
-                        <div class="card-header-inline" style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--color-border);">
-                             <h3 style="font-size: 1.1rem; margin: 0;"><i class="ri-time-line"></i> الجدول</h3>
-                            <div id="stats-bar-mobile" style="display: flex; gap: 0.5rem; flex-shrink: 0;">
-                                <div class="stat-pill glassy-pill" style="padding: 4px 10px; font-size: 0.7rem;"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count-mobile" style="font-weight:bold; color:var(--color-success)">-</span></div>
-                                <div class="stat-pill glassy-pill" style="padding: 4px 10px; font-size: 0.7rem;"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count-mobile" style="font-weight:bold; color:var(--color-warning)">-</span></div>
-                            </div>
+                        <div id="stats-bar-mobile" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap; padding: 1.5rem 1.5rem 0.5rem 1.5rem;">
+                            <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count-mobile" style="font-weight:bold; color:var(--color-success)">-</span></div>
+                            <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count-mobile" style="font-weight:bold; color:var(--color-warning)">-</span></div>
                         </div>
-                        <div class="mobile-calendar-scroll-wrapper" style="padding: 1rem;">
+                        <div class="mobile-calendar-scroll-wrapper" style="padding: 0 1.5rem 1.5rem 1.5rem;">
                             <div id='mobile-calendar'></div>
                         </div>
                     </div>
@@ -1208,12 +1203,12 @@
                     },
                     _calculateSmartStats() {
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        const daysOffEls = document.querySelectorAll('#days-off-count, #days-off-count-mobile');
-                        const maxGapEls = document.querySelectorAll('#max-gap-count, #max-gap-count-mobile');
-
+                        const daysOffEl = document.getElementById('days-off-count');
+                        const maxGapEl = document.getElementById('max-gap-count');
+                        
                         if (!activeSchedule || activeSchedule.sections.size === 0) {
-                            daysOffEls.forEach(el => el.innerText = "كل الأيام!");
-                            maxGapEls.forEach(el => el.innerText = "-");
+                            if (daysOffEl) daysOffEl.innerText = "كل الأيام!";
+                            if (maxGapEl) maxGapEl.innerText = "-";
                             return;
                         }
 
@@ -1251,16 +1246,16 @@
                             }
                         });
 
-                        const daysOffText = daysOff > 0 ? `${daysOff} أيام` : "لا يوجد";
-                        daysOffEls.forEach(el => el.innerText = daysOffText);
-
-                        let gapText = "لا يوجد";
-                        if (maxGap > 0) {
-                            const h = Math.floor(maxGap / 60);
-                            const m = maxGap % 60;
-                            gapText = h > 0 ? `${h} ساعة ${m > 0 ? `و ${m} دقيقة` : ''}` : `${m} دقيقة`;
+                        if (daysOffEl) daysOffEl.innerText = daysOff > 0 ? `${daysOff} أيام` : "لا يوجد";
+                        if (maxGapEl) {
+                            let gapText = "لا يوجد";
+                            if (maxGap > 0) {
+                                const h = Math.floor(maxGap / 60);
+                                const m = maxGap % 60;
+                                gapText = h > 0 ? `${h} ساعة ${m > 0 ? `و ${m} دقيقة` : ''}` : `${m} دقيقة`;
+                            }
+                            maxGapEl.innerText = gapText;
                         }
-                        maxGapEls.forEach(el => el.innerText = gapText);
                     },
                     _renderScheduleTabs() {
                         const containers = [this.dom.scheduleTabsContainer, this.dom.mobileScheduleTabsContainer].filter(Boolean);
@@ -1371,14 +1366,11 @@
                     _createMyScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
-                        selectedCourses.forEach(course => {
+                        const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
                             if (!uniqueCourseCodes.has(course.code)) {
                                 totalCredits += parseInt(course.hours, 10) || 0;
                                 uniqueCourseCodes.add(course.code);
                             }
-                        });
-
-                        const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
                             const examText = course.examPeriodId || "لا يوجد";
                             const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
                             const statusCellHTML = this.state.userSettings.hideClosedCourses ? '' : `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`;
@@ -1408,7 +1400,7 @@
                         
                         return `<div class="card my-schedule-card">
                             <div class="my-schedule-section">
-                                <div class="card-header-inline" style="margin-bottom: 1.5rem;">
+                                <div class="card-header-inline">
                                     <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
                                     <div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div>
                                 </div>
@@ -1427,14 +1419,12 @@
                     _createMobileScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
-                         selectedCourses.forEach(course => {
+
+                        const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => {
                             if (!uniqueCourseCodes.has(course.code)) {
                                 totalCredits += parseInt(course.hours, 10) || 0;
                                 uniqueCourseCodes.add(course.code);
                             }
-                        });
-
-                        const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => {
                             const isConflicted = conflictMap.has(course.uniqueId);
                             const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
                             
@@ -1631,15 +1621,6 @@
                             .map(id => this.state.allCoursesData.find(c => c.uniqueId === id))
                             .filter(Boolean)
                             .sort((a, b) => a.code.localeCompare(b.code));
-                            
-                        let totalCredits = 0;
-                        const uniqueCourseCodes = new Set();
-                         selectedDetails.forEach(course => {
-                            if (!uniqueCourseCodes.has(course.code)) {
-                                totalCredits += parseInt(course.hours, 10) || 0;
-                                uniqueCourseCodes.add(course.code);
-                            }
-                        });
 
                         let textOutput = `📅 *${activeSchedule.name}*\n\n`;
 
@@ -1651,6 +1632,7 @@
                             textOutput += `──────────────────\n`;
                         });
                         
+                        const totalCredits = selectedDetails.reduce((acc, curr) => acc + (parseInt(curr.hours) || 0), 0);
                         textOutput += `📊 إجمالي الساعات: ${totalCredits}`;
 
                         navigator.clipboard.writeText(textOutput).then(() => {
