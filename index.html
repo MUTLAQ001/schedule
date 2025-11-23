@@ -816,7 +816,10 @@
                 </header>
                 <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
                 <div class="calendar-wrapper card">
-                    
+                    <div id="stats-bar" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap;">
+                        <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count" style="font-weight:bold; color:var(--color-success)">-</span></div>
+                        <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count" style="font-weight:bold; color:var(--color-warning)">-</span></div>
+                    </div>
                     <div id='calendar'></div>
                 </div>
                 <div class="my-schedule-container" id="my-schedule-container"></div>
@@ -838,7 +841,10 @@
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
                     <div class="calendar-wrapper card">
-                        
+                        <div id="stats-bar-mobile" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap; padding: 1.5rem 1.5rem 0.5rem 1.5rem;">
+                            <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count-mobile" style="font-weight:bold; color:var(--color-success)">-</span></div>
+                            <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count-mobile" style="font-weight:bold; color:var(--color-warning)">-</span></div>
+                        </div>
                         <div class="mobile-calendar-scroll-wrapper" style="padding: 0 1.5rem 1.5rem 1.5rem;">
                             <div id='mobile-calendar'></div>
                         </div>
@@ -1198,12 +1204,12 @@
                     },
                     _calculateSmartStats() {
                         const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        const daysOffEl = document.getElementById('days-off-count');
-                        const maxGapEl = document.getElementById('max-gap-count');
-                        
+                        const daysOffEls = document.querySelectorAll('#days-off-count, #days-off-count-mobile');
+                        const maxGapEls = document.querySelectorAll('#max-gap-count, #max-gap-count-mobile');
+
                         if (!activeSchedule || activeSchedule.sections.size === 0) {
-                            if (daysOffEl) daysOffEl.innerText = "كل الأيام!";
-                            if (maxGapEl) maxGapEl.innerText = "-";
+                            daysOffEls.forEach(el => el.innerText = "كل الأيام!");
+                            maxGapEls.forEach(el => el.innerText = "-");
                             return;
                         }
 
@@ -1241,16 +1247,16 @@
                             }
                         });
 
-                        if (daysOffEl) daysOffEl.innerText = daysOff > 0 ? `${daysOff} أيام` : "لا يوجد";
-                        if (maxGapEl) {
-                            let gapText = "لا يوجد";
-                            if (maxGap > 0) {
-                                const h = Math.floor(maxGap / 60);
-                                const m = maxGap % 60;
-                                gapText = h > 0 ? `${h} ساعة ${m > 0 ? `و ${m} دقيقة` : ''}` : `${m} دقيقة`;
-                            }
-                            maxGapEl.innerText = gapText;
+                        const daysOffText = daysOff > 0 ? `${daysOff} أيام` : "لا يوجد";
+                        daysOffEls.forEach(el => el.innerText = daysOffText);
+
+                        let gapText = "لا يوجد";
+                        if (maxGap > 0) {
+                            const h = Math.floor(maxGap / 60);
+                            const m = maxGap % 60;
+                            gapText = h > 0 ? `${h} ساعة ${m > 0 ? `و ${m} دقيقة` : ''}` : `${m} دقيقة`;
                         }
+                        maxGapEls.forEach(el => el.innerText = gapText);
                     },
                     _renderScheduleTabs() {
                         const containers = [this.dom.scheduleTabsContainer, this.dom.mobileScheduleTabsContainer].filter(Boolean);
@@ -1427,7 +1433,7 @@
                                 <div class="mobile-schedule-header">
                                     <div class="mobile-schedule-title">
                                         <h3>${course.name}</h3>
-                                        <span>${course.code} - شعبة ${section.section}</span>
+                                        <span>${course.code} - شعبة ${course.section}</span>
                                     </div>
                                     ${conflictIconHTML}
                                 </div>
