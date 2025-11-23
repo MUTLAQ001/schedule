@@ -9,7 +9,6 @@
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
         <meta name="theme-color" content="#0a0a0a">
         <style>
@@ -319,13 +318,7 @@
             }
             .my-schedule-section { flex: 1; min-height: 0; display: flex; flex-direction: column; padding: 1.5rem; }
             
-            .my-schedule-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-            .my-schedule-table thead th { background: rgba(255,255,255,0.03); padding: 0.8rem; text-align: center; font-family: var(--font-title); color: var(--color-text-muted); border-bottom: 2px solid var(--color-border); }
-            .my-schedule-table tbody td { padding: 1.25rem 1rem; border-bottom: 1px solid var(--color-border); vertical-align: middle; text-align: center;}
-            .my-schedule-table .course-cell .course-code { font-size: 1rem; font-weight: 600;}
-            .my-schedule-table .section-cell .section-number { font-size: 1rem; font-weight: 600; }
-            .hours-value { font-size: 1.2rem; font-weight: 700; color: var(--color-primary); }
-
+            .my-schedule-table-wrapper { overflow-x: auto; }
             .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.25rem 0.75rem; border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 600; }
             .status-badge::before { content: ''; display: block; width: 8px; height: 8px; border-radius: 50%; }
             .status-badge.status-open { background-color: rgba(var(--rgb-success), 0.1); color: var(--color-success); }
@@ -478,7 +471,7 @@
             .light .data-btn.danger { background: rgba(var(--rgb-danger), 0.1); border-color: rgba(var(--rgb-danger), 0.2); }
             .light .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.2); border-color: rgba(var(--rgb-danger), 0.4); color: #fff; }
             
-            .conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
+            #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
             .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; }
             .conflict-group-title {
                 font-family: var(--font-title); font-size: 1.1rem; font-weight: 700;
@@ -533,7 +526,7 @@
             #mobile-my-schedule-container:not(.empty) .mobile-schedule-footer {
                 transform: translateY(0);
             }
-            .mobile-schedule-footer > .view-conflicts-btn, .mobile-schedule-footer > .total-credits-summary { flex-grow: 1; flex-basis: 0; justify-content: center; text-align: center; padding: 0.75rem 1.8rem; font-size: 1.3rem; font-weight: 700; }
+            .mobile-schedule-footer > .view-conflicts-btn, .mobile-schedule-footer > .total-credits-summary { flex-grow: 1; flex-basis: 0; justify-content: center; text-align: center; padding: 0.75rem 1rem; font-size: 1rem; font-weight: 700; }
             .mobile-section-details-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
             .mobile-section-details-overlay.open { opacity: 1; visibility: visible; }
             .details-panel { position: absolute; bottom: 0; left: 0; right: 0; background-color: var(--color-card); border-top: 1px solid var(--color-border); border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); padding-top: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
@@ -551,6 +544,9 @@
             .detail-item[data-full-width="true"] { grid-column: 1 / -1; }
             .details-actions-container { display: flex; gap: 0.5rem; align-items: center; }
             .details-action-btn { width: 100%; padding: 0.9rem 1.5rem; border: none; border-radius: var(--radius-md); font-family: var(--font-body); font-size: 1rem; font-weight: 700; color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: .5rem; transition: .2s; flex-grow: 1; }
+            .details-nav-btn { flex-shrink: 0; width: 48px; height: 48px; border-radius: var(--radius-md); border: 1px solid var(--color-border); background-color: transparent; color: var(--color-text-muted); font-size: 1.8rem; cursor: pointer; transition: all .2s; display: flex; align-items: center; justify-content: center; }
+            .details-nav-btn:not(:disabled):hover { background-color: rgba(var(--rgb-primary), 0.1); color: var(--color-primary); }
+            .details-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
             .details-action-btn.add { background-color: var(--color-primary); }
             .details-action-btn.add:hover { background-color: var(--color-primary-dark); }
             .details-action-btn.remove { background-color: var(--color-danger); }
@@ -580,8 +576,8 @@
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
 
-                #mobile-calendar-view .main-content { padding: 0; } /* تقليل البادينج للتأكد من عرض الجدول كاملاً */
-                #mobile-calendar-view .schedule-tabs-container { margin-top: 0.5rem; margin-left: 1rem; margin-right: 1rem;}
+                #mobile-calendar-view .main-content { padding: 0; } /* تم تقليل البادينج هنا */
+                #mobile-calendar-view .schedule-tabs-container { margin-top: 0.5rem; margin-left: 1rem; margin-right: 1rem; }
                 #mobile-courses-view { padding-left: 1rem; padding-right: 1rem; }
                 .schedule-tabs-container .demo-badge { margin-right: auto; margin-left: 0.5rem;}
 
@@ -840,7 +836,9 @@
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
                     <div class="calendar-wrapper card">
-                        <div id='mobile-calendar'></div>
+                        <div class="mobile-calendar-scroll-wrapper">
+                            <div id='mobile-calendar'></div>
+                        </div>
                     </div>
                 </main>
             </div>
@@ -1044,6 +1042,7 @@
                                 this._loadSchedules();
                                 this.updateFullUI();
                             } catch (e) {
+                                console.error("Error loading or parsing course data:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.COURSES);
                                 this.dom.installOverlay.style.display = 'flex';
                                 this.dom.installOverlay.classList.add('visible');
@@ -1127,6 +1126,7 @@
                                     throw new Error("No valid schedules found in storage.");
                                 }
                             } catch (e) {
+                                console.error("Error loading schedules, resetting:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.SCHEDULES);
                                 this.state.schedules = [];
                                 this._addSchedule(null, true);
@@ -1258,7 +1258,7 @@
                                             <div class="section-type">${section.type || ''}</div>
                                         </div>`;
                             }).join('');
-                            return `<div class="course-item" style="animation-delay: ${i * 30}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color}; --bg-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
+                            return `<div class="course-item" style="animation-delay: ${i * 30}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color}; box-shadow: 0 0 10px 1px ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${sectionsToDisplay.length} شعب متاحة</p></div><i class="ri-arrow-down-s-line toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
                         }).join('');
                     },
                     _renderCoursesList() {
@@ -1526,8 +1526,6 @@
                         this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
                         this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
-                        this.dom.shareTextBtn?.addEventListener('click', () => this._handleShareAsText());
-                        this.dom.downloadImgBtn?.addEventListener('click', () => this._handleDownloadImage());
                         
                         const courseLists = [this.dom.desktopCoursesList, this.dom.mobileCoursesList];
                         courseLists.forEach(list => {
@@ -1806,6 +1804,7 @@
                                 navigator.clipboard.writeText(code).then(() => {
                                     this._showToast('success', 'تم نسخ الكود بنجاح!');
                                 }).catch(err => {
+                                    console.error('Failed to copy text: ', err);
                                     this._showToast('error', 'فشل النسخ!');
                                 });
                             });
@@ -1873,7 +1872,7 @@
                         const scheduleName = this.state.schedules[index].name;
                         Swal.fire({
                             title: `حذف "${scheduleName}"؟`, text: "لا يمكن التراجع عن هذا الإجراء.", icon: 'warning',
-                            showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'نعم، احذفه!', cancelButtonText: 'إلغاء',
+                            showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'نعم، احذفه!', cancelButtonText: 'إلغاء'
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 this.state.schedules.splice(index, 1);
@@ -2138,6 +2137,7 @@
                                 this.state.userSettings = { ...this.state.userSettings, ...JSON.parse(saved) };
                                 this.state.hiddenCourseCodes = new Set(this.state.userSettings.hiddenCourseCodes || []);
                             } catch (e) {
+                                console.error("Could not load settings:", e);
                                 localStorage.removeItem(this.constants.STORAGE_KEYS.SETTINGS);
                             }
                         }
