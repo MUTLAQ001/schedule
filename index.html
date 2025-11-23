@@ -816,10 +816,7 @@
                 </header>
                 <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
                 <div class="calendar-wrapper card">
-                    <div id="stats-bar" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap;">
-                        <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count" style="font-weight:bold; color:var(--color-success)">-</span></div>
-                        <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count" style="font-weight:bold; color:var(--color-warning)">-</span></div>
-                    </div>
+                    
                     <div id='calendar'></div>
                 </div>
                 <div class="my-schedule-container" id="my-schedule-container"></div>
@@ -841,10 +838,7 @@
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
                     <div class="calendar-wrapper card">
-                        <div id="stats-bar-mobile" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap; padding: 1.5rem 1.5rem 0.5rem 1.5rem;">
-                            <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count-mobile" style="font-weight:bold; color:var(--color-success)">-</span></div>
-                            <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count-mobile" style="font-weight:bold; color:var(--color-warning)">-</span></div>
-                        </div>
+                        
                         <div class="mobile-calendar-scroll-wrapper" style="padding: 0 1.5rem 1.5rem 1.5rem;">
                             <div id='mobile-calendar'></div>
                         </div>
@@ -1433,7 +1427,7 @@
                                 <div class="mobile-schedule-header">
                                     <div class="mobile-schedule-title">
                                         <h3>${course.name}</h3>
-                                        <span>${course.code} - شعبة ${course.section}</span>
+                                        <span>${course.code} - شعبة ${section.section}</span>
                                     </div>
                                     ${conflictIconHTML}
                                 </div>
