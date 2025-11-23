@@ -819,7 +819,7 @@
                 </header>
                 <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
                 <div class="calendar-wrapper card">
-                    <div id="calendar"></div>
+                    <div id='calendar'></div>
                 </div>
                 <div class="my-schedule-container" id="my-schedule-container"></div>
             </main>
@@ -840,13 +840,7 @@
                 <main class="main-content">
                     <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
                     <div class="calendar-wrapper card">
-                        <div id="stats-bar-mobile" style="display: flex; gap: 15px; margin-bottom: 0; flex-wrap: wrap; padding: 1.5rem 1.5rem 0.5rem 1.5rem;">
-                            <div class="stat-pill glassy-pill"><i class="ri-moon-clear-line"></i> أيام الأوف: <span id="days-off-count-mobile" style="font-weight:bold; color:var(--color-success)">-</span></div>
-                            <div class="stat-pill glassy-pill"><i class="ri-cup-line"></i> أطول بريك: <span id="max-gap-count-mobile" style="font-weight:bold; color:var(--color-warning)">-</span></div>
-                        </div>
-                        <div class="mobile-calendar-scroll-wrapper" style="padding: 0 1.5rem 1.5rem 1.5rem;">
-                            <div id='mobile-calendar'></div>
-                        </div>
+                        <div id='mobile-calendar'></div>
                     </div>
                 </main>
             </div>
@@ -1195,67 +1189,10 @@
                             }
                         });
 
-                        this._calculateSmartStats();
                         this._renderFinalExams(selectedCourseDetails);
                         this._renderMyScheduleSummary(selectedCourseDetails, conflictMap);
                         this._updateAvailableSectionsUI(selectedCourseDetails);
                         this._saveSchedules();
-                    },
-                    _calculateSmartStats() {
-                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        const daysOffEl = document.getElementById('days-off-count');
-                        const maxGapEl = document.getElementById('max-gap-count');
-                        
-                        if (!activeSchedule || activeSchedule.sections.size === 0) {
-                            if (daysOffEl) daysOffEl.innerText = "كل الأيام!";
-                            if (maxGapEl) maxGapEl.innerText = "-";
-                            return;
-                        }
-
-                        const daysMap = {0:[], 1:[], 2:[], 3:[], 4:[]};
-                        const sections = Array.from(activeSchedule.sections)
-                            .map(id => this.state.allCoursesData.find(c => c.uniqueId === id))
-                            .filter(Boolean);
-
-                        sections.forEach(sec => {
-                            sec.timeSlots.forEach(slot => {
-                                if(daysMap[slot.day] !== undefined) {
-                                    const startMins = parseInt(slot.start.split(':')[0])*60 + parseInt(slot.start.split(':')[1]);
-                                    const endMins = parseInt(slot.end.split(':')[0])*60 + parseInt(slot.end.split(':')[1]);
-                                    daysMap[slot.day].push({s: startMins, e: endMins});
-                                }
-                            });
-                        });
-
-                        let daysOff = 0;
-                        let maxGap = 0; 
-                        
-                        const relevantDays = [0,1,2,3,4]; 
-                        relevantDays.forEach(d => {
-                            const slots = daysMap[d].sort((a,b) => a.s - b.s);
-                            
-                            if (slots.length === 0) {
-                                daysOff++;
-                            } else {
-                                for(let i=0; i < slots.length -1; i++) {
-                                    const currentEnd = slots[i].e;
-                                    const nextStart = slots[i+1].s;
-                                    const gap = nextStart - currentEnd;
-                                    if (gap > maxGap) maxGap = gap;
-                                }
-                            }
-                        });
-
-                        if (daysOffEl) daysOffEl.innerText = daysOff > 0 ? `${daysOff} أيام` : "لا يوجد";
-                        if (maxGapEl) {
-                            let gapText = "لا يوجد";
-                            if (maxGap > 0) {
-                                const h = Math.floor(maxGap / 60);
-                                const m = maxGap % 60;
-                                gapText = h > 0 ? `${h} ساعة ${m > 0 ? `و ${m} دقيقة` : ''}` : `${m} دقيقة`;
-                            }
-                            maxGapEl.innerText = gapText;
-                        }
                     },
                     _renderScheduleTabs() {
                         const containers = [this.dom.scheduleTabsContainer, this.dom.mobileScheduleTabsContainer].filter(Boolean);
