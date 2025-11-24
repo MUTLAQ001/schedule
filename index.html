@@ -7,8 +7,11 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+        <!-- Libraries -->
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <!-- Added html2canvas for Screenshot functionality -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
         <meta name="theme-color" content="#0a0a0a">
         <style>
@@ -713,7 +716,7 @@
                     <div id="main-header-title-wrapper"><h1><i class="ri-calendar-event-line"></i> QU Schedule</h1></div>
                     <div class="header-actions">
                         <button id="download-img-btn"><i class="ri-camera-3-line"></i> حفظ صورة</button>
-                        <button id="share-text-btn"><i class="ri-whatsapp-line"></i> مشاركة نصية</button>
+                        <!-- Removed Share Text Button -->
                         <button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button>
                         <button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button>
                     </div>
@@ -734,7 +737,10 @@
         <div class="mobile-wrapper">
             <header class="mobile-header">
                 <h1 id="mobile-header-title"></h1>
-                <button id="mobile-settings-btn"><i class="ri-settings-3-line"></i></button>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <button id="mobile-download-img-btn" style="background:none; border:none; color: var(--color-primary); font-size: 1.5rem; cursor: pointer; padding: 0.5rem;"><i class="ri-camera-3-line"></i></button>
+                    <button id="mobile-settings-btn"><i class="ri-settings-3-line"></i></button>
+                </div>
             </header>
             
             <div id="mobile-calendar-view" class="mobile-view-content active">
@@ -1346,7 +1352,7 @@
                             'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper',
                             'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 
                             'mobile-settings-btn', 'mobile-courses-list', 'mobile-exams-list', 'mobile-calendar',
-                            'mobile-section-details-overlay', 'details-panel', 'share-text-btn', 'download-img-btn'
+                            'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'mobile-download-img-btn'
                         ];
                         ids.forEach(id => {
                             this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id);
@@ -1429,6 +1435,10 @@
                         this.dom.clearCalendarBtn?.addEventListener('click', () => this._handleClearCalendar());
                         this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
+                        
+                        this.dom.downloadImgBtn?.addEventListener('click', () => this._handleDownloadImage(false));
+                        this.dom.mobileDownloadImgBtn?.addEventListener('click', () => this._handleDownloadImage(true));
+                        
                         this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
                         this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
                         
@@ -1450,68 +1460,44 @@
                             });
                         }
                     },
-                    _handleShareAsText() {
-                        const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-                        if (!activeSchedule || activeSchedule.sections.size === 0) {
-                            this._showToast('warning', 'الجدول فارغ! اختر مواد أولاً.');
-                            return;
+                    _handleDownloadImage(isMobileContext) {
+                        let calendarEl;
+                        if(isMobileContext) {
+                            calendarEl = document.querySelector('.mobile-calendar-scroll-wrapper');
+                        } else {
+                            calendarEl = document.querySelector('.calendar-wrapper .card');
                         }
 
-                        const selectedDetails = Array.from(activeSchedule.sections)
-                            .map(id => this.state.allCoursesData.find(c => c.uniqueId === id))
-                            .filter(Boolean)
-                            .sort((a, b) => a.code.localeCompare(b.code));
-
-                        let textOutput = `📅 *${activeSchedule.name}*\n\n`;
-
-                        selectedDetails.forEach(c => {
-                            textOutput += `📘 *${c.name}* (${c.code})\n`;
-                            textOutput += `🔢 شعبة: ${c.section} | 👨‍🏫 ${c.instructor}\n`;
-                            textOutput += `📍 ${c.location}\n`;
-                            textOutput += `⏰ ${c.time.replace(/<br>/g, '\n      ')}\n`;
-                            textOutput += `──────────────────\n`;
-                        });
-                        
-                        const totalCredits = selectedDetails.reduce((acc, curr) => acc + (parseInt(curr.hours) || 0), 0);
-                        textOutput += `📊 إجمالي الساعات: ${totalCredits}`;
-
-                        navigator.clipboard.writeText(textOutput).then(() => {
-                            Swal.fire({
-                                title: 'تم النسخ!',
-                                text: 'تم نسخ جدولك كنص مرتب، يمكنك لصقه الآن في واتساب أو الملاحظات.',
-                                icon: 'success',
-                                confirmButtonText: 'ممتاز'
-                            });
-                        }).catch(err => {
-                            this._showToast('error', 'حدث خطأ أثناء النسخ');
-                        });
-                    },
-                    _handleDownloadImage() {
-                        const calendarEl = document.querySelector('.calendar-wrapper .card');
                         if (!calendarEl || typeof html2canvas === 'undefined') {
                             this._showToast('error', 'خطأ في تحميل أدوات التصوير.');
                             return;
                         }
 
-                        const btn = this.dom.downloadImgBtn;
-                        const originalText = btn.innerHTML;
-                        btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i> جاري الحفظ...';
+                        // Select correct button based on context
+                        const btn = isMobileContext ? this.dom.mobileDownloadImgBtn : this.dom.downloadImgBtn;
+                        const originalHTML = btn.innerHTML;
+                        btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i>';
 
                         html2canvas(calendarEl, {
                             backgroundColor: document.body.classList.contains('light') ? '#f4f4f5' : '#0a0a0a',
-                            scale: 2,
-                            useCORS: true
+                            scale: 2, // High resolution
+                            useCORS: true,
+                            ignoreElements: (el) => {
+                                // Ignore any unwanted elements if needed
+                                return false;
+                            }
                         }).then(canvas => {
                             const link = document.createElement('a');
-                            link.download = `QU_Schedule_${this.state.schedules[this.state.activeScheduleIndex].name}_${new Date().getTime()}.png`;
-                            link.href = canvas.toDataURL();
+                            const platform = isMobileContext ? 'Mobile' : 'Desktop';
+                            link.download = `QU_Schedule_${platform}_${this.state.schedules[this.state.activeScheduleIndex].name}_${new Date().getTime()}.png`;
+                            link.href = canvas.toDataURL('image/png');
                             link.click();
                             
-                            btn.innerHTML = originalText;
-                            
+                            btn.innerHTML = originalHTML;
                             this._showToast('success', 'تم حفظ الصورة بنجاح');
                         }).catch(e => {
-                            btn.innerHTML = originalText;
+                            console.error(e);
+                            btn.innerHTML = originalHTML;
                             this._showToast('error', 'فشل حفظ الصورة.');
                         });
                     },
