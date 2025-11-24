@@ -10,8 +10,7 @@
         <!-- Libraries -->
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <!-- Added html2canvas for Screenshot functionality -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
         <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
         <meta name="theme-color" content="#0a0a0a">
         <style>
@@ -573,13 +572,15 @@
                 .page-wrapper { display: none; }
                 .mobile-wrapper { display: block; position: relative; width: 100vw; overflow: hidden; }
                 .mobile-header { display: flex; justify-content: space-between; align-items: center; padding: 0 1.25rem; height: 65px; background-color: var(--color-card); border-bottom: 1px solid var(--color-border); position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(16px); box-shadow: 0 5px 20px -5px rgba(0,0,0,0.2); }
-                .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; }
-                .mobile-header #mobile-settings-btn { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; }
+                .mobile-header h1 { margin: 0; font-size: 1.25rem; font-family: var(--font-title); color: var(--color-text-dark); font-weight: 700; flex: 1; text-align: right; }
+                #mobile-action-buttons { display: flex; align-items: center; gap: 0.5rem; }
+                #mobile-action-buttons .icon-btn-ghost { background: none; border: none; color: var(--color-primary); font-size: 1.6rem; padding: 0.5rem; cursor: pointer; }
+
                 .mobile-view-content { display: none; height: 100vh; padding: 65px 0 75px; overflow-y: auto; overflow-x: hidden; }
                 .mobile-view-content.active { display: flex; flex-direction: column; }
                 .light .mobile-header, .light .mobile-nav { box-shadow: 0 5px 20px -5px rgba(0,0,0,0.05); }
 
-                #mobile-calendar-view .main-content { padding: 0; } /* إزالة البادينج الأفقي لتوسيع مساحة التمرير */
+                #mobile-calendar-view .main-content { padding: 0; }
                 #mobile-calendar-view .schedule-tabs-container { margin-top: 0.5rem; margin-left: 1rem; margin-right: 1rem;}
                 #mobile-courses-view { padding-left: 1rem; padding-right: 1rem; }
                 .schedule-tabs-container .demo-badge { margin-right: auto; margin-left: 0.5rem;}
@@ -669,11 +670,6 @@
             .my-schedule-table .schedule-row:nth-child(3) { animation-delay: 0.15s; }
             .my-schedule-table .schedule-row:nth-child(4) { animation-delay: 0.2s; }
             .my-schedule-table .schedule-row:nth-child(5) { animation-delay: 0.25s; }
-            .my-schedule-table .schedule-row:nth-child(6) { animation-delay: 0.3s; }
-            .my-schedule-table .schedule-row:nth-child(7) { animation-delay: 0.35s; }
-            .my-schedule-table .schedule-row:nth-child(8) { animation-delay: 0.4s; }
-            .my-schedule-table .schedule-row:nth-child(9) { animation-delay: 0.45s; }
-            .my-schedule-table .schedule-row:nth-child(10) { animation-delay: 0.5s; }
 
             .my-schedule-table .schedule-row.has-conflict {
                 background-color: rgba(var(--rgb-danger), 0.1);
@@ -716,7 +712,6 @@
                     <div id="main-header-title-wrapper"><h1><i class="ri-calendar-event-line"></i> QU Schedule</h1></div>
                     <div class="header-actions">
                         <button id="download-img-btn"><i class="ri-camera-3-line"></i> حفظ صورة</button>
-                        <!-- Removed Share Text Button -->
                         <button id="settings-btn"><i class="ri-settings-3-line"></i> إعدادات</button>
                         <button id="clear-calendar-btn"><i class="ri-delete-bin-6-line"></i> مسح الجدول الحالي</button>
                     </div>
@@ -737,9 +732,9 @@
         <div class="mobile-wrapper">
             <header class="mobile-header">
                 <h1 id="mobile-header-title"></h1>
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                    <button id="mobile-download-img-btn" style="background:none; border:none; color: var(--color-primary); font-size: 1.5rem; cursor: pointer; padding: 0.5rem;"><i class="ri-camera-3-line"></i></button>
-                    <button id="mobile-settings-btn"><i class="ri-settings-3-line"></i></button>
+                <div id="mobile-action-buttons">
+                    <button class="icon-btn-ghost" id="mobile-download-img-btn"><i class="ri-camera-3-line"></i></button>
+                    <button class="icon-btn-ghost" id="mobile-settings-btn"><i class="ri-settings-3-line"></i></button>
                 </div>
             </header>
             
@@ -1214,37 +1209,22 @@
                     _createMyScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
-                        const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
-                            if (!uniqueCourseCodes.has(course.code)) {
-                                totalCredits += parseInt(course.hours, 10) || 0;
-                                uniqueCourseCodes.add(course.code);
-                            }
-                            const examText = course.examPeriodId || "لا يوجد";
-                            const statusClass = course.status.includes('مفتوحة') ? 'open' : 'closed';
-                            const statusCellHTML = this.state.userSettings.hideClosedCourses ? '' : `<td><span class="status-badge status-${statusClass}">${course.status}</span></td>`;
-                            const isConflicted = conflictMap.has(course.uniqueId);
-                            const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
+                        selectedCourses.forEach(c => { if (!uniqueCourseCodes.has(c.code)) { totalCredits += parseInt(c.hours, 10) || 0; uniqueCourseCodes.add(c.code); } });
 
+                        const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
+                            const isConflicted = conflictMap.has(course.uniqueId);
                             return `<tr class="schedule-row ${isConflicted ? 'has-conflict' : ''}">
-                                <td class="course-cell"><div class="course-code">${conflictIconHTML} ${course.code}</div><div class="course-name">${course.name}</div></td>
-                                <td class="section-cell"><div class="section-number">${course.section}</div><div class="section-type">${course.type}</div></td>
+                                <td><div>${course.code}</div><div>${course.name}</div></td>
+                                <td><div>${course.section}</div><div>${course.type}</div></td>
                                 <td>${course.instructor}</td>
                                 <td>${course.time.replace(/<br>/g, ' ')}</td>
-                                ${statusCellHTML}
-                                <td>${examText}</td>
+                                <td>${course.examPeriodId || "لا يوجد"}</td>
                                 <td>${course.location}</td>
                                 <td><div class="hours-value">${course.hours}</div></td>
                             </tr>`;
                         }).join('');
 
-                        let conflictButtonHTML = '';
-                        if (conflictMap.size > 0) {
-                            conflictButtonHTML = `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn">
-                                                    <i class="ri-alert-fill"></i> حل التعارض
-                                                </button>`;
-                        }
-                        
-                        const statusHeaderHTML = this.state.userSettings.hideClosedCourses ? '' : '<th>الحالة</th>';
+                        const conflictButtonHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn"><i class="ri-alert-fill"></i> حل التعارض</button>` : '';
                         
                         return `<div class="card my-schedule-card">
                             <div class="my-schedule-section">
@@ -1254,58 +1234,40 @@
                                 </div>
                                 <div class="my-schedule-table-wrapper">
                                     <table class="my-schedule-table">
-                                        <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th>${statusHeaderHTML}<th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>
+                                        <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>
                                         <tbody>${tableRowsHTML}</tbody>
                                     </table>
                                 </div>
-                                <div class="my-schedule-footer">
-                                    ${conflictButtonHTML}
-                                </div>
+                                <div class="my-schedule-footer">${conflictButtonHTML}</div>
                             </div>
                         </div>`;
                     },
                     _createMobileScheduleHTML(selectedCourses, conflictMap) {
                         let totalCredits = 0;
                         const uniqueCourseCodes = new Set();
+                        selectedCourses.forEach(c => { if (!uniqueCourseCodes.has(c.code)) { totalCredits += parseInt(c.hours, 10) || 0; uniqueCourseCodes.add(c.code); } });
 
                         const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => {
-                            if (!uniqueCourseCodes.has(course.code)) {
-                                totalCredits += parseInt(course.hours, 10) || 0;
-                                uniqueCourseCodes.add(course.code);
-                            }
                             const isConflicted = conflictMap.has(course.uniqueId);
-                            const conflictIconHTML = isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="${conflictMap.get(course.uniqueId).join('\n')}"></i>` : '';
-                            
                             return `<div class="mobile-schedule-item" style="animation-delay:${i*30}ms;">
                                 <div class="mobile-schedule-header">
-                                    <div class="mobile-schedule-title">
-                                        <h3>${course.name}</h3>
-                                        <span>${course.code} - شعبة ${course.section}</span>
-                                    </div>
-                                    ${conflictIconHTML}
+                                    <div class="mobile-schedule-title"><h3>${course.name}</h3><span>${course.code} - شعبة ${course.section}</span></div>
+                                    ${isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon"></i>` : ''}
                                 </div>
                                 <div class="mobile-schedule-details">
                                     <div class="mobile-detail-row"><i class="ri-time-line"></i> <strong>المواعيد:</strong> ${course.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div>
-                                    <div class="mobile-detail-row"><i class="ri-map-pin-line"></i> <strong>المكان:</strong> ${course.location || 'غير محدد'}</div>
                                     <div class="mobile-detail-row"><i class="ri-user-line"></i> <strong>المحاضر:</strong> ${course.instructor || 'غير محدد'}</div>
-                                    <div class="mobile-detail-row"><i class="ri-file-text-line"></i> <strong>الاختبار:</strong> ${course.examPeriodId || 'لا يوجد'}</div>
                                 </div>
                             </div>`;
                         }).join('');
                         
-                        let conflictButtonHTML = '';
-                        if (conflictMap.size > 0) {
-                            conflictButtonHTML = `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn">
-                                                    <i class="ri-alert-fill"></i> حل التعارض
-                                                </button>`;
-                        }
+                        const conflictButtonHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn"><i class="ri-alert-fill"></i> حل التعارض</button>` : '';
 
-                        return `
-                            <div id="mobile-my-schedule-list">${itemsHTML}</div>
-                            <div class="mobile-schedule-footer">
-                                 ${conflictButtonHTML}
-                                 <div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div>
-                            </div>`;
+                        return `<div id="mobile-my-schedule-list">${itemsHTML}</div>
+                                <div class="mobile-schedule-footer">
+                                     ${conflictButtonHTML}
+                                     <div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div>
+                                </div>`;
                     },
                     _renderFinalExams(selectedCourses) {
                         const uniqueExams = [...new Map(selectedCourses.filter(e => e.examPeriodId).map(e => [e.examPeriodId, e])).values()];
@@ -1435,7 +1397,6 @@
                         this.dom.clearCalendarBtn?.addEventListener('click', () => this._handleClearCalendar());
                         this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
                         this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
-                        
                         this.dom.downloadImgBtn?.addEventListener('click', () => this._handleDownloadImage(false));
                         this.dom.mobileDownloadImgBtn?.addEventListener('click', () => this._handleDownloadImage(true));
                         
@@ -1461,42 +1422,28 @@
                         }
                     },
                     _handleDownloadImage(isMobileContext) {
-                        let calendarEl;
-                        if(isMobileContext) {
-                            calendarEl = document.querySelector('.mobile-calendar-scroll-wrapper');
-                        } else {
-                            calendarEl = document.querySelector('.calendar-wrapper .card');
-                        }
-
+                        const calendarEl = isMobileContext ? document.querySelector('.mobile-calendar-scroll-wrapper') : document.querySelector('.calendar-wrapper .card');
                         if (!calendarEl || typeof html2canvas === 'undefined') {
                             this._showToast('error', 'خطأ في تحميل أدوات التصوير.');
                             return;
                         }
 
-                        // Select correct button based on context
                         const btn = isMobileContext ? this.dom.mobileDownloadImgBtn : this.dom.downloadImgBtn;
                         const originalHTML = btn.innerHTML;
                         btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i>';
 
                         html2canvas(calendarEl, {
                             backgroundColor: document.body.classList.contains('light') ? '#f4f4f5' : '#0a0a0a',
-                            scale: 2, // High resolution
-                            useCORS: true,
-                            ignoreElements: (el) => {
-                                // Ignore any unwanted elements if needed
-                                return false;
-                            }
+                            scale: 2,
+                            useCORS: true
                         }).then(canvas => {
                             const link = document.createElement('a');
-                            const platform = isMobileContext ? 'Mobile' : 'Desktop';
-                            link.download = `QU_Schedule_${platform}_${this.state.schedules[this.state.activeScheduleIndex].name}_${new Date().getTime()}.png`;
-                            link.href = canvas.toDataURL('image/png');
+                            link.download = `QU_Schedule_${this.state.schedules[this.state.activeScheduleIndex].name}.png`;
+                            link.href = canvas.toDataURL();
                             link.click();
-                            
                             btn.innerHTML = originalHTML;
                             this._showToast('success', 'تم حفظ الصورة بنجاح');
                         }).catch(e => {
-                            console.error(e);
                             btn.innerHTML = originalHTML;
                             this._showToast('error', 'فشل حفظ الصورة.');
                         });
@@ -1658,7 +1605,7 @@
                         }
                     },
                     _updateBookmarkletCode() {
-                        const code = `javascript:!function(){var e=document.createElement('script');e.src='${this.constants.EXTRACTOR_URL}?v='+Date.now(),document.head.appendChild(e)}();`;
+                        const code = `javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();`;
                         const container = this.dom.installSectionContainer;
                         
                         const demoBtn = `<button class="data-btn" id="demo-mode-btn"><i class="ri-eye-line"></i> ألقِ نظرة</button>`;
@@ -1677,7 +1624,7 @@
                                     </ol>
                                     <div class="install-actions">
                                         <div class="code-container">
-                                            <pre><span class="highlight">javascript:</span>!function(){...}();</pre>
+                                            <pre>${code}</pre>
                                         </div>
                                         <button id="copy-code-btn"><i class="ri-clipboard-line"></i> نسخ الكود</button>
                                         <div class="or-divider">أو</div>
@@ -1689,14 +1636,10 @@
                                 </div>
                             `;
                             const copyBtn = container.querySelector('#copy-code-btn');
-                            copyBtn.previousElementSibling.querySelector('pre').textContent = code;
                             copyBtn.addEventListener('click', (e) => {
                                 e.preventDefault();
                                 navigator.clipboard.writeText(code).then(() => {
                                     this._showToast('success', 'تم نسخ الكود بنجاح!');
-                                }).catch(err => {
-                                    console.error('Failed to copy text: ', err);
-                                    this._showToast('error', 'فشل النسخ!');
                                 });
                             });
                         } else {
@@ -1724,6 +1667,7 @@
                             events: [], dir: 'rtl', dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, 
                             slotMinTime: this.state.userSettings.minTime, slotMaxTime: this.state.userSettings.maxTime,
                             hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false,
+                            height: isMobile ? 'auto' : '100%',
                             dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; },
                             eventContent: (arg) => {
                                 const props = arg.event.extendedProps;
