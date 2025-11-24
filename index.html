@@ -7,7 +7,6 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
-        <!-- Libraries -->
         <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js'></script>
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
@@ -1422,31 +1421,61 @@
                         }
                     },
                     _handleDownloadImage(isMobileContext) {
-                        const calendarEl = isMobileContext ? document.querySelector('.mobile-calendar-scroll-wrapper') : document.querySelector('.calendar-wrapper .card');
-                        if (!calendarEl || typeof html2canvas === 'undefined') {
+                        const btn = isMobileContext ? this.dom.mobileDownloadImgBtn : this.dom.downloadImgBtn;
+                        if (typeof html2canvas === 'undefined') {
                             this._showToast('error', 'خطأ في تحميل أدوات التصوير.');
                             return;
                         }
 
-                        const btn = isMobileContext ? this.dom.mobileDownloadImgBtn : this.dom.downloadImgBtn;
                         const originalHTML = btn.innerHTML;
                         btn.innerHTML = '<i class="ri-loader-4-line ri-spin"></i>';
 
-                        html2canvas(calendarEl, {
+                        const captureOptions = {
                             backgroundColor: document.body.classList.contains('light') ? '#f4f4f5' : '#0a0a0a',
                             scale: 2,
                             useCORS: true
-                        }).then(canvas => {
+                        };
+
+                        const onCaptureComplete = (canvas) => {
                             const link = document.createElement('a');
                             link.download = `QU_Schedule_${this.state.schedules[this.state.activeScheduleIndex].name}.png`;
                             link.href = canvas.toDataURL();
                             link.click();
                             btn.innerHTML = originalHTML;
                             this._showToast('success', 'تم حفظ الصورة بنجاح');
-                        }).catch(e => {
+                        };
+
+                        const onCaptureError = (e) => {
+                            console.error("html2canvas error:", e);
                             btn.innerHTML = originalHTML;
                             this._showToast('error', 'فشل حفظ الصورة.');
-                        });
+                        };
+                        
+                        if(isMobileContext) {
+                            const calendarContent = document.getElementById('mobile-calendar');
+                            
+                            if (!calendarContent) {
+                                onCaptureError("Mobile calendar element not found.");
+                                return;
+                            }
+                           
+                            html2canvas(calendarContent, {
+                                ...captureOptions,
+                                width: calendarContent.scrollWidth,
+                                height: calendarContent.scrollHeight
+                            })
+                            .then(onCaptureComplete)
+                            .catch(onCaptureError);
+                        } else {
+                            const calendarEl = document.querySelector('.calendar-wrapper.card');
+                            if (!calendarEl) {
+                                onCaptureError("Desktop calendar element not found.");
+                                return;
+                            }
+                            html2canvas(calendarEl, captureOptions)
+                                .then(onCaptureComplete)
+                                .catch(onCaptureError);
+                        }
                     },
                     _handleSectionHover(event, isHovering) {
                         if (isMobile) return;
