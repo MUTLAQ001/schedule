@@ -300,10 +300,13 @@
             .course-info { flex-grow: 1; }
             .course-info h3 { margin: 0; font-family: var(--font-title); font-size: 1.1rem; font-weight: 400; color: var(--color-text-dark); }
             .course-info p { margin: 4px 0 0; font-size: 0.8rem; color: var(--color-text-muted); }
-            .course-item.open .sections-wrapper { max-height: 9999px; }
-            .sections-wrapper { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-in-out; background-color: rgba(0,0,0,0.1); }
+            
+            .course-item.open .sections-wrapper { grid-template-rows: 1fr; }
+            .sections-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); background-color: rgba(0,0,0,0.1); }
             .light .sections-wrapper { background-color: rgba(0,0,0,0.02); }
-            .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; padding: 1rem 1.25rem 1.25rem; }
+            .sections-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 0.75rem; overflow: hidden; min-height: 0; padding: 0 1.25rem; transition: padding 0.3s; }
+            .course-item.open .sections-grid { padding: 1rem 1.25rem 1.25rem; }
+
             .section-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.25rem; padding: 0.5rem; border: 1px solid var(--color-border); border-radius: var(--radius-full); text-align: center; cursor: pointer; background-color: transparent; transition: all var(--transition); position: relative;}
             .section-status-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px; }
             .section-status-dot.open { background-color: var(--color-success); box-shadow-color: var(--color-success); }
