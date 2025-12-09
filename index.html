@@ -1641,6 +1641,7 @@
                         const container = this.dom.installSectionContainer;
                         
                         const demoBtn = `<button class="data-btn" id="demo-mode-btn"><i class="ri-eye-line"></i> ألقِ نظرة</button>`;
+                        const helpBtnStyle = `text-decoration: none;`;
                         
                         if (isMobile) {
                              container.innerHTML = `
@@ -1660,7 +1661,10 @@
                                         </div>
                                         <button id="copy-code-btn"><i class="ri-clipboard-line"></i> نسخ الكود</button>
                                         <div class="or-divider">أو</div>
-                                        ${demoBtn}
+                                        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
+                                            ${demoBtn}
+                                            <a href="https://t.me/zalam_0/66" target="_blank" class="data-btn" style="${helpBtnStyle}"><i class="ri-question-line"></i> شرح</a>
+                                        </div>
                                     </div>
                                     <div class="js-warning">
                                         قد يحذف المتصفح <code>javascript:</code> تأكد من إعادتها يدوياً.
@@ -1684,9 +1688,19 @@
                                 <div class="install-actions">
                                    <a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ri-magic-line"></i> QU Schedule</a>
                                    <div class="or-divider">أو</div>
-                                   ${demoBtn}
+                                   <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
+                                        ${demoBtn}
+                                        <button class="data-btn" id="tablet-mode-btn"><i class="ri-tablet-line"></i> للأوحيات</button>
+                                        <a href="https://t.me/Qassim_QU/202" target="_blank" class="data-btn" style="${helpBtnStyle}"><i class="ri-question-line"></i> شرح</a>
+                                   </div>
                                 </div>
                             `;
+                            
+                            container.querySelector('#tablet-mode-btn')?.addEventListener('click', () => {
+                                 navigator.clipboard.writeText(code).then(() => {
+                                    this._showToast('success', 'تم نسخ كود الأوحيات بنجاح!');
+                                });
+                            });
                         }
 
                         document.getElementById('demo-mode-btn')?.addEventListener('click', () => this._startDemoMode());
