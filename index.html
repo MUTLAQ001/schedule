@@ -126,6 +126,7 @@ body::-webkit-scrollbar { display: none; }
 .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
 .calendar-wrapper .card { padding: 1.5rem; display: flex; flex-direction: column;}
 #calendar { height: 100%; flex-grow: 1;}
+
 .sidebar-header { padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid var(--color-border); flex-shrink: 0; display: flex; flex-direction: column; gap: 1rem; }
 .sidebar-title-row { display: flex; justify-content: space-between; align-items: center; }
 .sidebar-title-row h2 { margin: 0; font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--color-text-dark); }
@@ -133,10 +134,12 @@ body::-webkit-scrollbar { display: none; }
 #desktop-search-toggle:hover, #desktop-search-toggle.active { color: var(--color-primary); background-color: rgba(var(--rgb-primary), 0.1); }
 .sidebar-search-container { position: relative; width: 100%; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); max-height: 0; opacity: 0; margin-top: 0; }
 .sidebar-search-container.active { max-height: 60px; opacity: 1; margin-top: 0.5rem; }
+
 .search-input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--color-border); padding: 0.8rem 1rem 0.8rem 2.5rem; border-radius: var(--radius-md); color: var(--color-text); font-family: var(--font-body); font-size: 0.9rem; transition: var(--transition); outline: none; }
 .search-input:focus { border-color: var(--color-primary); background: rgba(var(--rgb-primary), 0.05); }
 .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); pointer-events: none; }
 .light .search-input { background: rgba(0,0,0,0.05); }
+
 .sidebar-content-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .sidebar-tabs { display: flex; padding: 0 1rem 0; border-bottom: 1px solid var(--color-border); }
 .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--color-text-muted); font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); border-bottom: 2px solid transparent; }
@@ -180,6 +183,7 @@ body::-webkit-scrollbar { display: none; }
 .copy-crn-btn:hover { background: var(--color-primary); color: white; transform: translateY(-1px); }
 .toggle-date-btn { background: transparent; border: 1px solid var(--color-border); color: var(--color-text-muted); border-radius: var(--radius-full); padding: 0 0.8rem; height: 32px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: var(--transition); white-space: nowrap;}
 .toggle-date-btn:hover, .toggle-date-btn.active { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
+
 #exam-schedule-select {
 background: var(--color-card);
 border: 1px solid var(--color-border);
@@ -199,6 +203,7 @@ text-align: center;
 border-color: var(--color-primary);
 color: var(--color-primary);
 }
+
 .fc { --fc-border-color: var(--color-border); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; font-family: var(--font-body); }
 .fc-theme-standard .fc-scrollgrid { border: none; }
 .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
@@ -604,6 +609,38 @@ PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#2
 COLOR_PALETTE: ['#8b5cf6', '#3b82f6', '#ec4899', '#22c55e', '#f97316', '#ef4444', '#06b6d4', '#d946ef'],
 DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
 STORAGE_KEYS: { SETTINGS: 'quScheduleSettings_v20', COURSES: 'quScheduleCourses_v20', SCHEDULES: 'quScheduleSchedules_v20', COLORS: 'quScheduleColors_v20' },
+EXAM_DATA: {
+'3': { 
+"1": "الأحد 21/12/1447 (08:00 - 10:00)", "2": "الأحد 21/12/1447 (10:30 - 12:30)", "3": "الأحد 21/12/1447 (13:00 - 15:00)",
+"4": "الاثنين 22/12/1447 (08:00 - 10:00)", "5": "الاثنين 22/12/1447 (10:30 - 12:30)", "6": "الاثنين 22/12/1447 (13:00 - 15:00)",
+"7": "الثلاثاء 23/12/1447 (08:00 - 10:00)", "8": "الثلاثاء 23/12/1447 (10:30 - 12:30)", "9": "الثلاثاء 23/12/1447 (13:00 - 15:00)",
+"10": "الأربعاء 24/12/1447 (08:00 - 10:00)", "11": "الأربعاء 24/12/1447 (10:30 - 12:30)", "12": "الأربعاء 24/12/1447 (13:00 - 15:00)",
+"13": "الخميس 25/12/1447 (08:00 - 10:00)", "14": "الخميس 25/12/1447 (10:30 - 12:30)", "15": "الخميس 25/12/1447 (13:00 - 15:00)",
+"16": "الأحد 28/12/1447 (08:00 - 10:00)", "17": "الأحد 28/12/1447 (10:30 - 12:30)", "18": "الأحد 28/12/1447 (13:00 - 15:00)",
+"19": "الاثنين 29/12/1447 (08:00 - 10:00)", "20": "الاثنين 29/12/1447 (10:30 - 12:30)", "21": "الاثنين 29/12/1447 (13:00 - 15:00)",
+"22": "الثلاثاء 1/1/1447 (08:00 - 10:00)", "23": "الثلاثاء 1/1/1447 (10:30 - 12:30)", "24": "الثلاثاء 1/1/1447 (13:00 - 15:00)",
+"25": "الأربعاء 2/1/1447 (08:00 - 10:00)", "26": "الأربعاء 2/1/1447 (10:30 - 12:30)", "27": "الأربعاء 2/1/1447 (13:00 - 15:00)",
+"28": "الخميس 3/1/1447 (08:00 - 10:00)", "29": "الخميس 3/1/1447 (10:30 - 12:30)", "30": "الخميس 3/1/1447 (13:00 - 15:00)",
+"55": "الثلاثاء 16/12/1447 (08:00 - 10:00)", "56": "الثلاثاء 16/12/1447 (10:30 - 12:30)",
+"57": "الأربعاء 17/12/1447 (08:00 - 10:00)", "58": "الأربعاء 17/12/1447 (10:30 - 12:30)",
+"60": "الخميس 18/12/1447 (08:00 - 10:00)", "61": "الخميس 18/12/1447 (10:30 - 12:30)"
+},
+'2': {
+"1": "الأحد 21/12/1447 (08:00 - 10:00)", "2": "الأحد 21/12/1447 (10:30 - 12:30)",
+"4": "الاثنين 22/12/1447 (08:00 - 10:00)", "5": "الاثنين 22/12/1447 (10:30 - 12:30)",
+"7": "الثلاثاء 23/12/1447 (08:00 - 10:00)", "8": "الثلاثاء 23/12/1447 (10:30 - 12:30)",
+"10": "الأربعاء 24/12/1447 (08:00 - 10:00)", "11": "الأربعاء 24/12/1447 (10:30 - 12:30)",
+"13": "الخميس 25/12/1447 (08:00 - 10:00)", "14": "الخميس 25/12/1447 (10:30 - 12:30)",
+"16": "الأحد 28/12/1447 (08:00 - 10:00)", "17": "الأحد 28/12/1447 (10:30 - 12:30)",
+"19": "الاثنين 29/12/1447 (08:00 - 10:00)", "20": "الاثنين 29/12/1447 (10:30 - 12:30)",
+"22": "الثلاثاء 1/1/1447 (08:00 - 10:00)", "23": "الثلاثاء 1/1/1447 (10:30 - 12:30)",
+"25": "الأربعاء 2/1/1447 (08:00 - 10:00)", "27": "الأربعاء 2/1/1447 (10:30 - 12:30)", 
+"28": "الخميس 3/1/1447 (08:00 - 10:00)", "30": "الخميس 3/1/1447 (10:30 - 12:30)",
+"55": "الثلاثاء 16/12/1447 (08:00 - 10:00)", "56": "الثلاثاء 16/12/1447 (10:30 - 12:30)",
+"57": "الأربعاء 17/12/1447 (08:00 - 10:00)", "58": "الأربعاء 17/12/1447 (10:30 - 12:30)",
+"60": "الخميس 18/12/1447 (08:00 - 10:00)", "61": "الخميس 18/12/1447 (10:30 - 12:30)"
+}
+}
 },
 dom: {},
 
@@ -828,53 +865,19 @@ return `<div class="mobile-schedule-item" style="animation-delay:${i*30}ms;"><di
 const conflictButtonHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn"><i class="ri-alert-fill"></i> حل التعارض</button>` : '';
 return `<div id="mobile-my-schedule-list">${itemsHTML}</div><div class="mobile-schedule-footer">${conflictButtonHTML}<div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div></div>`;
 },
-_getExamDateString(periodId) {
-const pId = parseInt(periodId);
-if (isNaN(pId)) return "فترة غير محددة";
-if (pId >= 55) {
-let d = 16, m = 12, y = 1447;
-let dayIndex = 2; 
-const weekDays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-let offset = 0;
-if (pId >= 57) offset = 1;
-if (pId >= 60) offset = 2;
-d += offset;
-dayIndex = (dayIndex + offset) % 7;
-const times = [{ start: "08:00", end: "10:00" }, { start: "10:30", end: "12:30" }];
-let timeIdx = (pId % 2 !== 0) ? 0 : 1;
-if (pId === 60) timeIdx = 0;
-if (pId === 61) timeIdx = 1;
-return `${weekDays[dayIndex]} ${d}/${m}/${y} (${times[timeIdx].start} - ${times[timeIdx].end})`;
-}
-let currentDay = 21, currentMonth = 12, currentYear = 1447, weekDayIndex = 0;
-let daysToAdd = Math.floor((pId - 1) / 3);
-for (let i = 0; i < daysToAdd; i++) {
-currentDay++;
-weekDayIndex = (weekDayIndex + 1) % 7;
-if (currentMonth === 12 && currentDay > 29) { currentDay = 1; currentMonth = 1; currentYear++; } else if (currentDay > 30) { currentDay = 1; currentMonth++; }
-if (weekDayIndex === 5) { 
-currentDay += 2; weekDayIndex = 0; 
-if (currentMonth === 12 && currentDay > 29) { currentDay = currentDay - 29; currentMonth = 1; currentYear++; }
-else if (currentDay > 30) { currentDay = currentDay - 30; currentMonth++; }
-}
-}
-const weekDays = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
-const times3 = [{ s: '08:00', e: '10:00' }, { s: '10:30', e: '12:30' }, { s: '13:00', e: '15:00' }];
-const times2 = [{ s: '08:00', e: '10:00' }, { s: '10:30', e: '12:30' }, { s: '×', e: '×' }];
-let tIdx = (pId - 1) % 3;
-const mode = this.state.userSettings.examScheduleMode || '3';
-let timeStr = (mode === '2' && tIdx === 2) ? "فترة غير متاحة" : (mode === '2' ? `${times2[tIdx].s} - ${times2[tIdx].e}` : `${times3[tIdx].s} - ${times3[tIdx].e}`);
-return `${weekDays[weekDayIndex]} ${currentDay}/${currentMonth}/${currentYear} (${timeStr})`;
-},
 _renderFinalExams(selectedCourses) {
 const uniqueExams = [...new Map(selectedCourses.filter(e => e.examPeriodId).map(e => [e.examPeriodId, e])).values()];
 const toggleBtnDesktop = this.dom.desktopDateToggle;
 const toggleBtnMobile = this.dom.mobileMyExamsDateToggle;
 [toggleBtnDesktop, toggleBtnMobile].forEach(btn => { if(btn) btn.classList.toggle('active', this.state.showExamDates); });
+
+const examMapping = this.constants.EXAM_DATA[this.state.userSettings.examScheduleMode];
+
 let footerHtml = '';
 if(this.state.showExamDates && uniqueExams.length > 0) {
 footerHtml = '<div style="text-align:center; margin-top:1rem; animation:fadeInUp 0.3s both;"><a href="https://t.me/Qassim_U/4414294" target="_blank" class="faisal-link">اجتهاد فيصل</a></div>';
 }
+
 if (this.dom.desktopExamsList) {
 if (uniqueExams.length === 0) {
 this.dom.desktopExamsList.innerHTML = `<div class="no-data" style="height: auto; padding-top: 2rem;"><i class="ri-file-text-line"></i><h4>لا توجد اختبارات</h4><p>لم يتم تحديد اختبارات نهائية للمقررات المختارة.</p></div>`;
@@ -882,8 +885,8 @@ this.dom.desktopExamsList.innerHTML = `<div class="no-data" style="height: auto;
 const html = uniqueExams.sort((a, b) => parseInt(a.examPeriodId, 10) - parseInt(b.examPeriodId, 10)).map(exam => {
 let examText = `فترة الاختبار: ${exam.examPeriodId}`;
 if (this.state.showExamDates) {
-const dateInfo = this._getExamDateString(exam.examPeriodId);
-examText = `<span style="color:var(--color-primary); font-weight:700">${dateInfo}</span>`;
+const dateInfo = examMapping[exam.examPeriodId];
+examText = dateInfo ? `<span style="color:var(--color-primary); font-weight:700">${dateInfo}</span>` : `<span style="opacity:0.6">فترة: ${exam.examPeriodId} (غير مدرجة)</span>`;
 }
 return `<div class="course-item"><div class="course-item-header" style="cursor:default;"><div class="course-info"><h3>${exam.name} (${exam.code})</h3><p><strong>${examText}</strong></p></div></div></div>`;
 }).join('');
@@ -898,7 +901,8 @@ this.dom.mobileMyExamsList.innerHTML = `<div class="no-data" style="height: auto
 const html = uniqueExams.sort((a, b) => parseInt(a.examPeriodId, 10) - parseInt(b.examPeriodId, 10)).map(exam => {
 let examText = `فترة الاختبار: ${exam.examPeriodId}`;
 if (this.state.showExamDates) {
-examText = this._getExamDateString(exam.examPeriodId);
+const dateInfo = examMapping[exam.examPeriodId];
+examText = dateInfo ? dateInfo : `فترة: ${exam.examPeriodId}`;
 }
 return `<div class="mobile-schedule-item mobile-exam-item"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${exam.name} (${exam.code})</h3><span class="mobile-exam-date">${examText}</span></div></div></div>`;
 }).join('');
