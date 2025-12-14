@@ -301,7 +301,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .light .data-btn.danger:hover { background: rgba(var(--rgb-danger), 0.2); border-color: rgba(var(--rgb-danger), 0.4); color: #fff; }
 #conflict-modal-content { max-height: 60vh; overflow-y: auto; padding: 1rem .5rem 1rem 1rem; text-align: right;}
 .conflict-group-container { border: 1px solid var(--color-border); border-radius: var(--radius-md); margin-bottom: 1.5rem; overflow: hidden; }
-.conflict-group-title { font-family: var(--font-title); font-size: 1.1rem; font-weight: 700; padding: .8rem 1.2rem; background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); }
+.conflict-group-title { font-family: var(--font-title); font-size: 1.1rem; font-weight: 700; padding: .8rem 1.2rem; background-color: rgba(var(--rgb-warning), 0.1); color: var(--color-warning); display: flex; justify-content: space-between; align-items: center; }
 .conflict-item { padding: .75rem; border-bottom: 1px solid var(--color-border); }
 .conflict-item:last-child { border-bottom: none; }
 .conflict-item-main-label { display: flex; align-items: center; gap: 1rem; width: 100%; cursor: pointer; padding: .5rem; border-radius: var(--radius-md); border: 2px solid transparent; transition: all .2s ease; }
@@ -1293,7 +1293,11 @@ const groupItemsHTML = group.sort((a,b) => a.code.localeCompare(b.code)).map((se
 const detailsId = `details-${groupIndex}-${itemIndex}`;
 return `<div class="conflict-item"><div class="conflict-item-flex"><label class="conflict-item-main-label"><input type="radio" name="conflict-group-${groupIndex}" value="${section.uniqueId}" ${itemIndex === 0 ? 'checked' : ''}><div class="custom-radio"></div><div class="conflict-item-info"><h4>${section.name}</h4><span>${section.code} - شعبة ${section.section}</span></div></label><button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button></div><div class="conflict-extra-details" id="${detailsId}"><div><strong>المحاضر:</strong> ${section.instructor || 'غير محدد'}</div><div><strong>المواعيد:</strong> ${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div><div><strong>المكان:</strong> ${section.location || 'غير محدد'}</div></div></div>`;
 }).join('');
-return `<div class="conflict-group-container"><div class="conflict-group-title">مجموعة التعارض ${groupIndex + 1} <span style="font-size:0.9em; font-weight:400; opacity:0.9">${typeStr}</span></div>${groupItemsHTML}</div>`;
+return `<div class="conflict-group-container">
+<div class="conflict-group-title">
+<span>مجموعة التعارض ${groupIndex + 1}</span>
+<span style="font-size:0.85em; opacity:0.8; font-weight:normal">${typeStr}</span>
+</div>${groupItemsHTML}</div>`;
 }).join('');
 Swal.fire({
 title: 'حل جميع التعارضات', html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML || '<p>لا توجد مجموعات تعارض واضحة.</p>'}</div>`, icon: 'warning', confirmButtonText: 'حفظ التغييرات', showCancelButton: true, cancelButtonText: 'إلغاء', customClass: { popup: 'swal2-popup wide-swal' },
