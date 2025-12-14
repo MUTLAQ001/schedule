@@ -1282,11 +1282,18 @@ if(group.size > 1) conflictGroups.push(Array.from(group));
 }
 });
 const modalHTML = conflictGroups.map((group, groupIndex) => {
+let isExam = false, isTime = false;
+group.forEach(s => {
+const msgs = conflictMap.get(s.uniqueId) || [];
+if(msgs.some(m => m.includes('وقت'))) isTime = true;
+if(msgs.some(m => m.includes('اختبار'))) isExam = true;
+});
+const typeStr = (isTime && isExam) ? '(وقت واختبار)' : (isExam ? '(اختبار)' : '(وقت)');
 const groupItemsHTML = group.sort((a,b) => a.code.localeCompare(b.code)).map((section, itemIndex) => {
 const detailsId = `details-${groupIndex}-${itemIndex}`;
 return `<div class="conflict-item"><div class="conflict-item-flex"><label class="conflict-item-main-label"><input type="radio" name="conflict-group-${groupIndex}" value="${section.uniqueId}" ${itemIndex === 0 ? 'checked' : ''}><div class="custom-radio"></div><div class="conflict-item-info"><h4>${section.name}</h4><span>${section.code} - شعبة ${section.section}</span></div></label><button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button></div><div class="conflict-extra-details" id="${detailsId}"><div><strong>المحاضر:</strong> ${section.instructor || 'غير محدد'}</div><div><strong>المواعيد:</strong> ${section.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div><div><strong>المكان:</strong> ${section.location || 'غير محدد'}</div></div></div>`;
 }).join('');
-return `<div class="conflict-group-container"><div class="conflict-group-title">مجموعة التعارض ${groupIndex + 1}</div>${groupItemsHTML}</div>`;
+return `<div class="conflict-group-container"><div class="conflict-group-title">مجموعة التعارض ${groupIndex + 1} <span style="font-size:0.9em; font-weight:400; opacity:0.9">${typeStr}</span></div>${groupItemsHTML}</div>`;
 }).join('');
 Swal.fire({
 title: 'حل جميع التعارضات', html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML || '<p>لا توجد مجموعات تعارض واضحة.</p>'}</div>`, icon: 'warning', confirmButtonText: 'حفظ التغييرات', showCancelButton: true, cancelButtonText: 'إلغاء', customClass: { popup: 'swal2-popup wide-swal' },
