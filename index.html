@@ -444,19 +444,16 @@ body { overflow: hidden; position: fixed; width: 100%; height: 100%; }
 @keyframes shimmer { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 .section-btn.selected { color: white; border-color: transparent; background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, #a855f7 100%); background-size: 200% 200%; animation: shimmer 4s ease infinite; box-shadow: 0 2px 20px rgba(var(--rgb-primary), 0.4); transform: scale(1.05); }
 .schedule-tab.active { color: white; background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary)); background-size: 200% 200%; animation: shimmer 5s ease infinite; }
-/* UltraWide Support */
 @media (min-width: 2000px) {
 .page-wrapper {
-max-width: 1900px; /* Limit total width */
-margin: 0 auto;    /* Center the layout */
-border-left: 1px solid var(--color-border); /* Define edges */
+max-width: 1900px;
+margin: 0 auto;
+border-left: 1px solid var(--color-border);
 border-right: 1px solid var(--color-border);
 position: relative;
-z-index: 10; /* Ensure it sits above background */
-box-shadow: 0 0 100px rgba(0,0,0,0.5); /* Shadow for depth against stars */
+z-index: 10;
+box-shadow: 0 0 100px rgba(0,0,0,0.5);
 }
-
-/* Adjust header to fit inside the boxed layout properly */
 .main-header {
 width: 100%;
 margin: -2rem 0 0;
@@ -508,6 +505,9 @@ border-radius: 0;
 </div>
 <div id="quick-visibility-wrapper" style="padding: 10px 15px; border-top: 1px solid var(--color-border);">
 <div style="display:flex; gap:0.5rem; margin-bottom: 10px;">
+<button id="expand-collapse-btn" class="data-btn" style="flex:0 0 auto; padding:0 0.8rem;" title="توسيع/طي الكل">
+<i class="ri-stack-line"></i>
+</button>
 <button id="quick-visibility-toggle-btn" class="data-btn" style="flex:1; justify-content: center;">
 <i class="ri-eye-line"></i> تحديد المقررات الظاهرة
 </button>
@@ -633,6 +633,7 @@ isDemoMode: false,
 searchTerm: '',
 showExamDates: false,
 isVisibilityNamesMode: false,
+areAllExpanded: false,
 userSettings: { theme: 'dark', accentColor: '#8b5cf6', showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, examScheduleMode: '3' }
 },
 constants: {
@@ -958,7 +959,7 @@ if (btn) { btn.classList.remove('conflicted'); if (!activeSections.has(section.u
 });
 },
 _populateDOMElements() {
-const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-my-exams-period-toggle', 'mobile-dynamic-action-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'exam-schedule-toggle-btn', 'quick-visibility-wrapper', 'quick-visibility-toggle-btn', 'quick-visibility-content', 'quick-visibility-swap-btn'];
+const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-my-exams-period-toggle', 'mobile-dynamic-action-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'exam-schedule-toggle-btn', 'quick-visibility-wrapper', 'quick-visibility-toggle-btn', 'quick-visibility-content', 'quick-visibility-swap-btn', 'expand-collapse-btn'];
 ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
 this.dom.mobileDownloadImgBtn = null; 
 if (isMobile) { this.dom.tabButtons = document.querySelectorAll('#mobile-courses-view .tab-btn'); this.dom.tabContents = document.querySelectorAll('#mobile-courses-view .tab-content'); this.dom.mobileNavButtons = document.querySelectorAll('.mobile-nav-btn'); this.dom.mobileViewContents = document.querySelectorAll('.mobile-view-content'); } 
@@ -1076,6 +1077,28 @@ this._renderQuickVisibilityList();
 }
 if (this.dom.quickVisibilityContent) {
 this.dom.quickVisibilityContent.addEventListener('click', e => this._handleVisibilityToggle(e));
+}
+
+if (this.dom.expandCollapseBtn) {
+this.dom.expandCollapseBtn.addEventListener('click', () => {
+this.state.areAllExpanded = !this.state.areAllExpanded;
+const courseItems = document.querySelectorAll('.course-item');
+const btnIcon = this.dom.expandCollapseBtn.querySelector('i');
+courseItems.forEach(item => {
+if (this.state.areAllExpanded) {
+item.classList.add('open');
+const sections = item.querySelectorAll('.section-btn');
+sections.forEach(s => s.style.animationDelay = '0ms');
+} else {
+item.classList.remove('open');
+}
+});
+if (this.state.areAllExpanded) {
+btnIcon.className = 'ri-stack-fill';
+} else {
+btnIcon.className = 'ri-stack-line';
+}
+});
 }
 },
 _handleDownloadImage(isMobileContext) {
