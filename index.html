@@ -444,6 +444,25 @@ body { overflow: hidden; position: fixed; width: 100%; height: 100%; }
 @keyframes shimmer { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 .section-btn.selected { color: white; border-color: transparent; background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 50%, #a855f7 100%); background-size: 200% 200%; animation: shimmer 4s ease infinite; box-shadow: 0 2px 20px rgba(var(--rgb-primary), 0.4); transform: scale(1.05); }
 .schedule-tab.active { color: white; background: linear-gradient(135deg, var(--color-primary-dark), var(--color-primary)); background-size: 200% 200%; animation: shimmer 5s ease infinite; }
+/* UltraWide Support */
+@media (min-width: 2000px) {
+.page-wrapper {
+max-width: 1900px; /* Limit total width */
+margin: 0 auto;    /* Center the layout */
+border-left: 1px solid var(--color-border); /* Define edges */
+border-right: 1px solid var(--color-border);
+position: relative;
+z-index: 10; /* Ensure it sits above background */
+box-shadow: 0 0 100px rgba(0,0,0,0.5); /* Shadow for depth against stars */
+}
+
+/* Adjust header to fit inside the boxed layout properly */
+.main-header {
+width: 100%;
+margin: -2rem 0 0;
+border-radius: 0;
+}
+}
 </style>
 </head>
 <body>
@@ -486,6 +505,17 @@ body { overflow: hidden; position: fixed; width: 100%; height: 100%; }
 <button class="toggle-date-btn" id="desktop-date-toggle" style="flex:1;"><i class="ri-calendar-todo-fill"></i> تبديل إلى التواريخ</button>
 </div>
 <div id="desktop-exams-list"></div>
+</div>
+<div id="quick-visibility-wrapper" style="padding: 10px 15px; border-top: 1px solid var(--color-border);">
+<div style="display:flex; gap:0.5rem; margin-bottom: 10px;">
+<button id="quick-visibility-toggle-btn" class="data-btn" style="flex:1; justify-content: center;">
+<i class="ri-eye-line"></i> تحديد المقررات الظاهرة
+</button>
+<button id="quick-visibility-swap-btn" class="data-btn" style="flex:0 0 auto; padding:0 0.8rem;" title="تبديل الاسم/الرمز">
+<i class="ri-text"></i>
+</button>
+</div>
+<div id="quick-visibility-content" class="course-visibility-grid custom-scrollbar" style="display:none; max-height: 200px; overflow-y: auto; padding-bottom: 5px;"></div>
 </div>
 </div>
 <footer class="sidebar-footer" id="sidebar-footer"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ri-telegram-line"></i> MUTLAQ1</a></footer>
@@ -602,6 +632,7 @@ customColors: {},
 isDemoMode: false,
 searchTerm: '',
 showExamDates: false,
+isVisibilityNamesMode: false,
 userSettings: { theme: 'dark', accentColor: '#8b5cf6', showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, examScheduleMode: '3' }
 },
 constants: {
@@ -709,6 +740,7 @@ let colorIndex = 0;
 Object.values(this.state.groupedCourses).forEach(group => { group.color = this.state.customColors[group.code] || this.constants.COLOR_PALETTE[colorIndex++ % this.constants.COLOR_PALETTE.length]; });
 document.getElementById('no-data-message').style.display = 'none';
 this._renderCoursesList();
+this._renderQuickVisibilityList();
 this._buildSettingsModal();
 this._toggleDemoBadge();
 },
@@ -815,6 +847,12 @@ const html = this._createCoursesListHTML();
 if (this.dom.desktopCoursesList) this.dom.desktopCoursesList.innerHTML = html || '';
 if (this.dom.mobileCoursesList) this.dom.mobileCoursesList.innerHTML = html || `<div class="no-data"><i class="ri-time-line"></i><h4>في انتظار البيانات...</h4><p>استخدم الأداة لتحميل بيانات المواد.</p></div>`;;
 },
+_renderQuickVisibilityList() {
+if (!this.dom.quickVisibilityContent) return;
+let courseVisibilityHTML = Object.values(this.state.groupedCourses).sort((a,b)=>a.code.localeCompare(b.code)).map(g=>{ const isHidden = this.state.hiddenCourseCodes.has(g.code); const label = this.state.isVisibilityNamesMode ? g.name : g.code; return`<button class="course-visibility-btn ${isHidden?'hidden':'visible'}" data-course-code="${g.code}" style="--item-color:${g.color};--item-color-rgb:${this._hexToRgb(g.color)};"><span class="color-dot"></span>${label}</button>`; }).join('');
+if (!courseVisibilityHTML) courseVisibilityHTML = '<p style="color:var(--color-text-muted);font-size:0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
+this.dom.quickVisibilityContent.innerHTML = courseVisibilityHTML;
+},
 _renderMyScheduleSummary(selectedCourses, conflictMap) {
 const desktopContainer = this.dom.myScheduleContainer;
 const mobileContainer = this.dom.mobileMyScheduleContainer;
@@ -920,7 +958,7 @@ if (btn) { btn.classList.remove('conflicted'); if (!activeSections.has(section.u
 });
 },
 _populateDOMElements() {
-const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-my-exams-period-toggle', 'mobile-dynamic-action-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'exam-schedule-toggle-btn'];
+const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-my-exams-period-toggle', 'mobile-dynamic-action-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'exam-schedule-toggle-btn', 'quick-visibility-wrapper', 'quick-visibility-toggle-btn', 'quick-visibility-content', 'quick-visibility-swap-btn'];
 ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
 this.dom.mobileDownloadImgBtn = null; 
 if (isMobile) { this.dom.tabButtons = document.querySelectorAll('#mobile-courses-view .tab-btn'); this.dom.tabContents = document.querySelectorAll('#mobile-courses-view .tab-content'); this.dom.mobileNavButtons = document.querySelectorAll('.mobile-nav-btn'); this.dom.mobileViewContents = document.querySelectorAll('.mobile-view-content'); } 
@@ -1023,6 +1061,22 @@ this._renderFinalExams(selectedCourseDetails);
 [this.dom.desktopDateToggle, this.dom.mobileMyExamsDateToggle].forEach(btn => { 
 if (btn) btn.addEventListener('click', toggleDates);
 });
+
+if (this.dom.quickVisibilityToggleBtn) {
+this.dom.quickVisibilityToggleBtn.addEventListener('click', () => {
+const content = this.dom.quickVisibilityContent;
+content.style.display = content.style.display === 'none' ? 'grid' : 'none';
+});
+}
+if (this.dom.quickVisibilitySwapBtn) {
+this.dom.quickVisibilitySwapBtn.addEventListener('click', () => {
+this.state.isVisibilityNamesMode = !this.state.isVisibilityNamesMode;
+this._renderQuickVisibilityList();
+});
+}
+if (this.dom.quickVisibilityContent) {
+this.dom.quickVisibilityContent.addEventListener('click', e => this._handleVisibilityToggle(e));
+}
 },
 _handleDownloadImage(isMobileContext) {
 const btn = isMobileContext ? this.dom.mobileDynamicActionBtn : this.dom.downloadImgBtn;
@@ -1097,6 +1151,11 @@ _handleTabClick(button) {
 const parentSidebar = button.closest('.sidebar');
 parentSidebar.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active')); button.classList.add('active');
 parentSidebar.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active')); document.getElementById(button.dataset.tab).classList.add('active');
+if (button.dataset.tab === 'courses-tab') {
+this.dom.quickVisibilityWrapper.style.display = 'block';
+} else {
+this.dom.quickVisibilityWrapper.style.display = 'none';
+}
 },
 _handleMobileNav(button) {
 const view = button.dataset.view;
@@ -1266,9 +1325,9 @@ _buildSettingsModal() {
 const modal = this.dom.settingsModal;
 let courseColorsHTML = Object.values(this.state.groupedCourses).sort((a,b)=>a.code.localeCompare(b.code)).map(g=>`<div class="settings-item"><div class="settings-item-label"><span style="color:${g.color};font-weight:600;">${g.name} (${g.code})</span></div><label class="color-picker-label" style="background-color:${g.color};"><input type="color" class="color-picker-input" data-course-code="${g.code}" value="${g.color}"></label></div>`).join('');
 if (!courseColorsHTML) courseColorsHTML = '<p style="color:var(--color-text-muted);font-size:0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
-let courseVisibilityHTML = Object.values(this.state.groupedCourses).sort((a,b)=>a.code.localeCompare(b.code)).map(g=>{ const isHidden = this.state.hiddenCourseCodes.has(g.code); return`<button class="course-visibility-btn ${isHidden?'hidden':'visible'}" data-course-code="${g.code}" style="--item-color:${g.color};--item-color-rgb:${this._hexToRgb(g.color)};"><span class="color-dot"></span>${g.code}</button>`; }).join('');
+let courseVisibilityHTML = Object.values(this.state.groupedCourses).sort((a,b)=>a.code.localeCompare(b.code)).map(g=>{ const isHidden = this.state.hiddenCourseCodes.has(g.code); const label = this.state.isVisibilityNamesMode ? g.name : g.code; return`<button class="course-visibility-btn ${isHidden?'hidden':'visible'}" data-course-code="${g.code}" style="--item-color:${g.color};--item-color-rgb:${this._hexToRgb(g.color)};"><span class="color-dot"></span>${label}</button>`; }).join('');
 if (!courseVisibilityHTML) courseVisibilityHTML = '<p style="color:var(--color-text-muted);font-size:0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
-modal.innerHTML = `<div class="modal-header"><h3><i class="ri-settings-3-line"></i> الإعدادات</h3><i class="ri-close-line modal-close-btn"></i></div><div class="modal-content custom-scrollbar"><div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-filter-3-line"></i>ترشيح المقررات</h4><div class="settings-item"><div class="settings-item-label"><span>إخفاء الشعب المغلقة</span><small>لإزالة الشعب غير المتاحة من القائمة</small></div><label class="toggle-switch"><input type="checkbox" id="hide-closed-toggle"><span class="slider"></span></label></div><h4 class="settings-group-title" style="margin-top:2rem;"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</h4><div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-paint-brush-line"></i>ألوان المقررات</h4><div id="course-colors-list">${courseColorsHTML}</div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><div id="min-time-select-container"></div><div id="max-time-select-container"></div></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="settings-item"><div class="settings-item-label"><span>تصدير واستيراد</span><small>احفظ جدولك الحالي كملف، أو قم باستيراد جدول محفوظ.</small></div><div class="data-actions-group"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد</button><input type="file" id="import-file-input" accept=".json" style="display:none;"></div></div><div class="settings-item"><div class="settings-item-label"><span>إعادة تعيين التطبيق</span><small>سيؤدي هذا إلى مسح جميع بيانات التطبيق نهائياً.</small></div><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين</button></div></div><div style="text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--color-border); margin-top: .5rem;"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ri-telegram-line"></i> MUTLAQ1</a></div></div>`;
+modal.innerHTML = `<div class="modal-header"><h3><i class="ri-settings-3-line"></i> الإعدادات</h3><i class="ri-close-line modal-close-btn"></i></div><div class="modal-content custom-scrollbar"><div class="settings-group"><h4 class="settings-group-title"><i class="ri-palette-line"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span></div><div class="theme-picker" id="accent-color-picker"></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-filter-3-line"></i>ترشيح المقررات</h4><div class="settings-item"><div class="settings-item-label"><span>إخفاء الشعب المغلقة</span><small>لإزالة الشعب غير المتاحة من القائمة</small></div><label class="toggle-switch"><input type="checkbox" id="hide-closed-toggle"><span class="slider"></span></label></div><div class="settings-group-title" style="margin-top:2rem; justify-content: space-between;"><div style="display:flex; align-items:center; gap:0.75rem;"><i class="ri-eye-off-line"></i>التحكم في ظهور المقررات</div><button id="modal-visibility-swap-btn" class="data-btn" style="padding:0.2rem 0.6rem; font-size: 0.9rem;" title="تبديل الاسم/الرمز"><i class="ri-text"></i></button></div><div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-paint-brush-line"></i>ألوان المقررات</h4><div id="course-colors-list">${courseColorsHTML}</div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-calendar-2-line"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>نطاق الساعات</span></div><div class="time-range-selects"><div id="min-time-select-container"></div><div id="max-time-select-container"></div></div></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ri-database-2-line"></i>إدارة البيانات</h4><div class="settings-item"><div class="settings-item-label"><span>تصدير واستيراد</span><small>احفظ جدولك الحالي كملف، أو قم باستيراد جدول محفوظ.</small></div><div class="data-actions-group"><button class="data-btn" id="export-btn"><i class="ri-download-cloud-2-line"></i>تصدير</button><button class="data-btn" id="import-btn"><i class="ri-upload-cloud-2-line"></i>استيراد</button><input type="file" id="import-file-input" accept=".json" style="display:none;"></div></div><div class="settings-item"><div class="settings-item-label"><span>إعادة تعيين التطبيق</span><small>سيؤدي هذا إلى مسح جميع بيانات التطبيق نهائياً.</small></div><button class="data-btn danger" id="reset-app-btn"><i class="ri-restart-line"></i>إعادة تعيين</button></div></div><div style="text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--color-border); margin-top: .5rem;"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ri-telegram-line"></i> MUTLAQ1</a></div></div>`;
 this._attachModalEventListeners();
 this._populateTimeSelects();
 this._applySettings();
@@ -1282,6 +1341,11 @@ modal.querySelector('#export-btn').addEventListener('click', () => this._handleE
 modal.querySelector('#import-btn').addEventListener('click', () => modal.querySelector('#import-file-input').click());
 modal.querySelector('#import-file-input').addEventListener('change', e => this._handleImport(e));
 modal.querySelector('#reset-app-btn').addEventListener('click', () => this._handleReset());
+modal.querySelector('#modal-visibility-swap-btn').addEventListener('click', () => {
+this.state.isVisibilityNamesMode = !this.state.isVisibilityNamesMode;
+this._buildSettingsModal(); 
+this._renderQuickVisibilityList(); 
+});
 },
 _handleCourseColorChange(e) {
 if (e.target.matches('.color-picker-input')) {
@@ -1295,7 +1359,7 @@ const btn = e.target.closest('.course-visibility-btn'); if (!btn) return;
 const code = btn.dataset.courseCode;
 if (this.state.hiddenCourseCodes.has(code)) { this.state.hiddenCourseCodes.delete(code); btn.classList.remove('hidden'); btn.classList.add('visible'); } 
 else { this.state.hiddenCourseCodes.add(code); btn.classList.add('hidden'); btn.classList.remove('visible'); }
-this._saveSettings(); this._renderCoursesList();
+this._saveSettings(); this._renderCoursesList(); this._renderQuickVisibilityList(); this._buildSettingsModal();
 },
 _handleExport() {
 const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
