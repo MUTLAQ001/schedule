@@ -1,4 +1,4 @@
-ٍ<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -126,17 +126,20 @@ body::-webkit-scrollbar { display: none; }
 .calendar-wrapper { flex: 1 1 auto; min-height: 500px; }
 .calendar-wrapper .card { padding: 1.5rem; display: flex; flex-direction: column;}
 #calendar { height: 100%; flex-grow: 1;}
-.sidebar-header { padding: 1.25rem 1.25rem 0.75rem; border-bottom: 1px solid var(--color-border); flex-shrink: 0; display: flex; flex-direction: column; gap: 1rem; }
+
+.sidebar-header { padding: 1.5rem 1.5rem 1rem; border-bottom: 1px solid var(--color-border); flex-shrink: 0; display: flex; flex-direction: column; gap: 1rem; }
 .sidebar-title-row { display: flex; justify-content: space-between; align-items: center; }
 .sidebar-title-row h2 { margin: 0; font-family: var(--font-title); font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; color: var(--color-text-dark); }
 #desktop-search-toggle { background: none; border: none; color: var(--color-text-muted); cursor: pointer; font-size: 1.2rem; transition: var(--transition); padding: 0.5rem; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
 #desktop-search-toggle:hover, #desktop-search-toggle.active { color: var(--color-primary); background-color: rgba(var(--rgb-primary), 0.1); }
 .sidebar-search-container { position: relative; width: 100%; overflow: hidden; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); max-height: 0; opacity: 0; margin-top: 0; }
 .sidebar-search-container.active { max-height: 60px; opacity: 1; margin-top: 0.5rem; }
+
 .search-input { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--color-border); padding: 0.8rem 1rem 0.8rem 2.5rem; border-radius: var(--radius-md); color: var(--color-text); font-family: var(--font-body); font-size: 0.9rem; transition: var(--transition); outline: none; }
 .search-input:focus { border-color: var(--color-primary); background: rgba(var(--rgb-primary), 0.05); }
 .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--color-text-muted); pointer-events: none; }
 .light .search-input { background: rgba(0,0,0,0.05); }
+
 .sidebar-content-wrapper { flex: 1; display: flex; flex-direction: column; min-height: 0; }
 .sidebar-tabs { display: flex; padding: 0 1rem 0; border-bottom: 1px solid var(--color-border); }
 .tab-btn { flex: 1; text-align: center; padding: 0.75rem 0.5rem; background: none; border: none; color: var(--color-text-muted); font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition); border-bottom: 2px solid transparent; }
@@ -144,7 +147,7 @@ body::-webkit-scrollbar { display: none; }
 .tab-content { padding: 1rem; display: none; overflow-y: auto; flex-grow: 1; }
 .tab-content.active { display: block; }
 .tab-header-actions { display: flex; justify-content: flex-end; padding-bottom: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--color-border); align-items: center; gap: 0.5rem; }
-.sidebar-footer { padding: 0.75rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
+.sidebar-footer { padding: 1.25rem; border-top: 1px solid var(--color-border); text-align: center; flex-shrink: 0; }
 .course-item { margin-bottom: 0.75rem; animation: fadeInUp .5s ease both; overflow: hidden; contain: content; }
 .course-item-header { display: flex; align-items: center; gap: 0.75rem; padding: 1.25rem; cursor: pointer; }
 .course-item .color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; box-shadow: 0 0 10px 1px; }
@@ -180,6 +183,7 @@ body::-webkit-scrollbar { display: none; }
 .copy-crn-btn:hover { background: var(--color-primary); color: white; transform: translateY(-1px); }
 .toggle-date-btn { background: transparent; border: 1px solid var(--color-border); color: var(--color-text-muted); border-radius: var(--radius-full); padding: 0 0.8rem; height: 32px; font-size: 0.8rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; transition: var(--transition); white-space: nowrap;}
 .toggle-date-btn:hover, .toggle-date-btn.active { border-color: var(--color-primary); color: var(--color-primary); background: rgba(var(--rgb-primary), 0.1); }
+
 #exam-schedule-select {
 background: var(--color-card);
 border: 1px solid var(--color-border);
@@ -199,6 +203,7 @@ text-align: center;
 border-color: var(--color-primary);
 color: var(--color-primary);
 }
+
 .fc { --fc-border-color: var(--color-border); --fc-event-text-color: #fff; --fc-page-bg-color: transparent; font-family: var(--font-body); }
 .fc-theme-standard .fc-scrollgrid { border: none; }
 .fc-event { border: none !important; border-radius: 8px !important; font-weight: 600; padding: 4px 8px !important; cursor: pointer; }
@@ -331,7 +336,7 @@ input:checked + .slider:before { transform: translateX(20px); }
 .mobile-detail-row strong { color: var(--color-text-muted); }
 .mobile-schedule-footer { position: fixed; bottom: 75px; left: 0; right: 0; z-index: 90; padding: 1rem 1rem calc(1rem + env(safe-area-inset-bottom) - env(safe-area-inset-bottom)); background-color: var(--color-card); border-top: 1px solid var(--color-border); backdrop-filter: blur(8px); display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; box-shadow: 0 -5px 20px -5px rgba(0,0,0,0.2); transition: transform 0.3s ease; transform: translateY(200%); }
 #mobile-my-schedule-container:not(.empty) .mobile-schedule-footer { transform: translateY(0); }
-.mobile-schedule-footer > .view-conflicts-btn { flex-grow: 1; flex-basis: 0; justify-content: center; text-align: center; padding: 0.75rem 1rem; font-size: 1rem; font-weight: 700; }
+.mobile-schedule-footer > .view-conflicts-btn, .mobile-schedule-footer > .total-credits-summary { flex-grow: 1; flex-basis: 0; justify-content: center; text-align: center; padding: 0.75rem 1rem; font-size: 1rem; font-weight: 700; }
 .mobile-section-details-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 2000; opacity: 0; visibility: hidden; transition: all .3s ease; will-change: opacity; }
 .mobile-section-details-overlay.open { opacity: 1; visibility: visible; }
 .details-panel { position: absolute; bottom: 0; left: 0; right: 0; background-color: var(--color-card); border-top: 1px solid var(--color-border); border-top-left-radius: var(--radius); border-top-right-radius: var(--radius); padding-top: 1.5rem; padding-left: 1.5rem; padding-right: 1.5rem; padding-bottom: calc(1.5rem + env(safe-area-inset-bottom)); box-shadow: 0 -10px 40px rgba(0,0,0,0.3); transform: translateY(100%); transition: transform .3s cubic-bezier(0.2, 0.8, 0.2, 1); will-change: transform; }
@@ -371,23 +376,6 @@ input:checked + .slider:before { transform: translateX(20px); }
 .mobile-exam-item { background: linear-gradient(145deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)); border: 1px solid rgba(var(--rgb-primary), 0.2); border-radius: var(--radius); padding: 1.25rem; display: flex; flex-direction: column; gap: 0.5rem; box-shadow: 0 8px 25px -10px rgba(0,0,0,0.3); margin-bottom: 0.75rem; }
 .mobile-exam-item .mobile-schedule-header { border-bottom: none; padding-bottom: 0; }
 .mobile-exam-date { color: var(--color-primary); font-weight: 700; font-size: 0.9rem; margin-top: 0.5rem; display: block; }
-.moad-btn { padding: 0.4rem 1.2rem; border-radius: 999px; background: linear-gradient(135deg, #8b5cf6, #d946ef); border: none; font-size: 1rem; color: white; flex-shrink: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
-.moad-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139, 92, 246, 0.4); }
-.crn-generator-content { text-align: right; font-family: var(--font-body); }
-.info-row { display: flex; align-items: center; gap: 0.5rem; color: var(--color-success); background: rgba(var(--rgb-success), 0.1); padding: 0.75rem; border-radius: var(--radius-md); margin-bottom: 1.25rem; font-size: 0.9rem; font-weight: 600; }
-.input-group { display: flex; flex-direction: column; gap: 0.5rem; }
-.input-group label { color: var(--color-text-dark); font-weight: 700; font-size: 0.95rem; }
-.custom-textarea { width: 100%; background: rgba(0,0,0,0.2); border: 1px solid var(--color-border); padding: 1rem; border-radius: var(--radius-md); color: var(--color-text); font-family: var(--font-body); font-size: 0.9rem; min-height: 120px; resize: vertical; transition: var(--transition); outline: none; }
-.custom-textarea:focus { border-color: var(--color-primary); background: rgba(var(--rgb-primary), 0.05); }
-.light .custom-textarea { background: rgba(0,0,0,0.05); }
-.my-schedule-table-wrapper.hidden, .my-schedule-grid-wrapper.hidden { display: none; }
-.my-schedule-grid-wrapper { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; padding-top: 0.5rem; }
-.my-schedule-grid-wrapper .mobile-schedule-item { box-shadow: none; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--color-border); transition: all 0.2s ease; }
-.my-schedule-grid-wrapper .mobile-schedule-item:hover { transform: translateY(-3px); border-color: rgba(var(--rgb-primary), 0.4); background: rgba(var(--rgb-primary), 0.05); }
-.light .my-schedule-grid-wrapper .mobile-schedule-item { background: rgba(0,0,0,0.02); }
-.light .my-schedule-grid-wrapper .mobile-schedule-item:hover { background: rgba(var(--rgb-primary), 0.08); }
-#schedule-view-toggle-btn { width: 36px; height: 36px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; }
-#schedule-view-toggle-btn i { font-size: 1.1rem; }
 @media (max-width: 1023px) {
 body { overflow: hidden; position: fixed; width: 100%; height: 100%; }
 .page-wrapper { display: none; }
@@ -435,27 +423,6 @@ body { overflow: hidden; position: fixed; width: 100%; height: 100%; }
 .my-schedule-container { display: flex; }
 .my-schedule-section { padding: 1rem; }
 .fc .fc-toolbar { padding: 0 1rem 1rem; font-size: 0.9em; }
-.mobile-schedule-footer > .total-credits-pill {
-width: 100%;
-text-align: center;
-box-sizing: border-box;
-font-weight: 700;
-}
-.mobile-footer-actions {
-display: flex;
-width: 100%;
-gap: 0.75rem;
-}
-.mobile-footer-actions > button {
-flex: 1;
-justify-content: center;
-padding-top: 0.9rem;
-padding-bottom: 0.9rem;
-font-size: 1rem;
-font-weight: 700;
-height: auto;
-border-radius: var(--radius-md);
-}
 }
 @keyframes sectionFadeUp { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .course-item.open .section-btn { animation: sectionFadeUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
@@ -498,6 +465,7 @@ border-radius: 0;
 <body>
 <div class="cosmic-bg-container"><div class="nebula-glow"></div><canvas id="starfield-canvas"></canvas></div>
 <div id="install-overlay"><div id="install-section-container"></div></div>
+
 <div class="page-wrapper">
 <main class="main-content custom-scrollbar">
 <header class="main-header">
@@ -535,8 +503,8 @@ border-radius: 0;
 </div>
 <div id="desktop-exams-list"></div>
 </div>
-<div id="quick-visibility-wrapper" style="padding: 0.5rem 1rem; border-top: 1px solid var(--color-border);">
-<div style="display:flex; gap:0.5rem; margin-bottom: 0.5rem;">
+<div id="quick-visibility-wrapper" style="padding: 10px 15px; border-top: 1px solid var(--color-border);">
+<div style="display:flex; gap:0.5rem; margin-bottom: 10px;">
 <button id="expand-collapse-btn" class="data-btn" style="flex:0 0 auto; padding:0 0.8rem;" title="توسيع/طي الكل">
 <i class="ri-stack-line"></i>
 </button>
@@ -553,6 +521,7 @@ border-radius: 0;
 <footer class="sidebar-footer" id="sidebar-footer"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ri-telegram-line"></i> MUTLAQ1</a></footer>
 </aside>
 </div>
+
 <div class="mobile-wrapper">
 <header class="mobile-header">
 <div id="mobile-action-buttons">
@@ -567,6 +536,7 @@ border-radius: 0;
 </div>
 </div>
 </header>
+
 <div id="mobile-calendar-view" class="mobile-view-content active">
 <main class="main-content">
 <div class="schedule-tabs-container" id="mobile-schedule-tabs-container"></div>
@@ -598,6 +568,7 @@ border-radius: 0;
 <div id="mobile-my-exams-list" class="custom-scrollbar" style="padding: 0 1rem 1rem;">
 </div>
 </div>
+
 <nav class="mobile-nav">
 <button class="mobile-nav-btn active" data-view="mobile-calendar-view"><i class="ri-calendar-line"></i><span>الجدول</span></button>
 <button class="mobile-nav-btn" data-view="mobile-courses-view"><i class="ri-stack-line"></i><span>المقررات</span></button>
@@ -605,11 +576,13 @@ border-radius: 0;
 <button class="mobile-nav-btn" data-view="mobile-my-exams-view"><i class="ri-file-list-3-line"></i><span>اختباراتي</span></button>
 </nav>
 </div>
+
 <div class="modal-overlay" id="modal-overlay"></div>
 <div class="settings-modal" id="settings-modal"></div>
 <div class="mobile-section-details-overlay" id="mobile-section-details-overlay">
 <div class="details-panel" id="details-panel"></div>
 </div>
+
 <script>
 function initStarfield() {
 const canvas = document.getElementById('starfield-canvas');
@@ -637,6 +610,7 @@ for (let i = 0; i < numShootingStars; i++) shootingStars.push(new ShootingStar()
 function animate() { ctx.clearRect(0, 0, w, h); stars.forEach(s => { s.update(); s.draw(); }); shootingStars.forEach(s => { s.update(); s.draw(); }); requestAnimationFrame(animate); }
 animate();
 }
+
 document.addEventListener('DOMContentLoaded', () => {
 initStarfield();
 const mainContent = document.querySelector('.main-content');
@@ -644,6 +618,7 @@ if(mainContent) { mainContent.addEventListener('scroll', () => { mainContent.set
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024;
 if (isMobile) { document.body.classList.add('mobile-view'); } else { document.body.classList.add('desktop-view'); }
 const Toast = Swal.mixin({ toast: true, position: isMobile ? 'bottom' : 'bottom-end', showConfirmButton: false, timer: 3500, timerProgressBar: true, didOpen: (toast) => { toast.addEventListener('mouseenter', Swal.stopTimer); toast.addEventListener('mouseleave', Swal.resumeTimer); } });
+
 const QU_ScheduleApp = {
 state: {
 calendar: null,
@@ -659,7 +634,7 @@ searchTerm: '',
 showExamDates: false,
 isVisibilityNamesMode: false,
 areAllExpanded: false,
-userSettings: { theme: 'dark', accentColor: '#8b5cf6', showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, examScheduleMode: '3', myScheduleView: 'table' }
+userSettings: { theme: 'dark', accentColor: '#8b5cf6', showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, examScheduleMode: '3' }
 },
 constants: {
 PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316', red: '#ef4444' },
@@ -700,6 +675,7 @@ EXAM_DATA: {
 }
 },
 dom: {},
+
 init() {
 this._populateDOMElements();
 this._setupEventListeners();
@@ -710,6 +686,7 @@ this._loadDataFromStorage();
 this._listenForDataFromOpener();
 this._updateBookmarkletCode();
 },
+
 _loadDataFromStorage() {
 const storedCourses = localStorage.getItem(this.constants.STORAGE_KEYS.COURSES);
 if (storedCourses) {
@@ -878,58 +855,28 @@ if (!courseVisibilityHTML) courseVisibilityHTML = '<p style="color:var(--color-t
 this.dom.quickVisibilityContent.innerHTML = courseVisibilityHTML;
 },
 _renderMyScheduleSummary(selectedCourses, conflictMap) {
-    const desktopContainer = this.dom.myScheduleContainer;
-    const mobileContainer = this.dom.mobileMyScheduleContainer;
-    if (desktopContainer) {
-        desktopContainer.style.display = 'flex';
-        if (selectedCourses.length === 0) {
-            desktopContainer.innerHTML = `<div class="no-data" style="width:100%"><i class="ri-calendar-check-line"></i><h4>جدولك فارغ</h4><p>اختر بعض المقررات لإنشاء جدولك.</p></div>`;
-        } else {
-            desktopContainer.innerHTML = this._createMyScheduleHTML(selectedCourses, conflictMap);
-            const desktopConflictBtn = desktopContainer.querySelector('#desktop-view-conflicts-btn');
-            if (desktopConflictBtn) desktopConflictBtn.addEventListener('click', () => this._handleViewAllConflicts(conflictMap));
-            
-            const copyBtn = desktopContainer.querySelector('#desktop-copy-crn-btn');
-            if (copyBtn) copyBtn.addEventListener('click', () => this._handleCopyCRNs(selectedCourses));
-            
-            const crnGenBtn = desktopContainer.querySelector('#generate-crn-tool-btn');
-            if (crnGenBtn) crnGenBtn.addEventListener('click', () => this._handleCRNGenerator());
-
-            const viewToggleBtn = desktopContainer.querySelector('#schedule-view-toggle-btn');
-            if (viewToggleBtn) {
-                viewToggleBtn.addEventListener('click', () => {
-                    this.state.userSettings.myScheduleView = this.state.userSettings.myScheduleView === 'table' ? 'grid' : 'table';
-                    this._saveSettings();
-                    
-                    const tableWrapper = desktopContainer.querySelector('.my-schedule-table-wrapper');
-                    const gridWrapper = desktopContainer.querySelector('.my-schedule-grid-wrapper');
-                    const icon = viewToggleBtn.querySelector('i');
-
-                    if (this.state.userSettings.myScheduleView === 'grid') {
-                        tableWrapper.classList.add('hidden');
-                        gridWrapper.classList.remove('hidden');
-                        icon.className = 'ri-table-line';
-                    } else {
-                        tableWrapper.classList.remove('hidden');
-                        gridWrapper.classList.add('hidden');
-                        icon.className = 'ri-layout-grid-line';
-                    }
-                });
-            }
-        }
-    }
-    if (mobileContainer) {
-        mobileContainer.classList.toggle('empty', selectedCourses.length === 0);
-        if (selectedCourses.length === 0) {
-            mobileContainer.innerHTML = `<div class="no-data" style="padding-top: 5rem;"><i class="ri-calendar-check-line"></i><h4>جدولك فارغ</h4><p>اختر بعض المقررات لإنشاء جدولك.</p></div>`;
-        } else {
-            mobileContainer.innerHTML = this._createMobileScheduleHTML(selectedCourses, conflictMap);
-            const mobileConflictBtn = mobileContainer.querySelector('#mobile-view-conflicts-btn');
-            if (mobileConflictBtn) mobileConflictBtn.addEventListener('click', () => this._handleViewAllConflicts(conflictMap));
-            const mobileCrnGenBtn = mobileContainer.querySelector('#mobile-generate-crn-tool-btn');
-            if (mobileCrnGenBtn) mobileCrnGenBtn.addEventListener('click', () => this._handleCRNGenerator());
-        }
-    }
+const desktopContainer = this.dom.myScheduleContainer;
+const mobileContainer = this.dom.mobileMyScheduleContainer;
+if (desktopContainer) {
+desktopContainer.style.display = 'flex';
+if (selectedCourses.length === 0) desktopContainer.innerHTML = `<div class="no-data" style="width:100%"><i class="ri-calendar-check-line"></i><h4>جدولك فارغ</h4><p>اختر بعض المقررات لإنشاء جدولك.</p></div>`;
+else {
+desktopContainer.innerHTML = this._createMyScheduleHTML(selectedCourses, conflictMap);
+const desktopConflictBtn = desktopContainer.querySelector('#desktop-view-conflicts-btn');
+if (desktopConflictBtn) desktopConflictBtn.addEventListener('click', () => this._handleViewAllConflicts(conflictMap));
+const copyBtn = desktopContainer.querySelector('#desktop-copy-crn-btn');
+if (copyBtn) copyBtn.addEventListener('click', () => this._handleCopyCRNs(selectedCourses));
+}
+}
+if (mobileContainer) {
+mobileContainer.classList.toggle('empty', selectedCourses.length === 0);
+if (selectedCourses.length === 0) mobileContainer.innerHTML = `<div class="no-data" style="padding-top: 5rem;"><i class="ri-calendar-check-line"></i><h4>جدولك فارغ</h4><p>اختر بعض المقررات لإنشاء جدولك.</p></div>`;
+else {
+mobileContainer.innerHTML = this._createMobileScheduleHTML(selectedCourses, conflictMap);
+const mobileConflictBtn = mobileContainer.querySelector('#mobile-view-conflicts-btn');
+if (mobileConflictBtn) mobileConflictBtn.addEventListener('click', () => this._handleViewAllConflicts(conflictMap));
+}
+}
 },
 _handleCopyCRNs(selectedCourses) {
 if (selectedCourses.length === 0) return;
@@ -937,308 +884,39 @@ const crns = selectedCourses.map(c => c.section).join('\n');
 navigator.clipboard.writeText(crns).then(() => this._showToast('success', 'تم نسخ أرقام الشعب!')).catch(() => this._showToast('error', 'فشل النسخ'));
 },
 _createMyScheduleHTML(selectedCourses, conflictMap) {
-    let totalCredits = 0;
-    const uniqueCourseCodes = new Set();
-    selectedCourses.forEach(c => {
-        if (!uniqueCourseCodes.has(c.code)) {
-            totalCredits += parseInt(c.hours, 10) || 0;
-            uniqueCourseCodes.add(c.code);
-        }
-    });
-
-    const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
-        const isConflicted = conflictMap.has(course.uniqueId);
-        return `<tr class="schedule-row ${isConflicted ? 'has-conflict' : ''}"><td><div>${course.code}</div><div>${course.name}</div></td><td><div>${course.section}</div><div>${course.type}</div></td><td>${course.instructor}</td><td>${course.time.replace(/<br>/g, ' ')}</td><td>${course.examPeriodId || "لا يوجد"}</td><td>${course.location}</td><td><div class="hours-value">${course.hours}</div></td></tr>`;
-    }).join('');
-
-    const gridItemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
-        const isConflicted = conflictMap.has(course.uniqueId);
-        return `<div class="mobile-schedule-item">
-                    <div class="mobile-schedule-header">
-                        <div class="mobile-schedule-title">
-                            <h3>${course.name}</h3>
-                            <span>${course.code} - شعبة ${course.section}</span>
-                        </div>
-                        ${isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon" title="يوجد تعارض"></i>` : ''}
-                    </div>
-                    <div class="mobile-schedule-details">
-                        <div class="mobile-detail-row"><i class="ri-time-line"></i> <strong>المواعيد:</strong> ${course.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div>
-                        <div class="mobile-detail-row"><i class="ri-user-line"></i> <strong>المحاضر:</strong> ${course.instructor || 'غير محدد'}</div>
-                    </div>
-                </div>`;
-    }).join('');
-
-    const toggleIcon = this.state.userSettings.myScheduleView === 'table' ? 'ri-layout-grid-line' : 'ri-table-line';
-    const conflictButtonHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn"><i class="ri-alert-fill"></i> حل التعارض</button>` : '';
-    
-    return `<div class="card my-schedule-card">
-                <div class="my-schedule-section">
-                    <div class="card-header-inline">
-                        <div class="card-header-actions">
-                            <h3><i class="ri-calendar-check-line"></i> جدولـي</h3>
-                            <button id="schedule-view-toggle-btn" class="data-btn" style="padding: 0 0.8rem;" title="تغيير طريقة العرض"><i class="${toggleIcon}"></i></button>
-                            <button class="copy-crn-btn" id="desktop-copy-crn-btn" title="نسخ أرقام الشعب"><i class="ri-file-copy-line"></i> نسخ الشعب</button>
-                        </div>
-                        <div style="display:flex;align-items:center;gap:0.75rem;">
-                             <button class="moad-btn" id="generate-crn-tool-btn"><i class="ri-magic-line"></i> مُعِدّ</button>
-                            <div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div>
-                        </div>
-                    </div>
-                    
-                    <div class="my-schedule-table-wrapper ${this.state.userSettings.myScheduleView !== 'table' ? 'hidden' : ''}">
-                        <table class="my-schedule-table">
-                            <thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead>
-                            <tbody>${tableRowsHTML}</tbody>
-                        </table>
-                    </div>
-                    <div class="my-schedule-grid-wrapper ${this.state.userSettings.myScheduleView !== 'grid' ? 'hidden' : ''}">
-                        ${gridItemsHTML}
-                    </div>
-
-                    <div class="my-schedule-footer">${conflictButtonHTML}</div>
-                </div>
-            </div>`;
+let totalCredits = 0; const uniqueCourseCodes = new Set();
+selectedCourses.forEach(c => { if (!uniqueCourseCodes.has(c.code)) { totalCredits += parseInt(c.hours, 10) || 0; uniqueCourseCodes.add(c.code); } });
+const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
+const isConflicted = conflictMap.has(course.uniqueId);
+return `<tr class="schedule-row ${isConflicted ? 'has-conflict' : ''}"><td><div>${course.code}</div><div>${course.name}</div></td><td><div>${course.section}</div><div>${course.type}</div></td><td>${course.instructor}</td><td>${course.time.replace(/<br>/g, ' ')}</td><td>${course.examPeriodId || "لا يوجد"}</td><td>${course.location}</td><td><div class="hours-value">${course.hours}</div></td></tr>`;
+}).join('');
+const conflictButtonHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn"><i class="ri-alert-fill"></i> حل التعارض</button>` : '';
+return `<div class="card my-schedule-card"><div class="my-schedule-section"><div class="card-header-inline"><div class="card-header-actions"><h3><i class="ri-calendar-check-line"></i> جدولـي</h3><button class="copy-crn-btn" id="desktop-copy-crn-btn" title="نسخ أرقام الشعب"><i class="ri-file-copy-line"></i> نسخ الشعب</button></div><div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div></div><div class="my-schedule-table-wrapper"><table class="my-schedule-table"><thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead><tbody>${tableRowsHTML}</tbody></table></div><div class="my-schedule-footer">${conflictButtonHTML}</div></div></div>`;
 },
 _createMobileScheduleHTML(selectedCourses, conflictMap) {
-    let totalCredits = 0; const uniqueCourseCodes = new Set();
-    selectedCourses.forEach(c => { if (!uniqueCourseCodes.has(c.code)) { totalCredits += parseInt(c.hours, 10) || 0; uniqueCourseCodes.add(c.code); } });
-    const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => {
-    const isConflicted = conflictMap.has(course.uniqueId);
-    return `<div class="mobile-schedule-item" style="animation-delay:${i*30}ms;"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${course.name}</h3><span>${course.code} - شعبة ${course.section}</span></div>${isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon"></i>` : ''}</div><div class="mobile-schedule-details"><div class="mobile-detail-row"><i class="ri-time-line"></i> <strong>المواعيد:</strong> ${course.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div><div class="mobile-detail-row"><i class="ri-user-line"></i> <strong>المحاضر:</strong> ${course.instructor || 'غير محدد'}</div></div></div>`;
-    }).join('');
-    const conflictButtonHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn"><i class="ri-alert-fill"></i> حل التعارض</button>` : '';
-    const moadButtonHTML = `<button class="moad-btn" id="mobile-generate-crn-tool-btn"><i class="ri-magic-line"></i> مُعِدّ</button>`;
-    
-    return `<div id="mobile-my-schedule-list">${itemsHTML}</div>
-    <div class="mobile-schedule-footer">
-        <div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div>
-        <div class="mobile-footer-actions">
-            ${moadButtonHTML}
-            ${conflictButtonHTML}
-        </div>
-    </div>`;
-},
-_handleCRNGenerator() {
-    const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-    const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
-    if (selectedSections.size === 0) { this._showToast('error', 'الجدول فارغ!'); return; }
-    
-    const scheduleData = Array.from(selectedSections).map(id => {
-        const c = this.state.allCoursesData.find(x => x.uniqueId === id);
-        return c ? `${c.name}: ${c.section}` : '';
-    }).filter(Boolean).join('\n');
+let totalCredits = 0; const uniqueCourseCodes = new Set();
+selectedCourses.forEach(c => { if (!uniqueCourseCodes.has(c.code)) { totalCredits += parseInt(c.hours, 10) || 0; uniqueCourseCodes.add(c.code); } });
+const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => {
+const isConflicted = conflictMap.has(course.uniqueId);
+return `<div class="mobile-schedule-item" style="animation-delay:${i*30}ms;"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${course.name}</h3><span>${course.code} - شعبة ${course.section}</span></div>${isConflicted ? `<i class="ri-alert-fill mobile-conflict-icon"></i>` : ''}</div><div class="mobile-schedule-details"><div class="mobile-detail-row"><i class="ri-time-line"></i> <strong>المواعيد:</strong> ${course.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div><div class="mobile-detail-row"><i class="ri-user-line"></i> <strong>المحاضر:</strong> ${course.instructor || 'غير محدد'}</div></div></div>`;
+}).join('');
 
-    Swal.fire({
-        title: 'مُعِدّ أداة التعبئة',
-        html: `
-        <div class="crn-generator-content">
-        <div class="info-row">
-        <i class="ri-checkbox-circle-line"></i>
-        <span>تم استخراج أرقام الشعب من جدولك الحالي.</span>
-        </div>
-        <div class="input-group">
-        <label>أرقام الشعب الحرة (اختياري)</label>
-        <textarea id="swal-free-crns" class="custom-textarea" placeholder="أدخل أرقام الشعب الحرة هنا (مثلاً: 12345, 67890)..."></textarea>
-        </div>
-        </div>
-        `,
-        showCancelButton: true,
-        confirmButtonText: 'إنشاء الأداة',
-        cancelButtonText: 'إلغاء',
-        preConfirm: () => {
-            return document.getElementById('swal-free-crns').value;
-        }
-    }).then((result) => {
-        if (result.isConfirmed) {
-            const freeInput = result.value.split(/[\n\s,]+/).map(s => s.trim()).filter(Boolean);
-            let finalData = scheduleData;
-            if(freeInput.length > 0) {
-                finalData += '\n' + freeInput.map(crn => `شعبة حرة: ${crn}`).join('\n');
-            }
-            const code = this._generateFillerCode(finalData);
-            this._showFillerTool(code);
-        }
-    });
-},
-_generateFillerCode(data) {
-    const dataStr = JSON.stringify(data);
-    const script = `(function(){'use strict';
-        const form=document.querySelector('form[name="allData"]');
-        if(!form){
-            const msg=document.createElement('div');
-            msg.style.cssText="position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#ef4444;color:white;padding:10px 20px;border-radius:10px;z-index:9999;font-family:'Segoe UI',sans-serif;box-shadow:0 5px 15px rgba(0,0,0,0.2);direction:rtl;font-weight:600;";
-            msg.innerText="الرجاء الذهاب إلى صفحة الحذف والإضافة أولاً لاستخدام الأداة.";
-            document.body.appendChild(msg);
-            setTimeout(()=>msg.remove(),4000);
-            return;
-        }
-        let inited=false;
-        function showUI(){
-            if(inited||document.getElementById('qu-auto-add-box'))return;
-            inited=true;
-            const container=document.createElement('div');
-            container.id='qu-auto-add-box';
-            container.innerHTML=\`<style>
-            #qu-auto-add-box *{box-sizing:border-box}
-            .qu-box{background:rgba(20,20,22,0.9);backdrop-filter:blur(16px);padding:1.5rem;border-radius:20px;margin:20px auto;max-width:500px;width:90%;box-shadow:0 16px 40px -12px rgba(0,0,0,0.4);border:1px solid rgba(255,255,255,0.1);font-family:'Segoe UI',Tahoma,sans-serif;color:#e0e0e0;text-align:right;direction:rtl}
-            .qu-header{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1rem;border-bottom:1px solid rgba(255,255,255,0.1);padding-bottom:1rem}
-            .qu-title{color:#fff;font-weight:700;font-size:1.1rem}
-            .qu-textarea{width:100%;height:100px;padding:1rem;border:1px solid rgba(255,255,255,0.1);border-radius:12px;font-size:0.9rem;resize:vertical;background:rgba(0,0,0,0.3);color:#fff;outline:none;transition:all 0.3s;margin-bottom:1rem}
-            .qu-textarea:focus{border-color:#8b5cf6;background:rgba(139,92,246,0.05)}
-            .qu-btn{width:100%;padding:0.8rem;background:linear-gradient(135deg,#8b5cf6,#7c3aed);color:white;border:none;border-radius:999px;font-weight:700;font-size:1rem;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:0.5rem}
-            .qu-btn:hover{transform:translateY(-2px);box-shadow:0 4px 15px rgba(139,92,246,0.3)}
-            .qu-status{margin-top:1rem;padding:0.8rem;border-radius:12px;font-size:0.9rem;line-height:1.6;display:none}
-            .qu-status.info{background:rgba(255,255,255,0.1);color:#e0e0e0}
-            .qu-status.success{background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.2)}
-            .qu-status.error{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
-            </style>
-            <div class="qu-box">
-            <div class="qu-header"><span class="qu-title">المُعبئ الآلي</span></div>
-            <textarea class="qu-textarea" id="quCoursesInput" placeholder="الصق بيانات الجدول هنا...">${dataStr.slice(1, -1)}</textarea>
-            <button type="button" class="qu-btn" id="quStartAdd"><span>تنفيذ الجدول</span></button>
-            <div class="qu-status" id="quStatus"></div>
-            </div>\`;
-            const table=form.querySelector('table');
-            if(table){form.insertBefore(container,table)}else{form.prepend(container)}
-            document.getElementById('quStartAdd').addEventListener('click',startProcess)
-        }
-        function parse(text){
-            const lines=text.trim().split('\\n').filter(l=>l.trim());
-            const courses=[];
-            for(const line of lines){
-                const match=line.match(/:\\s*(\\d+)\\s*$/);
-                if(match){
-                    let name=line.split(':')[0].trim();
-                    if(name.includes(' - د.')) name=name.split(' - د.')[0].trim();
-                    courses.push({name:name,section:match[1]})
-                }
-            }
-            return courses
-        }
-        function status(msg,type='info'){
-            const el=document.getElementById('quStatus');
-            if(!el)return;
-            el.style.display='block';
-            el.className='qu-status '+type;
-            el.innerHTML=msg
-        }
-        function findRow(name){
-            const cells=document.querySelectorAll('td[id^="courseName"]');
-            for(const cell of cells){
-                const txt=cell.textContent.trim().replace(/\\s+/g,' ');
-                if(txt.includes(name)||name.includes(txt.replace('&nbsp;','').trim())) return cell.closest('tr')
-            }
-            return null
-        }
-        async function startProcess(){
-            const txt=document.getElementById('quCoursesInput').value.trim();
-            if(!txt){status('الرجاء التحقق من البيانات.','error');return}
-            const courses=parse(txt);
-            if(!courses.length){status('لم يتم العثور على شعب صالحة.','error');return}
-            status(\`جاري المعالجة... (\${courses.length} مقررات)\`,'info');
-            let added=0,failed=0;
-            const errors=[];
-            for(let i=0;i<courses.length;i++){
-                const c=courses[i];
-                status(\`جاري البحث: \${c.name} <span style="font-size:0.85em; opacity:0.8">(\${i+1} من \${courses.length})</span>\`,'info');
-                const row=findRow(c.name);
-                if(!row){failed++;errors.push(c.name);continue}
-                const chk=row.querySelector('input[type="CHECKBOX"]');
-                const link=row.querySelector('a[onclick*="showToolTip"]');
-                if(!chk||!link){failed++;continue}
-                if(!chk.checked){chk.click();await new Promise(r=>setTimeout(r,300))}
-                link.click();
-                await new Promise(r=>setTimeout(r,800));
-                const popup=document.getElementById('tableContainer');
-                if(popup){
-                    const links=popup.querySelectorAll('a[onclick*="changeSction"]');
-                    let found=false;
-                    for(const l of links){
-                        if(l.textContent.trim()===c.section){
-                            l.click();found=true;await new Promise(r=>setTimeout(r,500));break
-                        }
-                    }
-                    if(!found){
-                        try{hideDilaogPrimeUI('divsData')}catch(e){}
-                        failed++;errors.push(c.name+' (الشعبة غير موجودة)')
-                        continue
-                    }
-                }
-                await new Promise(r=>setTimeout(r,500));
-                added++;
-                status(\`تم اختيار: \${c.name} بنجاح\`,'info')
-            }
-            let msg=\`اكتملت العملية! تم اختيار \${added} مقرر.\`;
-            if(failed>0){msg+=\`<br>فشل في \${failed} مقرر:\`;if(errors.length)msg+=\`<br>• \${errors.join('<br>• ')}\`}
-            msg+=\`<br><br><b>اضغط زر "إضافة" في الأسفل لحفظ الجدول.</b>\`;
-            status(msg,added>0?'success':'error')
-        }
-        showUI();
-    })();`;
-    return "javascript:" + encodeURIComponent(script);
-},
-_showFillerTool(code) {
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024;
-if (isMobile) {
-Swal.fire({
-title: 'تم إنشاء الأداة',
-html: `
-<div id="swal-custom-close" style="position: absolute; top: 12px; left: 15px; cursor: pointer; color: var(--color-text-muted); font-size: 1.5rem; z-index: 50;">
-<i class="ri-close-line"></i>
-</div>
-<p style="text-align:right; margin-bottom:1.5rem; padding: 0 .5rem;">انسخ الكود التالي، ثم اذهب لصفحة الحذف والإضافة، وألصقه في شريط العنوان.</p>
-<button id="swal-copy-tool-btn" class="details-action-btn add" style="width:calc(100% - 1rem); margin: 0 .5rem; justify-content: center;">
-<i class="ri-file-copy-line"></i> نسخ الكود
-</button>`,
-showConfirmButton: false,
-allowOutsideClick: true,
-didOpen: () => {
-document.getElementById('swal-custom-close').addEventListener('click', () => Swal.close());
-document.getElementById('swal-copy-tool-btn').addEventListener('click', () => {
-navigator.clipboard.writeText(code).then(() => { this._showToast('success', 'تم النسخ!'); });
-});
-}
-});
-} else {
-Swal.fire({
-title: 'اسحب الزر للشريط',
-icon: 'info',
-allowOutsideClick: true,
-showConfirmButton: false,
-html: `
-<div id="swal-custom-close" style="position: absolute; top: 12px; left: 15px; cursor: pointer; color: var(--color-text-muted); font-size: 1.5rem; z-index: 50;">
-<i class="ri-close-line"></i>
-</div>
-<div style="text-align: right;">
-<p style="margin-bottom: 1.5rem; color: var(--color-text-muted); line-height: 1.6;">
-اسحب الزر التالي وأفلته في شريط الإشارات المرجعية (Bookmarks Bar) أعلى المتصفح.
-</p>
-<div style="text-align: center; margin-bottom: 1.5rem;">
-<a href="${code}" class="bookmarklet-button" style="text-decoration:none; display:inline-flex;" onclick="return false;">
-<i class="ri-magic-line"></i> مُعِدّ
-</a>
-</div>
-<p style="font-size: 0.85rem; opacity: 0.7; text-align: center;">
-عند فتح صفحة الحذف والإضافة، اضغط على هذا الزر لتعبئة الشعب.
-</p>
-</div>
-`,
-didOpen: () => {
-document.getElementById('swal-custom-close').addEventListener('click', () => Swal.close());
-}
-});
-}
+const conflictButtonHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn"><i class="ri-alert-fill"></i> حل التعارض</button>` : '';
+return `<div id="mobile-my-schedule-list">${itemsHTML}</div><div class="mobile-schedule-footer">${conflictButtonHTML}<div class="total-credits-summary">إجمالي الساعات: <span>${totalCredits}</span></div></div>`;
 },
 _renderFinalExams(selectedCourses) {
 const uniqueExams = [...new Map(selectedCourses.filter(e => e.examPeriodId).map(e => [e.examPeriodId, e])).values()];
 const toggleBtnDesktop = this.dom.desktopDateToggle;
 const toggleBtnMobile = this.dom.mobileMyExamsDateToggle;
 [toggleBtnDesktop, toggleBtnMobile].forEach(btn => { if(btn) btn.classList.toggle('active', this.state.showExamDates); });
+
 const examMapping = this.constants.EXAM_DATA[this.state.userSettings.examScheduleMode];
+
 let footerHtml = '';
 if(this.state.showExamDates && uniqueExams.length > 0) {
 footerHtml = '<div style="text-align:center; margin-top:1rem; animation:fadeInUp 0.3s both;"><a href="https://t.me/Qassim_U/4414294" target="_blank" class="faisal-link">اجتهاد فيصل</a></div>';
 }
+
 if (this.dom.desktopExamsList) {
 if (uniqueExams.length === 0) {
 this.dom.desktopExamsList.innerHTML = `<div class="no-data" style="height: auto; padding-top: 2rem;"><i class="ri-file-text-line"></i><h4>لا توجد اختبارات</h4><p>لم يتم تحديد اختبارات نهائية للمقررات المختارة.</p></div>`;
@@ -1254,6 +932,7 @@ return `<div class="course-item"><div class="course-item-header" style="cursor:d
 this.dom.desktopExamsList.innerHTML = html + footerHtml;
 }
 }
+
 if (this.dom.mobileMyExamsList) {
 if (uniqueExams.length === 0) {
 this.dom.mobileMyExamsList.innerHTML = `<div class="no-data" style="height: auto; padding-top: 5rem;"><i class="ri-file-text-line"></i><h4>لا توجد اختبارات</h4><p>لم يتم تحديد اختبارات نهائية للمقررات المختارة.</p></div>`;
@@ -1319,12 +998,16 @@ this.dom.clearCalendarBtn?.addEventListener('click', () => this._handleClearCale
 this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
 this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
 this.dom.downloadImgBtn?.addEventListener('click', () => this._handleDownloadImage(false));
+
 this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
 this.dom.tabButtons.forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
+
 [this.dom.desktopCoursesList, this.dom.mobileCoursesList].forEach(list => { if(list) { list.addEventListener('click', e => this._handleCourseListClick(e)); list.addEventListener('mouseover', e => this._handleSectionHover(e, true)); list.addEventListener('mouseout', e => this._handleSectionHover(e, false)); } });
 if(isMobile) { this.dom.mobileNavButtons.forEach(btn => btn.addEventListener('click', () => this._handleMobileNav(btn))); this.dom.mobileSectionDetailsOverlay.addEventListener('click', (e) => { if(e.target === this.dom.mobileSectionDetailsOverlay) { this._hideMobileSectionDetails(); } }); }
+
 [this.dom.desktopSearchInput, this.dom.mobileSearchInput].forEach(input => { if (input) { input.addEventListener('input', (e) => { this.state.searchTerm = e.target.value; this._renderCoursesList(); }); } });
 if(this.dom.mobileCloseSearch) { this.dom.mobileCloseSearch.addEventListener('click', () => { this.dom.mobileSearchContainer.style.display = 'none'; this.dom.mobileHeaderTitle.style.display = 'block'; this.dom.mobileSearchInput.value = ''; this.state.searchTerm = ''; this._renderCoursesList(); }); }
+
 if (this.dom.desktopSearchToggle) {
 this.dom.desktopSearchToggle.addEventListener('click', () => {
 const container = this.dom.desktopSearchContainer;
@@ -1339,17 +1022,21 @@ this._renderCoursesList();
 }
 });
 }
+
 const updateExamMode = (mode) => {
 this.state.userSettings.examScheduleMode = mode;
 const textSpan = this.dom.examScheduleToggleBtn?.querySelector('span');
 if(textSpan) textSpan.textContent = mode === '3' ? '3 فترات' : 'فترتين';
+
 const mobileTextSpan = this.dom.mobileMyExamsPeriodToggle?.querySelector('span');
 if(mobileTextSpan) mobileTextSpan.textContent = mode === '3' ? '3 فترات' : 'فترتين';
+
 this._saveSettings(); 
 const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
 const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
 this._renderFinalExams(selectedCourseDetails);
 };
+
 if (this.dom.examScheduleToggleBtn) {
 this.dom.examScheduleToggleBtn.addEventListener('click', () => {
 const currentMode = this.state.userSettings.examScheduleMode;
@@ -1364,15 +1051,18 @@ const newMode = currentMode === '3' ? '2' : '3';
 updateExamMode(newMode);
 });
 }
+
 const toggleDates = () => {
 this.state.showExamDates = !this.state.showExamDates; 
 const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set(); 
 const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean); 
 this._renderFinalExams(selectedCourseDetails);
 };
+
 [this.dom.desktopDateToggle, this.dom.mobileMyExamsDateToggle].forEach(btn => { 
 if (btn) btn.addEventListener('click', toggleDates);
 });
+
 if (this.dom.quickVisibilityToggleBtn) {
 this.dom.quickVisibilityToggleBtn.addEventListener('click', () => {
 const content = this.dom.quickVisibilityContent;
@@ -1388,6 +1078,7 @@ this._renderQuickVisibilityList();
 if (this.dom.quickVisibilityContent) {
 this.dom.quickVisibilityContent.addEventListener('click', e => this._handleVisibilityToggle(e));
 }
+
 if (this.dom.expandCollapseBtn) {
 this.dom.expandCollapseBtn.addEventListener('click', () => {
 this.state.areAllExpanded = !this.state.areAllExpanded;
@@ -1536,8 +1227,10 @@ const currentView = activeNavBtn.dataset.view;
 const titleEl = this.dom.mobileHeaderTitle;
 const actionBtn = this.dom.mobileDynamicActionBtn;
 const searchContainer = this.dom.mobileSearchContainer;
+
 searchContainer.style.display = 'none';
 titleEl.style.display = 'block';
+
 if (currentView === 'mobile-calendar-view') {
 titleEl.textContent = this.state.schedules[this.state.activeScheduleIndex]?.name || 'الجدول';
 actionBtn.innerHTML = '<i class="ri-camera-3-line"></i>';
@@ -1750,6 +1443,7 @@ const weekendToggle = this.dom.settingsModal.querySelector('#show-weekend-toggle
 if (weekendToggle) { weekendToggle.checked = this.state.userSettings.showWeekends; weekendToggle.onchange = e => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); }; }
 const closedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
 if (closedToggle) { closedToggle.checked = this.state.userSettings.hideClosedCourses; closedToggle.onchange = e => { this.state.userSettings.hideClosedCourses = e.target.checked; this._saveSettings(); this._renderCoursesList(); this.updateCalendarAndConflicts(); }; }
+
 if (this.dom.examScheduleToggleBtn) {
 const textSpan = this.dom.examScheduleToggleBtn.querySelector('span');
 if(textSpan) textSpan.textContent = this.state.userSettings.examScheduleMode === '3' ? '3 فترات' : 'فترتين';
@@ -1817,6 +1511,7 @@ else { if(badge) badge.remove(); }
 }
 }
 };
+
 QU_ScheduleApp.init();
 });
 </script>
