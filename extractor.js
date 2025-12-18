@@ -1,7 +1,7 @@
 javascript:(function() {
     'use strict';
     const VIEWER_URL = "https://mutlaq001.github.io/schedule/";
-    const STATE_KEY = 'qu_extraction_state_v2';
+    const TEMP_STORAGE_KEY = 'temp_qu_schedule_data';
 
     function parseTimeDetails(detailsRaw) {
         if (!detailsRaw || detailsRaw.trim() === '') return { timeText: 'غير محدد', location: 'غير محدد' };
@@ -25,7 +25,7 @@ javascript:(function() {
         return { timeText: 'غير محدد', location: loc };
     }
 
-    function extractCourses(rows, semVal, semName) {
+    function extractCourses(rows) {
         const coursesData = [];
         let lastTheoreticalCourse = null;
         const getVal = (row, th) => {
@@ -53,19 +53,7 @@ javascript:(function() {
                     examPeriodId = lastTheoreticalCourse.examPeriodId;
                 }
                 const timeDetails = parseTimeDetails(detailsRaw);
-                const courseInfo = {
-                    semester: semVal,
-                    semesterName: semName,
-                    code, name, section,
-                    time: timeDetails.timeText,
-                    location: timeDetails.location,
-                    instructor: instructor || 'غير محدد',
-                    examPeriodId: examPeriodId || null,
-                    hours: hours || '0',
-                    type: type || 'نظري',
-                    status: status || 'غير معروف',
-                    campus: campus || 'غير معروف'
-                };
+                const courseInfo = { code, name, section, time: timeDetails.timeText, location: timeDetails.location, instructor: instructor || 'غير محدد', examPeriodId: examPeriodId || null, hours: hours || '0', type: type || 'نظري', status: status || 'غير معروف', campus: campus || 'غير معروف' };
                 coursesData.push(courseInfo);
                 if (!isPractical) {
                     lastTheoreticalCourse = { code: courseInfo.code, hours: courseInfo.hours, examPeriodId: examPeriodId };
@@ -75,37 +63,34 @@ javascript:(function() {
         return coursesData;
     }
 
-    const select = document.getElementById('myForm:semesterSelect');
-    if (!select) {
-        alert("تأكد من وجودك في صفحة المقررات المطروحة.");
-        return;
-    }
-
-    const allOptions = Array.from(select.options);
-    const currentIndex = select.selectedIndex;
-    const currentOption = allOptions[currentIndex];
-    
-    const state = JSON.parse(sessionStorage.getItem(STATE_KEY) || '{"data": []}');
-    
-    const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
-    const currentData = extractCourses(courseRows, currentOption.value, currentOption.text);
-    const newData = state.data.concat(currentData);
-
-    if (currentIndex < allOptions.length - 1) {
-        sessionStorage.setItem(STATE_KEY, JSON.stringify({ data: newData }));
-        select.selectedIndex = currentIndex + 1;
-        const event = new Event('change', { bubbles: true });
-        select.dispatchEvent(event);
-        if (typeof onChangeSemester === 'function') onChangeSemester();
-    } else {
-        sessionStorage.removeItem(STATE_KEY);
-        const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
-        const messageHandler = (event) => {
-            if (event.source === viewerWindow && event.data === 'request_schedule_data') {
-                viewerWindow.postMessage({ type: 'universityCoursesData', data: newData }, '*');
-                window.removeEventListener('message', messageHandler);
+    setTimeout(() => {
+        const courseRows = document.querySelectorAll('tr.ROW1, tr.ROW2');
+        if (courseRows.length === 0) {
+            alert("فشل استخراج البيانات.\n\nلم يتم العثور على أي مقررات.\n\nتأكد من أنك في صفحة 'المقررات المطروحة' بعد أن تقوم بالبحث.");
+            return;
+        }
+        const courses = extractCourses(courseRows);
+        if (courses && courses.length > 0) {
+            sessionStorage.setItem(TEMP_STORAGE_KEY, JSON.stringify(courses));
+            const viewerWindow = window.open(VIEWER_URL, 'QU_Schedule_Viewer');
+            if (!viewerWindow || viewerWindow.closed || typeof viewerWindow.closed === 'undefined') {
+                alert("فشل فتح نافذة العارض.\n\nالرجاء السماح بالنوافذ المنبثقة (Pop-ups) لهذا الموقع والمحاولة مرة أخرى.");
+                sessionStorage.removeItem(TEMP_STORAGE_KEY);
+                return;
             }
-        };
-        window.addEventListener('message', messageHandler);
-    }
+            const messageHandler = (event) => {
+                if (event.source === viewerWindow && event.data === 'request_schedule_data') {
+                    const storedData = sessionStorage.getItem(TEMP_STORAGE_KEY);
+                    if (storedData) {
+                        viewerWindow.postMessage({ type: 'universityCoursesData', data: JSON.parse(storedData) }, new URL(VIEWER_URL).origin);
+                        sessionStorage.removeItem(TEMP_STORAGE_KEY);
+                        window.removeEventListener('message', messageHandler);
+                    }
+                }
+            };
+            window.addEventListener('message', messageHandler, false);
+        } else {
+            alert("فشل استخراج البيانات. لم يتم العثور على بيانات يمكن قراءتها في الجدول.");
+        }
+    }, 1000);
 })();
