@@ -16,7 +16,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" rel="stylesheet"></noscript>
-  <meta name="description" content="QU Schedule — أنشئ جدولك الدراسي في جامعة القصيم بكل سهول.">
+  <meta name="description" content="QU Schedule — أنشئ جدولك الدراسي في جامعة القصيم بكل سهولة.">
   <meta name="theme-color" content="#0a0a0a">
   <style>
     :root {
@@ -4605,15 +4605,6 @@
       white-space: nowrap;
     }
 
-    .hours-shared-label {
-      display: block;
-      margin-top: 3px;
-      font-size: 0.62rem;
-      font-weight: 600;
-      color: var(--color-text-muted);
-      letter-spacing: 0.02em;
-    }
-
     .fc .fc-col-header-cell-cushion {
       padding: 10px 4px;
       font-size: 0.85rem;
@@ -7097,7 +7088,7 @@ showUI();})();`;
               const rowClasses = ['schedule-row', isConflicted ? 'has-conflict' : '', isClosed ? 'is-closed' : '', idx === 0 ? 'group-start' : 'group-inner', idx < g.items.length - 1 ? 'group-mid' : 'group-end'].filter(Boolean).join(' ');
               const courseCell = idx === 0 ? `<td class="course-cell" rowspan="${g.items.length}"><div class="course-code">${g.code}</div><div class="course-name">${g.name}</div>${g.items.length > 1 ? `<span class="course-parts-chip"><i class="ph ph-link-simple"></i> ${typeChips}</span>` : ''}</td>` : '';
               const hoursCell = sharedHours
-                ? (idx === 0 ? `<td class="hours-cell" rowspan="${g.items.length}"><div class="hours-value">${hoursVals[0]}</div>${g.items.length > 1 ? '<span class="hours-shared-label">مشتركة</span>' : ''}</td>` : '')
+                ? (idx === 0 ? `<td class="hours-cell" rowspan="${g.items.length}"><div class="hours-value">${hoursVals[0]}</div></td>` : '')
                 : `<td class="hours-cell"><div class="hours-value">${parseInt(course.hours, 10) || 0}</div></td>`;
               const conflictChip = isConflicted ? '<span class="conflict-chip"><i class="ph-fill ph-warning"></i>تعارض</span>' : '';
               return `<tr class="${rowClasses}">${courseCell}<td class="sec-cell"><div class="section-number">${course.section}${closedBadge}${conflictChip}</div><div class="type-label">${this._typeLabel(course.type)}</div></td><td>${course.instructor}</td><td>${course.time.replace(/<br>/g, ' ')}</td><td>${course.examPeriodId || "لا يوجد"}</td><td>${course.location}</td>${hoursCell}</tr>`;
@@ -7916,7 +7907,7 @@ ${shareButtonHTML}
                         Swal.fire({
                           title: `اختر شعبة ${typeName}`,
                           html: `<div style="font-size:0.9rem;">هذا المقرر له أكثر من شعبة ${typeName}، اختر واحدة منها:</div><div class="qa-pick-list">${cardsHTML}</div>`,
-                          showCancelButton: true, confirmButtonText: '<i class="ph ph-plus-circle"></i> إضافة', cancelButtonText: 'تخطي',
+                          showCancelButton: true, confirmButtonText: 'إضافة', cancelButtonText: 'تخطي',
                           didOpen: (popup) => { popup.querySelectorAll('.qa-pick-option').forEach(el => { el.addEventListener('click', () => { popup.querySelectorAll('.qa-pick-option').forEach(o => o.classList.remove('selected')); el.classList.add('selected'); }); }); },
                           preConfirm: () => { const sel = Swal.getPopup().querySelector('.qa-pick-option.selected'); return sel ? sel.dataset.uid : null; }
                         }).then(res => { if (res.isConfirmed && res.value) { const chosen = arr.find(c => c.uniqueId === res.value); if (chosen) linkPair(chosen); } showPicker(mi + 1); });
