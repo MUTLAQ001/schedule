@@ -16,7 +16,7 @@
   <link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" rel="stylesheet" media="print" onload="this.media='all'">
   <noscript><link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" rel="stylesheet"></noscript>
-  <meta name="description" content="QU Schedule — أنشئ جدولك الدراسي في جامعة القصيم بكل سهولة.">
+  <meta name="description" content="QU Schedule — أنشئ جدولك الدراسي في جامعة القصيم بكل سهول.">
   <meta name="theme-color" content="#0a0a0a">
   <style>
     :root {
@@ -2746,9 +2746,9 @@
     }
 
     .view-conflicts-btn {
-      background: rgba(var(--rgb-warning), 0.1);
-      color: var(--color-warning);
-      border: 1px solid rgba(var(--rgb-warning), 0.2);
+      background: linear-gradient(135deg, var(--color-danger), rgba(var(--rgb-danger), 0.78));
+      color: #fff;
+      border: none;
       border-radius: var(--radius-md);
       cursor: pointer;
       display: inline-flex;
@@ -2758,10 +2758,20 @@
       padding: 0.7rem 1.5rem;
       font-weight: 700;
       font-size: 1rem;
+      box-shadow: 0 4px 14px rgba(var(--rgb-danger), 0.25);
     }
 
     .view-conflicts-btn:hover {
-      background: rgba(var(--rgb-warning), 0.2);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(var(--rgb-danger), 0.35);
+      background: linear-gradient(135deg, var(--color-danger), rgba(var(--rgb-danger), 0.88));
+    }
+
+    .schedule-stats .view-conflicts-btn {
+      margin-inline-start: auto;
+      padding: 0.4rem 1rem;
+      font-size: 0.8rem;
+      border-radius: var(--radius-full);
     }
 
     .my-schedule-card {
@@ -3500,7 +3510,7 @@
       white-space: nowrap;
     }
 
-    .my-schedule-table .schedule-row.is-closed td:first-child {
+    .my-schedule-table .schedule-row.is-closed .sec-cell {
       box-shadow: inset 3px 0 0 0 var(--color-danger);
     }
 
@@ -3538,19 +3548,31 @@
       }
     }
 
-    .my-schedule-table .schedule-row.has-conflict {
-      background: linear-gradient(90deg, rgba(var(--rgb-danger), 0.18) 0%, rgba(var(--rgb-danger), 0.02) 100%);
-      border-bottom: 1px dashed rgba(var(--rgb-danger), 0.4);
-      border-top: 1px dashed rgba(var(--rgb-danger), 0.2);
-      animation-name: rowIn, conflictPulse;
-      animation-duration: 0.35s, 2.5s;
-      animation-timing-function: ease-out, ease-in-out;
-      animation-fill-mode: forwards, none;
-      animation-iteration-count: 1, infinite;
+    .my-schedule-table .schedule-row.has-conflict > td:not(.course-cell) {
+      background: rgba(var(--rgb-danger), 0.06);
     }
 
-    .light .my-schedule-table .schedule-row.has-conflict {
-      background: linear-gradient(90deg, rgba(var(--rgb-danger), 0.1) 0%, rgba(var(--rgb-danger), 0.01) 100%);
+    .my-schedule-table .schedule-row.has-conflict .sec-cell {
+      box-shadow: inset 3px 0 0 0 var(--color-danger);
+    }
+
+    .light .my-schedule-table .schedule-row.has-conflict > td:not(.course-cell) {
+      background: rgba(var(--rgb-danger), 0.045);
+    }
+
+    .conflict-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+      font-size: .65rem;
+      font-weight: 700;
+      padding: .15rem .5rem;
+      border-radius: var(--radius-full);
+      color: var(--color-danger);
+      background: rgba(var(--rgb-danger), 0.14);
+      border: 1px solid rgba(var(--rgb-danger), 0.3);
+      margin-inline-start: .4rem;
+      white-space: nowrap;
     }
 
     .moad-btn {
@@ -4285,6 +4307,7 @@
     .schedule-stats {
       display: flex;
       flex-wrap: wrap;
+      align-items: center;
       gap: 0.5rem;
       padding: 0 1.25rem 0.25rem;
     }
@@ -4524,7 +4547,7 @@
       border-bottom: none;
     }
 
-    .my-schedule-table td:first-child div:first-child {
+    .my-schedule-table .course-cell .course-code {
       font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.04em;
@@ -4532,20 +4555,63 @@
       margin-bottom: 3px;
     }
 
-    .my-schedule-table td:first-child div:last-child {
+    .my-schedule-table .course-cell .course-name {
       font-weight: 600;
       color: var(--color-text-dark);
     }
 
-    .my-schedule-table td:nth-child(2) div:first-child {
+    .my-schedule-table .sec-cell .section-number {
       font-weight: 700;
       color: var(--color-text-dark);
     }
 
-    .my-schedule-table td:nth-child(2) div:last-child {
+    .my-schedule-table .sec-cell .type-label {
       font-size: 0.75rem;
       color: var(--color-text-muted);
       margin-top: 2px;
+    }
+
+    .my-schedule-table .course-cell {
+      position: relative;
+    }
+
+    .my-schedule-table .course-cell[rowspan]:not([rowspan="1"]) {
+      box-shadow: inset -1px 0 0 0 var(--color-border);
+      background: rgba(var(--rgb-primary), 0.025);
+    }
+
+    .my-schedule-table .hours-cell[rowspan]:not([rowspan="1"]) {
+      box-shadow: inset 1px 0 0 0 var(--color-border);
+      background: rgba(var(--rgb-primary), 0.025);
+    }
+
+    .my-schedule-table .schedule-row.group-mid > td:not(.course-cell):not(.hours-cell) {
+      border-bottom-style: dashed;
+      border-bottom-color: rgba(var(--rgb-primary), 0.16);
+    }
+
+    .course-parts-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-top: 0.45rem;
+      padding: 0.18rem 0.55rem;
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--color-primary);
+      background: rgba(var(--rgb-primary), 0.1);
+      border: 1px solid rgba(var(--rgb-primary), 0.22);
+      border-radius: var(--radius-full);
+      white-space: nowrap;
+    }
+
+    .hours-shared-label {
+      display: block;
+      margin-top: 3px;
+      font-size: 0.62rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      letter-spacing: 0.02em;
     }
 
     .fc .fc-col-header-cell-cushion {
@@ -7007,16 +7073,38 @@ showUI();})();`;
         _createMyScheduleHTML(selectedCourses, conflictMap) {
           let totalCredits = 0; const uniqueCourseCodes = new Set();
           selectedCourses.forEach(c => { if (!uniqueCourseCodes.has(c.code)) { totalCredits += parseInt(c.hours, 10) || 0; uniqueCourseCodes.add(c.code); } });
-          const statsHTML = this._createScheduleStatsHTML(selectedCourses, uniqueCourseCodes.size);
-          const tableRowsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map(course => {
-            const isConflicted = conflictMap.has(course.uniqueId);
-            const isClosed = !!(course.status && course.status.includes('مغلقة'));
-            const closedBadge = isClosed ? '<span class="closed-badge"><i class="ph-fill ph-lock-simple"></i>مغلقة</span>' : '';
-            return `<tr class="schedule-row ${isConflicted ? 'has-conflict' : ''} ${isClosed ? 'is-closed' : ''}"><td><div>${course.code}${closedBadge}</div><div>${course.name}</div></td><td><div>${course.section}</div><div>${this._typeLabel(course.type)}</div></td><td>${course.instructor}</td><td>${course.time.replace(/<br>/g, ' ')}</td><td>${course.examPeriodId || "لا يوجد"}</td><td>${course.location}</td><td><div class="hours-value">${course.hours}</div></td></tr>`;
+          let statsHTML = this._createScheduleStatsHTML(selectedCourses, uniqueCourseCodes.size);
+          const conflictBtnHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn"><i class="ph-fill ph-wrench"></i> حل التعارض</button>` : '';
+          if (conflictBtnHTML) {
+            statsHTML = statsHTML ? statsHTML.replace('</div>', `${conflictBtnHTML}</div>`) : `<div class="schedule-stats">${conflictBtnHTML}</div>`;
+          }
+          const typeRank = t => { t = t || ''; if (t.includes('نظري') || t.includes('محاضرة')) return 0; if (t.includes('عملي')) return 1; if (t.includes('تمارين')) return 2; if (t.includes('تدريب')) return 3; return 4; };
+          const sortedForTable = selectedCourses.slice().sort((a, b) => a.code.localeCompare(b.code) || a.name.localeCompare(b.name) || typeRank(a.type) - typeRank(b.type) || String(a.section).localeCompare(String(b.section), undefined, { numeric: true }));
+          const courseGroups = [];
+          sortedForTable.forEach(c => {
+            const last = courseGroups[courseGroups.length - 1];
+            if (last && last.code === c.code && last.name === c.name) last.items.push(c);
+            else courseGroups.push({ code: c.code, name: c.name, items: [c] });
+          });
+          const tableRowsHTML = courseGroups.map(g => {
+            const hoursVals = [...new Set(g.items.map(c => String(parseInt(c.hours, 10) || 0)))];
+            const sharedHours = hoursVals.length === 1;
+            const typeChips = [...new Set(g.items.map(c => this._typeLabel(c.type)).filter(Boolean))].join(' + ');
+            return g.items.map((course, idx) => {
+              const isConflicted = conflictMap.has(course.uniqueId);
+              const isClosed = !!(course.status && course.status.includes('مغلقة'));
+              const closedBadge = isClosed ? '<span class="closed-badge"><i class="ph-fill ph-lock-simple"></i>مغلقة</span>' : '';
+              const rowClasses = ['schedule-row', isConflicted ? 'has-conflict' : '', isClosed ? 'is-closed' : '', idx === 0 ? 'group-start' : 'group-inner', idx < g.items.length - 1 ? 'group-mid' : 'group-end'].filter(Boolean).join(' ');
+              const courseCell = idx === 0 ? `<td class="course-cell" rowspan="${g.items.length}"><div class="course-code">${g.code}</div><div class="course-name">${g.name}</div>${g.items.length > 1 ? `<span class="course-parts-chip"><i class="ph ph-link-simple"></i> ${typeChips}</span>` : ''}</td>` : '';
+              const hoursCell = sharedHours
+                ? (idx === 0 ? `<td class="hours-cell" rowspan="${g.items.length}"><div class="hours-value">${hoursVals[0]}</div>${g.items.length > 1 ? '<span class="hours-shared-label">مشتركة</span>' : ''}</td>` : '')
+                : `<td class="hours-cell"><div class="hours-value">${parseInt(course.hours, 10) || 0}</div></td>`;
+              const conflictChip = isConflicted ? '<span class="conflict-chip"><i class="ph-fill ph-warning"></i>تعارض</span>' : '';
+              return `<tr class="${rowClasses}">${courseCell}<td class="sec-cell"><div class="section-number">${course.section}${closedBadge}${conflictChip}</div><div class="type-label">${this._typeLabel(course.type)}</div></td><td>${course.instructor}</td><td>${course.time.replace(/<br>/g, ' ')}</td><td>${course.examPeriodId || "لا يوجد"}</td><td>${course.location}</td>${hoursCell}</tr>`;
+            }).join('');
           }).join('');
-          const conflictButtonHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn"><i class="ph-fill ph-warning"></i> حل التعارض</button>` : '';
           const gridItemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => { const isClosed = !!(course.status && course.status.includes('مغلقة')); return `<div class="mobile-schedule-item" style="animation-delay:${i * 30}ms;"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${course.name}</h3><span>${course.code} - شعبة ${course.section}${isClosed ? '<span class="closed-badge"><i class="ph-fill ph-lock-simple"></i>مغلقة</span>' : ''}</span></div>${conflictMap.has(course.uniqueId) ? '<i class="ph-fill ph-warning mobile-conflict-icon"></i>' : ''}</div><div class="mobile-schedule-details"><div class="mobile-detail-row"><i class="ph ph-clock"></i> <strong>المواعيد:</strong> ${course.time.replace(/<br>/g, ' / ') || 'غير محدد'}</div><div class="mobile-detail-row"><i class="ph ph-user"></i> <strong>المحاضر:</strong> ${course.instructor || 'غير محدد'}</div></div></div>`; }).join('');
-          return `<div class="card my-schedule-card"><div class="my-schedule-section"><div class="card-header-inline"><div class="card-header-actions"><h3><i class="ph ph-calendar-check"></i> جدولـي</h3><button class="copy-crn-btn" id="desktop-copy-crn-btn" title="نسخ أرقام الشعب"><i class="ph ph-copy"></i> نسخ الشعب</button></div><div style="display:flex;align-items:center;gap:0.75rem;"><button class="moad-btn" id="generate-crn-tool-btn"><i class="ph ph-magic-wand"></i> مُعِدّ</button><div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div></div></div>${statsHTML}<div class="my-schedule-table-wrapper"><table class="my-schedule-table"><thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead><tbody>${tableRowsHTML}</tbody></table></div><div class="my-schedule-grid-wrapper hidden">${gridItemsHTML}</div><div class="my-schedule-footer">${conflictButtonHTML}</div></div></div>`;
+          return `<div class="card my-schedule-card"><div class="my-schedule-section"><div class="card-header-inline"><div class="card-header-actions"><h3><i class="ph ph-calendar-check"></i> جدولـي</h3><button class="copy-crn-btn" id="desktop-copy-crn-btn" title="نسخ أرقام الشعب"><i class="ph ph-copy"></i> نسخ الشعب</button></div><div style="display:flex;align-items:center;gap:0.75rem;"><button class="moad-btn" id="generate-crn-tool-btn"><i class="ph ph-magic-wand"></i> مُعِدّ</button><div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div></div></div>${statsHTML}<div class="my-schedule-table-wrapper"><table class="my-schedule-table"><thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead><tbody>${tableRowsHTML}</tbody></table></div><div class="my-schedule-grid-wrapper hidden">${gridItemsHTML}</div></div></div>`;
         },
         _createScheduleStatsHTML(selectedCourses, coursesCount) {
           const daySet = new Set(); let weeklyMin = 0;
@@ -7034,7 +7122,7 @@ showUI();})();`;
           }).join('');
 
           const hasConflict = conflictMap.size > 0;
-          const conflictButtonHTML = hasConflict ? `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn"><i class="ph-fill ph-warning"></i> حل التعارض</button>` : '';
+          const conflictButtonHTML = hasConflict ? `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn"><i class="ph-fill ph-wrench"></i> حل التعارض</button>` : '';
           const moadButtonHTML = `<button class="moad-btn" id="mobile-generate-crn-tool-btn"><i class="ph ph-magic-wand"></i> مُعِدّ</button>`;
           const shareButtonHTML = `<button class="footer-icon-btn" id="mobile-share-schedule-btn" aria-label="مشاركة الجدول" title="مشاركة الجدول"><i class="ph ph-share-network"></i></button>`;
           const daySet = new Set(); let weeklyMin = 0;
