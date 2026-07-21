@@ -6355,6 +6355,50 @@
       --axis-corner-bg: #ffffff;
     }
 
+    body:not(.exporting-image) .fc-event.fc-event-mid {
+      padding: 3px 6px !important;
+    }
+
+    body:not(.exporting-image) .fc-event.fc-event-mid div {
+      font-size: 0.72rem !important;
+      line-height: 1.3 !important;
+    }
+
+    body:not(.exporting-image) .fc-event.fc-event-mid small {
+      font-size: 0.62rem !important;
+      line-height: 1.25 !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    body:not(.exporting-image) .fc-event.fc-event-short {
+      padding: 2px 5px !important;
+    }
+
+    body:not(.exporting-image) .fc-event.fc-event-short div {
+      font-size: 0.64rem !important;
+      line-height: 1.22 !important;
+    }
+
+    body:not(.exporting-image) .fc-event.fc-event-short b {
+      font-size: 0.64rem !important;
+    }
+
+    body:not(.exporting-image) .fc-event.fc-event-short small {
+      font-size: 0.55rem !important;
+      line-height: 1.18 !important;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: block;
+    }
+
+    body:not(.exporting-image) .fc-event.fc-event-short small i {
+      font-size: 0.55rem !important;
+    }
+
     @media (max-width: 1023px) {
 
       #mobile-courses-view {
@@ -8670,7 +8714,7 @@ ${shareButtonHTML}
         _initializeCalendar() {
           if (this.state.calendar) this.state.calendar.destroy();
           const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
-          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;'; wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); } };
+          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;'; wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, eventDidMount: (arg) => { const s = arg.event.start, e = arg.event.end; if (s && e) { const mins = (e - s) / 60000; if (mins <= 60) arg.el.classList.add('fc-event-short'); else if (mins <= 90) arg.el.classList.add('fc-event-mid'); } }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); } };
           this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
           this.state.calendar.render();
         },
