@@ -1232,29 +1232,19 @@
       font-family: var(--font-body);
     }
 
-    .fc-scroller::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    .fc-scroller::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .fc-scroller::-webkit-scrollbar-thumb {
-      background-color: rgba(var(--rgb-primary), 0.3);
-      border-radius: 10px;
-    }
-
+    .fc-scroller::-webkit-scrollbar,
+    .fc-scroller::-webkit-scrollbar-track,
+    .fc-scroller::-webkit-scrollbar-thumb,
     .fc-scroller::-webkit-scrollbar-button {
       display: none !important;
       width: 0 !important;
       height: 0 !important;
+      background: transparent !important;
     }
 
     .fc-scroller {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(var(--rgb-primary), 0.3) transparent;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
     .fc-theme-standard .fc-scrollgrid {
@@ -3109,17 +3099,18 @@
         height: auto !important;
       }
 
-      .mobile-calendar-scroll-wrapper::-webkit-scrollbar {
-        height: 4px;
+      .mobile-calendar-scroll-wrapper {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
       }
 
-      .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
+      .mobile-calendar-scroll-wrapper::-webkit-scrollbar,
+      .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track,
       .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb {
-        background: rgba(var(--rgb-primary), 0.5);
-        border-radius: 4px;
+        display: none;
+        width: 0;
+        height: 0;
+        background: transparent;
       }
 
       #mobile-calendar {
@@ -6331,6 +6322,25 @@
       padding-bottom: 4px !important;
     }
 
+    body.exporting-image .fc .fc-timegrid-slot,
+    body.exporting-image #mobile-calendar .fc-timegrid-slot {
+      height: 3.4em !important;
+    }
+
+    body.exporting-image .fc .fc-timegrid-body,
+    body.exporting-image .fc .fc-timegrid-slots table {
+      height: auto !important;
+    }
+
+    body.exporting-image .fc-event {
+      padding: 6px 9px !important;
+    }
+
+    body.exporting-image .fc-event small {
+      white-space: nowrap;
+      line-height: 1.5 !important;
+    }
+
     body.exporting-image .fc .fc-timegrid-slot-label,
     body.exporting-image .fc .fc-col-header .fc-timegrid-axis,
     body.exporting-image #mobile-calendar .fc-scrollgrid-section-header>td {
@@ -7660,6 +7670,18 @@ ${shareButtonHTML}
           const isLight = document.body.classList.contains('light');
           const solidBg = isLight ? '#ffffff' : '#141417';
           document.body.classList.add('exporting-image');
+          if (this.state.calendar) { this.state.calendar.updateSize(); requestAnimationFrame(() => { try { this.state.calendar.updateSize(); } catch (e) { } }); }
+
+          const finalizeRestore = () => {
+            document.body.classList.remove('exporting-image');
+            restoreAll();
+            if (mobileCalViewPrevDisplay !== null && mobileCalView) mobileCalView.style.display = mobileCalViewPrevDisplay;
+            if (this.state.calendar) {
+              this.state.calendar.setOption('height', isMobileContext ? 'auto' : '100%');
+              this.state.calendar.updateSize();
+              requestAnimationFrame(() => { try { this.state.calendar.updateSize(); } catch (e) { } });
+            }
+          };
 
           setTimeout(() => {
             const captureW = targetEl.scrollWidth;
@@ -7677,9 +7699,7 @@ ${shareButtonHTML}
               scrollY: -window.scrollY,
               ignoreElements: (el) => el.classList && (el.classList.contains('cosmic-bg-container') || el.classList.contains('sidebar') || el.classList.contains('main-header') || el.classList.contains('schedule-tabs-container'))
             }).then((calCanvas) => {
-              document.body.classList.remove('exporting-image');
-              restoreAll();
-              if (this.state.calendar && !isMobileContext) { this.state.calendar.setOption('height', '100%'); this.state.calendar.updateSize(); }
+              finalizeRestore();
 
               const accent = this.state.userSettings.accentColor || '#8b5cf6';
               const sc = 2;
@@ -7882,14 +7902,10 @@ ${shareButtonHTML}
               link.download = `QU_Schedule_${this.state.schedules[this.state.activeScheduleIndex].name}.png`;
               link.href = fc.toDataURL('image/png', 1.0);
               link.click();
-              if (mobileCalViewPrevDisplay !== null && mobileCalView) mobileCalView.style.display = mobileCalViewPrevDisplay;
               btn.innerHTML = originalHTML;
               this._showToast('success', '\u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629 \u0628\u0627\u062d\u062a\u0631\u0627\u0641\u064a\u0629!');
             }).catch((e) => {
-              document.body.classList.remove('exporting-image');
-              restoreAll();
-              if (this.state.calendar) { this.state.calendar.setOption('height', isMobileContext ? 'auto' : '100%'); this.state.calendar.updateSize(); }
-              if (mobileCalViewPrevDisplay !== null && mobileCalView) mobileCalView.style.display = mobileCalViewPrevDisplay;
+              finalizeRestore();
               console.error('html2canvas error:', e);
               btn.innerHTML = originalHTML;
               this._showToast('error', '\u0641\u0634\u0644 \u062d\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629.');
