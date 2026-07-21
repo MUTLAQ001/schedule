@@ -1232,19 +1232,29 @@
       font-family: var(--font-body);
     }
 
-    .fc-scroller::-webkit-scrollbar,
-    .fc-scroller::-webkit-scrollbar-track,
-    .fc-scroller::-webkit-scrollbar-thumb,
+    .fc-scroller::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    .fc-scroller::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .fc-scroller::-webkit-scrollbar-thumb {
+      background-color: rgba(var(--rgb-primary), 0.3);
+      border-radius: 10px;
+    }
+
     .fc-scroller::-webkit-scrollbar-button {
       display: none !important;
       width: 0 !important;
       height: 0 !important;
-      background: transparent !important;
     }
 
     .fc-scroller {
-      scrollbar-width: none;
-      -ms-overflow-style: none;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(var(--rgb-primary), 0.3) transparent;
     }
 
     .fc-theme-standard .fc-scrollgrid {
@@ -3099,18 +3109,17 @@
         height: auto !important;
       }
 
-      .mobile-calendar-scroll-wrapper {
-        scrollbar-width: none;
-        -ms-overflow-style: none;
+      .mobile-calendar-scroll-wrapper::-webkit-scrollbar {
+        height: 4px;
       }
 
-      .mobile-calendar-scroll-wrapper::-webkit-scrollbar,
-      .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track,
-      .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb {
-        display: none;
-        width: 0;
-        height: 0;
+      .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track {
         background: transparent;
+      }
+
+      .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb {
+        background: rgba(var(--rgb-primary), 0.5);
+        border-radius: 4px;
       }
 
       #mobile-calendar {
@@ -6322,25 +6331,6 @@
       padding-bottom: 4px !important;
     }
 
-    body.exporting-image .fc .fc-timegrid-slot,
-    body.exporting-image #mobile-calendar .fc-timegrid-slot {
-      height: 3.4em !important;
-    }
-
-    body.exporting-image .fc .fc-timegrid-body,
-    body.exporting-image .fc .fc-timegrid-slots table {
-      height: auto !important;
-    }
-
-    body.exporting-image .fc-event {
-      padding: 6px 9px !important;
-    }
-
-    body.exporting-image .fc-event small {
-      white-space: nowrap;
-      line-height: 1.5 !important;
-    }
-
     body.exporting-image .fc .fc-timegrid-slot-label,
     body.exporting-image .fc .fc-col-header .fc-timegrid-axis,
     body.exporting-image #mobile-calendar .fc-scrollgrid-section-header>td {
@@ -6353,50 +6343,6 @@
 
     body.light.exporting-image .fc {
       --axis-corner-bg: #ffffff;
-    }
-
-    body:not(.exporting-image) .fc-event.fc-event-mid {
-      padding: 3px 6px !important;
-    }
-
-    body:not(.exporting-image) .fc-event.fc-event-mid div {
-      font-size: 0.72rem !important;
-      line-height: 1.3 !important;
-    }
-
-    body:not(.exporting-image) .fc-event.fc-event-mid small {
-      font-size: 0.62rem !important;
-      line-height: 1.25 !important;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: block;
-    }
-
-    body:not(.exporting-image) .fc-event.fc-event-short {
-      padding: 2px 5px !important;
-    }
-
-    body:not(.exporting-image) .fc-event.fc-event-short div {
-      font-size: 0.64rem !important;
-      line-height: 1.22 !important;
-    }
-
-    body:not(.exporting-image) .fc-event.fc-event-short b {
-      font-size: 0.64rem !important;
-    }
-
-    body:not(.exporting-image) .fc-event.fc-event-short small {
-      font-size: 0.55rem !important;
-      line-height: 1.18 !important;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      display: block;
-    }
-
-    body:not(.exporting-image) .fc-event.fc-event-short small i {
-      font-size: 0.55rem !important;
     }
 
     @media (max-width: 1023px) {
@@ -7714,18 +7660,6 @@ ${shareButtonHTML}
           const isLight = document.body.classList.contains('light');
           const solidBg = isLight ? '#ffffff' : '#141417';
           document.body.classList.add('exporting-image');
-          if (this.state.calendar) { this.state.calendar.updateSize(); requestAnimationFrame(() => { try { this.state.calendar.updateSize(); } catch (e) { } }); }
-
-          const finalizeRestore = () => {
-            document.body.classList.remove('exporting-image');
-            restoreAll();
-            if (mobileCalViewPrevDisplay !== null && mobileCalView) mobileCalView.style.display = mobileCalViewPrevDisplay;
-            if (this.state.calendar) {
-              this.state.calendar.setOption('height', isMobileContext ? 'auto' : '100%');
-              this.state.calendar.updateSize();
-              requestAnimationFrame(() => { try { this.state.calendar.updateSize(); } catch (e) { } });
-            }
-          };
 
           setTimeout(() => {
             const captureW = targetEl.scrollWidth;
@@ -7743,7 +7677,9 @@ ${shareButtonHTML}
               scrollY: -window.scrollY,
               ignoreElements: (el) => el.classList && (el.classList.contains('cosmic-bg-container') || el.classList.contains('sidebar') || el.classList.contains('main-header') || el.classList.contains('schedule-tabs-container'))
             }).then((calCanvas) => {
-              finalizeRestore();
+              document.body.classList.remove('exporting-image');
+              restoreAll();
+              if (this.state.calendar && !isMobileContext) { this.state.calendar.setOption('height', '100%'); this.state.calendar.updateSize(); }
 
               const accent = this.state.userSettings.accentColor || '#8b5cf6';
               const sc = 2;
@@ -7946,10 +7882,14 @@ ${shareButtonHTML}
               link.download = `QU_Schedule_${this.state.schedules[this.state.activeScheduleIndex].name}.png`;
               link.href = fc.toDataURL('image/png', 1.0);
               link.click();
+              if (mobileCalViewPrevDisplay !== null && mobileCalView) mobileCalView.style.display = mobileCalViewPrevDisplay;
               btn.innerHTML = originalHTML;
               this._showToast('success', '\u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629 \u0628\u0627\u062d\u062a\u0631\u0627\u0641\u064a\u0629!');
             }).catch((e) => {
-              finalizeRestore();
+              document.body.classList.remove('exporting-image');
+              restoreAll();
+              if (this.state.calendar) { this.state.calendar.setOption('height', isMobileContext ? 'auto' : '100%'); this.state.calendar.updateSize(); }
+              if (mobileCalViewPrevDisplay !== null && mobileCalView) mobileCalView.style.display = mobileCalViewPrevDisplay;
               console.error('html2canvas error:', e);
               btn.innerHTML = originalHTML;
               this._showToast('error', '\u0641\u0634\u0644 \u062d\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629.');
@@ -8714,7 +8654,7 @@ ${shareButtonHTML}
         _initializeCalendar() {
           if (this.state.calendar) this.state.calendar.destroy();
           const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
-          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;'; wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, eventDidMount: (arg) => { const s = arg.event.start, e = arg.event.end; if (s && e) { const mins = (e - s) / 60000; if (mins <= 60) arg.el.classList.add('fc-event-short'); else if (mins <= 90) arg.el.classList.add('fc-event-mid'); } }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); } };
+          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;'; wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); } };
           this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
           this.state.calendar.render();
         },
