@@ -1112,6 +1112,14 @@
 
     .my-schedule-table-wrapper {
       overflow-x: auto;
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    .my-schedule-table-wrapper::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
     }
 
     .status-badge {
@@ -1232,29 +1240,18 @@
       font-family: var(--font-body);
     }
 
-    .fc-scroller::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-
-    .fc-scroller::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    .fc-scroller::-webkit-scrollbar-thumb {
-      background-color: rgba(var(--rgb-primary), 0.3);
-      border-radius: 10px;
-    }
-
-    .fc-scroller::-webkit-scrollbar-button {
+    /* إخفاء أي شريط تمرير داخل الجدول نهائيًا (مع بقاء التمرير بالعجلة واللمس) */
+    .fc-scroller::-webkit-scrollbar,
+    .fc-scroller-harness::-webkit-scrollbar {
       display: none !important;
       width: 0 !important;
       height: 0 !important;
     }
 
-    .fc-scroller {
-      scrollbar-width: thin;
-      scrollbar-color: rgba(var(--rgb-primary), 0.3) transparent;
+    .fc-scroller,
+    .fc-scroller-harness {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
     }
 
     .fc-theme-standard .fc-scrollgrid {
@@ -3110,16 +3107,14 @@
       }
 
       .mobile-calendar-scroll-wrapper::-webkit-scrollbar {
-        height: 4px;
+        display: none !important;
+        width: 0 !important;
+        height: 0 !important;
       }
 
-      .mobile-calendar-scroll-wrapper::-webkit-scrollbar-track {
-        background: transparent;
-      }
-
-      .mobile-calendar-scroll-wrapper::-webkit-scrollbar-thumb {
-        background: rgba(var(--rgb-primary), 0.5);
-        border-radius: 4px;
+      .mobile-calendar-scroll-wrapper {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
       }
 
       #mobile-calendar {
@@ -5362,6 +5357,14 @@
       overflow-x: auto;
       border: 1px solid var(--color-border);
       border-radius: var(--radius-md);
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+
+    .cmp-table-wrap::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
     }
 
     .cmp-table {
