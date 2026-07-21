@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0a12">
+<title>الشرح التفاعلي — QU Schedule</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%238b5cf6'/%3E%3Cstop offset='1' stop-color='%236d28d9'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='16' fill='url(%23g)'/%3E%3Crect x='14' y='16' width='36' height='34' rx='7' fill='%23fff'/%3E%3Crect x='14' y='16' width='36' height='10' rx='7' fill='%23ede9fe'/%3E%3Ccircle cx='24' cy='13' r='3' fill='%23fff'/%3E%3Ccircle cx='40' cy='13' r='3' fill='%23fff'/%3E%3Crect x='20' y='32' width='8' height='6' rx='2' fill='%238b5cf6'/%3E%3Crect x='30' y='32' width='8' height='6' rx='2' fill='%23e9e5f8'/%3E%3Crect x='20' y='41' width='8' height='6' rx='2' fill='%23e9e5f8'/%3E%3Crect x='30' y='41' width='8' height='6' rx='2' fill='%23e9e5f8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Alexandria:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/fill/style.css" rel="stylesheet">
+<style>
+:root{
+  --color-primary:#8b5cf6; --color-primary-dark:#7c3aed;
+  --color-danger:#ef4444; --color-warning:#f59e0b; --color-success:#10b981; --color-info:#38bdf8;
+  --color-bg:#0b0a12; --color-card:rgba(19,17,28,.6);
+  --color-border:rgba(var(--rgb-primary),.16); --color-border-hover:rgba(var(--rgb-primary),.30);
+  --color-text:#f4f3fa; --color-text-muted:#a4a2ba; --color-text-dark:#fbfaff;
+  --font-body:"IBM Plex Sans Arabic",sans-serif; --font-title:"Alexandria",sans-serif;
+  --radius:24px; --radius-md:16px; --radius-full:999px;
+  --transition:.3s cubic-bezier(.25,.8,.25,1); --transition-smooth:.4s cubic-bezier(.2,.8,.2,1);
+  --glass-blur:blur(24px) saturate(150%);
+  --glass-shadow:0 16px 40px -12px rgba(0,0,0,.5);
+  --rgb-primary:139,92,246; --rgb-warning:245,158,11; --rgb-danger:239,68,68; --rgb-success:16,185,129; --rgb-info:56,189,248;
+  --primary-hue:257; --secondary-hue:287;
+  --accent-sheen:linear-gradient(180deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,.06) 42%,rgba(0,0,0,.08) 100%);
+  --accent-body:linear-gradient(145deg,var(--color-primary) 0%,var(--color-primary-dark) 100%);
+  --accent-fill:var(--accent-sheen),var(--accent-body);
+  --accent-ring:inset 0 1px 0 rgba(255,255,255,.3),inset 0 0 0 1px rgba(255,255,255,.1);
+  --accent-lift:0 1px 2px rgba(var(--rgb-primary),.3),0 8px 18px -8px rgba(var(--rgb-primary),.5);
+  --accent-lift-hover:0 2px 5px rgba(var(--rgb-primary),.35),0 16px 28px -10px rgba(var(--rgb-primary),.62);
+  --accent-tint:linear-gradient(160deg,rgba(var(--rgb-primary),.16) 0%,rgba(var(--rgb-primary),.04) 100%);
+  --surface-sheen:inset 0 1px 0 rgba(255,255,255,.06);
+  --accent-text-shadow:0 1px 1px rgba(20,12,45,.22);
+  --primary:var(--color-primary); --primary-dark:var(--color-primary-dark);
+  --danger:var(--color-danger); --success:var(--color-success); --warning:var(--color-warning);
+  --bg:var(--color-bg); --card:var(--color-card);
+  --border:var(--color-border); --border-hover:var(--color-border-hover);
+  --text:var(--color-text); --muted:var(--color-text-muted);
+  --tr:var(--transition); --tr-smooth:var(--transition-smooth);
+  --glass:var(--glass-blur);
+}
+.light{
+  --color-danger:#dc2626; --color-warning:#d97706; --color-success:#0e9f6e; --color-info:#0284c7;
+  --color-bg:#f7f6fc; --color-card:rgba(255,255,255,.94);
+  --color-border:rgba(84,60,160,.24); --color-border-hover:rgba(84,60,160,.45);
+  --color-text:#3d3a55; --color-text-muted:#6d6a85; --color-text-dark:#161328;
+  --glass-blur:blur(20px) saturate(140%);
+  --glass-shadow:0 10px 26px -12px rgba(58,40,116,.22),0 2px 6px -3px rgba(58,40,116,.12);
+  --accent-sheen:linear-gradient(180deg,rgba(255,255,255,.3) 0%,rgba(255,255,255,.08) 45%,rgba(0,0,0,.05) 100%);
+  --accent-ring:inset 0 1px 0 rgba(255,255,255,.42),inset 0 0 0 1px rgba(255,255,255,.18);
+  --accent-lift:0 1px 2px rgba(var(--rgb-primary),.22),0 8px 18px -9px rgba(var(--rgb-primary),.45);
+  --accent-lift-hover:0 2px 5px rgba(var(--rgb-primary),.28),0 16px 28px -12px rgba(var(--rgb-primary),.55);
+  --accent-tint:linear-gradient(160deg,rgba(var(--rgb-primary),.12) 0%,rgba(var(--rgb-primary),.03) 100%);
+  --surface-sheen:inset 0 1px 0 rgba(255,255,255,.85);
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  margin:0; min-height:100dvh; background-color:var(--color-bg); color:var(--color-text);
+  font-family:var(--font-body); font-size:15px; line-height:1.7;
+  overflow-x:hidden; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+}
+.cosmic-bg-container{position:fixed; top:0; left:0; width:100%; height:100%; z-index:-2; overflow:hidden}
+#starfield-canvas{position:absolute; top:0; left:0; width:100%; height:100%}
+.nebula-glow{
+  position:absolute; top:50%; left:50%; width:90vmax; height:90vmax; margin-top:-45vmax; margin-left:-45vmax;
+  background:radial-gradient(circle, hsl(var(--primary-hue),90%,60%,.08) 0%, hsl(var(--primary-hue),85%,58%,.06) 25%, hsl(var(--secondary-hue),80%,50%,.04) 45%, hsl(var(--secondary-hue),75%,50%,.015) 62%, transparent 78%);
+  border-radius:50%; transition:background 1s ease;
+}
+.light #starfield-canvas{display:none}
+.light .nebula-glow{
+  background:radial-gradient(circle, hsl(var(--primary-hue),70%,60%,.06) 0%, hsl(var(--primary-hue),65%,60%,.045) 25%, hsl(var(--secondary-hue),60%,60%,.03) 45%, hsl(var(--secondary-hue),55%,60%,.012) 62%, transparent 78%);
+}
+body.high-performance .cosmic-bg-container{display:none !important}
+.custom-scrollbar::-webkit-scrollbar, .b-body::-webkit-scrollbar, .mk-courses::-webkit-scrollbar, .mk-calscroll::-webkit-scrollbar{width:6px; height:6px}
+.custom-scrollbar::-webkit-scrollbar-track, .b-body::-webkit-scrollbar-track, .mk-courses::-webkit-scrollbar-track, .mk-calscroll::-webkit-scrollbar-track{background:rgba(0,0,0,.1); border-radius:10px}
+.light .custom-scrollbar::-webkit-scrollbar-track, .light .b-body::-webkit-scrollbar-track, .light .mk-courses::-webkit-scrollbar-track, .light .mk-calscroll::-webkit-scrollbar-track{background:rgba(0,0,0,.05)}
+.custom-scrollbar::-webkit-scrollbar-thumb, .b-body::-webkit-scrollbar-thumb, .mk-courses::-webkit-scrollbar-thumb, .mk-calscroll::-webkit-scrollbar-thumb{background-color:rgba(var(--rgb-primary),.4); border-radius:10px; transition:background-color .3s}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover, .b-body::-webkit-scrollbar-thumb:hover, .mk-courses::-webkit-scrollbar-thumb:hover, .mk-calscroll::-webkit-scrollbar-thumb:hover{background-color:rgba(var(--rgb-primary),.7)}
+button{font-family:inherit; cursor:pointer}
+i.ph, i.ph-fill{line-height:1}
+
+.top{
+  position:sticky; top:0; z-index:80;
+  display:flex; align-items:center; gap:14px;
+  padding:calc(10px + env(safe-area-inset-top)) 18px 10px;
+  background:rgba(10,10,10,.6); backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+  border-bottom:1px solid transparent; transition:all .3s ease;
+}
+.light .top{background:rgba(248,250,252,.7); border-bottom:1px solid var(--color-border)}
+.top .brand{display:flex; align-items:center; gap:10px; font-family:var(--font-title); font-weight:700; font-size:15px; letter-spacing:-.02em; color:var(--color-text-dark); white-space:nowrap}
+.top .brand i{color:var(--primary); font-size:20px}
+.top .brand small{color:var(--muted); font-weight:500; font-family:var(--font-body)}
+.progress{flex:1; display:flex; flex-direction:column; gap:5px; min-width:0}
+.progress .p-label{font-size:11.5px; color:var(--muted); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.progress .p-track{height:5px; border-radius:99px; background:rgba(var(--rgb-primary),.14); overflow:hidden}
+.progress .p-fill{height:100%; width:0%; border-radius:99px; background:var(--accent-fill); transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.top .exit{
+  flex:none; display:flex; align-items:center; gap:6px;
+  color:var(--color-text); text-decoration:none; font-size:12.5px; font-weight:600;
+  background:rgba(255,255,255,.03); border:1px solid var(--color-border); border-radius:12px; padding:6px 12px;
+  transition:background var(--transition), border-color var(--transition), color var(--transition);
+}
+.light .top .exit{background:rgba(0,0,0,.03)}
+.top .exit:hover{background:rgba(var(--rgb-primary),.12); border-color:rgba(var(--rgb-primary),.4); color:var(--color-primary)}
+
+.stage{display:none; animation:stageIn .5s cubic-bezier(.2,.8,.2,1)}
+.stage.active{display:block}
+@keyframes stageIn{from{opacity:0; transform:translateY(14px)}to{opacity:1; transform:none}}
+.wrap{max-width:1040px; margin:0 auto; padding:26px 18px calc(60px + env(safe-area-inset-bottom))}
+
+.hero{ text-align:center; padding:34px 10px 10px}
+.hero .badge{
+  display:inline-flex; align-items:center; gap:8px;
+  font-size:12.5px; color:var(--color-text); background:rgba(var(--rgb-primary),.14);
+  border:1px solid rgba(var(--rgb-primary),.35); border-radius:99px; padding:7px 16px;
+}
+.hero h1{font-family:var(--font-title); font-weight:700; font-size:clamp(26px,5.6vw,40px); margin:18px 0 10px}
+.hero h1 em{font-style:normal; background:linear-gradient(90deg,hsl(var(--primary-hue),88%,74%),var(--color-primary)); -webkit-background-clip:text; background-clip:text; color:transparent}
+.hero p{color:var(--muted); max-width:520px; margin:0 auto; font-size:15.5px}
+.device-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; max-width:640px; margin:34px auto 0}
+.device-card{
+  position:relative; text-align:right; border-radius:var(--radius);
+  background:var(--card); border:1px solid var(--border);
+  backdrop-filter:var(--glass); -webkit-backdrop-filter:var(--glass);
+  padding:24px 22px; color:var(--text); transition:var(--tr); overflow:hidden;
+}
+.device-card::after{
+  content:""; position:absolute; inset:0; opacity:0; transition:var(--tr);
+  background:radial-gradient(60% 80% at 50% 0%, rgba(var(--rgb-primary),.16), transparent 70%);
+}
+.device-card:hover{border-color:var(--border-hover); transform:translateY(-3px)}
+.device-card:hover::after{opacity:1}
+.device-card .d-ico{
+  width:52px; height:52px; border-radius:16px; display:grid; place-items:center;
+  background:linear-gradient(145deg,rgba(var(--rgb-primary),.28),rgba(var(--rgb-primary),.12));
+  border:1px solid rgba(var(--rgb-primary),.4); font-size:26px; color:var(--color-text); margin-bottom:14px;
+}
+.device-card h3{font-family:var(--font-title); font-size:17px; margin:0 0 6px}
+.device-card p{margin:0; color:var(--muted); font-size:13px}
+.device-card .d-go{
+  margin-top:16px; display:inline-flex; align-items:center; gap:7px;
+  color:var(--color-primary); font-size:13px; font-weight:600;
+}
+.device-card.suggested .d-tag{
+  position:absolute; top:14px; left:14px; font-size:10.5px; font-weight:600;
+  color:#0b0a12; background:linear-gradient(90deg,hsl(var(--primary-hue),88%,74%),var(--color-primary));
+  border-radius:99px; padding:3px 10px;
+}
+
+.stage-head{text-align:center; margin-bottom:22px}
+.stage-head .s-step{
+  display:inline-flex; align-items:center; gap:7px; font-size:12px; color:var(--color-primary);
+  background:rgba(var(--rgb-primary),.12); border:1px solid rgba(var(--rgb-primary),.3);
+  border-radius:99px; padding:5px 13px; margin-bottom:12px;
+}
+.stage-head h2{font-family:var(--font-title); font-weight:700; font-size:clamp(20px,4.4vw,27px); margin:0 0 8px}
+.stage-head p{color:var(--muted); margin:0 auto; max-width:560px; font-size:14.5px}
+.stage-head p b{color:var(--text)}
+
+.glass{
+  background:var(--color-card); border:1px solid var(--color-border); border-radius:var(--radius);
+  backdrop-filter:var(--glass-blur); -webkit-backdrop-filter:var(--glass-blur);
+  box-shadow:var(--glass-shadow),var(--surface-sheen);
+}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:9px;
+  border:none; border-radius:var(--radius-full); padding:13px 26px;
+  font-family:var(--font-body); font-size:15px; font-weight:600; color:#fff;
+  background:var(--accent-fill); text-shadow:var(--accent-text-shadow);
+  box-shadow:var(--accent-ring),var(--accent-lift); transition:var(--transition);
+}
+.btn:hover{transform:translateY(-2px); box-shadow:var(--accent-ring),var(--accent-lift-hover); filter:brightness(1.05)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{
+  background:rgba(255,255,255,.03); border:1px solid var(--color-border);
+  box-shadow:none; text-shadow:none; color:var(--color-text); font-weight:600;
+}
+.light .btn.ghost{background:rgba(0,0,0,.03)}
+.btn.ghost:hover{background:rgba(var(--rgb-primary),.12); border-color:rgba(var(--rgb-primary),.4); color:var(--color-primary); filter:none; box-shadow:none}
+.btn[disabled]{opacity:.45; pointer-events:none}
+.stage-actions{display:flex; justify-content:center; gap:12px; margin-top:26px; flex-wrap:wrap}
+
+.copy-sim{max-width:560px; margin:0 auto; padding:26px 22px; text-align:center}
+.copy-sim .cs-title{display:flex; align-items:center; justify-content:center; gap:9px; font-family:var(--font-title); font-weight:600; font-size:16px; margin-bottom:6px}
+.copy-sim .cs-title i{color:var(--primary); font-size:20px}
+.copy-sim .cs-sub{color:var(--muted); font-size:13px; margin-bottom:20px}
+.fake-link{
+  direction:ltr; text-align:left; font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:12px; color:#cbc6e6; background:rgba(0,0,0,.35);
+  border:1px dashed rgba(var(--rgb-primary),.3); border-radius:14px; padding:13px 15px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-bottom:16px;
+  position:relative; user-select:none;
+}
+.fake-link .press-ring{
+  position:absolute; inset:0; border-radius:14px; pointer-events:none; opacity:0;
+  border:2px solid var(--primary); transition:opacity .2s;
+}
+.fake-link.pressing .press-ring{opacity:1; animation:pressPulse 1s ease-out infinite}
+@keyframes pressPulse{0%{box-shadow:0 0 0 0 rgba(var(--rgb-primary),.45)}100%{box-shadow:0 0 0 14px rgba(var(--rgb-primary),0)}}
+.copied-chip{
+  display:inline-flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600;
+  color:#86efac; background:rgba(var(--rgb-success),.12); border:1px solid rgba(var(--rgb-success),.35);
+  border-radius:99px; padding:8px 18px; opacity:0; transform:scale(.85); transition:var(--tr-smooth);
+}
+.copied-chip.show{opacity:1; transform:scale(1)}
+
+.drag-zone{max-width:720px; margin:0 auto; overflow:hidden}
+.dz-browser{border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border)}
+.dz-chrome{background:#1b1926; padding:10px 14px; display:flex; align-items:center; gap:12px; border-bottom:1px solid var(--border)}
+.dz-dots{display:flex; gap:6px}
+.dz-dots span{width:10px; height:10px; border-radius:50%; background:#3a3650}
+.dz-dots span:nth-child(1){background:#f87171}.dz-dots span:nth-child(2){background:#fbbf24}.dz-dots span:nth-child(3){background:#34d399}
+.dz-url{flex:1; direction:ltr; text-align:left; font-size:12px; color:var(--muted); background:rgba(0,0,0,.3); border-radius:8px; padding:6px 12px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis}
+.dz-bookmarks{
+  background:#161422; padding:8px 14px; display:flex; align-items:center; gap:10px;
+  font-size:12px; color:var(--muted); min-height:40px;
+  border-bottom:1px solid var(--border); transition:var(--tr);
+}
+.dz-bookmarks.armed{background:rgba(var(--rgb-primary),.10); box-shadow:inset 0 0 0 2px rgba(var(--rgb-primary),.55)}
+.bm-chip{cursor:pointer; display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--color-text); background:rgba(var(--rgb-primary),.16); border:1px solid rgba(var(--rgb-primary),.4); border-radius:8px; padding:4px 10px; animation:popIn .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes popIn{from{opacity:0; transform:scale(.6)}to{opacity:1; transform:scale(1)}}
+.dz-page{padding:30px 20px 36px; text-align:center; background:linear-gradient(180deg,#131120,#0e0c18)}
+.dz-page .dzp-note{color:var(--muted); font-size:13px; margin-bottom:18px}
+.bookmarklet{
+  display:inline-flex; align-items:center; gap:9px; font-weight:600; font-size:15px; color:#fff;
+  background:var(--accent-fill); text-shadow:var(--accent-text-shadow);
+  border-radius:14px; padding:13px 26px; cursor:grab; user-select:none; touch-action:none;
+  box-shadow:var(--accent-ring),var(--accent-lift); position:relative; z-index:5;
+}
+.bookmarklet.dragging{opacity:.35}
+.drag-ghost{
+  position:fixed; z-index:600; pointer-events:none; display:none;
+  align-items:center; gap:8px; font-weight:600; font-size:14px; color:#fff;
+  background:var(--accent-fill); text-shadow:var(--accent-text-shadow);
+  border-radius:12px; padding:10px 20px; box-shadow:var(--accent-ring),var(--accent-lift-hover);
+  transform:translate(-50%,-50%) rotate(-3deg);
+}
+.drag-hint{display:flex; align-items:center; justify-content:center; gap:8px; color:var(--color-primary); font-size:13px; margin-top:18px}
+.drag-hint i{animation:floatUp 1.6s ease-in-out infinite}
+@keyframes floatUp{0%,100%{transform:translateY(2px)}50%{transform:translateY(-4px)}}
+
+.browser{border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border); box-shadow:0 22px 50px -20px rgba(0,0,0,.6); background:#fff}
+.b-chrome{background:#1b1926; padding:9px 14px; display:flex; align-items:center; gap:12px}
+.b-url{flex:1; display:flex; align-items:center; gap:8px; direction:ltr; font-size:11.5px; color:#bdb8d6; background:rgba(0,0,0,.32); border-radius:8px; padding:6px 12px; overflow:hidden; white-space:nowrap}
+.b-url i{color:#8f89ad; flex:none}
+.b-bm{background:#161422; padding:7px 14px; display:none; align-items:center; gap:10px; font-size:11.5px; color:var(--muted); border-top:1px solid rgba(var(--rgb-primary),.1)}
+.b-bm.show{display:flex}
+.b-body{max-height:min(62vh,620px); overflow:auto; overscroll-behavior:contain; background:#F4F6FA}
+
+.uni{--u-bg:#F4F6FA; --u-card:#fff; --u-qu:#0F3D6E; --u-qu-dark:#0B2E52; --u-soft:#EAF1F9; --u-gold:#C6A15B; --u-ink:#1B2430; --u-muted:#647089; --u-line:#E6EBF3; --u-open:#1B8A5A; --u-open-bg:#E7F5EE; --u-closed:#B4462F; --u-closed-bg:#FBECE8;
+  background:var(--u-bg); color:var(--u-ink); font-size:13.5px; line-height:1.65}
+.uni .u-top{background:linear-gradient(180deg,var(--u-qu),var(--u-qu-dark)); color:#fff; border-bottom:3px solid var(--u-gold); padding:13px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px}
+.uni .u-brand{display:flex; align-items:center; gap:11px}
+.uni .u-emblem{width:38px; height:38px; border-radius:11px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.28); display:grid; place-items:center; font-weight:700; font-size:20px}
+.uni .u-brand b{font-size:15.5px; display:block; line-height:1.3}
+.uni .u-brand small{font-size:9px; letter-spacing:2.5px; color:rgba(255,255,255,.7)}
+.uni .u-portal{font-size:11px; color:rgba(255,255,255,.85); border:1px solid rgba(255,255,255,.22); border-radius:99px; padding:4px 11px; white-space:nowrap}
+.uni .u-wrap{padding:18px 18px 34px}
+.uni .u-eyebrow{font-size:10.5px; font-weight:600; letter-spacing:2px; color:var(--u-gold); text-transform:uppercase}
+.uni h1{font-size:19px; margin:4px 0 8px; color:var(--u-qu-dark); font-family:var(--font-title)}
+.uni .u-chips{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px}
+.uni .u-chip{font-size:11px; color:var(--u-muted); background:#fff; border:1px solid var(--u-line); border-radius:99px; padding:4px 10px}
+.uni .u-chip strong{color:var(--u-qu)}
+.uni .u-search{position:relative; margin-bottom:13px}
+.uni .u-search i{position:absolute; inset-inline-start:12px; top:50%; transform:translateY(-50%); color:var(--u-muted)}
+.uni .u-search input{width:100%; padding:10px 38px 10px 14px; border:1px solid var(--u-line); border-radius:11px; background:#fff; font-family:inherit; font-size:13px; color:var(--u-ink)}
+.uni .u-search input:focus{outline:none; border-color:var(--u-qu); box-shadow:0 0 0 3px rgba(15,61,110,.1)}
+.uni .u-tablecard{background:#fff; border:1px solid var(--u-line); border-radius:14px; overflow:hidden; box-shadow:0 1px 2px rgba(16,42,74,.04), 0 8px 24px rgba(16,42,74,.06)}
+.uni table{width:100%; border-collapse:collapse}
+.uni thead th{font-size:11px; font-weight:600; color:var(--u-muted); text-align:right; background:var(--u-soft); padding:9px 12px; white-space:nowrap; border-bottom:1px solid var(--u-line)}
+.uni tbody td{padding:9px 12px; border-bottom:1px solid var(--u-line); font-size:12.5px; vertical-align:middle}
+.uni tbody tr:last-child td{border-bottom:none}
+.uni .c-code{font-weight:600; color:var(--u-qu); white-space:nowrap}
+.uni .c-sec{font-variant-numeric:tabular-nums; font-weight:600}
+.uni .status{display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:600; border-radius:99px; padding:3px 10px; white-space:nowrap}
+.uni .status .dot{width:6px; height:6px; border-radius:50%}
+.uni .status.open{background:var(--u-open-bg); color:var(--u-open)}
+.uni .status.open .dot{background:var(--u-open)}
+.uni .status.closed{background:var(--u-closed-bg); color:var(--u-closed)}
+.uni .status.closed .dot{background:var(--u-closed)}
+.uni .d-btn{display:inline-flex; align-items:center; gap:5px; font-family:inherit; font-size:11.5px; font-weight:500; color:var(--u-qu); background:#fff; border:1px solid var(--u-line); border-radius:9px; padding:5px 10px; white-space:nowrap}
+.uni .d-btn i{transition:transform .2s}
+.uni tr.open-detail .d-btn i{transform:rotate(180deg)}
+.uni .detail-row td{background:#FBFCFE; padding:12px 14px}
+.uni .meeting{display:inline-flex; align-items:center; gap:10px; background:var(--u-soft); border:1px solid #DCE8F6; border-radius:10px; padding:7px 12px; margin:2px 4px 2px 0; font-size:12px}
+.uni .meeting b{color:var(--u-qu-dark); font-variant-numeric:tabular-nums; white-space:nowrap}
+.uni .meeting span{color:var(--u-muted); border-inline-start:1px solid #CBDBF0; padding-inline-start:10px}
+.uni-shot{display:block; width:100%; height:auto}
+.uni td.cell-hq{display:none}
+@media (max-width:1024px){
+  .uni thead{display:none}
+  .uni table, .uni tbody, .uni tr, .uni td{display:block; width:100%}
+  .uni table{border-collapse:separate}
+  .uni tbody tr{margin:0 0 16px; border:1px solid #DFE3EA; background:#fff}
+  .uni tbody tr:nth-of-type(4n+3){background:#EFEFEF}
+  .uni tbody td{display:grid; grid-template-columns:35% 1fr; align-items:stretch; padding:0; border:none; font-size:14px; min-height:46px}
+  .uni tr[hidden], .uni td[hidden]{display:none}
+  .uni tbody td::before{content:attr(data-th); background:#2F5496; color:#fff; font-size:13.5px; font-weight:500; display:flex; align-items:center; padding:10px 14px; border-bottom:1px solid #fff; justify-self:stretch; align-self:stretch; text-align:start}
+  .uni tbody td:last-child::before{border-bottom:none}
+  .uni td.cell-hq{display:grid}
+  .uni tbody td, .uni tbody td *{text-align:center}
+  .uni tbody td{align-content:center; justify-items:center; color:var(--u-ink)}
+  .uni tbody td > *{align-self:center}
+  .uni .c-code{color:var(--u-ink); font-weight:500}
+  .uni .c-sec{font-weight:500}
+  .uni .status{background:none; padding:0; font-size:14px; font-weight:500; gap:0}
+  .uni .status .dot{display:none}
+  .uni .status.open{color:var(--u-ink)}
+  .uni .status.closed{color:#C62828}
+  .uni td.cell-details::before{content:attr(data-th)}
+  .uni .d-btn{border:none; background:none; color:#2F5496; font-size:14px; padding:6px 10px}
+  .uni .detail-row{margin-top:-17px; border-top:1px solid #fff}
+  .uni .detail-row td{display:block; background:#FBFCFE; padding:12px 14px}
+  .uni .detail-row td::before{display:none}
+}
+.phone-wrap{max-width:430px; margin:0 auto}
+.phone{
+  border-radius:26px; overflow:hidden; border:1px solid rgba(var(--rgb-primary),.22);
+  background:#101018; box-shadow:0 26px 60px -22px rgba(0,0,0,.7);
+}
+.addr-panel{background:#1c1c22; padding:14px 14px 10px}
+.addr-field{
+  display:flex; align-items:center; gap:10px; background:#2c2c33; border-radius:14px;
+  padding:11px 13px; direction:ltr; position:relative;
+  border:1.5px solid transparent; transition:var(--tr);
+}
+.addr-field.focus{border-color:rgba(var(--rgb-primary),.65)}
+.addr-field > i.ph-globe-simple{color:#9d98b6; font-size:18px; flex:none}
+.addr-text{
+  flex:1; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12.5px; color:#e8e6f2;
+  white-space:nowrap; overflow:hidden; text-align:left; min-height:19px;
+}
+.addr-text .caret{display:inline-block; width:1.5px; height:15px; background:#8ab4ff; vertical-align:-2px; animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.addr-text .js-pre{color:#6ee7b7; font-weight:600}
+.addr-text.placeholder{color:#79758f}
+.addr-clear{flex:none; width:20px; height:20px; border-radius:50%; background:#4a4a55; color:#c9c6da; display:grid; place-items:center; font-size:11px}
+.addr-note{
+  display:flex; align-items:flex-start; gap:8px; margin:12px 2px 2px;
+  font-size:12.5px; color:#fca5a5; opacity:0; transform:translateY(-4px); transition:var(--tr-smooth);
+}
+.addr-note.show{opacity:1; transform:none}
+.addr-note i{flex:none; margin-top:2px}
+.addr-note.good{color:#86efac}
+.suggests{background:#131318; padding:4px 0 6px; display:none}
+.suggests.show{display:block; animation:stageIn .35s cubic-bezier(.2,.8,.2,1)}
+.sg-row{
+  display:flex; align-items:center; gap:13px; width:100%; text-align:right;
+  background:none; border:none; padding:13px 16px; color:#e8e6f2; position:relative;
+  border-bottom:1px solid rgba(255,255,255,.06); transition:background .2s;
+}
+.sg-row:last-child{border-bottom:none}
+.sg-row:active{background:rgba(255,255,255,.05)}
+.sg-row .sg-ico{
+  flex:none; width:38px; height:38px; border-radius:50%; display:grid; place-items:center;
+  background:#2c2c33; color:#b9b4d0; font-size:19px;
+}
+.sg-row .sg-body{flex:1; min-width:0; direction:ltr; text-align:left}
+.sg-row .sg-main{font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:ui-monospace,Menlo,Consolas,monospace}
+.sg-row .sg-sub{font-size:11px; color:#79758f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; direction:rtl; text-align:right}
+.sg-row .sg-tag{
+  flex:none; font-size:10.5px; font-weight:700; border-radius:99px; padding:3px 10px; white-space:nowrap;
+}
+.sg-row .sg-tag.ok{color:#86efac; background:rgba(var(--rgb-success),.14); border:1px solid rgba(var(--rgb-success),.4)}
+.sg-row .sg-tag.no{color:#fca5a5; background:rgba(var(--rgb-danger),.12); border:1px solid rgba(var(--rgb-danger),.4)}
+.sg-row.correct .sg-ico{background:rgba(var(--rgb-primary),.22); color:var(--color-primary); box-shadow:0 0 0 0 rgba(var(--rgb-primary),.5)}
+.sg-row.shake{animation:shakeX .5s}
+@keyframes shakeX{0%,100%{transform:none}20%{transform:translateX(7px)}40%{transform:translateX(-7px)}60%{transform:translateX(5px)}80%{transform:translateX(-5px)}}
+.sg-warn{
+  margin:8px 14px 10px; display:none; align-items:flex-start; gap:9px;
+  background:rgba(var(--rgb-danger),.1); border:1px solid rgba(var(--rgb-danger),.35); border-radius:12px;
+  padding:11px 13px; font-size:12.5px; color:#fecaca;
+}
+.sg-warn.show{display:flex; animation:stageIn .35s}
+.sg-warn i{flex:none; color:#f87171; margin-top:2px}
+.phone-actions{padding:16px 16px calc(16px + env(safe-area-inset-bottom)); background:#101018; display:flex; flex-direction:column; gap:10px}
+.phone-actions .btn{width:100%}
+.type-anim{color:#6ee7b7}
+
+.pulse-target{position:relative; z-index:502 !important}
+.pulse-target::after{
+  content:""; position:absolute; inset:-5px; border-radius:inherit; pointer-events:none;
+  border:2px solid var(--primary); animation:ringPulse 1.4s ease-out infinite;
+}
+@keyframes ringPulse{0%{box-shadow:0 0 0 0 rgba(var(--rgb-primary),.55); opacity:1}100%{box-shadow:0 0 0 16px rgba(var(--rgb-primary),0); opacity:.6}}
+
+.extract-card{max-width:460px; margin:40px auto; padding:34px 26px; text-align:center}
+.extract-card .spin{
+  width:62px; height:62px; margin:0 auto 20px; border-radius:50%;
+  border:4px solid rgba(var(--rgb-primary),.2); border-top-color:var(--primary);
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.extract-card h3{font-family:var(--font-title); font-size:19px; margin:0 0 18px}
+.ex-list{display:flex; flex-direction:column; gap:11px; text-align:right; max-width:300px; margin:0 auto}
+.ex-item{display:flex; align-items:center; gap:10px; color:var(--muted); font-size:14px; opacity:.35; transition:var(--tr)}
+.ex-item i{flex:none; font-size:18px; color:var(--muted)}
+.ex-item.done{opacity:1; color:var(--text)}
+.ex-item.done i{color:var(--success)}
+
+.appmock{border-radius:var(--radius); overflow:hidden; border:1px solid var(--color-border); background:var(--color-bg); box-shadow:var(--glass-shadow); position:relative}
+.mk-page{display:flex; direction:rtl; align-items:stretch}
+.mk-main{flex:1; min-width:0; display:flex; flex-direction:column; gap:1rem; padding:1.15rem}
+.mk-header{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
+.mk-header h1{font-family:var(--font-title); font-weight:700; font-size:1.2rem; letter-spacing:-.02em; color:var(--color-text-dark); margin:0; display:flex; align-items:center; gap:.55rem}
+.mk-header h1 i{color:var(--color-primary); font-size:1.15rem}
+.mk-actions{display:flex; gap:.5rem; flex-wrap:wrap}
+.mk-hbtn{background:rgba(255,255,255,.03); border:1px solid var(--color-border); color:var(--color-text); padding:.45rem .8rem; border-radius:12px; font-family:inherit; font-size:.74rem; font-weight:600; display:inline-flex; align-items:center; gap:.4rem; white-space:nowrap; transition:background var(--transition), border-color var(--transition), color var(--transition)}
+.light .mk-hbtn{background:rgba(0,0,0,.03)}
+.mk-hbtn:hover{background:rgba(var(--rgb-primary),.12); border-color:rgba(var(--rgb-primary),.4); color:var(--color-primary)}
+.mk-tabs{display:flex; align-items:center; gap:.5rem; padding:.45rem; background:rgba(0,0,0,.2); border-radius:var(--radius); overflow-x:auto}
+.light .mk-tabs{background:rgba(0,0,0,.05)}
+.mk-tab{padding:.5rem 1.05rem; border:none; border-radius:var(--radius-md); background:transparent; color:var(--color-text); font-family:inherit; font-weight:600; font-size:.8rem; white-space:nowrap; display:flex; align-items:center; gap:.4rem}
+.mk-tab.active{background:var(--accent-fill); color:#fff; text-shadow:var(--accent-text-shadow); box-shadow:var(--accent-ring),var(--accent-lift)}
+.mk-addtab{width:34px; height:34px; border-radius:50%; background:rgba(var(--rgb-primary),.1); color:var(--color-primary); border:1px solid var(--color-border); font-size:1.05rem; flex:none; display:flex; align-items:center; justify-content:center; line-height:1; transition:var(--transition)}
+.mk-addtab:hover{background:var(--color-primary); color:#fff; transform:rotate(90deg)}
+.mk-icontab{width:34px; height:34px; border-radius:var(--radius-full); background:rgba(var(--rgb-primary),.08); color:var(--color-text-muted); border:1px solid var(--color-border); font-size:.95rem; flex:none; display:flex; align-items:center; justify-content:center; transition:var(--transition)}
+.mk-icontab:hover{color:var(--color-primary); border-color:var(--color-border-hover); background:rgba(var(--rgb-primary),.16)}
+.mk-tab-x{font-size:.95rem; color:rgba(255,255,255,.7)}
+.mk-calcard{background:var(--color-card); border:1px solid var(--color-border); border-radius:var(--radius); -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur); box-shadow:var(--glass-shadow); overflow:hidden}
+.mk-calscroll{overflow-x:auto}
+.mk-summary{display:grid; grid-template-columns:repeat(4,1fr); align-items:stretch; background:rgba(255,255,255,.04); border:1px solid var(--color-border); border-radius:16px; padding:.75rem .25rem}
+.light .mk-summary{background:rgba(0,0,0,.03)}
+.mk-sum-cell{position:relative; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.3rem; padding:0 .25rem}
+.mk-sum-cell:not(:first-child)::before{content:''; position:absolute; inset-inline-start:0; top:18%; height:64%; width:1px; background:var(--color-border)}
+.mk-sum-val{font-family:var(--font-title); font-size:1.2rem; font-weight:700; line-height:1; color:var(--color-text-dark); direction:ltr}
+.mk-sum-cell.accent .mk-sum-val{color:var(--color-primary)}
+.mk-sum-label{font-size:.64rem; font-weight:600; color:var(--color-text-muted); white-space:nowrap}
+.mk-side{width:290px; flex:none; background:var(--color-card); -webkit-backdrop-filter:var(--glass-blur); backdrop-filter:var(--glass-blur); display:flex; flex-direction:column; max-height:660px}
+.mk-sidehead{padding:1rem 1rem .75rem; border-bottom:1px solid var(--color-border); flex-shrink:0}
+.mk-sidetitle{display:flex; justify-content:space-between; align-items:center}
+.mk-sidetitle h2{margin:0; font-family:var(--font-title); font-size:1.05rem; font-weight:700; color:var(--color-text-dark); display:flex; align-items:center; gap:.5rem}
+.mk-searchtoggle{background:none; border:none; color:var(--color-text-muted); font-size:1rem; padding:.35rem; border-radius:50%; display:flex; transition:var(--transition)}
+.mk-searchtoggle:hover{color:var(--color-primary); background:rgba(var(--rgb-primary),.1)}
+.mk-sidetabs{display:flex; padding:0 .6rem; border-bottom:1px solid var(--color-border); flex-shrink:0}
+.mk-tabbtn{flex:1; text-align:center; padding:.6rem .25rem; background:none; border:none; border-bottom:2px solid transparent; border-radius:8px 8px 0 0; color:var(--color-text-muted); font-family:inherit; font-size:.72rem; font-weight:600; display:inline-flex; align-items:center; justify-content:center; gap:.32rem; white-space:nowrap; transition:all var(--transition)}
+.mk-tabbtn.active{color:var(--color-primary); border-bottom-color:var(--color-primary); background:rgba(var(--rgb-primary),.05)}
+.mk-courses{padding:.85rem; overflow-y:auto; flex:1}
+.course-item{margin-bottom:.7rem; overflow:hidden}
+.course-item-header{display:flex; align-items:center; gap:.7rem; padding:.95rem; cursor:pointer}
+.course-item .color-dot{width:10px; height:10px; border-radius:50%; flex-shrink:0}
+.course-info{flex-grow:1; min-width:0}
+.course-info h3{margin:0; font-family:var(--font-title); font-size:.9rem; font-weight:600; color:var(--color-text-dark)}
+.course-info p{margin:3px 0 0; font-size:.72rem; color:var(--color-text-muted)}
+.toggle-icon{color:var(--color-text-muted); transition:transform .3s; flex-shrink:0}
+.course-item.open .toggle-icon{transform:rotate(180deg)}
+.sections-wrapper{display:grid; grid-template-rows:0fr; transition:grid-template-rows .3s cubic-bezier(.2,.8,.2,1); background-color:rgba(0,0,0,.1)}
+.light .sections-wrapper{background-color:rgba(0,0,0,.02)}
+.course-item.open .sections-wrapper{grid-template-rows:1fr}
+.sections-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(64px,1fr)); gap:.5rem; overflow:hidden; min-height:0; padding:0 .7rem; transition:padding .3s}
+.course-item.open .sections-grid{padding:.7rem}
+.section-btn{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.25rem; padding:.5rem; border:1px solid var(--color-border); border-radius:12px; text-align:center; cursor:pointer; background-color:transparent; font-family:inherit; transition:all var(--transition); position:relative}
+.section-btn:hover{border-color:var(--color-primary); color:var(--color-primary); background:rgba(var(--rgb-primary),.1)}
+.section-btn-number{font-size:.82rem; font-weight:600; font-variant-numeric:tabular-nums; color:var(--color-text-dark)}
+.section-btn .section-type{font-size:.66rem; color:var(--color-text-muted)}
+.section-btn.selected{background:var(--accent-fill); border-color:transparent; color:#fff; text-shadow:var(--accent-text-shadow); box-shadow:var(--accent-ring),var(--accent-lift)}
+.section-btn.selected .section-btn-number{color:#fff}
+.section-btn.selected .section-type{color:rgba(255,255,255,.8)}
+.cal-grid{display:flex; direction:rtl; min-width:560px; --grid-line:rgba(190,175,250,.13); --grid-line-soft:rgba(190,175,250,.06)}
+.light .cal-grid{--grid-line:rgba(84,60,160,.16); --grid-line-soft:rgba(84,60,160,.08)}
+.cg-timecol{width:52px; flex:none}
+.cg-corner{height:46px; display:flex; align-items:center; justify-content:center; font-size:.64rem; font-weight:600; color:var(--color-text-muted); border-bottom:1px solid var(--grid-line); border-inline-end:1px solid var(--grid-line)}
+.cg-time{height:46px; display:flex; align-items:flex-start; justify-content:center; padding-top:3px; font-size:.66rem; font-weight:600; color:var(--color-text-muted); font-variant-numeric:tabular-nums; white-space:nowrap; border-top:1px solid var(--grid-line); border-inline-end:1px solid var(--grid-line)}
+.cg-timecol .cg-time:first-of-type{border-top-color:transparent}
+.cg-daycol{flex:1; min-width:96px; position:relative; border-inline-start:1px solid var(--grid-line-soft)}
+.cg-daycol:first-of-type{border-inline-start:none}
+.cg-day{height:46px; display:flex; align-items:center; justify-content:center; font-family:var(--font-title); font-size:.84rem; font-weight:700; color:var(--color-text-dark); border-bottom:1px solid var(--grid-line)}
+.cg-slots{position:absolute; top:46px; bottom:0; inset-inline:0; pointer-events:none}
+.cg-slot{height:46px; border-top:1px solid var(--grid-line); position:relative}
+.cg-slot:first-child{border-top-color:transparent}
+.cg-slot::after{content:''; position:absolute; top:50%; inset-inline:0; border-top:1px dashed var(--grid-line-soft)}
+.cg-daycol:hover{background:rgba(var(--rgb-primary),.04)}
+.cg-layer{position:absolute; top:0; bottom:0; inset-inline:0; pointer-events:none}
+.cal-ev{
+  position:absolute; inset-inline:2px; border-radius:8px; padding:4px 8px; overflow:hidden;
+  font-size:.62rem; line-height:1.4; font-weight:600; color:#fff; display:flex; flex-direction:column;
+  box-shadow:0 1px 2px rgba(0,0,0,.12), 0 4px 10px -6px rgba(0,0,0,.35);
+}
+.light .cal-ev{box-shadow:0 1px 2px rgba(48,34,100,.10), 0 4px 10px -6px rgba(48,34,100,.22)}
+.cal-ev b{display:block; font-family:var(--font-title); font-weight:400; font-size:.68rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.cal-ev small{font-size:.56rem; font-weight:400; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.cal-ev small.ev-loc{margin-top:auto}
+.cal-ev.pop{animation:evPop .55s cubic-bezier(.2,.8,.2,1)}
+@keyframes evPop{0%{opacity:0; transform:scale(.5)}60%{transform:scale(1.06)}100%{opacity:1; transform:scale(1)}}
+.mk-mnav{display:none}
+@media (max-width:820px){
+  .mk-page{flex-direction:column}
+  .mk-main{padding:0 0 1rem; gap:.9rem}
+  .mk-header{
+    padding:.8rem 1.1rem; height:auto; flex-wrap:nowrap;
+    background:linear-gradient(to bottom, rgba(15,15,20,.9) 0%, rgba(15,15,20,.7) 100%);
+    border-bottom:1px solid rgba(255,255,255,.05);
+    -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%);
+    box-shadow:0 10px 30px -10px rgba(0,0,0,.5);
+  }
+  .light .mk-header{background:linear-gradient(to bottom, rgba(255,255,255,.92) 0%, rgba(255,255,255,.78) 100%); border-bottom-color:rgba(0,0,0,.05); box-shadow:0 10px 30px -10px rgba(0,0,0,.06)}
+  .mk-hbtn span{display:none}
+  .mk-hbtn{padding:.5rem .55rem; border-radius:11px}
+  .mk-hbtn i{font-size:1rem}
+  .mk-tabs, .mk-calcard, .mk-summary{margin:0 .6rem}
+  .mk-side{width:100%; max-height:none; background:transparent; -webkit-backdrop-filter:none; backdrop-filter:none}
+  .mk-sidehead, .mk-sidetabs{display:none}
+  .mk-courses{padding:.4rem .85rem 1rem; overflow:visible}
+  .course-item{
+    background:linear-gradient(145deg, rgba(255,255,255,.06), rgba(0,0,0,.15));
+    border:1px solid rgba(255,255,255,.08); border-radius:calc(var(--radius) * 1.5);
+    margin-bottom:1.1rem;
+    box-shadow:0 10px 25px -10px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.05);
+  }
+  .course-item.open{border-color:rgba(var(--rgb-primary),.4); background:linear-gradient(145deg, rgba(255,255,255,.09), rgba(0,0,0,.2))}
+  .light .course-item{background:linear-gradient(145deg, rgba(255,255,255,.95), rgba(245,245,250,.9)); border:1px solid rgba(0,0,0,.06); box-shadow:0 10px 25px -10px rgba(0,0,0,.08), inset 0 1px 0 rgba(255,255,255,1)}
+  .light .course-item.open{border-color:rgba(var(--rgb-primary),.4); background:linear-gradient(145deg,#ffffff,rgba(250,250,255,1))}
+  .course-item-header{padding:1rem 1.15rem}
+  .sections-wrapper{background:none; border-top:1px dashed rgba(255,255,255,.1)}
+  .light .sections-wrapper{border-top-color:rgba(0,0,0,.08)}
+  .course-item.open .sections-grid{padding:1rem 1.15rem; gap:.8rem}
+  .section-btn{background:rgba(0,0,0,.2); border:1px solid rgba(255,255,255,.05)}
+  .light .section-btn{background:rgba(0,0,0,.04); border-color:rgba(0,0,0,.05)}
+  .section-btn.selected{background:var(--accent-fill); border-color:transparent}
+  .mk-mnav{
+    display:flex; position:sticky; bottom:0; z-index:5;
+    height:64px; background-color:rgba(15,15,20,.85); border-top:1px solid var(--color-border);
+    -webkit-backdrop-filter:blur(24px) saturate(180%); backdrop-filter:blur(24px) saturate(180%);
+    box-shadow:0 -10px 30px -5px rgba(0,0,0,.3);
+  }
+  .light .mk-mnav{background-color:rgba(255,255,255,.85); box-shadow:0 -10px 30px -5px rgba(0,0,0,.05)}
+  .mk-nav-btn{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; background:none; border:none; color:var(--color-text-muted); position:relative; font-family:inherit}
+  .mk-nav-btn i{font-size:1.45rem; transition:transform .4s cubic-bezier(.175,.885,.32,1.275), color .3s}
+  .mk-nav-btn.active i{transform:translateY(-10px) scale(1.1); color:var(--color-primary); text-shadow:0 4px 12px rgba(var(--rgb-primary),.4)}
+  .mk-nav-btn span{position:absolute; bottom:5px; font-size:.66rem; font-weight:800; padding:.2rem .75rem; border-radius:999px; opacity:0; transform:scale(.8) translateY(5px); transition:all .4s cubic-bezier(.175,.885,.32,1.275); pointer-events:none}
+  .mk-nav-btn.active span{opacity:1; transform:scale(1) translateY(0); color:#fff; background:linear-gradient(135deg,var(--color-primary),var(--color-primary-dark)); box-shadow:0 4px 15px rgba(var(--rgb-primary),.4)}
+}
+
+#coach{position:fixed; inset:0; z-index:500; display:none; pointer-events:none}
+#coach.on{display:block}
+#coach-tip{pointer-events:auto}
+#coach-ring{
+  position:fixed; border-radius:14px; pointer-events:none;
+  box-shadow:0 0 0 3px rgba(var(--rgb-primary),.9), 0 0 0 9999px rgba(6,5,12,.78);
+  transition:all .45s cubic-bezier(.2,.8,.2,1);
+}
+#coach-ring.hide{box-shadow:0 0 0 0 rgba(var(--rgb-primary),0), 0 0 0 9999px rgba(6,5,12,.82)}
+#coach-tip{
+  position:fixed; z-index:501; width:min(360px, calc(100vw - 28px));
+  background:rgba(23,20,34,.96); border:1px solid rgba(var(--rgb-primary),.3); border-radius:18px;
+  backdrop-filter:var(--glass); -webkit-backdrop-filter:var(--glass);
+  box-shadow:0 22px 55px -18px rgba(0,0,0,.75); padding:17px 17px 14px;
+  transition:opacity .3s, transform .45s cubic-bezier(.2,.8,.2,1);
+}
+#coach-tip .ct-step{
+  display:inline-flex; align-items:center; gap:6px; font-size:10.5px; font-weight:700;
+  color:var(--color-primary); background:rgba(var(--rgb-primary),.14); border:1px solid rgba(var(--rgb-primary),.35);
+  border-radius:99px; padding:3px 11px; margin-bottom:9px;
+}
+#coach-tip h4{font-family:var(--font-title); font-size:15.5px; margin:0 0 6px; display:flex; align-items:center; gap:8px}
+#coach-tip h4 i{color:var(--primary); font-size:19px; flex:none}
+#coach-tip .ct-body{font-size:13px; color:#cfcbe4; margin:0}
+#coach-tip .ct-body b{color:#fff}
+#coach-tip .ct-body .hl-ok{color:#86efac; font-weight:600}
+#coach-tip .ct-body .hl-no{color:#fca5a5; font-weight:600}
+#coach-tip .ct-foot{display:flex; align-items:center; gap:8px; margin-top:14px}
+#coach-tip .ct-dots{display:flex; gap:5px; margin-inline-end:auto}
+#coach-tip .ct-dots span{width:6px; height:6px; border-radius:50%; background:rgba(var(--rgb-primary),.25); transition:var(--tr)}
+#coach-tip .ct-dots span.on{background:var(--primary); width:16px; border-radius:99px}
+.ct-btn{
+  border:none; border-radius:99px; padding:8px 17px; font-family:inherit; font-size:12.5px; font-weight:600;
+  color:#fff; background:var(--accent-fill); text-shadow:var(--accent-text-shadow);
+  box-shadow:var(--accent-ring),var(--accent-lift); transition:var(--transition);
+}
+.ct-btn:hover{transform:translateY(-1px); box-shadow:var(--accent-ring),var(--accent-lift-hover); filter:brightness(1.05)}
+.ct-btn.sec{background:rgba(var(--rgb-primary),.1); border:1px solid var(--border); color:var(--muted); font-weight:500}
+.ct-wait{
+  display:inline-flex; align-items:center; gap:7px; font-size:12px; color:var(--color-primary); font-weight:600;
+}
+.ct-wait i{animation:floatUp 1.4s ease-in-out infinite}
+@media (max-width:640px){
+  #coach-tip{
+    left:12px !important; right:12px !important; width:auto;
+    top:auto !important; bottom:calc(14px + env(safe-area-inset-bottom)) !important;
+    transform:none !important;
+  }
+}
+
+.done-card{max-width:560px; margin:30px auto; padding:40px 26px; text-align:center}
+.done-card .dc-ico{
+  width:76px; height:76px; margin:0 auto 20px; border-radius:24px; display:grid; place-items:center;
+  background:linear-gradient(145deg,rgba(var(--rgb-success),.25),rgba(var(--rgb-success),.08));
+  border:1px solid rgba(var(--rgb-success),.45); color:#6ee7b7; font-size:38px;
+  animation:popIn .6s cubic-bezier(.2,.8,.2,1);
+}
+.done-card h2{font-family:var(--font-title); font-size:24px; margin:0 0 10px}
+.done-card p{color:var(--muted); font-size:14.5px; margin:0 0 24px}
+.done-list{display:grid; gap:9px; max-width:380px; margin:0 auto 28px; text-align:right}
+.done-list div{display:flex; align-items:center; gap:10px; font-size:13.5px; color:#d6d2ea}
+.done-list i{color:var(--success); flex:none; font-size:17px}
+
+.confetti{position:fixed; inset:0; pointer-events:none; z-index:400; overflow:hidden}
+.confetti i{position:absolute; top:-14px; width:8px; height:13px; border-radius:2px; animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(600deg); opacity:.15}}
+
+.light .fake-link{background:rgba(0,0,0,.05); color:#4b477a; border-color:rgba(84,60,160,.35)}
+.light .dz-chrome{background:#e9e7f3}
+.light .dz-bookmarks{background:#f0eef8}
+.light .dz-url{background:#fff; color:var(--color-text-muted); border:1px solid var(--color-border)}
+.light .dz-page{background:linear-gradient(180deg,#f3f1fa,#eceaf6)}
+.light .b-chrome{background:#e9e7f3}
+.light .b-url{background:#fff; color:#5a567a; border:1px solid var(--color-border)}
+.light .b-url i{color:#8c88a8}
+.light .b-bm{background:#f0eef8; border-top-color:var(--color-border)}
+.light .phone{background:#f2f0fa; border-color:var(--color-border); box-shadow:var(--glass-shadow)}
+.light .addr-panel{background:#e9e7f3}
+.light .addr-field{background:#fff}
+.light .addr-field > i.ph-globe-simple{color:#8c88a8}
+.light .addr-text{color:#2c2a45}
+.light .addr-text.placeholder{color:#9a96b5}
+.light .addr-clear{background:#d9d6e8; color:#57536f}
+.light .suggests{background:#fbfaff}
+.light .sg-row{color:#2c2a45; border-bottom-color:rgba(0,0,0,.06)}
+.light .sg-row:active{background:rgba(0,0,0,.04)}
+.light .sg-row .sg-ico{background:#e9e7f3; color:#6a6590}
+.light .sg-row .sg-sub{color:#9a96b5}
+.light .sg-row .sg-main{color:#2c2a45}
+.light .phone-actions{background:#f2f0fa}
+.light .copied-chip{color:var(--color-success)}
+.light .addr-note{color:var(--color-danger)}
+.light .addr-note.good{color:var(--color-success)}
+.light .sg-tag.ok{color:var(--color-success)}
+.light .sg-tag.no{color:var(--color-danger)}
+.light .sg-warn{color:#8c2f22; background:rgba(var(--rgb-danger),.08)}
+.light .sg-warn i{color:var(--color-danger)}
+.light .addr-text .js-pre,.light .type-anim{color:#047857}
+.light .done-card .dc-ico{color:var(--color-success)}
+.light .done-list div{color:var(--color-text)}
+.light #coach-ring{box-shadow:0 0 0 3px rgba(var(--rgb-primary),.9), 0 0 0 9999px rgba(26,20,48,.45)}
+.light #coach-ring.hide{box-shadow:0 0 0 0 rgba(var(--rgb-primary),0), 0 0 0 9999px rgba(26,20,48,.5)}
+.light #coach-tip{background:rgba(255,255,255,.97); border-color:var(--color-border-hover); box-shadow:0 22px 55px -18px rgba(58,40,116,.35)}
+.light #coach-tip .ct-body{color:var(--color-text)}
+.light #coach-tip .ct-body b{color:var(--color-text-dark)}
+.light #coach-tip .ct-body .hl-ok{color:var(--color-success)}
+.light #coach-tip .ct-body .hl-no{color:var(--color-danger)}
+.light .ct-btn.sec{background:rgba(0,0,0,.04); color:var(--color-text-muted)}
+.light .ct-wait{color:var(--color-primary)}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important}
+  html{scroll-behavior:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="cosmic-bg-container"><div class="nebula-glow"></div><canvas id="starfield-canvas"></canvas></div>
+<script>
+(function(){
+  function adjust(hex,p){if(!hex||hex.length<7)return '#7f7f7f';var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);p/=100;r=Math.round(Math.min(255,Math.max(0,r*(1+p))));g=Math.round(Math.min(255,Math.max(0,g*(1+p))));b=Math.round(Math.min(255,Math.max(0,b*(1+p))));return '#'+r.toString(16).padStart(2,'0')+g.toString(16).padStart(2,'0')+b.toString(16).padStart(2,'0')}
+  function toRgb(hex){var m=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);return m?parseInt(m[1],16)+', '+parseInt(m[2],16)+', '+parseInt(m[3],16):'139, 92, 246'}
+  function toHue(H){if(!H)return 257;var r=0,g=0,b=0;if(H.length==7){r=parseInt('0x'+H.substring(1,3));g=parseInt('0x'+H.substring(3,5));b=parseInt('0x'+H.substring(5,7))}r/=255;g/=255;b/=255;var cmin=Math.min(r,g,b),cmax=Math.max(r,g,b),delta=cmax-cmin,h=0;if(delta==0)h=0;else if(cmax==r)h=((g-b)/delta)%6;else if(cmax==g)h=(b-r)/delta+2;else h=(r-g)/delta+4;h=Math.round(h*60);if(h<0)h+=360;return h}
+  var s=null;try{s=JSON.parse(localStorage.getItem('quScheduleSettings_v20'))}catch(e){}
+  var isLight=!!(s&&s.theme==='light');
+  if(isLight)document.body.classList.add('light');
+  document.documentElement.style.colorScheme=isLight?'light':'dark';
+  document.documentElement.style.backgroundColor=isLight?'#f7f6fc':'#0b0a12';
+  var meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute('content',isLight?'#f7f6fc':'#0b0a12');
+  var ac=(s&&s.accentColor)||'#8b5cf6';
+  var p=isLight?adjust(ac,-8):ac;
+  var rs=document.documentElement.style;
+  rs.setProperty('--color-primary',p);rs.setProperty('--color-primary-dark',adjust(p,-10));rs.setProperty('--rgb-primary',toRgb(p));
+  var hue=toHue(ac);rs.setProperty('--primary-hue',String(hue));rs.setProperty('--secondary-hue',String((hue+40)%360));
+  if(s&&s.highPerformance)document.body.classList.add('high-performance');
+})();
+</script>
+
+<header class="top">
+  <div class="brand"><i class="ph-fill ph-calendar-check"></i> QU Schedule <small>· الشرح التفاعلي</small></div>
+  <div class="progress">
+    <div class="p-label" id="p-label">مرحباً بك</div>
+    <div class="p-track"><div class="p-fill" id="p-fill"></div></div>
+  </div>
+  <a class="exit" href="index.html"><i class="ph ph-x"></i> خروج</a>
+</header>
+
+<section class="stage active" id="s-intro">
+  <div class="wrap">
+    <div class="hero">
+      <span class="badge"><i class="ph-fill ph-sparkle"></i> شرح تفاعلي خطوة بخطوة</span>
+      <h1>خلال دقيقتين، بتتعلم <em>كل شيء</em></h1>
+      <p>بنمشي معك من نسخ الرابط، إلى صفحة المقررات المطروحة في موقع الجامعة، إلى جدولك الجاهز — وكل خطوة بتجربها بنفسك.</p>
+      <div class="device-grid">
+        <button class="device-card" id="pick-mobile">
+          <span class="d-tag" hidden>جهازك الحالي</span>
+          <div class="d-ico"><i class="ph ph-device-mobile"></i></div>
+          <h3>جوال أو جهاز لوحي</h3>
+          <p>النسخ بالضغط المطول، ثم اللصق في شريط البحث بالمتصفح.</p>
+          <span class="d-go">ابدأ الشرح <i class="ph ph-arrow-left"></i></span>
+        </button>
+        <button class="device-card" id="pick-desktop">
+          <span class="d-tag" hidden>جهازك الحالي</span>
+          <div class="d-ico"><i class="ph ph-desktop"></i></div>
+          <h3>كمبيوتر</h3>
+          <p>سحب الزر إلى شريط العلامات المرجعية في أعلى المتصفح.</p>
+          <span class="d-go">ابدأ الشرح <i class="ph ph-arrow-left"></i></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="s-copy-mobile">
+  <div class="wrap">
+    <div class="stage-head">
+      <span class="s-step"><i class="ph ph-number-circle-one"></i> الخطوة الأولى</span>
+      <h2>انسخ الرابط من الصفحة الأساسية</h2>
+      <p>في صفحة QU Schedule الرئيسية بتلقى زر <b>«نسخ الكود»</b> — اضغطه وبينسخ لك الرابط كامل. جرّبها هنا:</p>
+    </div>
+    <div class="glass copy-sim">
+      <div class="cs-title"><i class="ph ph-copy"></i> محاكاة: نسخ الرابط</div>
+      <div class="cs-sub">اضغط الزر مثل ما راح تسويها في الصفحة الأساسية</div>
+      <div class="fake-link" id="fake-link-m">javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();<span class="press-ring"></span></div>
+      <button class="btn" id="copy-btn-m"><i class="ph ph-clipboard-text"></i> نسخ الكود</button>
+      <div style="margin-top:16px"><span class="copied-chip" id="copied-m"><i class="ph-fill ph-check-circle"></i> تم نسخ الرابط بنجاح</span></div>
+    </div>
+    <div class="stage-actions">
+      <button class="btn ghost" id="back-copy-m"><i class="ph ph-arrow-right"></i> رجوع</button>
+      <button class="btn" id="next-copy-m" disabled>التالي: صفحة المقررات المطروحة <i class="ph ph-arrow-left"></i></button>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="s-copy-desktop">
+  <div class="wrap">
+    <div class="stage-head">
+      <span class="s-step"><i class="ph ph-number-circle-one"></i> الخطوة الأولى</span>
+      <h2>اسحب الزر إلى شريط العلامات المرجعية</h2>
+      <p>على الكمبيوتر ما تحتاج نسخ ولصق — بس اسحب زر <b>QU Schedule</b> وأفلته فوق في شريط العلامات المرجعية (Bookmarks bar). جرّب السحب بنفسك:</p>
+    </div>
+    <div class="glass drag-zone" style="padding:18px">
+      <div class="dz-browser">
+        <div class="dz-chrome">
+          <div class="dz-dots"><span></span><span></span><span></span></div>
+          <div class="dz-url">mutlaq001.github.io/schedule</div>
+        </div>
+        <div class="dz-bookmarks" id="dz-bookmarks"><i class="ph ph-bookmarks-simple"></i> شريط العلامات المرجعية — <b>أفلت الزر هنا</b><span id="bm-slot"></span></div>
+        <div class="dz-page">
+          <div class="dzp-note">هذا الزر موجود في الصفحة الأساسية للموقع:</div>
+          <span class="bookmarklet" id="bookmarklet"><i class="ph ph-magic-wand"></i> QU Schedule</span>
+          <div class="drag-hint" id="drag-hint"><i class="ph ph-hand-grabbing"></i> اضغط على الزر واسحبه للأعلى نحو الشريط</div>
+        </div>
+      </div>
+    </div>
+    <div class="stage-actions">
+      <button class="btn ghost" id="back-copy-d"><i class="ph ph-arrow-right"></i> رجوع</button>
+      <button class="btn" id="next-copy-d" disabled>التالي: صفحة المقررات المطروحة <i class="ph ph-arrow-left"></i></button>
+    </div>
+  </div>
+</section>
+<div class="drag-ghost" id="drag-ghost"><i class="ph ph-magic-wand"></i> QU Schedule</div>
+
+<section class="stage" id="s-uni">
+  <div class="wrap">
+    <div class="stage-head">
+      <span class="s-step"><i class="ph ph-number-circle-two"></i> الخطوة الثانية</span>
+      <h2>صفحة «المقررات المطروحة» في موقع الجامعة</h2>
+      <p>هذه نسخة تجريبية مطابقة لصفحة الجامعة. بنتعرّف عليها سريعاً، وبعدها نشغّل الأداة منها.</p>
+    </div>
+    <div class="browser" id="uni-browser">
+      <div class="b-chrome">
+        <div class="dz-dots"><span></span><span></span><span></span></div>
+        <div class="b-url"><i class="ph ph-lock-simple"></i> edugate.qu.edu.sa — المقررات المطروحة وفق الخطة</div>
+      </div>
+      <div class="b-bm" id="uni-bm"><i class="ph ph-bookmarks-simple"></i> العلامات المرجعية: <span class="bm-chip" id="uni-bm-chip"><i class="ph ph-magic-wand"></i> QU Schedule</span></div>
+      <div class="b-body" id="uni-scroll">
+        <img class="uni-shot" id="uni-shot" alt="صفحة المقررات المطروحة" hidden>
+        <div class="uni" id="uni-mock">
+          <div class="u-top">
+            <div class="u-brand">
+              <div class="u-emblem">ق</div>
+              <div><b>جامعة القصيم</b><small>QASSIM UNIVERSITY</small></div>
+            </div>
+            <div class="u-portal">البوابة الأكاديمية</div>
+          </div>
+          <div class="u-wrap">
+            <div class="u-eyebrow">التسجيل</div>
+            <h1 id="uni-title">المقررات المطروحة وفق الخطة</h1>
+            <div class="u-chips">
+              <span class="u-chip">الفصل: <strong>الفصل الأول ١٤٤٨</strong></span>
+              <span class="u-chip" id="uni-count">—</span>
+            </div>
+            <div class="u-search" id="uni-search">
+              <i class="ph ph-magnifying-glass"></i>
+              <input id="uni-q" type="search" placeholder="ابحث برمز المقرر أو اسمه أو رقم الشعبة…" autocomplete="off">
+            </div>
+            <div class="u-tablecard" id="uni-tablecard">
+              <table>
+                <thead>
+                  <tr><th>رمز المقرر</th><th>اسم المقرر</th><th>الشعبة</th><th>النشاط</th><th>الساعات</th><th>الحالة</th><th>التفاصيل</th></tr>
+                </thead>
+                <tbody id="uni-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="s-bar">
+  <div class="wrap">
+    <div class="stage-head">
+      <span class="s-step"><i class="ph ph-number-circle-three"></i> الخطوة الثالثة</span>
+      <h2>شريط البحث في المتصفح</h2>
+      <p>وأنت داخل صفحة المقررات المطروحة، اضغط على شريط البحث فوق والصق الرابط. هنا محاكاة مطابقة لجوالك — <b>جرّبها بنفسك</b>:</p>
+    </div>
+    <div class="phone-wrap">
+      <div class="phone">
+        <div class="addr-panel">
+          <div class="addr-field" id="addr-field">
+            <i class="ph ph-globe-simple"></i>
+            <div class="addr-text placeholder" id="addr-text">ابحث أو اكتب عنوان موقع</div>
+            <span class="addr-clear" id="addr-clear" hidden><i class="ph ph-x"></i></span>
+          </div>
+          <div class="addr-note" id="addr-note"></div>
+        </div>
+        <div class="suggests" id="suggests">
+          <button class="sg-row correct" id="sg-globe">
+            <span class="sg-ico"><i class="ph ph-globe-simple"></i></span>
+            <span class="sg-body">
+              <span class="sg-main">javascript:!function()%7Bvar%20e=docu…</span>
+              <span class="sg-sub">فتح العنوان مباشرة</span>
+            </span>
+            <span class="sg-tag ok">✓ الصحيح</span>
+          </button>
+          <button class="sg-row" id="sg-search">
+            <span class="sg-ico"><i class="ph ph-magnifying-glass"></i></span>
+            <span class="sg-body">
+              <span class="sg-main">javascript:!function()%7Bvar…</span>
+              <span class="sg-sub">انتقال — بحث في Google</span>
+            </span>
+            <span class="sg-tag no">✗ لن يعمل</span>
+          </button>
+          <div class="sg-warn" id="sg-warn"><i class="ph-fill ph-warning-circle"></i><span>خيار «انتقال» الذي يحمل أيقونة العدسة لن يفتح الموقع ولن يضيف المقررات — اضغط الخيار الذي يحمل <b>أيقونة الكوكب</b>.</span></div>
+        </div>
+        <div class="phone-actions">
+          <button class="btn" id="paste-btn"><i class="ph ph-clipboard-text"></i> الصق الرابط المنسوخ</button>
+          <button class="btn" id="fix-btn" hidden><i class="ph ph-keyboard"></i> اكتب javascript: في البداية</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="s-extract">
+  <div class="wrap">
+    <div class="glass extract-card">
+      <div class="spin"></div>
+      <h3>الأداة تشتغل الآن…</h3>
+      <div class="ex-list">
+        <div class="ex-item" id="ex-1"><i class="ph ph-circle-dashed"></i> قراءة جدول المقررات المطروحة</div>
+        <div class="ex-item" id="ex-2"><i class="ph ph-circle-dashed"></i> استخراج <span id="ex-count">—</span> شعبة بكل تفاصيلها</div>
+        <div class="ex-item" id="ex-3"><i class="ph ph-circle-dashed"></i> فتح QU Schedule ونقل المقررات</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="s-app">
+  <div class="wrap">
+    <div class="stage-head">
+      <span class="s-step"><i class="ph ph-number-circle-four"></i> الخطوة الأخيرة</span>
+      <h2>وصلت إلى جدولك في QU Schedule</h2>
+      <p>كل المقررات المطروحة انتقلت معك تلقائياً. هذه جولة سريعة على أهم ما في الصفحة.</p>
+    </div>
+    <div class="appmock" id="appmock">
+      <div class="mk-page">
+        <main class="mk-main">
+          <header class="mk-header" id="am-top">
+            <h1><i class="ph-fill ph-calendar-dots"></i> QU Schedule</h1>
+            <div class="mk-actions">
+              <button class="mk-hbtn" id="am-save" title="حفظ الجدول كصورة"><i class="ph ph-camera"></i> <span>حفظ كصورة</span></button>
+              <button class="mk-hbtn" id="am-share" title="مشاركة الجدول برابط أو QR"><i class="ph ph-share-network"></i> <span>مشاركة</span></button>
+              <button class="mk-hbtn" id="am-settings" title="فتح إعدادات الموقع"><i class="ph ph-gear-six"></i> <span>إعدادات</span></button>
+              <button class="mk-hbtn" id="am-clear" title="مسح المقررات من هذا الجدول"><i class="ph ph-trash"></i> <span>مسح الجدول الحالي</span></button>
+            </div>
+          </header>
+          <div class="mk-tabs" id="am-tabs">
+            <button class="mk-tab active"><span>جدول 1</span><i class="ph ph-x mk-tab-x"></i></button>
+            <button class="mk-tab"><span>جدول 2</span></button>
+            <button class="mk-addtab" title="إضافة جدول جديد"><i class="ph ph-plus"></i></button>
+            <button class="mk-icontab" title="نسخ الجدول الحالي كسيناريو جديد"><i class="ph ph-copy"></i></button>
+          </div>
+          <div class="mk-calcard" id="am-cal">
+            <div class="mk-calscroll">
+              <div class="cal-grid" id="cal-grid"></div>
+            </div>
+          </div>
+          <div class="mk-summary" id="am-stats">
+            <div class="mk-sum-cell"><span class="mk-sum-val" id="st-courses">٤</span><span class="mk-sum-label">مقررات</span></div>
+            <div class="mk-sum-cell accent"><span class="mk-sum-val" id="st-credits">١٠</span><span class="mk-sum-label">ساعة معتمدة</span></div>
+            <div class="mk-sum-cell"><span class="mk-sum-val" id="st-days">٤</span><span class="mk-sum-label">أيام دوام</span></div>
+            <div class="mk-sum-cell"><span class="mk-sum-val" id="st-hours">١١</span><span class="mk-sum-label">ساعة أسبوعياً</span></div>
+          </div>
+        </main>
+        <aside class="mk-side" id="am-side">
+          <header class="mk-sidehead">
+            <div class="mk-sidetitle">
+              <h2><i class="ph ph-stack"></i> المقررات</h2>
+              <button class="mk-searchtoggle" title="تفعيل البحث"><i class="ph ph-magnifying-glass"></i></button>
+            </div>
+          </header>
+          <div class="mk-sidetabs">
+            <button class="mk-tabbtn active"><i class="ph ph-squares-four"></i> المقررات المتاحة</button>
+            <button class="mk-tabbtn"><i class="ph ph-file-text"></i> الاختبارات النهائية</button>
+          </div>
+          <div class="mk-courses" id="course-list"></div>
+        </aside>
+      </div>
+      <nav class="mk-mnav">
+        <button class="mk-nav-btn active"><i class="ph ph-calendar-blank"></i><span>الجدول</span></button>
+        <button class="mk-nav-btn"><i class="ph ph-stack"></i><span>المقررات</span></button>
+        <button class="mk-nav-btn"><i class="ph ph-list-checks"></i><span>جدولي</span></button>
+        <button class="mk-nav-btn"><i class="ph ph-file-text"></i><span>اختباراتي</span></button>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="s-done">
+  <div class="wrap">
+    <div class="glass done-card">
+      <div class="dc-ico"><i class="ph-fill ph-check-circle"></i></div>
+      <h2>صرت جاهزاً تماماً 🎉</h2>
+      <p>هذا كل شيء تحتاجه — من موقع الجامعة إلى جدول مرتب بضغطة واحدة.</p>
+      <div class="done-list">
+        <div><i class="ph-fill ph-check-circle"></i> نسخ الرابط من الصفحة الأساسية</div>
+        <div><i class="ph-fill ph-check-circle"></i> لصقه في شريط البحث وإعادة كتابة javascript:</div>
+        <div><i class="ph-fill ph-check-circle"></i> اختيار الخيار ذي أيقونة الكوكب — وليس «انتقال»</div>
+        <div><i class="ph-fill ph-check-circle"></i> انتقال المقررات المطروحة وبناء جدولك</div>
+      </div>
+      <div class="stage-actions" style="margin-top:0">
+        <button class="btn ghost" id="replay-btn"><i class="ph ph-arrow-counter-clockwise"></i> إعادة الشرح</button>
+        <a class="btn" href="index.html"><i class="ph ph-rocket-launch"></i> ابدأ الآن في QU Schedule</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div id="coach">
+  <div id="coach-ring"></div>
+  <div id="coach-tip">
+    <span class="ct-step" id="ct-step"></span>
+    <h4 id="ct-title"></h4>
+    <p class="ct-body" id="ct-body"></p>
+    <div class="ct-foot">
+      <div class="ct-dots" id="ct-dots"></div>
+      <button class="ct-btn sec" id="ct-prev">السابق</button>
+      <button class="ct-btn" id="ct-next">التالي</button>
+      <span class="ct-wait" id="ct-wait" hidden><i class="ph-fill ph-hand-tap"></i> جرّبها بنفسك</span>
+    </div>
+  </div>
+</div>
+<div class="confetti" id="confetti"></div>
+<script>
+(function(){
+  var $=function(s,c){return (c||document).querySelector(s)};
+  var $$=function(s,c){return Array.prototype.slice.call((c||document).querySelectorAll(s))};
+  function toAr(n){return String(n).replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d]})}
+  var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var device = null;
+  var STAGES = {
+    's-intro':      {p:2,  label:'مرحباً بك'},
+    's-copy-mobile':{p:16, label:'الخطوة ١ · نسخ الرابط'},
+    's-copy-desktop':{p:16,label:'الخطوة ١ · سحب الزر'},
+    's-uni':        {p:38, label:'الخطوة ٢ · المقررات المطروحة'},
+    's-bar':        {p:58, label:'الخطوة ٣ · شريط العنوان'},
+    's-extract':    {p:74, label:'تشغيل الأداة…'},
+    's-app':        {p:90, label:'الخطوة ٤ · جدولك'},
+    's-done':       {p:100,label:'اكتمل الشرح 🎉'}
+  };
+  function goTo(id){
+    coach.end(true);
+    $$('.stage').forEach(function(s){s.classList.remove('active')});
+    $('#'+id).classList.add('active');
+    window.scrollTo({top:0, behavior: reduceMotion?'auto':'smooth'});
+    var st = STAGES[id];
+    $('#p-fill').style.width = st.p+'%';
+    $('#p-label').textContent = st.label;
+    if(id==='s-uni'){ loadUniShot(); setTimeout(startUniTour, 550); }
+    if(id==='s-bar') setTimeout(startBarTour, 550);
+    if(id==='s-extract') runExtract();
+    if(id==='s-app') setTimeout(startAppTour, 600);
+    if(id==='s-done') confetti();
+  }
+
+  var coach = {
+    steps:[], i:0, on:false, onEnd:null, target:null,
+    el:{root:$('#coach'), ring:$('#coach-ring'), tip:$('#coach-tip'), step:$('#ct-step'), title:$('#ct-title'), body:$('#ct-body'), dots:$('#ct-dots'), prev:$('#ct-prev'), next:$('#ct-next'), wait:$('#ct-wait')},
+    start:function(steps,onEnd){
+      this.steps=steps; this.onEnd=onEnd||null; this.i=0; this.on=true;
+      this.el.root.classList.add('on');
+      this.el.dots.innerHTML = steps.map(function(){return '<span></span>'}).join('');
+      this.show(0);
+    },
+    show:function(i){
+      var self=this;
+      this.i=i;
+      var s=this.steps[i];
+      this.clearPulse();
+      if(s.before) s.before();
+      this.el.step.textContent = toAr(i+1)+' / '+toAr(this.steps.length);
+      this.el.title.innerHTML = (s.icon?'<i class="ph '+s.icon+'"></i>':'')+s.title;
+      this.el.body.innerHTML = s.body;
+      $$('span',this.el.dots).forEach(function(d,j){d.classList.toggle('on', j===i)});
+      this.el.prev.style.display = i===0 ? 'none' : '';
+      var waiting = !!s.wait;
+      this.el.next.hidden = waiting;
+      this.el.wait.hidden = !waiting;
+      this.el.next.textContent = s.nextLabel || (i===this.steps.length-1 ? 'إنهاء' : 'التالي');
+      this.target = s.el ? $(s.el) : null;
+      if(waiting){
+        var w = $(s.wait);
+        if(w) w.classList.add('pulse-target');
+      }
+      if(this.target){
+        this.target.scrollIntoView({block:'center', behavior: reduceMotion?'auto':'smooth'});
+        setTimeout(function(){ self.position() }, reduceMotion?30:430);
+      } else {
+        this.position();
+      }
+    },
+    position:function(){
+      if(!this.on) return;
+      var ring=this.el.ring, tip=this.el.tip;
+      var vw=window.innerWidth, vh=window.innerHeight;
+      if(this.target){
+        var r=this.target.getBoundingClientRect();
+        ring.classList.remove('hide');
+        ring.style.top=(r.top-6)+'px'; ring.style.left=(r.left-6)+'px';
+        ring.style.width=(r.width+12)+'px'; ring.style.height=(r.height+12)+'px';
+        if(vw>640){
+          var th=tip.offsetHeight, tw=tip.offsetWidth;
+          var top = (r.bottom+14+th < vh-10) ? r.bottom+14 : Math.max(10, r.top-14-th);
+          var left = Math.min(Math.max(12, r.left + r.width/2 - tw/2), vw-tw-12);
+          tip.style.top=top+'px'; tip.style.left=left+'px'; tip.style.transform='none';
+        }
+      } else {
+        ring.classList.add('hide');
+        ring.style.top='50%'; ring.style.left='50%'; ring.style.width='0px'; ring.style.height='0px';
+        if(vw>640){
+          var tw2=tip.offsetWidth, th2=tip.offsetHeight;
+          tip.style.top=(vh/2-th2/2)+'px'; tip.style.left=(vw/2-tw2/2)+'px'; tip.style.transform='none';
+        }
+      }
+    },
+    clearPulse:function(){ $$('.pulse-target').forEach(function(e){e.classList.remove('pulse-target')}) },
+    next:function(){
+      if(!this.on) return;
+      if(this.i>=this.steps.length-1){ this.end(); return }
+      this.show(this.i+1);
+    },
+    prev:function(){ if(this.i>0) this.show(this.i-1) },
+    end:function(silent){
+      if(!this.on) return;
+      var cb=this.onEnd;
+      this.on=false; this.onEnd=null; this.clearPulse();
+      this.el.root.classList.remove('on');
+      if(!silent && cb) cb();
+    }
+  };
+  coach.el.next.addEventListener('click', function(){ coach.next() });
+  coach.el.prev.addEventListener('click', function(){ coach.prev() });
+  window.addEventListener('resize', function(){ coach.position() });
+  window.addEventListener('scroll', function(){ coach.position() }, true);
+
+  var isTouch = window.matchMedia('(pointer:coarse)').matches || window.innerWidth < 760;
+  var suggestCard = isTouch ? $('#pick-mobile') : $('#pick-desktop');
+  suggestCard.classList.add('suggested');
+  $('.d-tag', suggestCard).hidden = false;
+  $('#pick-mobile').addEventListener('click', function(){ device='mobile'; goTo('s-copy-mobile') });
+  $('#pick-desktop').addEventListener('click', function(){ device='desktop'; goTo('s-copy-desktop') });
+  $('#back-copy-m').addEventListener('click', function(){ goTo('s-intro') });
+  $('#back-copy-d').addEventListener('click', function(){ goTo('s-intro') });
+  $('#replay-btn').addEventListener('click', function(){ location.reload() });
+
+  var pressTimer=null, fakeLink=$('#fake-link-m');
+  $('#copy-btn-m').addEventListener('click', function(){
+    fakeLink.classList.add('pressing');
+    clearTimeout(pressTimer);
+    pressTimer=setTimeout(function(){
+      fakeLink.classList.remove('pressing');
+      $('#copied-m').classList.add('show');
+      $('#next-copy-m').disabled=false;
+    }, reduceMotion?50:900);
+  });
+  $('#next-copy-m').addEventListener('click', function(){ goTo('s-uni') });
+
+  (function(){
+    var bm=$('#bookmarklet'), ghost=$('#drag-ghost'), zone=$('#dz-bookmarks'), dropped=false;
+    function overZone(x,y){
+      var r=zone.getBoundingClientRect();
+      return x>=r.left && x<=r.right && y>=r.top-14 && y<=r.bottom+14;
+    }
+    bm.addEventListener('pointerdown', function(e){
+      if(dropped) return;
+      e.preventDefault();
+      bm.setPointerCapture(e.pointerId);
+      bm.classList.add('dragging');
+      ghost.style.display='inline-flex';
+      move(e);
+    });
+    function move(e){
+      ghost.style.left=e.clientX+'px'; ghost.style.top=e.clientY+'px';
+      zone.classList.toggle('armed', overZone(e.clientX,e.clientY));
+    }
+    bm.addEventListener('pointermove', function(e){ if(bm.classList.contains('dragging')) move(e) });
+    bm.addEventListener('pointerup', function(e){
+      if(!bm.classList.contains('dragging')) return;
+      bm.classList.remove('dragging');
+      ghost.style.display='none';
+      if(overZone(e.clientX,e.clientY) && !dropped){
+        dropped=true;
+        zone.classList.remove('armed');
+        $('#bm-slot').innerHTML=' <span class="bm-chip"><i class="ph ph-magic-wand"></i> QU Schedule</span>';
+        $('#drag-hint').innerHTML='<i class="ph-fill ph-check-circle" style="color:var(--color-success)"></i> ممتاز! صار الزر محفوظاً في الشريط، وجاهزاً للاستخدام من أي صفحة';
+        $('#next-copy-d').disabled=false;
+      } else {
+        zone.classList.remove('armed');
+      }
+    });
+  })();
+  $('#next-copy-d').addEventListener('click', function(){ goTo('s-uni') });
+
+  var UNI = [
+    {code:'QU 101',name:'المقرر ١',sec:'1833',act:'نظري',hrs:'3',open:1,meet:[['الأحد ١٢:٤٠ م – ٠٢:٢٠ م','فصل دراسي']],exam:'٣٥'},
+    {code:'QU 101',name:'المقرر ١',sec:'1835',act:'تدريب',hrs:'',open:1,meet:[['الأربعاء ١٢:٤٠ م – ٠٢:٢٠ م','فصل دراسي']],exam:''},
+    {code:'QU 101',name:'المقرر ١',sec:'1834',act:'نظري',hrs:'3',open:1,meet:[['الأحد ١٢:٤٠ م – ٠٢:٢٠ م','']],exam:'٣٥'},
+    {code:'QU 101',name:'المقرر ١',sec:'1836',act:'تدريب',hrs:'',open:1,meet:[['الأربعاء ١٢:٤٠ م – ٠٢:٢٠ م','']],exam:''},
+    {code:'QU 103',name:'المقرر ٣',sec:'2307',act:'نظري',hrs:'2',open:1,meet:[['الثلاثاء ٠٢:٤٠ م – ٠٤:٢٠ م','B.1-G225']],exam:'٥٥'},
+    {code:'QU 103',name:'المقرر ٣',sec:'135',act:'نظري',hrs:'2',open:0,meet:[['الثلاثاء ٠٨:٠٠ ص – ٠٩:٤٠ ص','C1-L2-R-2041']],exam:'٥٥'},
+    {code:'QU 103',name:'المقرر ٣',sec:'2309',act:'نظري',hrs:'2',open:0,meet:[['الثلاثاء ١٢:٣٥ م – ٠١:٢٥ م','القاعة ١١٩'],['الثلاثاء ٠١:٣٠ م – ٠٢:٢٠ م','القاعة ١١٩']],exam:'٥٥'},
+    {code:'QU 104',name:'المقرر ٤',sec:'748',act:'نظري',hrs:'2',open:1,meet:[['الأحد ٠٨:٠٠ ص – ٠٩:٤٠ ص','٥١٧٩ كلية اللغات']],exam:'٦٤'},
+    {code:'QU 104',name:'المقرر ٤',sec:'749',act:'نظري',hrs:'2',open:1,meet:[['الأحد ١٠:٠٠ ص – ١١:٤٠ ص','٥١٣٣ كلية اللغات']],exam:'٦٤'},
+    {code:'QU 104',name:'المقرر ٤',sec:'95',act:'نظري',hrs:'2',open:0,meet:[['الثلاثاء ٠٨:٠٠ ص – ٠٩:٤٠ ص','C1-L1-R-1062']],exam:'٦٤'},
+    {code:'QU 105',name:'المقرر ٥',sec:'2783',act:'نظري',hrs:'3',open:1,meet:[['الثلاثاء ١٠:٠٠ ص – ١٠:٥٠ ص','B1-F083']],exam:'٤١'},
+    {code:'QU 105',name:'المقرر ٥',sec:'2786',act:'عملي',hrs:'',open:1,meet:[['الأحد ١٢:٤٠ م – ٠٢:٢٠ م','معمل المساحة']],exam:''},
+    {code:'QU 105',name:'المقرر ٥',sec:'2787',act:'عملي',hrs:'',open:1,meet:[['الخميس ١٢:٤٠ م – ٠٢:٢٠ م','معمل المساحة']],exam:''},
+    {code:'QU 105',name:'المقرر ٥',sec:'2792',act:'تدريب',hrs:'',open:1,meet:[['الاثنين ١٢:٤٠ م – ٠٢:٢٠ م','B1-F083']],exam:''},
+    {code:'QU 108',name:'المقرر ٨',sec:'2801',act:'عملي',hrs:'1',open:1,meet:[['الخميس ١٢:٤٠ م – ٠٢:٢٠ م','FLUID MECHANICS LAB']],exam:''},
+    {code:'QU 108',name:'المقرر ٨',sec:'2802',act:'عملي',hrs:'1',open:1,meet:[['الثلاثاء ٠٨:٠٠ ص – ٠٩:٤٠ ص','FLUID MECHANICS LAB']],exam:''},
+    {code:'QU 111',name:'المقرر ١١',sec:'1841',act:'نظري',hrs:'3',open:1,meet:[['الأحد ٠٢:٤٠ م – ٠٤:٢٠ م','فصل دراسي']],exam:'٣٦'},
+    {code:'QU 111',name:'المقرر ١١',sec:'1843',act:'تمارين',hrs:'',open:1,meet:[['الأربعاء ٠٢:٤٠ م – ٠٤:٢٠ م','فصل دراسي']],exam:''},
+    {code:'QU 113',name:'المقرر ١٣',sec:'2768',act:'نظري',hrs:'2',open:1,meet:[['الثلاثاء ١١:٠٠ ص – ١١:٥٠ ص','B1-F080']],exam:'٣٩'},
+    {code:'QU 113',name:'المقرر ١٣',sec:'2771',act:'عملي',hrs:'',open:1,meet:[['الثلاثاء ٠٨:٠٠ ص – ٠٩:٤٠ ص','MECHANICS OF MATERIAL LAB']],exam:''},
+    {code:'QU 115',name:'المقرر ١٥',sec:'2838',act:'نظري',hrs:'3',open:1,meet:[['الاثنين ٠٨:٠٠ ص – ٠٩:٤٠ ص','B1-F080']],exam:'٣٥'},
+    {code:'QU 115',name:'المقرر ١٥',sec:'2840',act:'تدريب',hrs:'',open:1,meet:[['الأربعاء ٠٨:٠٠ ص – ٠٩:٤٠ ص','B1-F080']],exam:'٣٥'},
+    {code:'QU 118',name:'المقرر ١٨',sec:'3407',act:'نظري',hrs:'3',open:1,meet:[['الاثنين ٠٨:٠٠ ص – ٠٩:٤٠ ص','B1-F074']],exam:'٤٥'},
+    {code:'QU 118',name:'المقرر ١٨',sec:'3404',act:'نظري',hrs:'3',open:0,meet:[['الأحد ١٢:٤٠ م – ٠٢:٢٠ م','فصل دراسي']],exam:'٤٥'}
+  ];
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function renderUni(list){
+    var tb=$('#uni-tbody'); tb.innerHTML='';
+    list.forEach(function(c,i){
+      var tr=document.createElement('tr');
+      tr.innerHTML =
+        '<td data-th="رمز المقرر"><span class="c-code">'+esc(c.code)+'</span></td>'+
+        '<td data-th="اسم المقرر">'+esc(c.name)+'</td>'+
+        '<td class="cell-hq" data-th="المقر">مقر الجامعة الرئيس طلاب</td>'+
+        '<td data-th="الشعبة"><span class="c-sec">'+toAr(c.sec)+'</span></td>'+
+        '<td data-th="النشاط">'+esc(c.act)+'</td>'+
+        '<td data-th="الساعات">'+(c.hrs?toAr(c.hrs):'')+'</td>'+
+        '<td data-th="الحالة"><span class="status '+(c.open?'open':'closed')+'"><span class="dot"></span>'+(c.open?'مفتوحة':'مغلقة')+'</span></td>'+
+        '<td class="cell-details" data-th="التفاصيل"><button class="d-btn" type="button">التفاصيل <i class="ph ph-caret-down"></i></button></td>';
+      var dtr=document.createElement('tr');
+      dtr.className='detail-row'; dtr.hidden=true;
+      dtr.innerHTML='<td colspan="7">'+c.meet.map(function(m){return '<span class="meeting"><b>'+esc(m[0])+'</b>'+(m[1]?'<span>'+esc(m[1])+'</span>':'')+'</span>'}).join('')+
+        (c.exam?'<span class="meeting"><b>فترة الاختبار: '+esc(c.exam)+'</b></span>':'')+'</td>';
+      $('button',tr).addEventListener('click',function(){
+        dtr.hidden=!dtr.hidden;
+        tr.classList.toggle('open-detail', !dtr.hidden);
+        coach.position();
+      });
+      if(i===0){ tr.id='uni-first-row'; dtr.id='uni-first-detail' }
+      if(!c.open && !document.getElementById('uni-closed-row')) tr.id = tr.id || 'uni-closed-row';
+      tb.appendChild(tr); tb.appendChild(dtr);
+    });
+    $('#uni-count').innerHTML = '<strong>'+toAr(list.length)+'</strong> شعبة مطروحة';
+  }
+  renderUni(UNI);
+  $('#uni-q').addEventListener('input', function(){
+    var t=this.value.trim();
+    var t2=t.replace(/[٠-٩]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.indexOf(d)});
+    if(!t){ renderUni(UNI); return }
+    renderUni(UNI.filter(function(c){
+      return (c.code+' '+c.name+' '+c.sec+' '+c.act).indexOf(t)>-1 || (c.code+' '+c.name+' '+c.sec+' '+c.act).indexOf(t2)>-1;
+    }));
+  });
+
+  var uniShotDone=false;
+  function loadUniShot(){
+    if(uniShotDone) return; uniShotDone=true;
+    var names;
+    if(device==='desktop'){
+      names=['tut-uni-desktop.png','tut-uni-desktop.jpg','tut-uni-desktop.jpeg'];
+    } else {
+      var isTablet = Math.min(window.innerWidth, window.innerHeight) >= 600;
+      names = isTablet
+        ? ['tut-uni-tablet.png','tut-uni-tablet.jpg','tut-uni-tablet.jpeg','tut-uni-mobile.png','tut-uni-mobile.jpg','tut-uni-mobile.jpeg']
+        : ['tut-uni-mobile.png','tut-uni-mobile.jpg','tut-uni-mobile.jpeg'];
+    }
+    (function tryNext(i){
+      if(i>=names.length) return;
+      var im=new Image();
+      im.onload=function(){
+        var shot=$('#uni-shot');
+        shot.src=names[i]; shot.hidden=false;
+        $('#uni-mock').style.display='none';
+      };
+      im.onerror=function(){ tryNext(i+1) };
+      im.src=names[i];
+    })(0);
+  }
+
+  function startUniTour(){
+    if(device==='desktop'){
+      coach.start([
+        {el:'#uni-bm-chip', wait:'#uni-bm-chip', icon:'ph-cursor-click', title:'الآن اضغط الزر!', body:'هذه صفحة <b>«المقررات المطروحة وفق الخطة»</b> في موقع الجامعة. زر <b>QU Schedule</b> الذي سحبته صار موجوداً في شريط العلامات المرجعية. وأنت داخل هذه الصفحة، <b>اضغطه الآن</b> وشاهد ما يحدث.', before:function(){ $('#uni-bm').classList.add('show') }}
+      ], function(){ goTo('s-extract') });
+      $('#uni-bm-chip').addEventListener('click', function h(){ $('#uni-bm-chip').removeEventListener('click',h); coach.end() });
+    } else {
+      coach.start([
+        {icon:'ph-arrow-fat-line-up', title:'أنت الآن في صفحة الجامعة', body:'هذه صفحة <b>«المقررات المطروحة وفق الخطة»</b> في موقع الجامعة. وأنت داخلها، اضغط على <b>شريط البحث في أعلى المتصفح</b> والصق الرابط الذي نسخته. تعال نجرّبها بمحاكاة مطابقة لجوالك.', nextLabel:'افتح شريط العنوان'}
+      ], function(){ goTo('s-bar') });
+    }
+  }
+
+  var FULL='javascript:!function()%7Bvar%20e=document.createElement(\'script\');e.src=\'https%3A//mutlaq001.github.io/schedule/extractor.js?v=\'+Date.now(),document.head.appendChild(e)%7D();';
+  var NOJS=FULL.replace(/^javascript:/,'');
+  function startBarTour(){
+    var addr=$('#addr-text'), field=$('#addr-field'), note=$('#addr-note');
+    coach.start([
+      {el:'#addr-field', wait:'#paste-btn', icon:'ph-clipboard-text', title:'الصق الرابط', body:'اضغط زر <b>«الصق الرابط المنسوخ»</b> بالأسفل — مثل ما راح تسوي لصقاً عادياً في شريط بحث متصفحك.'},
+      {el:'#addr-field', wait:'#fix-btn', icon:'ph-warning', title:'المتصفح حذف شيئاً مهماً!', body:'لاحظ أن كلمة <span class="hl-no">javascript:</span> اختفت من بداية الرابط — أغلب المتصفحات تحذفها تلقائياً عند اللصق. <b>ارجع لبداية النص واكتبها يدوياً</b> (جافا سكريبت ثم نقطتان رأسيتان). اضغط الزر بالأسفل ليكتبها عنك.'},
+      {el:'#suggests', wait:'#sg-globe', icon:'ph-globe-simple', title:'أهم خطوة: اختر الكوكب 🌐', body:'ظهرت لك خانتان في الاقتراحات:<br>• خيار بأيقونة <span class="hl-ok">الكوكب</span> — هذا الصحيح، وهو الذي ينقلك لصفحة المقررات ويضيفها.<br>• خيار <span class="hl-no">«انتقال»</span> بأيقونة العدسة — لن يفتح الموقع ولن يضيف شيئاً.<br><b>اضغط خيار الكوكب الآن</b> (وجرّب العدسة إن حبيت تشوف الفرق).'}
+    ], function(){ goTo('s-extract') });
+
+    $('#paste-btn').onclick=function(){
+      field.classList.add('focus');
+      addr.classList.remove('placeholder');
+      addr.innerHTML='<span class="caret"></span>'+esc(NOJS);
+      $('#addr-clear').hidden=false;
+      note.className='addr-note show';
+      note.innerHTML='<i class="ph-fill ph-warning-circle"></i><span>انتبه: المتصفح حذف <b style="font-family:monospace">javascript:</b> من بداية الرابط تلقائياً</span>';
+      this.hidden=true;
+      $('#fix-btn').hidden=false;
+      coach.next();
+    };
+    $('#fix-btn').onclick=function(){
+      var btn=this; btn.disabled=true;
+      var word='javascript:', i=0;
+      var pre=document.createElement('span'); pre.className='js-pre';
+      addr.innerHTML=''; 
+      var caret=document.createElement('span'); caret.className='caret';
+      var rest=document.createElement('span'); rest.textContent=NOJS;
+      addr.appendChild(pre); addr.appendChild(caret); addr.appendChild(rest);
+      var iv=setInterval(function(){
+        pre.textContent+=word[i]; i++;
+        if(i>=word.length){
+          clearInterval(iv);
+          caret.remove();
+          note.className='addr-note good show';
+          note.innerHTML='<i class="ph-fill ph-check-circle"></i><span>ممتاز! الرابط اكتمل بشكل صحيح</span>';
+          btn.hidden=true;
+          setTimeout(function(){
+            $('#suggests').classList.add('show');
+            coach.next();
+          }, reduceMotion?50:450);
+        }
+      }, reduceMotion?5:90);
+    };
+    $('#sg-search').addEventListener('click', function(){
+      var r=this;
+      r.classList.remove('shake'); void r.offsetWidth; r.classList.add('shake');
+      $('#sg-warn').classList.add('show');
+      coach.position();
+    });
+    $('#sg-globe').addEventListener('click', function h(){
+      $('#sg-globe').removeEventListener('click', h);
+      coach.end();
+    });
+  }
+
+  function runExtract(){
+    $('#ex-count').textContent=toAr(UNI.length);
+    var t = reduceMotion ? [80,160,240,400] : [600,1500,2400,3100];
+    setTimeout(function(){ mark('ex-1') }, t[0]);
+    setTimeout(function(){ mark('ex-2') }, t[1]);
+    setTimeout(function(){ mark('ex-3') }, t[2]);
+    setTimeout(function(){ goTo('s-app') }, t[3]);
+    function mark(id){
+      var e=$('#'+id);
+      e.classList.add('done');
+      $('i',e).className='ph-fill ph-check-circle';
+    }
+  }
+
+  var COURSES=[
+    {id:'c1', code:'QU 101', name:'المقرر ١', hrs:3, color:'#8b5cf6', added:false, secs:[
+      {n:'1833', type:'نظري', ins:'د. عبدالله الحربي', loc:'قاعة ١٠٥', day:0, start:12.66, len:1.67},
+      {n:'1835', type:'تدريب', ins:'د. عبدالله الحربي', loc:'معمل ٣', day:3, start:12.66, len:1.67}
+    ]},
+    {id:'c2', code:'QU 105', name:'المقرر ٥', hrs:3, color:'#14b8a6', added:true, secs:[
+      {n:'2783', type:'نظري', ins:'د. سلطان العتيبي', loc:'قاعة ٢٠١', day:2, start:10, len:0.85},
+      {n:'2789', type:'عملي', ins:'م. فهد القحطاني', loc:'معمل ٧', day:2, start:12.66, len:1.67}
+    ]},
+    {id:'c3', code:'QU 111', name:'المقرر ١١', hrs:3, color:'#f59e0b', added:true, secs:[
+      {n:'1841', type:'نظري', ins:'د. ماجد الرشيدي', loc:'قاعة ١١٢', day:0, start:14.66, len:1.67},
+      {n:'1843', type:'تمارين', ins:'د. ماجد الرشيدي', loc:'قاعة ١١٢', day:3, start:14.66, len:1.67}
+    ]},
+    {id:'c4', code:'QU 113', name:'المقرر ١٣', hrs:2, color:'#38bdf8', added:true, secs:[
+      {n:'2768', type:'نظري', ins:'د. خالد الشمري', loc:'قاعة ٣٠٤', day:2, start:11, len:0.85},
+      {n:'2771', type:'عملي', ins:'م. نايف الدوسري', loc:'معمل ٢', day:2, start:8, len:1.67}
+    ]},
+    {id:'c5', code:'QU 115', name:'المقرر ١٥', hrs:2, color:'#ec4899', added:true, secs:[
+      {n:'2838', type:'نظري', ins:'د. بندر المطيري', loc:'قاعة ١٢٠', day:1, start:8, len:1.67},
+      {n:'2840', type:'تدريب', ins:'د. بندر المطيري', loc:'معمل ٥', day:3, start:8, len:1.67}
+    ]}
+  ];
+  var DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس'];
+  var CAL={hstart:8, hend:17, header:46, hourH:46};
+  var dayLayers=[];
+  function buildCal(){
+    var g=$('#cal-grid'); g.innerHTML='';
+    var timecol=document.createElement('div'); timecol.className='cg-timecol';
+    var tHtml='<div class="cg-corner">الوقت</div>';
+    for(var h=CAL.hstart; h<CAL.hend; h++){
+      var lbl = h<12 ? toAr(h)+' ص' : toAr(h===12?12:h-12)+' م';
+      tHtml+='<div class="cg-time">'+lbl+'</div>';
+    }
+    timecol.innerHTML=tHtml;
+    g.appendChild(timecol);
+    dayLayers=[];
+    var slotCount=CAL.hend-CAL.hstart;
+    DAYS.forEach(function(d){
+      var col=document.createElement('div'); col.className='cg-daycol';
+      var slots='';
+      for(var s=0;s<slotCount;s++) slots+='<div class="cg-slot"></div>';
+      col.innerHTML='<div class="cg-day">'+d+'</div><div class="cg-slots">'+slots+'</div>';
+      var layer=document.createElement('div'); layer.className='cg-layer';
+      col.appendChild(layer);
+      dayLayers.push(layer);
+      g.appendChild(col);
+    });
+    COURSES.forEach(function(c){ if(c.added) c.secs.forEach(function(s){ placeEvent(c,s,false) }) });
+  }
+  function placeEvent(c,s,pop){
+    var ev=document.createElement('div');
+    ev.className='cal-ev'+(pop?' pop':'');
+    ev.style.background=c.color;
+    ev.style.top=(CAL.header+(s.start-CAL.hstart)*CAL.hourH+1)+'px';
+    ev.style.height=(s.len*CAL.hourH-4)+'px';
+    var inner='<b>'+esc(c.name)+'</b><small>'+toAr(s.n)+' - '+esc(s.ins)+'</small>';
+    if(s.len>1.2) inner+='<small class="ev-loc"><i class="ph ph-map-pin"></i> '+esc(s.loc)+'</small>';
+    ev.innerHTML=inner;
+    dayLayers[s.day].appendChild(ev);
+  }
+  function buildList(){
+    var host=$('#course-list'); host.innerHTML='';
+    COURSES.forEach(function(c){
+      var item=document.createElement('div'); item.className='course-item open';
+      var secsHTML=c.secs.map(function(s,si){
+        return '<div class="section-btn'+(c.added?' selected':'')+'"'+(c.id==='c1'&&si===0?' id="add-demo"':'')+' data-si="'+si+'"><div class="section-btn-number">'+toAr(s.n)+'</div><div class="section-type">'+esc(s.type)+'</div></div>';
+      }).join('');
+      item.innerHTML='<div class="course-item-header"><span class="color-dot" style="background-color:'+c.color+'"></span><div class="course-info"><h3>'+esc(c.name)+' ('+esc(c.code)+')</h3><p>'+toAr(c.secs.length)+' شعب متاحة</p></div><i class="ph ph-caret-down toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">'+secsHTML+'</div></div>';
+      $('.course-item-header',item).addEventListener('click', function(){ item.classList.toggle('open') });
+      if(!c.added){
+        $$('.section-btn',item).forEach(function(btn){
+          btn.addEventListener('click', function(){ addCourse(c) });
+        });
+      }
+      host.appendChild(item);
+    });
+  }
+  function addCourse(c){
+    if(c.added) return;
+    c.added=true;
+    c.secs.forEach(function(s){ placeEvent(c,s,true) });
+    buildList();
+    $('#st-courses').textContent=toAr(5);
+    $('#st-credits').textContent=toAr(13);
+    $('#st-hours').textContent=toAr(14);
+    coach.clearPulse();
+    setTimeout(function(){ coach.next() }, reduceMotion?60:650);
+  }
+  function startAppTour(){
+    buildCal(); buildList();
+    coach.start([
+      {icon:'ph-confetti', title:'أهلاً بجدولك!', body:'هذا موقع <b>QU Schedule</b> — كل الشعب اللي كانت في صفحة الجامعة انتقلت هنا تلقائياً بنفس ترتيبها وتفاصيلها، بدون أي كتابة يدوية.'},
+      {el:'#am-side', icon:'ph-stack', title:'قائمة المقررات', body:'جميع المقررات المطروحة صارت هنا. اضغط أيقونة البحث للبحث باسم المقرر أو الدكتور أو رقم الشعبة، وافتح أي مقرر لتشوف كل شعبه.'},
+      {el:'#add-demo', wait:'#add-demo', icon:'ph-plus-circle', title:'جرّبها بنفسك: أضف مقرراً', body:'اضغط على شعبة <b>١٨٣٣ (نظري)</b> لإضافة «المقرر ١» إلى الجدول — ولاحظ أن شعبة <b>التدريب المرتبطة</b> بها تنضاف معها تلقائياً، مثل نظام الجامعة تماماً.'},
+      {el:'#am-cal', icon:'ph-calendar-check', title:'جدولك الأسبوعي', body:'كل شعبة تُرسم في مكان وقتها بلون مميز لمقررها. لو تعارضت شعبتان، يظهر لك التعارض فوراً مع زر <b>«حل التعارض»</b> يقترح عليك البدائل.'},
+      {el:'#am-stats', icon:'ph-chart-bar', title:'إحصائيات لحظية', body:'المقررات، الساعات المعتمدة، أيام الدوام، والساعات الأسبوعية — تتحدث مباشرة مع كل إضافة أو حذف عشان توازن جدولك.'},
+      {el:'#am-save', icon:'ph-camera', title:'حفظ كصورة', body:'يصدّر جدولك <b>كصورة أنيقة</b> جاهزة للمشاركة أو حفظها بالاستديو.'},
+      {el:'#am-share', icon:'ph-share-network', title:'المشاركة والمقارنة', body:'شارك جدولك برابط أو رمز QR، وقارنه مع جداول أصدقائك لمعرفة <b>الفراغات المشتركة</b> بينكم.'},
+      {el:'#am-settings', icon:'ph-gear-six', title:'الإعدادات: كنز الموقع', body:'من هنا تلقى <b>الجدول الذكي</b> (يبني لك أفضل جدول تلقائياً)، إخفاء الشعب المغلقة، تصدير للتقويم، تحليل الوقت، الألوان والمظهر، وأكثر.', nextLabel:'إنهاء الجولة'}
+    ], function(){ goTo('s-done') });
+  }
+
+  function confetti(){
+    if(reduceMotion) return;
+    var host=$('#confetti'); host.innerHTML='';
+    var colors=['#8b5cf6','#14b8a6','#f59e0b','#38bdf8','#ec4899','#c4b5fd'];
+    for(var i=0;i<90;i++){
+      var p=document.createElement('i');
+      p.style.left=(Math.random()*100)+'%';
+      p.style.background=colors[i%colors.length];
+      p.style.animationDuration=(2.2+Math.random()*2.4)+'s';
+      p.style.animationDelay=(Math.random()*0.9)+'s';
+      p.style.transform='rotate('+(Math.random()*360)+'deg)';
+      host.appendChild(p);
+    }
+    setTimeout(function(){ host.innerHTML='' }, 5200);
+  }
+})();
+</script>
+<script>
+(function(){
+  var canvas=document.getElementById('starfield-canvas');
+  if(!canvas||document.body.classList.contains('high-performance'))return;
+  var ctx=canvas.getContext('2d');
+  var w,h;
+  function setSize(){w=canvas.width=window.innerWidth;h=canvas.height=window.innerHeight}
+  setSize();
+  var resizeTimer=null;
+  window.addEventListener('resize',function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(setSize,200)});
+  var isSmallScreen=window.innerWidth<1024;
+  var lowEndDevice=(navigator.deviceMemory&&navigator.deviceMemory<=4)||(navigator.hardwareConcurrency&&navigator.hardwareConcurrency<=4);
+  var stars=[],shootingStars=[],numStars=isSmallScreen?(lowEndDevice?18:26):(lowEndDevice?45:70),numShootingStars=isSmallScreen?0:1;
+  var staticMode=isSmallScreen&&lowEndDevice;
+  var frameInterval=1000/30,lastFrame=0;
+  function Star(){this.reset()}
+  Star.prototype.reset=function(){this.x=Math.random()*w;this.y=Math.random()*h;this.size=Math.random()*1.2+0.4;this.opacity=Math.random()*0.35+0.12;this.speedX=(Math.random()-0.5)*0.1;this.speedY=(Math.random()-0.5)*0.1};
+  Star.prototype.draw=function(){ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fillStyle='rgba(214, 205, 255, '+this.opacity+')';ctx.fill()};
+  Star.prototype.update=function(){this.x+=this.speedX;this.y+=this.speedY;if(this.x<0||this.x>w||this.y<0||this.y>h)this.reset()};
+  function ShootingStar(){this.reset()}
+  ShootingStar.prototype.reset=function(){this.x=Math.random()*w;this.y=0;this.len=Math.random()*80+10;this.speed=Math.random()*8+6;this.size=Math.random()*1+0.5;this.waitTime=new Date().getTime()+Math.random()*12000+6000;this.active=false};
+  ShootingStar.prototype.update=function(){if(this.active){this.x-=this.speed;this.y+=this.speed;if(this.x<-this.len||this.y>h+this.len)this.reset()}else if(this.waitTime<new Date().getTime()){this.active=true}};
+  ShootingStar.prototype.draw=function(){if(this.active){var grad=ctx.createLinearGradient(this.x,this.y,this.x+this.len,this.y-this.len);grad.addColorStop(0,'rgba(255, 255, 255, 0.8)');grad.addColorStop(1,'rgba(255, 255, 255, 0)');ctx.strokeStyle=grad;ctx.lineWidth=this.size;ctx.beginPath();ctx.moveTo(this.x,this.y);ctx.lineTo(this.x-this.len,this.y+this.len);ctx.stroke()}};
+  for(var i=0;i<numStars;i++)stars.push(new Star());
+  for(var j=0;j<numShootingStars;j++)shootingStars.push(new ShootingStar());
+  var reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reducedMotion||staticMode){stars.forEach(function(s){s.draw()});return}
+  function animate(ts){
+    requestAnimationFrame(animate);
+    if(document.hidden)return;
+    if(ts-lastFrame<frameInterval)return;
+    lastFrame=ts;
+    ctx.clearRect(0,0,w,h);
+    stars.forEach(function(s){s.update();s.draw()});
+    shootingStars.forEach(function(s){s.update();s.draw()});
+  }
+  requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>
