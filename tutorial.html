@@ -428,6 +428,9 @@ i.ph, i.ph-fill{line-height:1}
 .phone-actions .btn{width:100%}
 .type-anim{color:#6ee7b7}
 
+.tab-ico{display:inline-block; vertical-align:-.125em; flex:none}
+.copy-sim .cs-title .tab-ico{color:var(--primary); font-size:20px}
+
 .pulse-target{position:relative; z-index:502 !important}
 .pulse-target::after{
   content:""; position:absolute; inset:-5px; border-radius:inherit; pointer-events:none;
@@ -748,7 +751,7 @@ i.ph, i.ph-fill{line-height:1}
         </button>
         <button class="device-card" id="pick-tablet">
           <span class="d-tag" hidden>جهازك الحالي</span>
-          <div class="d-ico"><i class="ph ph-device-tablet"></i></div>
+          <div class="d-ico"><svg class="tab-ico" viewBox="0 0 256 256" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"><rect x="48" y="32" width="160" height="192" rx="26"/></svg></div>
           <h3>جهاز لوحي</h3>
           <p>الصفحة تفتح بشكل الكمبيوتر، فتنسخ الكود من زر «للأوحيات».</p>
           <span class="d-go">ابدأ الشرح <i class="ph ph-arrow-left"></i></span>
@@ -794,7 +797,7 @@ i.ph, i.ph-fill{line-height:1}
       <p>الجهاز اللوحي يفتح الصفحة الأساسية بشكل <b>الكمبيوتر</b>، فيظهر لك زر السحب — والسحب ما يشتغل باللمس. لذلك تحته بتلقى زر <b>«للأوحيات»</b> ينسخ لك الكود مباشرة. جرّبها هنا:</p>
     </div>
     <div class="glass copy-sim tablet-sim">
-      <div class="cs-title"><i class="ph ph-device-tablet"></i> محاكاة: قسم التثبيت في الصفحة الأساسية</div>
+      <div class="cs-title"><svg class="tab-ico" viewBox="0 0 256 256" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"><rect x="48" y="32" width="160" height="192" rx="26"/></svg> محاكاة: قسم التثبيت في الصفحة الأساسية</div>
       <div class="cs-sub">هذا بالضبط الشكل اللي بيظهر لك في QU Schedule</div>
       <div class="tsim-panel">
         <div class="tsim-head"><i class="ph ph-arrows-out-cardinal"></i> التثبيت على الكمبيوتر</div>
@@ -803,7 +806,7 @@ i.ph, i.ph-fill{line-height:1}
         <div class="tsim-or"><span>أو</span></div>
         <div class="tsim-row">
           <span class="tsim-gbtn"><i class="ph ph-eye"></i> ألقِ نظرة</span>
-          <button class="tsim-gbtn hot" id="copy-btn-t"><i class="ph ph-device-tablet"></i> للأوحيات</button>
+          <button class="tsim-gbtn hot" id="copy-btn-t"><svg class="tab-ico" viewBox="0 0 256 256" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"><rect x="48" y="32" width="160" height="192" rx="26"/></svg> للأوحيات</button>
           <span class="tsim-gbtn"><i class="ph ph-question"></i> شرح</span>
           <span class="tsim-gbtn"><i class="ph ph-sparkle"></i> المميزات</span>
         </div>
@@ -1089,7 +1092,7 @@ i.ph, i.ph-fill{line-height:1}
   }
 
   var coach = {
-    steps:[], i:0, on:false, onEnd:null, target:null,
+    steps:[], i:0, on:false, onEnd:null, target:null, waitEl:null,
     el:{root:$('#coach'), ring:$('#coach-ring'), tip:$('#coach-tip'), step:$('#ct-step'), title:$('#ct-title'), body:$('#ct-body'), dots:$('#ct-dots'), prev:$('#ct-prev'), next:$('#ct-next'), wait:$('#ct-wait')},
     start:function(steps,onEnd){
       this.steps=steps; this.onEnd=onEnd||null; this.i=0; this.on=true;
@@ -1114,10 +1117,8 @@ i.ph, i.ph-fill{line-height:1}
       this.el.wait.hidden = !waiting;
       this.el.next.textContent = s.nextLabel || (i===this.steps.length-1 ? 'إنهاء' : 'التالي');
       this.target = s.el ? $(s.el) : null;
-      if(waiting){
-        var w = $(s.wait);
-        if(w) w.classList.add('pulse-target');
-      }
+      this.waitEl = waiting ? $(s.wait) : null;
+      if(this.waitEl) this.waitEl.classList.add('pulse-target');
       if(this.target){
         this.scrollToTarget();
         setTimeout(function(){ self.position() }, reduceMotion?30:430);
@@ -1145,9 +1146,17 @@ i.ph, i.ph-fill{line-height:1}
         ring.style.top=(r.top-6)+'px'; ring.style.left=(r.left-6)+'px';
         ring.style.width=(r.width+12)+'px'; ring.style.height=(r.height+12)+'px';
         if(vw>640){
+          var pr={top:r.top, bottom:r.bottom, left:r.left, right:r.right};
+          if(this.waitEl){
+            var wr=this.waitEl.getBoundingClientRect();
+            if(wr.width>0 && wr.height>0){
+              pr.top=Math.min(pr.top,wr.top); pr.bottom=Math.max(pr.bottom,wr.bottom);
+              pr.left=Math.min(pr.left,wr.left); pr.right=Math.max(pr.right,wr.right);
+            }
+          }
           var th=tip.offsetHeight, tw=tip.offsetWidth;
-          var top = (r.bottom+14+th < vh-10) ? r.bottom+14 : Math.max(10, r.top-14-th);
-          var left = Math.min(Math.max(12, r.left + r.width/2 - tw/2), vw-tw-12);
+          var top = (pr.bottom+14+th < vh-10) ? pr.bottom+14 : Math.max(10, pr.top-14-th);
+          var left = Math.min(Math.max(12, (pr.left+pr.right)/2 - tw/2), vw-tw-12);
           tip.style.top=top+'px'; tip.style.left=left+'px'; tip.style.transform='none';
         }
       } else {
@@ -1169,7 +1178,7 @@ i.ph, i.ph-fill{line-height:1}
     end:function(silent){
       if(!this.on) return;
       var cb=this.onEnd;
-      this.on=false; this.onEnd=null; this.clearPulse();
+      this.on=false; this.onEnd=null; this.waitEl=null; this.clearPulse();
       this.el.root.classList.remove('on');
       document.body.classList.remove('coach-on');
       if(!silent && cb) cb();
@@ -1177,6 +1186,18 @@ i.ph, i.ph-fill{line-height:1}
   };
   coach.el.next.addEventListener('click', function(){ coach.next() });
   coach.el.prev.addEventListener('click', function(){ coach.prev() });
+  window.addEventListener('keydown', function(e){
+    if((e.key!=='Enter' && e.key!=='NumpadEnter') || e.repeat || !coach.on) return;
+    var t=e.target;
+    if(t && /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+    e.preventDefault();
+    if(!coach.el.next.hidden){ coach.el.next.click(); return }
+    var w=coach.waitEl;
+    if(w && !w.disabled && !w.hidden){
+      var wr=w.getBoundingClientRect();
+      if(wr.width>0 && wr.height>0) w.click();
+    }
+  });
   window.addEventListener('resize', function(){ coach.position() });
   window.addEventListener('scroll', function(){ coach.position() }, true);
 
