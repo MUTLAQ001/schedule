@@ -8721,6 +8721,30 @@ ${shareButtonHTML}
           const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;'; wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); } };
           this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
           this.state.calendar.render();
+          this._setupCalendarSizeGuard(calendarEl);
+        },
+        _setupCalendarSizeGuard(calendarEl) {
+          const sync = () => {
+            if (this._calSizeRaf) cancelAnimationFrame(this._calSizeRaf);
+            this._calSizeRaf = requestAnimationFrame(() => {
+              if (document.body.classList.contains('exporting-image')) return;
+              try { this.state.calendar?.updateSize(); } catch (e) { }
+            });
+          };
+          if (this._calSizeObserver) { try { this._calSizeObserver.disconnect(); } catch (e) { } this._calSizeObserver = null; }
+          if (typeof ResizeObserver !== 'undefined') {
+            this._calSizeObserver = new ResizeObserver(() => sync());
+            if (calendarEl.parentElement) this._calSizeObserver.observe(calendarEl.parentElement);
+            const card = calendarEl.closest('.calendar-wrapper');
+            if (card && card !== calendarEl.parentElement) this._calSizeObserver.observe(card);
+          }
+          if (!this._calSizeGuardsBound) {
+            this._calSizeGuardsBound = true;
+            if (document.fonts && document.fonts.ready) { document.fonts.ready.then(sync).catch(() => { }); }
+            document.addEventListener('visibilitychange', () => { if (!document.hidden) sync(); });
+            window.addEventListener('pageshow', sync);
+            window.addEventListener('focus', sync);
+          }
         },
         _addSchedule(name, isDefault = false) {
           let scheduleName = name;
