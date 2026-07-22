@@ -6333,6 +6333,22 @@
       padding-bottom: 4px !important;
     }
 
+    .fc-event .evt-1h small {
+      font-size: 0.95em;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    body.exporting-image .fc-event .evt-1h b {
+      line-height: 1.5 !important;
+      padding-bottom: 2px !important;
+    }
+
+    body.exporting-image .fc-event .evt-1h small {
+      white-space: normal;
+    }
+
     body.exporting-image .fc .fc-timegrid-slot-label,
     body.exporting-image .fc .fc-col-header .fc-timegrid-axis,
     body.exporting-image #mobile-calendar .fc-scrollgrid-section-header>td {
@@ -8718,7 +8734,7 @@ ${shareButtonHTML}
         _initializeCalendar() {
           if (this.state.calendar) this.state.calendar.destroy();
           const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
-          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: 0.8rem; line-height: 1.4;'; wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); } };
+          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const durMin = (arg.event.start && arg.event.end) ? Math.round((arg.event.end - arg.event.start) / 60000) : 999; const isShort = durMin <= 60; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: ' + (isShort ? '0.66rem' : '0.8rem') + '; line-height: ' + (isShort ? '1.2' : '1.4') + ';'; if (isShort) wrapper.classList.add('evt-1h'); wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); } };
           this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
           this.state.calendar.render();
           this._setupCalendarSizeGuard(calendarEl);
