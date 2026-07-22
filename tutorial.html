@@ -121,7 +121,7 @@ i.ph, i.ph-fill{line-height:1}
 .hero h1{font-family:var(--font-title); font-weight:700; font-size:clamp(26px,5.6vw,40px); margin:18px 0 10px}
 .hero h1 em{font-style:normal; background:linear-gradient(90deg,hsl(var(--primary-hue),88%,74%),var(--color-primary)); -webkit-background-clip:text; background-clip:text; color:transparent}
 .hero p{color:var(--muted); max-width:520px; margin:0 auto; font-size:15.5px}
-.device-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; max-width:640px; margin:34px auto 0}
+.device-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:14px; max-width:960px; margin:34px auto 0}
 .device-card{
   position:relative; text-align:right; border-radius:var(--radius);
   background:var(--card); border:1px solid var(--border);
@@ -169,7 +169,7 @@ i.ph, i.ph-fill{line-height:1}
 
 .btn{
   display:inline-flex; align-items:center; justify-content:center; gap:9px;
-  border:none; border-radius:var(--radius-full); padding:13px 26px;
+  border:none; border-radius:var(--radius-full); padding:13px 26px; text-decoration:none;
   font-family:var(--font-body); font-size:15px; font-weight:600; color:#fff;
   background:var(--accent-fill); text-shadow:var(--accent-text-shadow);
   box-shadow:var(--accent-ring),var(--accent-lift); transition:var(--transition);
@@ -208,6 +208,52 @@ i.ph, i.ph-fill{line-height:1}
   border-radius:99px; padding:8px 18px; opacity:0; transform:scale(.85); transition:var(--tr-smooth);
 }
 .copied-chip.show{opacity:1; transform:scale(1)}
+
+.tablet-sim{max-width:600px}
+.tsim-panel{
+  border-radius:var(--radius-md); border:1px solid var(--border);
+  background:linear-gradient(180deg,#131120,#0e0c18); padding:22px 18px 20px; text-align:center;
+}
+.light .tsim-panel{background:linear-gradient(180deg,#f2f0fb,#eae7f7)}
+.tsim-head{display:flex; align-items:center; justify-content:center; gap:8px; font-family:var(--font-title); font-weight:600; font-size:15px; margin-bottom:8px}
+.tsim-head i{color:var(--color-primary)}
+.tsim-note{color:var(--muted); font-size:12.5px; margin-bottom:16px; line-height:1.7}
+.tsim-note b{color:#fca5a5}
+.tsim-bml{cursor:not-allowed; opacity:.55}
+.tsim-or{display:flex; align-items:center; gap:12px; margin:16px 4px 14px; color:var(--muted); font-size:12px}
+.tsim-or::before,.tsim-or::after{content:""; flex:1; height:1px; background:var(--border)}
+.tsim-row{display:flex; flex-wrap:wrap; gap:8px; justify-content:center}
+.tsim-gbtn{
+  display:inline-flex; align-items:center; gap:6px; font-size:12.5px; font-weight:600;
+  color:var(--color-text); background:rgba(255,255,255,.04); border:1px solid var(--color-border);
+  border-radius:99px; padding:8px 14px; opacity:.5; transition:var(--tr);
+}
+.light .tsim-gbtn{background:rgba(0,0,0,.03)}
+.tsim-gbtn.hot{
+  opacity:1; color:#fff; background:var(--accent-fill); border-color:transparent;
+  text-shadow:var(--accent-text-shadow); box-shadow:var(--accent-ring); cursor:pointer;
+}
+.tsim-gbtn.hot::after{
+  content:""; position:absolute; inset:0; border-radius:99px; pointer-events:none;
+}
+.tsim-gbtn.hot{position:relative; animation:tsimPulse 1.9s ease-out infinite}
+.tsim-gbtn.hot:hover{transform:translateY(-2px); filter:brightness(1.06)}
+.tsim-gbtn.hot.done{animation:none; opacity:.75}
+@keyframes tsimPulse{0%{box-shadow:var(--accent-ring),0 0 0 0 rgba(var(--rgb-primary),.5)}70%,100%{box-shadow:var(--accent-ring),0 0 0 13px rgba(var(--rgb-primary),0)}}
+
+.uni-skeleton{background:#F4F6FA; padding:16px; min-height:300px}
+.uni-skeleton span{
+  display:block; border-radius:10px; margin-bottom:11px;
+  background:linear-gradient(90deg,#e6ecf5 25%,#f5f8fc 37%,#e6ecf5 63%);
+  background-size:400% 100%; animation:ukShimmer 1.4s ease-in-out infinite;
+}
+.uni-skeleton .uk-a{height:44px}
+.uni-skeleton .uk-b{height:20px; width:52%}
+.uni-skeleton .uk-c{height:34px}
+.uni-skeleton .uk-d{height:150px}
+.uni-skeleton .uk-note{display:flex; align-items:center; justify-content:center; gap:8px; color:#8b97ad; font-size:12.5px; padding:6px 0 2px}
+@keyframes ukShimmer{0%{background-position:100% 50%}100%{background-position:0 50%}}
+@media (prefers-reduced-motion: reduce){.uni-skeleton span{animation:none}.tsim-gbtn.hot{animation:none}}
 
 .drag-zone{max-width:720px; margin:0 auto; overflow:hidden}
 .dz-browser{border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border)}
@@ -350,7 +396,7 @@ i.ph, i.ph-fill{line-height:1}
 .suggests{background:#131318; padding:4px 0 6px; display:none}
 .suggests.show{display:block; animation:stageIn .35s cubic-bezier(.2,.8,.2,1)}
 .sg-row{
-  display:flex; align-items:center; gap:13px; width:100%; text-align:right;
+  display:flex; align-items:center; gap:13px; width:100%; direction:ltr; text-align:left;
   background:none; border:none; padding:13px 16px; color:#e8e6f2; position:relative;
   border-bottom:1px solid rgba(255,255,255,.06); transition:background .2s;
 }
@@ -362,7 +408,7 @@ i.ph, i.ph-fill{line-height:1}
 }
 .sg-row .sg-body{flex:1; min-width:0; direction:ltr; text-align:left}
 .sg-row .sg-main{font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; font-family:ui-monospace,Menlo,Consolas,monospace}
-.sg-row .sg-sub{font-size:11px; color:#79758f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; direction:rtl; text-align:right}
+.sg-row .sg-sub{font-size:11px; color:#79758f; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; direction:rtl; text-align:left}
 .sg-row .sg-tag{
   flex:none; font-size:10.5px; font-weight:700; border-radius:99px; padding:3px 10px; white-space:nowrap;
 }
@@ -583,7 +629,9 @@ i.ph, i.ph-fill{line-height:1}
     left:12px !important; right:12px !important; width:auto;
     top:auto !important; bottom:calc(14px + env(safe-area-inset-bottom)) !important;
     transform:none !important;
+    max-height:50vh; overflow-y:auto; overscroll-behavior:contain;
   }
+  body.coach-on .stage.active .wrap{padding-bottom:calc(62vh + env(safe-area-inset-bottom))}
 }
 
 .done-card{max-width:560px; margin:30px auto; padding:40px 26px; text-align:center}
@@ -694,8 +742,15 @@ i.ph, i.ph-fill{line-height:1}
         <button class="device-card" id="pick-mobile">
           <span class="d-tag" hidden>جهازك الحالي</span>
           <div class="d-ico"><i class="ph ph-device-mobile"></i></div>
-          <h3>جوال أو جهاز لوحي</h3>
-          <p>النسخ بالضغط المطول، ثم اللصق في شريط البحث بالمتصفح.</p>
+          <h3>جوال</h3>
+          <p>النسخ من زر «نسخ الكود»، ثم اللصق في شريط البحث بالمتصفح.</p>
+          <span class="d-go">ابدأ الشرح <i class="ph ph-arrow-left"></i></span>
+        </button>
+        <button class="device-card" id="pick-tablet">
+          <span class="d-tag" hidden>جهازك الحالي</span>
+          <div class="d-ico"><i class="ph ph-device-tablet"></i></div>
+          <h3>جهاز لوحي</h3>
+          <p>الصفحة تفتح بشكل الكمبيوتر، فتنسخ الكود من زر «للأوحيات».</p>
           <span class="d-go">ابدأ الشرح <i class="ph ph-arrow-left"></i></span>
         </button>
         <button class="device-card" id="pick-desktop">
@@ -727,6 +782,37 @@ i.ph, i.ph-fill{line-height:1}
     <div class="stage-actions">
       <button class="btn ghost" id="back-copy-m"><i class="ph ph-arrow-right"></i> رجوع</button>
       <button class="btn" id="next-copy-m" disabled>التالي: صفحة المقررات المطروحة <i class="ph ph-arrow-left"></i></button>
+    </div>
+  </div>
+</section>
+
+<section class="stage" id="s-copy-tablet">
+  <div class="wrap">
+    <div class="stage-head">
+      <span class="s-step"><i class="ph ph-number-circle-one"></i> الخطوة الأولى</span>
+      <h2>انسخ الكود من زر «للأوحيات»</h2>
+      <p>الجهاز اللوحي يفتح الصفحة الأساسية بشكل <b>الكمبيوتر</b>، فيظهر لك زر السحب — والسحب ما يشتغل باللمس. لذلك تحته بتلقى زر <b>«للأوحيات»</b> ينسخ لك الكود مباشرة. جرّبها هنا:</p>
+    </div>
+    <div class="glass copy-sim tablet-sim">
+      <div class="cs-title"><i class="ph ph-device-tablet"></i> محاكاة: قسم التثبيت في الصفحة الأساسية</div>
+      <div class="cs-sub">هذا بالضبط الشكل اللي بيظهر لك في QU Schedule</div>
+      <div class="tsim-panel">
+        <div class="tsim-head"><i class="ph ph-arrows-out-cardinal"></i> التثبيت على الكمبيوتر</div>
+        <div class="tsim-note">اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك…<br><b>(السحب لا يعمل على الشاشات اللمسية)</b></div>
+        <span class="bookmarklet tsim-bml"><i class="ph ph-magic-wand"></i> QU Schedule</span>
+        <div class="tsim-or"><span>أو</span></div>
+        <div class="tsim-row">
+          <span class="tsim-gbtn"><i class="ph ph-eye"></i> ألقِ نظرة</span>
+          <button class="tsim-gbtn hot" id="copy-btn-t"><i class="ph ph-device-tablet"></i> للأوحيات</button>
+          <span class="tsim-gbtn"><i class="ph ph-question"></i> شرح</span>
+          <span class="tsim-gbtn"><i class="ph ph-sparkle"></i> المميزات</span>
+        </div>
+      </div>
+      <div style="margin-top:16px"><span class="copied-chip" id="copied-t"><i class="ph-fill ph-check-circle"></i> تم نسخ كود الأوحيات بنجاح!</span></div>
+    </div>
+    <div class="stage-actions">
+      <button class="btn ghost" id="back-copy-t"><i class="ph ph-arrow-right"></i> رجوع</button>
+      <button class="btn" id="next-copy-t" disabled>التالي: صفحة المقررات المطروحة <i class="ph ph-arrow-left"></i></button>
     </div>
   </div>
 </section>
@@ -774,8 +860,12 @@ i.ph, i.ph-fill{line-height:1}
       </div>
       <div class="b-bm" id="uni-bm"><i class="ph ph-bookmarks-simple"></i> العلامات المرجعية: <span class="bm-chip" id="uni-bm-chip"><i class="ph ph-magic-wand"></i> QU Schedule</span></div>
       <div class="b-body" id="uni-scroll">
-        <img class="uni-shot" id="uni-shot" alt="صفحة المقررات المطروحة" hidden>
-        <div class="uni" id="uni-mock">
+        <img class="uni-shot" id="uni-shot" alt="صفحة المقررات المطروحة" decoding="async" hidden>
+        <div class="uni-skeleton" id="uni-skeleton" hidden>
+          <span class="uk-a"></span><span class="uk-b"></span><span class="uk-c"></span><span class="uk-d"></span>
+          <div class="uk-note" id="uni-shot-note" hidden><i class="ph ph-image"></i> جاري تحميل صورة الصفحة…</div>
+        </div>
+        <div class="uni" id="uni-mock" style="display:none">
           <div class="u-top">
             <div class="u-brand">
               <div class="u-emblem">ق</div>
@@ -814,7 +904,7 @@ i.ph, i.ph-fill{line-height:1}
     <div class="stage-head">
       <span class="s-step"><i class="ph ph-number-circle-three"></i> الخطوة الثالثة</span>
       <h2>شريط البحث في المتصفح</h2>
-      <p>وأنت داخل صفحة المقررات المطروحة، اضغط على شريط البحث فوق والصق الرابط. هنا محاكاة مطابقة لجوالك — <b>جرّبها بنفسك</b>:</p>
+      <p id="bar-lead">وأنت داخل صفحة المقررات المطروحة، اضغط على شريط البحث فوق والصق الرابط. هنا محاكاة مطابقة لمتصفح جوالك — <b>جرّبها بنفسك</b>:</p>
     </div>
     <div class="phone-wrap">
       <div class="phone">
@@ -975,6 +1065,7 @@ i.ph, i.ph-fill{line-height:1}
   var STAGES = {
     's-intro':      {p:2,  label:'مرحباً بك'},
     's-copy-mobile':{p:16, label:'الخطوة ١ · نسخ الرابط'},
+    's-copy-tablet':{p:16, label:'الخطوة ١ · نسخ الكود'},
     's-copy-desktop':{p:16,label:'الخطوة ١ · سحب الزر'},
     's-uni':        {p:38, label:'الخطوة ٢ · المقررات المطروحة'},
     's-bar':        {p:58, label:'الخطوة ٣ · شريط العنوان'},
@@ -990,7 +1081,7 @@ i.ph, i.ph-fill{line-height:1}
     var st = STAGES[id];
     $('#p-fill').style.width = st.p+'%';
     $('#p-label').textContent = st.label;
-    if(id==='s-uni'){ loadUniShot(); setTimeout(startUniTour, 550); }
+    if(id==='s-uni'){ preloadUniShot(); applyUniShot(); setTimeout(startUniTour, 550); }
     if(id==='s-bar') setTimeout(startBarTour, 550);
     if(id==='s-extract') runExtract();
     if(id==='s-app') setTimeout(startAppTour, 600);
@@ -1003,6 +1094,7 @@ i.ph, i.ph-fill{line-height:1}
     start:function(steps,onEnd){
       this.steps=steps; this.onEnd=onEnd||null; this.i=0; this.on=true;
       this.el.root.classList.add('on');
+      document.body.classList.add('coach-on');
       this.el.dots.innerHTML = steps.map(function(){return '<span></span>'}).join('');
       this.show(0);
     },
@@ -1027,11 +1119,21 @@ i.ph, i.ph-fill{line-height:1}
         if(w) w.classList.add('pulse-target');
       }
       if(this.target){
-        this.target.scrollIntoView({block:'center', behavior: reduceMotion?'auto':'smooth'});
+        this.scrollToTarget();
         setTimeout(function(){ self.position() }, reduceMotion?30:430);
       } else {
         this.position();
       }
+    },
+    scrollToTarget:function(){
+      var t=this.target; if(!t) return;
+      var r=t.getBoundingClientRect();
+      var reserve = window.innerWidth<=640 ? (this.el.tip.offsetHeight + 30) : 0;
+      var avail = window.innerHeight - reserve;
+      var desiredTop = (r.height >= avail-24) ? 12 : Math.max(12, (avail - r.height)/2);
+      var delta = r.top - desiredTop;
+      if(Math.abs(delta) < 2) return;
+      window.scrollBy({top:delta, left:0, behavior: reduceMotion?'auto':'smooth'});
     },
     position:function(){
       if(!this.on) return;
@@ -1069,6 +1171,7 @@ i.ph, i.ph-fill{line-height:1}
       var cb=this.onEnd;
       this.on=false; this.onEnd=null; this.clearPulse();
       this.el.root.classList.remove('on');
+      document.body.classList.remove('coach-on');
       if(!silent && cb) cb();
     }
   };
@@ -1077,14 +1180,32 @@ i.ph, i.ph-fill{line-height:1}
   window.addEventListener('resize', function(){ coach.position() });
   window.addEventListener('scroll', function(){ coach.position() }, true);
 
-  var isTouch = window.matchMedia('(pointer:coarse)').matches || window.innerWidth < 760;
-  var suggestCard = isTouch ? $('#pick-mobile') : $('#pick-desktop');
+  var isTouch = window.matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window) || window.innerWidth < 760;
+  var minSide = Math.min(window.innerWidth, window.innerHeight);
+  var suggestCard = !isTouch ? $('#pick-desktop') : (minSide >= 600 ? $('#pick-tablet') : $('#pick-mobile'));
   suggestCard.classList.add('suggested');
   $('.d-tag', suggestCard).hidden = false;
-  $('#pick-mobile').addEventListener('click', function(){ device='mobile'; goTo('s-copy-mobile') });
-  $('#pick-desktop').addEventListener('click', function(){ device='desktop'; goTo('s-copy-desktop') });
+
+  function devWord(){ return device==='tablet' ? 'جهازك اللوحي' : 'جوالك' }
+  function pick(d, stage){
+    device=d;
+    $('#bar-lead').innerHTML = 'وأنت داخل صفحة المقررات المطروحة، اضغط على شريط البحث فوق والصق الرابط. هنا محاكاة مطابقة لمتصفح '+devWord()+' — <b>جرّبها بنفسك</b>:';
+    preloadUniShot();
+    goTo(stage);
+  }
+  $('#pick-mobile').addEventListener('click', function(){ pick('mobile','s-copy-mobile') });
+  $('#pick-tablet').addEventListener('click', function(){ pick('tablet','s-copy-tablet') });
+  $('#pick-desktop').addEventListener('click', function(){ pick('desktop','s-copy-desktop') });
   $('#back-copy-m').addEventListener('click', function(){ goTo('s-intro') });
+  $('#back-copy-t').addEventListener('click', function(){ goTo('s-intro') });
   $('#back-copy-d').addEventListener('click', function(){ goTo('s-intro') });
+
+  $('#copy-btn-t').addEventListener('click', function(){
+    this.classList.add('done');
+    $('#copied-t').classList.add('show');
+    $('#next-copy-t').disabled=false;
+  });
+  $('#next-copy-t').addEventListener('click', function(){ goTo('s-uni') });
   $('#replay-btn').addEventListener('click', function(){ location.reload() });
 
   var pressTimer=null, fakeLink=$('#fake-link-m');
@@ -1200,29 +1321,48 @@ i.ph, i.ph-fill{line-height:1}
     }));
   });
 
-  var uniShotDone=false;
-  function loadUniShot(){
-    if(uniShotDone) return; uniShotDone=true;
-    var names;
-    if(device==='desktop'){
-      names=['tut-uni-desktop.png','tut-uni-desktop.jpg','tut-uni-desktop.jpeg'];
-    } else {
-      var isTablet = Math.min(window.innerWidth, window.innerHeight) >= 600;
-      names = isTablet
-        ? ['tut-uni-tablet.png','tut-uni-tablet.jpg','tut-uni-tablet.jpeg','tut-uni-mobile.png','tut-uni-mobile.jpg','tut-uni-mobile.jpeg']
-        : ['tut-uni-mobile.png','tut-uni-mobile.jpg','tut-uni-mobile.jpeg'];
-    }
+  var uniShotSrc=null, uniShotState='idle', uniShotTries=0;
+  function uniShotNames(){
+    var order = device==='desktop' ? ['desktop']
+              : device==='tablet'  ? ['tablet','desktop','mobile']
+              :                      ['mobile'];
+    var exts=['jpg','png','jpeg','webp'], out=[];
+    order.forEach(function(k){ exts.forEach(function(e){ out.push('tut-uni-'+k+'.'+e) }) });
+    return out;
+  }
+  function preloadUniShot(){
+    if(uniShotState==='ready' || uniShotState==='loading') return;
+    uniShotState='loading';
+    applyUniShot();
+    var names=uniShotNames();
     (function tryNext(i){
-      if(i>=names.length) return;
+      if(i>=names.length){
+        uniShotTries++;
+        uniShotState='waiting';
+        applyUniShot();
+        setTimeout(function(){
+          if(uniShotState==='waiting'){ uniShotState='idle'; preloadUniShot() }
+        }, Math.min(1200*uniShotTries, 6000));
+        return;
+      }
       var im=new Image();
-      im.onload=function(){
-        var shot=$('#uni-shot');
-        shot.src=names[i]; shot.hidden=false;
-        $('#uni-mock').style.display='none';
-      };
+      im.decoding='async';
+      im.onload=function(){ uniShotSrc=names[i]; uniShotState='ready'; applyUniShot() };
       im.onerror=function(){ tryNext(i+1) };
       im.src=names[i];
     })(0);
+  }
+  function applyUniShot(){
+    var shot=$('#uni-shot'), mock=$('#uni-mock'), skel=$('#uni-skeleton'), note=$('#uni-shot-note');
+    mock.style.display='none';
+    if(uniShotState==='ready'){
+      if(shot.getAttribute('src')!==uniShotSrc) shot.setAttribute('src', uniShotSrc);
+      shot.hidden=false; skel.hidden=true;
+    } else {
+      shot.hidden=true; skel.hidden=false;
+      note.hidden = uniShotTries<1;
+    }
+    coach.position();
   }
 
   function startUniTour(){
@@ -1233,7 +1373,7 @@ i.ph, i.ph-fill{line-height:1}
       $('#uni-bm-chip').addEventListener('click', function h(){ $('#uni-bm-chip').removeEventListener('click',h); coach.end() });
     } else {
       coach.start([
-        {icon:'ph-arrow-fat-line-up', title:'أنت الآن في صفحة الجامعة', body:'هذه صفحة <b>«المقررات المطروحة وفق الخطة»</b> في موقع الجامعة. وأنت داخلها، اضغط على <b>شريط البحث في أعلى المتصفح</b> والصق الرابط الذي نسخته. تعال نجرّبها بمحاكاة مطابقة لجوالك.', nextLabel:'افتح شريط العنوان'}
+        {icon:'ph-arrow-fat-line-up', title:'أنت الآن في صفحة الجامعة', body:'هذه صفحة <b>«المقررات المطروحة وفق الخطة»</b> في موقع الجامعة. وأنت داخلها، اضغط على <b>شريط البحث في أعلى المتصفح</b> والصق الكود الذي نسخته. تعال نجرّبها بمحاكاة مطابقة لمتصفح '+devWord()+'.', nextLabel:'افتح شريط العنوان'}
       ], function(){ goTo('s-bar') });
     }
   }
