@@ -1353,13 +1353,10 @@
       display: none;
     }
 
-    .swal2-container.swal2-top,
-    .swal2-container.swal2-center,
-    .swal2-container.swal2-bottom {
+    body.swal2-toast-shown .swal2-container {
       pointer-events: none;
     }
 
-    .swal2-popup,
     .swal2-toast {
       pointer-events: all;
     }
@@ -2417,6 +2414,10 @@
       bottom: 0;
       left: 0;
       right: 0;
+      display: flex;
+      flex-direction: column;
+      max-height: 86vh;
+      max-height: 86dvh;
       background: linear-gradient(to bottom, rgba(30, 30, 35, 0.96), rgba(15, 15, 20, 1));
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       border-top-left-radius: 28px;
@@ -2455,6 +2456,20 @@
 
     .details-body {
       animation: sheetContentIn .35s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      margin: 0 -1.5rem;
+      padding: 0 1.5rem;
+    }
+
+    .details-body::-webkit-scrollbar {
+      display: none;
     }
 
     @keyframes sheetContentIn {
@@ -2462,73 +2477,185 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .details-panel .conflict-banner {
-      padding: .75rem .9rem;
+    .conflict-banner {
+      padding: 0.85rem;
       margin-bottom: 1.1rem;
-      background-color: rgba(var(--rgb-warning), 0.1);
-      color: var(--color-warning);
-      border: 1px solid rgba(var(--rgb-warning), 0.22);
+      background: linear-gradient(180deg, rgba(var(--rgb-warning), 0.12), rgba(var(--rgb-warning), 0.05));
+      border: 1px solid rgba(var(--rgb-warning), 0.28);
       border-radius: var(--radius-md);
       display: flex;
       flex-direction: column;
-      gap: .55rem;
-      text-align: right;
+      gap: 0.6rem;
+      text-align: start;
     }
 
-    .details-panel .conflict-banner .cb-head {
+    .conflict-banner .cb-head {
       display: flex;
       align-items: center;
-      gap: .5rem;
-      font-size: .85rem;
-      font-weight: 700;
+      gap: 0.6rem;
     }
 
-    .details-panel .conflict-banner .cb-list {
-      display: flex;
-      flex-direction: column;
-      gap: .4rem;
-    }
-
-    .details-panel .conflict-banner .cb-row {
+    .conflict-banner .cb-head-icon {
+      width: 30px;
+      height: 30px;
+      flex: none;
+      border-radius: 10px;
       display: flex;
       align-items: center;
-      gap: .5rem;
-    }
-
-    .details-panel .conflict-banner .cb-tag {
-      flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      gap: .25rem;
-      font-size: .65rem;
-      font-weight: 700;
-      padding: .2rem .5rem;
-      border-radius: var(--radius-full);
-    }
-
-    .details-panel .conflict-banner .cb-tag.time {
+      justify-content: center;
+      background: rgba(var(--rgb-warning), 0.18);
       color: var(--color-warning);
-      background: rgba(var(--rgb-warning), 0.16);
-      border: 1px solid rgba(var(--rgb-warning), 0.3);
+      font-size: 1rem;
     }
 
-    .details-panel .conflict-banner .cb-tag.exam {
-      color: var(--color-danger);
-      background: rgba(239, 68, 68, 0.14);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .details-panel .conflict-banner .cb-text {
+    .conflict-banner .cb-head-text {
       flex: 1;
       min-width: 0;
-      font-size: .76rem;
-      font-weight: 500;
-      line-height: 1.5;
-      color: var(--color-text-dark);
+      display: flex;
+      flex-direction: column;
+      line-height: 1.35;
     }
 
-    .details-panel .conflict-banner .cb-text strong {
+    .conflict-banner .cb-head-title {
+      font-family: var(--font-title);
+      font-size: 0.86rem;
+      font-weight: 500;
+      color: var(--color-warning);
+    }
+
+    .conflict-banner .cb-head-sub {
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+    }
+
+    .conflict-banner .cb-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .conflict-banner .cb-row {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .light .conflict-banner .cb-row {
+      background: rgba(255, 255, 255, 0.7);
+      border-color: rgba(0, 0, 0, 0.07);
+    }
+
+    .conflict-banner .cb-badge {
+      width: 30px;
+      height: 30px;
+      flex: none;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .conflict-banner .cb-badge.time {
+      color: var(--color-warning);
+      background: rgba(var(--rgb-warning), 0.16);
+    }
+
+    .conflict-banner .cb-badge.exam {
+      color: var(--color-danger);
+      background: rgba(var(--rgb-danger), 0.16);
+    }
+
+    .conflict-banner .cb-main {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .conflict-banner .cb-title {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      font-size: 0.8rem;
       font-weight: 700;
+      color: var(--color-text);
+      line-height: 1.35;
+    }
+
+    .conflict-banner .cb-title span.cb-sec {
+      font-size: 0.66rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-full);
+      padding: 1px 7px;
+    }
+
+    .light .conflict-banner .cb-title span.cb-sec {
+      background: rgba(0, 0, 0, 0.04);
+      border-color: rgba(0, 0, 0, 0.08);
+    }
+
+    .conflict-banner .cb-sub {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      font-size: 0.72rem;
+      font-weight: 500;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+      direction: rtl;
+    }
+
+    .conflict-banner .cb-dot {
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: currentColor;
+      opacity: 0.5;
+      flex: none;
+    }
+
+    .conflict-banner .cb-time {
+      direction: ltr;
+      unicode-bidi: isolate;
+      font-variant-numeric: tabular-nums;
+    }
+
+    @media (min-width: 768px) {
+      .conflict-banner {
+        padding: 1rem;
+      }
+
+      .conflict-banner .cb-row {
+        padding: 0.65rem 0.8rem;
+        gap: 0.8rem;
+      }
+
+      .conflict-banner .cb-badge,
+      .conflict-banner .cb-head-icon {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+      }
+
+      .conflict-banner .cb-title {
+        font-size: 0.86rem;
+      }
+
+      .conflict-banner .cb-sub {
+        font-size: 0.76rem;
+      }
     }
 
     .details-header {
@@ -2688,6 +2815,20 @@
       display: flex;
       align-items: center;
       gap: 0.6rem;
+      position: sticky;
+      bottom: 0;
+      margin-top: auto;
+      padding: 0.7rem 1.5rem calc(0.35rem + env(safe-area-inset-bottom));
+      margin-inline: -1.5rem;
+      background: rgba(15, 15, 20, 0.94);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-top: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .light .details-footer {
+      background: rgba(247, 246, 252, 0.94);
+      border-top: 1px solid rgba(0, 0, 0, 0.08);
     }
 
     .details-stepper {
@@ -6607,6 +6748,438 @@
       .tutorial-cta::before { display: none; }
     }
 
+
+    .qs-filter-host {
+      margin-bottom: 0.75rem;
+    }
+
+    .qs-filter-host .qs-filter-toggle {
+      width: 100%;
+      justify-content: center;
+      padding: 0.55rem 0.9rem;
+      font-size: 0.82rem;
+    }
+
+    .qs-filter-host .qs-filter-panel {
+      margin-top: 0.5rem;
+    }
+
+    .qs-filter-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: transparent;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-muted);
+      border-radius: var(--radius-full);
+      padding: 0.32rem 0.8rem;
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .qs-filter-toggle:hover {
+      border-color: var(--color-border-hover);
+      color: var(--color-text);
+    }
+
+    .qs-filter-toggle.has-active {
+      color: var(--color-primary);
+      border-color: rgba(var(--rgb-primary), 0.5);
+      background: rgba(var(--rgb-primary), 0.12);
+    }
+
+    .qs-filter-toggle .qs-count {
+      background: var(--color-primary);
+      color: #fff;
+      border-radius: var(--radius-full);
+      font-size: 0.66rem;
+      min-width: 17px;
+      height: 17px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+    }
+
+    .qs-filter-panel {
+      display: none;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-top: 0.7rem;
+      padding: 0.8rem;
+      border-radius: var(--radius-md);
+      background: rgba(var(--rgb-primary), 0.05);
+      border: 1px solid var(--color-border);
+    }
+
+    .qs-filter-panel.open {
+      display: flex;
+      animation: fadeInUp 0.25s both;
+    }
+
+    .qs-filter-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .qs-filter-row>.qs-row-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+    }
+
+    .qs-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+    }
+
+    .qs-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.32rem 0.7rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      background: transparent;
+      color: var(--color-text-muted);
+      font-family: inherit;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .qs-chip:hover {
+      border-color: var(--color-border-hover);
+      color: var(--color-text);
+    }
+
+    .qs-chip.active {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    .qs-chip.wide {
+      flex: 1;
+      justify-content: center;
+    }
+
+    .qs-filter-foot {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.6rem;
+      font-size: 0.72rem;
+      color: var(--color-text-muted);
+    }
+
+    .qs-clear-btn {
+      background: transparent;
+      border: none;
+      color: var(--color-danger);
+      font-family: inherit;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.2rem 0.3rem;
+      border-radius: 8px;
+    }
+
+    .qs-clear-btn:hover {
+      background: rgba(var(--rgb-danger), 0.1);
+    }
+
+    .section-btn .sec-fav {
+      position: absolute;
+      top: 3px;
+      inset-inline-start: 4px;
+      font-size: 0.62rem;
+      color: var(--color-warning);
+      line-height: 1;
+    }
+
+    .section-btn.selected .sec-fav {
+      color: #fff;
+    }
+
+    .course-note-flag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 0.64rem;
+      font-weight: 700;
+      color: var(--color-info);
+      background: rgba(var(--rgb-info), 0.12);
+      border: 1px solid rgba(var(--rgb-info), 0.28);
+      border-radius: var(--radius-full);
+      padding: 1px 7px;
+      margin-inline-start: 0.4rem;
+      vertical-align: middle;
+    }
+
+    .details-note-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      background: transparent;
+      border: 1px dashed var(--color-border-hover);
+      color: var(--color-text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .details-note-chip:hover,
+    .details-note-chip:active {
+      color: var(--color-text);
+      border-color: var(--color-info);
+    }
+
+    .details-note-chip.has-note {
+      border-style: solid;
+      border-color: transparent;
+      background: rgba(var(--rgb-info), 0.14);
+      color: var(--color-info);
+    }
+
+    .qv-note-box {
+      margin-top: 0.75rem;
+      padding: 0.7rem 0.85rem;
+      border-radius: var(--radius-md);
+      background: rgba(var(--rgb-info), 0.08);
+      border: 1px solid rgba(var(--rgb-info), 0.22);
+      text-align: start;
+    }
+
+    .qv-note-box .qv-note-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--color-info);
+      margin-bottom: 0.3rem;
+    }
+
+    .qv-note-box .qv-note-text {
+      font-size: 0.82rem;
+      color: var(--color-text);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .qv-note-box .qv-note-edit {
+      background: transparent;
+      border: none;
+      color: var(--color-info);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .qv-alts {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+      gap: 0.45rem;
+      margin-top: 0.5rem;
+    }
+
+    .qv-alt {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding: 0.45rem 0.3rem;
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      background: transparent;
+      color: var(--color-text);
+      font-family: inherit;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .qv-alt:hover {
+      border-color: var(--color-primary);
+      transform: translateY(-2px);
+    }
+
+    .qv-alt .qv-alt-num {
+      font-family: var(--font-title);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .qv-alt .qv-alt-sub {
+      font-size: 0.62rem;
+      color: var(--color-text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+
+    .qv-alt.is-conflict {
+      border-color: rgba(var(--rgb-danger), 0.45);
+      background: rgba(var(--rgb-danger), 0.07);
+    }
+
+    .qv-alt.is-conflict .qv-alt-num {
+      color: var(--color-danger);
+    }
+
+    .qv-alt.is-current {
+      border-color: var(--color-primary);
+      background: rgba(var(--rgb-primary), 0.14);
+      cursor: default;
+    }
+
+    .qv-section-title {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      margin-top: 0.9rem;
+      text-align: start;
+    }
+
+    .qv-actions {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .qv-btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      padding: 0.65rem 0.8rem;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--color-border);
+      background: transparent;
+      color: var(--color-text);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .qv-btn:hover {
+      border-color: var(--color-border-hover);
+    }
+
+    .qv-btn.danger {
+      color: var(--color-danger);
+      border-color: rgba(var(--rgb-danger), 0.4);
+      background: rgba(var(--rgb-danger), 0.08);
+    }
+
+    .qv-btn.primary {
+      background: var(--color-primary);
+      border-color: var(--color-primary);
+      color: #fff;
+    }
+
+    .qv-fav-btn.on {
+      color: var(--color-warning);
+      border-color: rgba(var(--rgb-warning), 0.45);
+      background: rgba(var(--rgb-warning), 0.1);
+    }
+
+    .kbd-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      text-align: start;
+    }
+
+    .kbd-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.5rem 0.7rem;
+      border-radius: 12px;
+      background: rgba(var(--rgb-primary), 0.06);
+      border: 1px solid var(--color-border);
+      font-size: 0.84rem;
+    }
+
+    .kbd {
+      font-family: var(--font-title);
+      font-size: 0.74rem;
+      font-weight: 600;
+      background: var(--color-card);
+      border: 1px solid var(--color-border-hover);
+      border-bottom-width: 2px;
+      border-radius: 7px;
+      padding: 0.14rem 0.5rem;
+      color: var(--color-text);
+      white-space: nowrap;
+      direction: ltr;
+      display: inline-block;
+    }
+
+    .exam-stale-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      padding: 0.75rem 0.9rem;
+      margin-bottom: 0.8rem;
+      border-radius: var(--radius-md);
+      background: rgba(var(--rgb-warning), 0.1);
+      border: 1px solid rgba(var(--rgb-warning), 0.3);
+      color: var(--color-text);
+      font-size: 0.78rem;
+      line-height: 1.6;
+    }
+
+    .exam-stale-note i {
+      color: var(--color-warning);
+      font-size: 1.1rem;
+      flex: none;
+      margin-top: 1px;
+    }
+
+    .section-btn:focus-visible,
+    .course-item-header:focus-visible,
+    .qs-chip:focus-visible,
+    .qv-alt:focus-visible,
+    .schedule-tab:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+      border-radius: 10px;
+    }
+
+    .course-item-header {
+      cursor: pointer;
+    }
+
   </style>
 
 </head>
@@ -6676,6 +7249,7 @@
               class="ph ph-squares-four"></i> المقررات المتاحة</button><button class="tab-btn" data-tab="exams-tab"><i
               class="ph ph-file-text"></i> الاختبارات النهائية</button></div>
         <div id="courses-tab" class="tab-content active custom-scrollbar">
+          <div id="qs-filter-desktop" class="qs-filter-host"></div>
           <div id="desktop-courses-list">
             <div class="no-data" id="no-data-message"><i class="ph ph-clock"></i>
               <h4>في انتظار البيانات...</h4>
@@ -6749,6 +7323,7 @@
           <h2><i class="ph ph-stack"></i> المقررات</h2>
         </header>
         <div class="sidebar-content-wrapper">
+          <div id="qs-filter-mobile" class="qs-filter-host" style="padding:0.75rem 1rem 0;"></div>
           <div id="mobile-courses-list" class="custom-scrollbar" style="padding:1rem;"></div>
         </div>
       </aside>
@@ -6917,7 +7492,9 @@
           showExamDates: false,
           isVisibilityNamesMode: false,
           areAllExpanded: false,
-          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, examScheduleMode: '3', highPerformance: false, timeAxisPosition: 'left', quickAddMode: false }
+          history: [],
+          filters: { days: [], period: 'any', noConflict: false, favOnly: false },
+          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, examScheduleMode: '3', highPerformance: false, timeAxisPosition: 'left', quickAddMode: false, courseNotes: {}, favInstructors: [] }
         },
         constants: {
           PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316', red: '#ef4444' },
@@ -6943,6 +7520,9 @@
           this._listenForDataFromOpener();
           this._updateBookmarkletCode();
           this._checkUrlForSharedSchedule();
+          this._initPWA();
+          this._renderFilterUI();
+          this._initListKeyboardNav();
           this._maybeStartTour();
         },
 
@@ -7076,6 +7656,7 @@
           this._renderFinalExams(selectedCourseDetails);
           this._renderMyScheduleSummary(selectedCourseDetails, conflictMap);
           this._updateAvailableSectionsUI(selectedCourseDetails);
+          this._trackHistory();
           this._saveSchedules();
         },
         _renderScheduleTabs() {
@@ -7126,21 +7707,29 @@
               return false;
             });
           }
+          const hasFilters = this._activeFilterCount() > 0;
+          const selectedDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
           if (Object.keys(this.state.groupedCourses).length > 0 && visibleCourses.length === 0) return term ? `<div class="no-data"><i class="ph ph-magnifying-glass"></i><h4>لا توجد نتائج</h4><p>جرب كلمات بحث مختلفة.</p></div>` : `<div class="no-data"><i class="ph ph-eye-slash"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
           if (visibleCourses.length === 0) return '';
           return visibleCourses.sort((a, b) => a.code.localeCompare(b.code)).map((group, i) => {
             let sectionsToDisplay = this.state.userSettings.hideClosedCourses ? group.sections.filter(section => !section.status.includes('مغلقة')) : group.sections;
             const matchedIds = term ? sectionMatchIds.get(group.code) : null;
             if (matchedIds) sectionsToDisplay = sectionsToDisplay.filter(section => matchedIds.has(section.uniqueId));
+            if (hasFilters) sectionsToDisplay = sectionsToDisplay.filter(section => this._sectionPassesFilters(section, selectedDetails, selectedSections));
             if (sectionsToDisplay.length === 0) return '';
             const sectionsHTML = sectionsToDisplay.map(section => {
               const isNoTime = section.time === 'غير محدد';
               const isOpen = section.status.includes('مفتوحة');
               const statusIndicatorHTML = !this.state.userSettings.hideClosedCourses ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
-              return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color + ';--item-color-rgb:' + this._hexToRgb(group.color) : ''}">
-${statusIndicatorHTML}<div class="section-btn-number">${section.section}</div><div class="section-type">${isNoTime ? '<i class="ph ph-laptop"></i>' : ''}${this._typeLabel(section.type)}</div></div>`;
+              const favHTML = this._isFavInstructor(section.instructor) ? '<i class="ph-fill ph-star sec-fav"></i>' : '';
+              const aria = `شعبة ${section.section} ${this._typeLabel(section.type)} ${section.instructor || ''}`;
+              return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" role="button" tabindex="0" aria-pressed="${selectedSections.has(section.uniqueId)}" aria-label="${this._escapeHTML(aria)}" data-unique-id="${section.uniqueId}" style="${isNoTime ? '--item-color:' + group.color + ';--item-color-rgb:' + this._hexToRgb(group.color) : ''}">
+${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${section.section}</div><div class="section-type">${isNoTime ? '<i class="ph ph-laptop"></i>' : ''}${this._typeLabel(section.type)}</div></div>`;
             }).join('');
-            return `<div class="course-item ${term ? 'open' : ''}" style="animation-delay: ${i * 30}ms"><div class="course-item-header"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})</h3><p>${matchedIds ? sectionsToDisplay.length + ' نتيجة مطابقة' : sectionsToDisplay.length + ' شعب متاحة'}</p></div><i class="ph ph-caret-down toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
+            const note = (this.state.userSettings.courseNotes || {})[group.code];
+            const noteFlag = note ? `<span class="course-note-flag" title="${this._escapeHTML(note)}"><i class="ph-fill ph-note"></i>ملاحظة</span>` : '';
+            const countText = matchedIds ? sectionsToDisplay.length + ' نتيجة مطابقة' : (hasFilters ? sectionsToDisplay.length + ' شعبة بعد الترشيح' : sectionsToDisplay.length + ' شعب متاحة');
+            return `<div class="course-item ${term || hasFilters ? 'open' : ''}" style="animation-delay: ${i * 30}ms"><div class="course-item-header" role="button" tabindex="0" aria-expanded="${!!(term || hasFilters)}"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${group.name} (${group.code})${noteFlag}</h3><p>${countText}</p></div><i class="ph ph-caret-down toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
           }).join('');
         },
         _renderCoursesList() {
@@ -7439,6 +8028,7 @@ ${shareButtonHTML}
             footerHtml = '<div style="margin-top:1rem; animation:fadeInUp 0.3s both;"><a href="https://t.me/Qassim_U/4414294" target="_blank" rel="noopener noreferrer" class="exam-source-link"><span class="esl-icon"><i class="ph ph-file-arrow-down"></i></span><span class="esl-text"><span class="esl-title">تواريخ الفترات كاملة</span><span class="esl-sub">ملف جدول الاختبارات · اجتهاد فيصل</span></span><i class="ph ph-arrow-up-left esl-arrow"></i></a></div>';
           }
 
+          const staleNote = this._examDataIsEmpty() ? `<div class="exam-stale-note"><i class="ph-fill ph-warning-circle"></i><div>لم تُحدَّث تواريخ فترات الاختبارات لهذا الفصل بعد، لذلك تظهر أرقام الفترات بدون تواريخ أو عدّاد. كشف تعارض الاختبارات يعمل بشكل طبيعي.</div></div>` : '';
           const emptyHTML = `<div class="empty-state"><div class="es-icon"><i class="ph ph-file-text"></i></div><h4>لا توجد اختبارات</h4><p>لم تُحدَّد اختبارات نهائية للمقررات المختارة. أضف مقررات لجدولك لتظهر مواعيد اختباراتها هنا.</p><div class="es-actions"><button class="es-btn primary" data-empty-action="browse"><i class="ph ph-stack"></i> تصفح المقررات</button></div></div>`;
 
           const sorted = uniqueExams.slice().map(e => ({ exam: e, info: this._getExamDateInfo(e.examPeriodId) }))
@@ -7477,7 +8067,7 @@ ${shareButtonHTML}
             if (sorted.length === 0) {
               this.dom.desktopExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.desktopExamsList.innerHTML = bannerHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
+              this.dom.desktopExamsList.innerHTML = staleNote + bannerHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.desktopExamsList);
           }
@@ -7486,7 +8076,7 @@ ${shareButtonHTML}
             if (sorted.length === 0) {
               this.dom.mobileMyExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.mobileMyExamsList.innerHTML = bannerHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
+              this.dom.mobileMyExamsList.innerHTML = staleNote + bannerHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.mobileMyExamsList);
           }
@@ -7610,15 +8200,28 @@ ${shareButtonHTML}
               if (this.dom.mobileSectionDetailsOverlay?.classList.contains('open')) this._hideMobileSectionDetails();
               return;
             }
-            if (isMobile) return;
             const active = document.activeElement;
-            if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable)) return;
+            const typing = !!(active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.isContentEditable));
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !typing) { e.preventDefault(); this._undoLast(); return; }
+            if (isMobile || typing) return;
             if (e.key === '/' || ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k')) {
               e.preventDefault();
               const container = this.dom.desktopSearchContainer;
               if (container && !container.classList.contains('active')) { this.dom.desktopSearchToggle?.click(); }
               else { this.dom.desktopSearchInput?.focus(); }
+              return;
             }
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+            if (document.querySelector('.swal2-container')) return;
+            if (e.key === '?') { e.preventDefault(); this._showShortcutsModal(); return; }
+            if (/^[1-9]$/.test(e.key)) { const i = parseInt(e.key, 10) - 1; if (i < this.state.schedules.length) { e.preventDefault(); this._switchSchedule(i); } return; }
+            const k = e.key.toLowerCase();
+            if (k === 'g') { e.preventDefault(); this._handleAutoGenerate(); }
+            else if (k === 's') { e.preventDefault(); this._toggleSettingsModal(true); }
+            else if (k === 'c') { e.preventDefault(); this._handleCompareSchedules(); }
+            else if (k === 'n') { e.preventDefault(); this._addSchedule(); }
+            else if (k === 'f') { e.preventDefault(); this._toggleFilterPanel(); }
+            else if (k === 'r') { e.preventDefault(); this._handleViewAllConflictsShortcut(); }
           });
           this.dom.clearCalendarBtn?.addEventListener('click', () => this._handleClearCalendar());
           this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
@@ -8073,7 +8676,7 @@ ${shareButtonHTML}
             const group = this.state.groupedCourses[section.code]; const activeSchedule = this.state.schedules[this.state.activeScheduleIndex]; if (!activeSchedule) return;
             if (isMobile) { this._showMobileSectionDetails(section, group); } else { if (activeSchedule.sections.has(uniqueId)) { this._removeWithUndo(uniqueId, activeSchedule); } else { this._addSectionAndLink(uniqueId, activeSchedule); this._vibrate(12); this.updateCalendarAndConflicts(); } }
           } else if (header) {
-            const courseItem = header.parentElement; const isOpening = !courseItem.classList.contains('open'); courseItem.classList.toggle('open');
+            const courseItem = header.parentElement; const isOpening = !courseItem.classList.contains('open'); courseItem.classList.toggle('open'); header.setAttribute('aria-expanded', String(isOpening));
             if (isOpening) { const sections = courseItem.querySelectorAll('.section-btn'); sections.forEach((section, index) => { section.style.animationDelay = `${index * 25}ms`; }); }
           }
         },
@@ -8161,6 +8764,295 @@ ${shareButtonHTML}
           const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
           if (!activeSchedule || activeSchedule.sections.size === 0) { this._showToast('info', 'الجدول الحالي فارغ بالفعل'); return; }
           Swal.fire({ title: 'هل أنت متأكد؟', text: `سيتم مسح جميع المواد المختارة من "${activeSchedule.name}".`, icon: 'warning', showCancelButton: true, confirmButtonText: 'نعم، امسح الجدول!', cancelButtonText: 'إلغاء', }).then((result) => { if (result.isConfirmed) { activeSchedule.sections.clear(); activeSchedule.linkedSections.clear(); this.updateCalendarAndConflicts(); this._showToast('success', 'تم مسح الجدول بنجاح'); } });
+        },
+        _buildConflictBanner(conflictDetails) {
+          if (!conflictDetails || !conflictDetails.length) return '';
+          const rows = conflictDetails.map(c => {
+            if (c.type === 'exam') {
+              return `<div class="cb-row"><span class="cb-badge exam"><i class="ph-fill ph-file-text"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(c.other.name)}<span class="cb-sec">شعبة ${this._escapeHTML(c.other.section)}</span></div><div class="cb-sub">نفس فترة الاختبار النهائي<i class="cb-dot"></i>الفترة ${this._escapeHTML(String(c.period))}</div></div></div>`;
+            }
+            return `<div class="cb-row"><span class="cb-badge time"><i class="ph-fill ph-clock"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(c.other.name)}<span class="cb-sec">شعبة ${this._escapeHTML(c.other.section)}</span></div><div class="cb-sub">${c.day}<i class="cb-dot"></i><span class="cb-time">${this._formatClock(c.from)} – ${this._formatClock(c.to)}</span><i class="cb-dot"></i>${this._formatDuration(c.mins)}</div></div></div>`;
+          }).join('');
+          const n = conflictDetails.length;
+          const sub = n === 1 ? 'تعارض واحد' : n === 2 ? 'تعارضان' : `${n} تعارضات`;
+          return `<div class="conflict-banner"><div class="cb-head"><span class="cb-head-icon"><i class="ph-fill ph-warning"></i></span><div class="cb-head-text"><span class="cb-head-title">هذه الشعبة تتعارض مع جدولك</span><span class="cb-head-sub">${sub} — يمكنك اختيار شعبة أخرى بالأسفل</span></div></div><div class="cb-list">${rows}</div></div>`;
+        },
+        _cloneLinked(map) { return new Map(Array.from(map.entries()).map(([k, v]) => [k, new Set(v)])); },
+        _trackHistory() {
+          const idx = this.state.activeScheduleIndex;
+          const sch = this.state.schedules[idx];
+          if (!sch) { this._lastSnap = null; return; }
+          const ids = Array.from(sch.sections).sort().join('|');
+          const prev = this._lastSnap;
+          if (prev && prev.idx === idx && prev.ids !== ids && !this._restoringHistory) {
+            this.state.history.push({ idx, sections: prev.sections, linked: prev.linked });
+            if (this.state.history.length > 30) this.state.history.shift();
+          }
+          this._lastSnap = { idx, ids, sections: new Set(sch.sections), linked: this._cloneLinked(sch.linkedSections) };
+        },
+        _undoLast() {
+          const h = this.state.history.pop();
+          if (!h) { this._showToast('info', 'لا يوجد تغيير يمكن التراجع عنه'); return; }
+          const sch = this.state.schedules[h.idx];
+          if (!sch) return;
+          this._restoringHistory = true;
+          sch.sections = new Set(h.sections);
+          sch.linkedSections = this._cloneLinked(h.linked);
+          this.state.activeScheduleIndex = h.idx;
+          this.updateFullUI();
+          this._restoringHistory = false;
+          this._vibrate(15);
+          this._showToast('success', 'تم التراجع عن آخر تغيير');
+        },
+        _handleViewAllConflictsShortcut() {
+          const sch = this.state.schedules[this.state.activeScheduleIndex];
+          if (!sch) return;
+          const details = Array.from(sch.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+          const map = this._calculateConflicts(details);
+          if (map.size === 0) { this._showToast('success', 'لا توجد تعارضات في جدولك'); return; }
+          this._handleViewAllConflicts(map);
+        },
+        _isFavInstructor(name) {
+          if (!name) return false;
+          const n = this._normalizeArabic(name).trim();
+          if (!n || n === 'غير محدد') return false;
+          return (this.state.userSettings.favInstructors || []).includes(n);
+        },
+        _toggleFavInstructor(name) {
+          if (!name || name === 'غير محدد') { this._showToast('info', 'لا يوجد اسم محاضر لهذه الشعبة'); return; }
+          const n = this._normalizeArabic(name).trim();
+          if (!Array.isArray(this.state.userSettings.favInstructors)) this.state.userSettings.favInstructors = [];
+          const list = this.state.userSettings.favInstructors;
+          const i = list.indexOf(n);
+          if (i >= 0) { list.splice(i, 1); this._showToast('info', 'أُزيل من المفضلين'); }
+          else { list.push(n); this._showToast('success', 'أُضيف إلى المفضلين'); }
+          this._saveSettings();
+          this._renderCoursesList();
+          this.updateCalendarAndConflicts();
+          this._renderFilterUI();
+        },
+        _editCourseNote(code, after) {
+          if (!this.state.userSettings.courseNotes || typeof this.state.userSettings.courseNotes !== 'object') this.state.userSettings.courseNotes = {};
+          const notes = this.state.userSettings.courseNotes;
+          const group = this.state.groupedCourses[code];
+          const existing = notes[code] || '';
+          Swal.fire({
+            title: `ملاحظة على ${group ? group.name : code}`,
+            input: 'textarea',
+            inputValue: existing,
+            inputPlaceholder: 'رابط قروب المقرر، تغيير القاعة، متطلبات الدكتور...',
+            inputAttributes: { maxlength: 400 },
+            showCancelButton: true,
+            showDenyButton: !!existing,
+            confirmButtonText: 'حفظ',
+            denyButtonText: 'حذف',
+            cancelButtonText: 'إلغاء'
+          }).then(r => {
+            if (r.isConfirmed) {
+              const v = String(r.value || '').trim();
+              if (v) notes[code] = v; else delete notes[code];
+              this._saveSettings();
+              this._showToast('success', v ? 'تم حفظ الملاحظة' : 'تم حذف الملاحظة');
+            } else if (r.isDenied) {
+              delete notes[code];
+              this._saveSettings();
+              this._showToast('success', 'تم حذف الملاحظة');
+            } else return;
+            this._renderCoursesList();
+            this.updateCalendarAndConflicts();
+            if (typeof after === 'function') after();
+          });
+        },
+        _swapSection(oldId, newId) {
+          const schedule = this.state.schedules[this.state.activeScheduleIndex];
+          if (!schedule) return false;
+          const prevSections = new Set(schedule.sections);
+          const prevLinked = this._cloneLinked(schedule.linkedSections);
+          this._removeSectionAndUnlink(oldId, schedule);
+          const ok = this._addSectionAndLink(newId, schedule);
+          if (!ok) {
+            schedule.sections = prevSections;
+            schedule.linkedSections = prevLinked;
+            this.updateCalendarAndConflicts();
+            this._showToast('error', 'تعذر تبديل الشعبة');
+            return false;
+          }
+          this.updateCalendarAndConflicts();
+          this._vibrate(12);
+          this._showToast('success', 'تم تبديل الشعبة');
+          return true;
+        },
+        _showSectionQuickView(section, group) {
+          const schedule = this.state.schedules[this.state.activeScheduleIndex];
+          if (!schedule) return;
+          const isSelected = schedule.sections.has(section.uniqueId);
+          const selectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+          const isOpen = String(section.status || '').includes('مفتوحة');
+          const typeStr = this._typeLabel(section.type);
+          const typeIcon = /عمل|معمل|مختبر/.test(typeStr) ? 'ph-flask' : /تمرين/.test(typeStr) ? 'ph-pencil-simple' : 'ph-chalkboard-simple';
+          const timeStr = String(section.time || '').replace(/<br>/g, ' / ') || 'غير محدد';
+          const isFav = this._isFavInstructor(section.instructor);
+          const note = (this.state.userSettings.courseNotes || {})[section.code] || '';
+          const row = (icon, label, value) => `<div class="details-row"><span class="details-row-icon"><i class="ph ${icon}"></i></span><div class="details-row-text"><span>${label}</span><strong>${value}</strong></div></div>`;
+          const conflictBanner = isSelected ? '' : this._buildConflictBanner(this._getConflictDetails(section, selectedDetails));
+          const alts = this._visibleSectionsOf(group).filter(sec => sec.uniqueId !== section.uniqueId);
+          const altsHTML = alts.map(sec => {
+            const conflicted = this._isSectionConflicted(sec, selectedDetails.filter(d => d.uniqueId !== section.uniqueId));
+            return `<button class="qv-alt ${conflicted ? 'is-conflict' : ''}" data-swap="${sec.uniqueId}" title="${this._escapeHTML((sec.instructor || '') + ' — ' + String(sec.time || '').replace(/<br>/g, ' / '))}"><span class="qv-alt-num">${this._escapeHTML(sec.section)}</span><span class="qv-alt-sub">${this._escapeHTML(this._typeLabel(sec.type) || '')}</span>${conflicted ? '<span class="qv-alt-sub" style="color:var(--color-danger)">تعارض</span>' : ''}</button>`;
+          }).join('');
+          const altsBlock = alts.length ? `<div class="qv-section-title"><i class="ph ph-swap"></i> ${isSelected ? 'تبديل إلى شعبة أخرى' : 'شعب أخرى لنفس المقرر'}</div><div class="qv-alts">${altsHTML}</div>` : '';
+          const noteBox = `<div class="qv-note-box"><div class="qv-note-head"><span><i class="ph-fill ph-note"></i> ملاحظتي على المقرر</span><button class="qv-note-edit" data-qv="note"><i class="ph ph-pencil-simple"></i>${note ? 'تعديل' : 'إضافة'}</button></div><div class="qv-note-text">${note ? this._escapeHTML(note) : 'لا توجد ملاحظة بعد.'}</div></div>`;
+          Swal.fire({
+            title: `${this._escapeHTML(section.name)} (${this._escapeHTML(section.code)})`,
+            html: `${conflictBanner}<div class="details-status-row" style="justify-content:center;"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status || '')}</span><span class="details-type-chip"><i class="ph ${typeIcon}"></i> ${this._escapeHTML(typeStr || '')}</span><span class="details-type-chip"><i class="ph ph-hash"></i> شعبة ${this._escapeHTML(section.section)}</span></div>
+<div class="details-list" style="margin-top:0.8rem;">${row('ph-user', 'المحاضر', this._escapeHTML(section.instructor || 'غير محدد'))}${row('ph-clock', 'المواعيد', this._escapeHTML(timeStr))}${row('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${row('ph-file-text', 'فترة الاختبار', this._escapeHTML(section.examPeriodId || 'لا يوجد'))}</div>
+${noteBox}${altsBlock}
+<div class="qv-actions"><button class="qv-btn" data-qv="crn"><i class="ph ph-copy"></i> نسخ رقم الشعبة</button><button class="qv-btn qv-fav-btn ${isFav ? 'on' : ''}" data-qv="fav"><i class="${isFav ? 'ph-fill' : 'ph'} ph-star"></i> ${isFav ? 'محاضر مفضل' : 'أضف للمفضلين'}</button><button class="qv-btn ${isSelected ? 'danger' : 'primary'}" data-qv="toggle"><i class="ph ${isSelected ? 'ph-trash' : 'ph-plus'}"></i> ${isSelected ? 'إزالة من الجدول' : 'إضافة للجدول'}</button></div>`,
+            showConfirmButton: false,
+            showCloseButton: true,
+            allowOutsideClick: true,
+            allowEscapeKey: true,
+            customClass: { popup: 'swal2-popup wide-swal' },
+            didOpen: (popup) => {
+              popup.querySelectorAll('[data-swap]').forEach(btn => btn.addEventListener('click', () => {
+                const newId = btn.dataset.swap;
+                Swal.close();
+                if (isSelected) this._swapSection(section.uniqueId, newId);
+                else { this._addSectionAndLink(newId, schedule); this.updateCalendarAndConflicts(); }
+              }));
+              popup.querySelector('[data-qv="crn"]')?.addEventListener('click', () => {
+                navigator.clipboard?.writeText(String(section.section)).then(() => this._showToast('success', 'تم نسخ رقم الشعبة')).catch(() => this._showToast('error', 'تعذر النسخ'));
+              });
+              popup.querySelector('[data-qv="fav"]')?.addEventListener('click', () => { Swal.close(); this._toggleFavInstructor(section.instructor); });
+              popup.querySelector('[data-qv="note"]')?.addEventListener('click', () => { Swal.close(); this._editCourseNote(section.code); });
+              popup.querySelector('[data-qv="toggle"]')?.addEventListener('click', () => {
+                Swal.close();
+                if (isSelected) this._removeWithUndo(section.uniqueId, schedule);
+                else { this._addSectionAndLink(section.uniqueId, schedule); this.updateCalendarAndConflicts(); this._vibrate(12); }
+              });
+            }
+          });
+        },
+        _activeFilterCount() {
+          const f = this.state.filters;
+          return (f.days.length ? 1 : 0) + (f.period !== 'any' ? 1 : 0) + (f.noConflict ? 1 : 0) + (f.favOnly ? 1 : 0);
+        },
+        _sectionPassesFilters(section, selectedDetails, selectedIds) {
+          const f = this.state.filters;
+          if (selectedIds && selectedIds.has(section.uniqueId)) return true;
+          const slots = section.timeSlots || [];
+          if (f.days.length && slots.length && !slots.every(sl => f.days.includes(sl.day))) return false;
+          if (f.period !== 'any' && slots.length) {
+            const ok = slots.every(sl => { const m = this._toMin(sl.start); return f.period === 'am' ? m < 720 : m >= 720; });
+            if (!ok) return false;
+          }
+          if (f.favOnly && !this._isFavInstructor(section.instructor)) return false;
+          if (f.noConflict && this._isSectionConflicted(section, selectedDetails)) return false;
+          return true;
+        },
+        _toggleFilterPanel(force) {
+          this._filterPanelOpen = typeof force === 'boolean' ? force : !this._filterPanelOpen;
+          document.querySelectorAll('.qs-filter-panel').forEach(p => p.classList.toggle('open', !!this._filterPanelOpen));
+        },
+        _clearFilters() {
+          this.state.filters = { days: [], period: 'any', noConflict: false, favOnly: false };
+          this._renderFilterUI();
+          this._renderCoursesList();
+          this.updateCalendarAndConflicts();
+        },
+        _renderFilterUI() {
+          const hosts = [document.getElementById('qs-filter-desktop'), document.getElementById('qs-filter-mobile')].filter(Boolean);
+          if (!hosts.length) return;
+          const f = this.state.filters;
+          const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+          const days = this.state.userSettings.showWeekends ? [0, 1, 2, 3, 4, 5, 6] : [0, 1, 2, 3, 4];
+          const count = this._activeFilterCount();
+          const dayChips = days.map(d => `<button class="qs-chip ${f.days.includes(d) ? 'active' : ''}" data-filter="day" data-value="${d}">${dayNames[d]}</button>`).join('');
+          const periodChips = [['any', 'الكل'], ['am', 'قبل ١٢'], ['pm', 'بعد ١٢']].map(p => `<button class="qs-chip wide ${f.period === p[0] ? 'active' : ''}" data-filter="period" data-value="${p[0]}">${p[1]}</button>`).join('');
+          const html = `<button class="qs-filter-toggle ${count ? 'has-active' : ''}" data-filter="toggle" aria-label="ترشيح الشعب"><i class="ph ph-funnel"></i> ترشيح الشعب${count ? ` <span class="qs-count">${count}</span>` : ''}</button>
+<div class="qs-filter-panel ${this._filterPanelOpen ? 'open' : ''}">
+<div class="qs-filter-row"><span class="qs-row-label">الأيام — تُعرض الشعب التي تقع مواعيدها كلها داخلها</span><div class="qs-chips">${dayChips}</div></div>
+<div class="qs-filter-row"><span class="qs-row-label">الفترة</span><div class="qs-chips">${periodChips}</div></div>
+<div class="qs-filter-row"><div class="qs-chips"><button class="qs-chip wide ${f.noConflict ? 'active' : ''}" data-filter="noConflict"><i class="ph ph-check-circle"></i> بدون تعارض مع جدولي</button><button class="qs-chip wide ${f.favOnly ? 'active' : ''}" data-filter="favOnly"><i class="ph ph-star"></i> دكاترتي المفضلون</button></div></div>
+<div class="qs-filter-foot"><span>${count ? count + ' مرشِّح مفعّل' : 'لا يوجد ترشيح'}</span><button class="qs-clear-btn" data-filter="clear"><i class="ph ph-x-circle"></i> مسح الكل</button></div>
+</div>`;
+          hosts.forEach(h => { h.innerHTML = html; });
+          if (this._filterBound) return;
+          this._filterBound = true;
+          document.addEventListener('click', (e) => {
+            const el = e.target.closest('[data-filter]');
+            if (!el) return;
+            const kind = el.dataset.filter;
+            const f2 = this.state.filters;
+            if (kind === 'toggle') { this._toggleFilterPanel(); return; }
+            if (kind === 'clear') { this._clearFilters(); return; }
+            if (kind === 'day') {
+              const d = parseInt(el.dataset.value, 10);
+              const i = f2.days.indexOf(d);
+              if (i >= 0) f2.days.splice(i, 1); else f2.days.push(d);
+            } else if (kind === 'period') { f2.period = el.dataset.value; }
+            else if (kind === 'noConflict') { f2.noConflict = !f2.noConflict; }
+            else if (kind === 'favOnly') { f2.favOnly = !f2.favOnly; }
+            else return;
+            this._renderFilterUI();
+            this._renderCoursesList();
+            this.updateCalendarAndConflicts();
+          });
+        },
+        _examDataIsEmpty() {
+          const d = this.constants.EXAM_DATA || {};
+          return Object.keys(d['3'] || {}).length === 0 && Object.keys(d['2'] || {}).length === 0;
+        },
+        _showShortcutsModal() {
+          const rows = [
+            ['فتح البحث', '/ أو Ctrl + K'],
+            ['تراجع عن آخر تغيير', 'Ctrl + Z'],
+            ['لوحة ترشيح الشعب', 'F'],
+            ['الجدول الذكي', 'G'],
+            ['الإعدادات', 'S'],
+            ['مقارنة الجداول', 'C'],
+            ['جدول جديد', 'N'],
+            ['حل التعارضات', 'R'],
+            ['التنقل بين الجداول', '1 … 9'],
+            ['إغلاق النوافذ', 'Esc'],
+            ['عرض هذه القائمة', '؟']
+          ];
+          Swal.fire({
+            title: 'اختصارات لوحة المفاتيح',
+            html: `<div class="kbd-list">${rows.map(r => `<div class="kbd-row"><span>${r[0]}</span><span class="kbd">${r[1]}</span></div>`).join('')}</div>`,
+            confirmButtonText: 'تم',
+            customClass: { popup: 'swal2-popup wide-swal' }
+          });
+        },
+        _initListKeyboardNav() {
+          [this.dom.desktopCoursesList, this.dom.mobileCoursesList].filter(Boolean).forEach(list => {
+            list.addEventListener('keydown', (e) => {
+              if (e.key !== 'Enter' && e.key !== ' ') return;
+              const t = e.target.closest('.section-btn, .course-item-header');
+              if (!t) return;
+              e.preventDefault();
+              t.click();
+            });
+          });
+        },
+        _initPWA() {
+          try {
+            if (!document.querySelector('link[rel="manifest"]')) {
+              const iconEl = document.querySelector('link[rel="icon"]');
+              const icons = iconEl ? [{ src: iconEl.getAttribute('href'), sizes: 'any', type: 'image/svg+xml', purpose: 'any' }] : [];
+              const manifest = { name: 'QU Schedule', short_name: 'QU Schedule', description: 'أنشئ جدولك الدراسي بكل سهولة', start_url: './', scope: './', display: 'standalone', orientation: 'portrait-primary', dir: 'rtl', lang: 'ar', background_color: '#0b0a12', theme_color: this.state.userSettings.accentColor || '#8b5cf6', icons };
+              const url = URL.createObjectURL(new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' }));
+              const link = document.createElement('link');
+              link.rel = 'manifest';
+              link.href = url;
+              document.head.appendChild(link);
+            }
+          } catch (e) { }
+          try {
+            if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')) {
+              window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => { }); });
+            }
+          } catch (e) { }
         },
         _showToast(type, message) { Toast.fire({ icon: type, title: message }); },
         _vibrate(pattern) { try { if (navigator.vibrate) navigator.vibrate(pattern); } catch (e) {} },
@@ -8764,32 +9656,47 @@ ${shareButtonHTML}
             { icon: 'ph-calendar-plus', title: 'بناء الجدول', items: [
               { i: 'ph-calendar-blank', t: 'تقويم تفاعلي', d: 'عرض محاضراتك على تقويم أسبوعي حي مع الشعبة والدكتور والقاعة.' },
               { i: 'ph-stack', t: 'جداول متعددة', d: 'أنشئ أكثر من جدول، قارن بينها، وبدّل بضغطة واحدة.' },
-              { i: 'ph-warning-octagon', t: 'كشف التعارضات', d: 'تنبيه فوري عند تعارض المواعيد مع أداة لحل جميع التعارضات دفعة واحدة.' },
+              { i: 'ph-cursor-click', t: 'بطاقة المحاضرة', d: 'اضغط أي محاضرة في التقويم لعرض تفاصيلها، تبديل شعبتها، نسخ رقمها، أو إزالتها.' },
+              { i: 'ph-warning-octagon', t: 'كشف التعارضات', d: 'بطاقة توضح المقرر المتعارض واليوم والوقت المتداخل ومدته، مع أداة لحل التعارضات دفعة واحدة.' },
+              { i: 'ph-arrow-counter-clockwise', t: 'التراجع عن الأخطاء', d: 'Ctrl + Z يرجّع أي إضافة أو حذف أو مسح للجدول، حتى ٣٠ خطوة للخلف.' },
               { i: 'ph-magic-wand', t: 'إنشاء الجدول الذكي', d: 'توليد تلقائي لجدول بلا تعارض حسب نمطك، أيام إجازتك، ودكاترتك المفضلين.' },
               { i: 'ph-file-text', t: 'جدول الاختبارات', d: 'مواعيد الاختبارات النهائية لموادك، بالفترات أو بالتواريخ الهجرية والميلادية.' }
             ]},
-            { icon: 'ph-magnifying-glass', title: 'البحث والتسجيل', items: [
+            { icon: 'ph-magnifying-glass', title: 'البحث والترشيح', items: [
               { i: 'ph-magnifying-glass', t: 'بحث فوري', d: 'ابحث بالاسم أو الرمز أو رقم الشعبة، مع اختصار ( / ) للوصول السريع.' },
-              { i: 'ph-funnel', t: 'ترشيح الشعب', d: 'إخفاء الشعب المغلقة والتحكم الكامل في ظهور المقررات.' },
-              { i: 'ph-clipboard-text', t: 'نسخ أرقام الشعب', d: 'انسخ أرقام شعب جدولك (CRN) بضغطة واحدة للتسجيل السريع.' },
-              { i: 'ph-lightning', t: 'مُعِدّ أداة التعبئة', d: 'أداة تعبئ أرقام شعبك تلقائياً في صفحة التسجيل بموقع الجامعة.' }
+              { i: 'ph-funnel', t: 'ترشيح الشعب', d: 'رشّح حسب الأيام أو الفترة الصباحية والمسائية، أو اعرض ما لا يتعارض مع جدولك فقط.' },
+              { i: 'ph-star', t: 'الدكاترة المفضلون', d: 'ضع نجمة على من تفضّلهم لتظهر شعبهم مميزة، ويعتمدها الجدول الذكي في التوليد.' },
+              { i: 'ph-eye-slash', t: 'تنظيف القائمة', d: 'أخفِ الشعب المغلقة أو المقررات التي لا تخصك لتبقى القائمة مرتبة.' }
             ]},
-            { icon: 'ph-share-network', title: 'المشاركة والتصدير', items: [
+            { icon: 'ph-share-network', title: 'التسجيل والمشاركة', items: [
+              { i: 'ph-clipboard-text', t: 'نسخ أرقام الشعب', d: 'انسخ أرقام شعب جدولك (CRN) بضغطة واحدة للتسجيل السريع.' },
+              { i: 'ph-lightning', t: 'مُعِدّ أداة التعبئة', d: 'أداة تعبئ أرقام شعبك تلقائياً في صفحة التسجيل بموقع الجامعة.' },
               { i: 'ph-qr-code', t: 'مشاركة برابط أو QR', d: 'شارك جدولك مع زملائك برابط مباشر أو رمز QR.' },
+              { i: 'ph-users-three', t: 'مقارنة مع الأصدقاء', d: 'ألصق أرقام شعب زملائك لتعرفوا الأوقات الفارغة المشتركة بينكم.' }
+            ]},
+            { icon: 'ph-download-simple', title: 'التصدير والحفظ', items: [
               { i: 'ph-calendar-check', t: 'تصدير للتقويم (.ics)', d: 'افتح جدولك في تقويم Google أو Apple مع تنبيهات قبل المحاضرة.' },
               { i: 'ph-image', t: 'حفظ كصورة', d: 'صدّر جدولك كصورة عالية الجودة جاهزة للمشاركة أو خلفية للشاشة.' },
-              { i: 'ph-cloud-arrow-down', t: 'نسخ احتياطي', d: 'تصدير واستيراد جدولك كملف JSON أو باللصق المباشر.' }
+              { i: 'ph-cloud-arrow-down', t: 'نسخ احتياطي', d: 'تصدير واستيراد جدولك كملف JSON أو باللصق المباشر.' },
+              { i: 'ph-floppy-disk', t: 'حفظ تلقائي', d: 'كل تغييراتك تُحفظ في جهازك فوراً وتبقى بعد إغلاق الصفحة.' }
             ]},
             { icon: 'ph-palette', title: 'تخصيص المظهر', items: [
               { i: 'ph-moon-stars', t: 'وضع ليلي وفاتح', d: 'بدّل بين الوضعين مع حفظ اختيارك تلقائياً.' },
               { i: 'ph-paint-brush', t: 'ألوانك المفضلة', d: 'غيّر اللون الأساسي للموقع وخصص لوناً مميزاً لكل مقرر.' },
-              { i: 'ph-calendar', t: 'عرض مرن', d: 'إظهار أو إخفاء عطلة نهاية الأسبوع في التقويم حسب حاجتك.' },
+              { i: 'ph-calendar', t: 'عرض مرن', d: 'إظهار أو إخفاء عطلة نهاية الأسبوع، وتغيير موضع محور الوقت.' },
               { i: 'ph-gauge', t: 'وضع الأداء العالي', d: 'إلغاء التأثيرات البصرية لتجربة أسرع على الأجهزة الضعيفة.' }
             ]},
             { icon: 'ph-sparkle', title: 'أدوات ذكية', items: [
               { i: 'ph-chart-bar', t: 'تحليل الوقت', d: 'ساعات الحضور، الفراغات، وأيام الإجازة في لمحة واحدة.' },
-              { i: 'ph-eye', t: 'وضع المعاينة', d: 'جرّب الموقع ببيانات تجريبية كاملة قبل تثبيت الأداة.' },
-              { i: 'ph-floppy-disk', t: 'حفظ تلقائي', d: 'كل تغييراتك تُحفظ في جهازك فوراً وتبقى بعد إغلاق الصفحة.' }
+              { i: 'ph-note-pencil', t: 'ملاحظات المقررات', d: 'دوّن رابط قروب المقرر أو تغيير القاعة أو أي تفصيلة، وتبقى محفوظة مع الجدول.' },
+              { i: 'ph-eye', t: 'وضع المعاينة', d: 'جرّب الموقع ببيانات تجريبية كاملة قبل تثبيت الأداة.' }
+            ]},
+            { icon: 'ph-graduation-cap', title: 'الشرح وسهولة الوصول', items: [
+              { i: 'ph-play-circle', t: 'شرح تفاعلي', d: 'صفحة شرح كاملة تمشي معك خطوة بخطوة من تثبيت الأداة حتى تسجيل جدولك.' },
+              { i: 'ph-compass', t: 'جولة إرشادية', d: 'جولة داخل الموقع تعرّفك على كل زر عند أول استخدام، ويمكنك إعادتها متى شئت.' },
+              { i: 'ph-keyboard', t: 'اختصارات لوحة المفاتيح', d: 'اختصارات سريعة للبحث والجدول الذكي والتنقل بين جداولك، اضغط ( ؟ ) لعرضها.' },
+              { i: 'ph-device-mobile', t: 'تثبيت كتطبيق', d: 'ثبّت الموقع على شاشتك الرئيسية وافتح جدولك حتى بدون إنترنت.' },
+              { i: 'ph-devices', t: 'يعمل على كل الأجهزة', d: 'تصميم متجاوب للجوال والتابلت والكمبيوتر، مع دعم التنقل بلوحة المفاتيح وقارئات الشاشة.' }
             ]}
           ];
           const html = `<div id="features-modal-content" class="custom-scrollbar">${groups.map(g => `<div class="features-group"><div class="features-group-header"><span class="fg-icon"><i class="ph ${g.icon}"></i></span><h4>${g.title}</h4></div><div class="features-items">${g.items.map(f => `<div class="feature-item"><i class="ph ${f.i}"></i><div><div class="f-title">${f.t}</div><div class="f-desc">${f.d}</div></div></div>`).join('')}</div></div>`).join('')}</div>`;
@@ -8808,7 +9715,7 @@ ${shareButtonHTML}
         _initializeCalendar() {
           if (this.state.calendar) this.state.calendar.destroy();
           const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
-          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const durMin = (arg.event.start && arg.event.end) ? Math.round((arg.event.end - arg.event.start) / 60000) : 999; const isShort = durMin <= 60; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: ' + (isShort ? '0.66rem' : '0.8rem') + '; line-height: ' + (isShort ? '1.2' : '1.4') + ';'; if (isShort) wrapper.classList.add('evt-1h'); wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); } };
+          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const durMin = (arg.event.start && arg.event.end) ? Math.round((arg.event.end - arg.event.start) / 60000) : 999; const isShort = durMin <= 60; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: ' + (isShort ? '0.66rem' : '0.8rem') + '; line-height: ' + (isShort ? '1.2' : '1.4') + ';'; if (isShort) wrapper.classList.add('evt-1h'); wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); }, eventClick: (info) => { const p = info.event.extendedProps || {}; const sec = this.state.allCoursesData.find(c => c.uniqueId === p.uniqueId); if (!sec) return; const grp = this.state.groupedCourses[sec.code]; if (!grp) return; if (isMobile) { this._showMobileSectionDetails(sec, grp); } else { this._showSectionQuickView(sec, grp); } } };
           this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
           this.state.calendar.render();
           this._setupCalendarSizeGuard(calendarEl);
@@ -8915,9 +9822,7 @@ ${shareButtonHTML}
           const tempSelectedDetails = Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
           const conflictDetails = isSelected ? [] : this._getConflictDetails(section, tempSelectedDetails);
           const isConflicted = conflictDetails.length > 0;
-          const conflictBanner = isConflicted ? `<div class="conflict-banner"><div class="cb-head"><i class="ph-fill ph-warning"></i>شعبة متعارضة مع جدولك الحالي</div><div class="cb-list">${conflictDetails.map(c => c.type === 'exam'
-            ? `<div class="cb-row"><span class="cb-tag exam"><i class="ph ph-file-text"></i>اختبار</span><span class="cb-text">نفس فترة اختبار <strong>${this._escapeHTML(c.other.name)}</strong> (${this._escapeHTML(c.period)})</span></div>`
-            : `<div class="cb-row"><span class="cb-tag time"><i class="ph ph-clock"></i>وقت</span><span class="cb-text">${c.day} ${this._formatClock(c.from)} – ${this._formatClock(c.to)} مع <strong>${this._escapeHTML(c.other.name)}</strong> (شعبة ${this._escapeHTML(c.other.section)})</span></div>`).join('')}</div></div>` : '';
+          const conflictBanner = this._buildConflictBanner(conflictDetails);
           const courseSections = group.sections.filter(s => !this.state.userSettings.hideClosedCourses || !s.status.includes('مغلقة')).sort((a, b) => a.section.localeCompare(b.section, undefined, { numeric: true }));
           const currentIndex = courseSections.findIndex(s => s.uniqueId === section.uniqueId);
           const visibleGroups = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code) && this._visibleSectionsOf(g).length > 0).sort((a, b) => a.code.localeCompare(b.code));
@@ -8933,7 +9838,11 @@ ${shareButtonHTML}
           const typeChip = typeStr ? `<span class="details-type-chip"><i class="ph ${typeIcon}"></i> ${typeStr}</span>` : '';
           const timeStr = (section.time || '').replace(/<br>/g, ' / ') || 'غير محدد';
           const detailRow = (icon, label, value) => `<div class="details-row"><span class="details-row-icon"><i class="ph ${icon}"></i></span><div class="details-row-text"><span>${label}</span><strong>${value}</strong></div></div>`;
-          panel.innerHTML = `<div class="details-grabber"></div><div class="details-body"><div class="details-header"><div class="details-title-wrap"><span class="color-dot" style="background-color: ${group.color};"></span><div class="details-title-text"><h4>${section.name} (${section.code})</h4><span class="details-eyebrow">شعبة ${section.section}</span></div></div><button class="details-close-btn" aria-label="إغلاق"><i class="ph ph-x"></i></button></div>${courseSwitcher}${conflictBanner}<div class="details-status-row"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${section.status}</span>${typeChip}</div><div class="details-list">${detailRow('ph-user', 'المحاضر', section.instructor || 'غير محدد')}${detailRow('ph-clock', 'المواعيد', timeStr)}${detailRow('ph-map-pin', 'المكان', section.location || 'غير محدد')}${detailRow('ph-file-text', 'الاختبار النهائي', section.examPeriodId || 'لا يوجد')}</div><div class="details-footer"><div class="details-stepper"><button class="details-nav-btn" id="details-prev-btn" ${currentIndex <= 0 ? 'disabled' : ''} aria-label="الشعبة السابقة"><i class="ph ph-caret-right"></i></button><span class="details-counter">${currentIndex + 1} من ${courseSections.length}</span><button class="details-nav-btn" id="details-next-btn" ${currentIndex >= courseSections.length - 1 ? 'disabled' : ''} aria-label="الشعبة التالية"><i class="ph ph-caret-left"></i></button></div><button class="details-action-btn ${actionBtnClass}" id="details-action-btn"><i class="${actionBtnIcon}"></i> ${actionBtnText}</button></div></div>`;
+          const isFav = this._isFavInstructor(section.instructor);
+          const instructorRow = `<div class="details-row"><span class="details-row-icon"><i class="ph ph-user"></i></span><div class="details-row-text"><span>المحاضر</span><strong>${this._escapeHTML(section.instructor || 'غير محدد')}</strong></div><button class="qv-btn qv-fav-btn ${isFav ? 'on' : ''}" id="sheet-fav-btn" style="flex:0 0 auto;padding:0.35rem 0.6rem;font-size:0.72rem;" aria-label="تفضيل المحاضر"><i class="${isFav ? 'ph-fill' : 'ph'} ph-star"></i></button></div>`;
+          const noteText = (this.state.userSettings.courseNotes || {})[section.code] || '';
+          const noteChip = `<button class="details-note-chip ${noteText ? 'has-note' : ''}" id="sheet-note-btn" aria-label="${noteText ? 'عرض وتعديل ملاحظتي على المقرر' : 'إضافة ملاحظة على المقرر'}"><i class="${noteText ? 'ph-fill ph-note' : 'ph ph-note-pencil'}"></i> ${noteText ? 'ملاحظتي' : 'ملاحظة'}</button>`;
+          panel.innerHTML = `<div class="details-grabber"></div><div class="details-body"><div class="details-header"><div class="details-title-wrap"><span class="color-dot" style="background-color: ${group.color};"></span><div class="details-title-text"><h4>${section.name} (${section.code})</h4><span class="details-eyebrow">شعبة ${section.section}</span></div></div><button class="details-close-btn" aria-label="إغلاق"><i class="ph ph-x"></i></button></div>${courseSwitcher}${conflictBanner}<div class="details-status-row"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${section.status}</span>${typeChip}${noteChip}</div><div class="details-list">${instructorRow}${detailRow('ph-clock', 'المواعيد', timeStr)}${detailRow('ph-map-pin', 'المكان', section.location || 'غير محدد')}${detailRow('ph-file-text', 'الاختبار النهائي', section.examPeriodId || 'لا يوجد')}</div><div class="details-footer"><div class="details-stepper"><button class="details-nav-btn" id="details-prev-btn" ${currentIndex <= 0 ? 'disabled' : ''} aria-label="الشعبة السابقة"><i class="ph ph-caret-right"></i></button><span class="details-counter">${currentIndex + 1} من ${courseSections.length}</span><button class="details-nav-btn" id="details-next-btn" ${currentIndex >= courseSections.length - 1 ? 'disabled' : ''} aria-label="الشعبة التالية"><i class="ph ph-caret-left"></i></button></div><button class="details-action-btn ${actionBtnClass}" id="details-action-btn"><i class="${actionBtnIcon}"></i> ${actionBtnText}</button></div></div>`;
           panel.querySelector('.details-close-btn').onclick = () => this._hideMobileSectionDetails();
           panel.querySelector('#details-action-btn').onclick = () => {
             if (activeSchedule.sections.has(section.uniqueId)) {
@@ -8945,8 +9854,11 @@ ${shareButtonHTML}
           };
           const prevBtn = panel.querySelector('#details-prev-btn'); if (prevBtn) { prevBtn.onclick = () => { if (currentIndex > 0) this._showMobileSectionDetails(courseSections[currentIndex - 1], group, true) }; }
           const nextBtn = panel.querySelector('#details-next-btn'); if (nextBtn) { nextBtn.onclick = () => { if (currentIndex < courseSections.length - 1) this._showMobileSectionDetails(courseSections[currentIndex + 1], group, true) }; }
+          const favBtn = panel.querySelector('#sheet-fav-btn'); if (favBtn) { favBtn.onclick = () => { this._toggleFavInstructor(section.instructor); this._showMobileSectionDetails(section, group, false); }; }
+          const noteBtn = panel.querySelector('#sheet-note-btn'); if (noteBtn) { noteBtn.onclick = () => this._editCourseNote(section.code, () => this._showMobileSectionDetails(section, group, false)); }
           const cPrevBtn = panel.querySelector('#course-prev-btn'); if (cPrevBtn) { cPrevBtn.onclick = () => this._courseNavigate(-1); }
           const cNextBtn = panel.querySelector('#course-next-btn'); if (cNextBtn) { cNextBtn.onclick = () => this._courseNavigate(1); }
+          const bodyEl = panel.querySelector('.details-body'); if (bodyEl && shouldUpdatePanel) bodyEl.scrollTop = 0;
           this.dom.mobileSectionDetailsOverlay.classList.add('open');
         },
         _hideMobileSectionDetails() { this.dom.mobileSectionDetailsOverlay.classList.remove('open'); },
@@ -8954,12 +9866,13 @@ ${shareButtonHTML}
           const panel = this.dom.detailsPanel; if (!panel) return;
           let startX = 0, startY = 0, curX = 0, curY = 0, dragging = false;
           panel.addEventListener('touchstart', (e) => { if (e.target.closest('button')) return; startX = curX = e.touches[0].clientX; startY = curY = e.touches[0].clientY; dragging = true; panel.style.transition = 'none'; }, { passive: true });
-          panel.addEventListener('touchmove', (e) => { if (!dragging) return; curX = e.touches[0].clientX; curY = e.touches[0].clientY; const dy = curY - startY; if (dy > 0 && Math.abs(dy) > Math.abs(curX - startX)) panel.style.transform = `translateY(${dy}px)`; }, { passive: true });
+          const atTop = () => { const body = panel.querySelector('.details-body'); return !body || body.scrollTop <= 0; };
+          panel.addEventListener('touchmove', (e) => { if (!dragging) return; curX = e.touches[0].clientX; curY = e.touches[0].clientY; const dy = curY - startY; if (dy > 0 && atTop() && Math.abs(dy) > Math.abs(curX - startX)) panel.style.transform = `translateY(${dy}px)`; }, { passive: true });
           panel.addEventListener('touchend', () => {
             if (!dragging) return; dragging = false;
             const dy = curY - startY, dx = curX - startX;
             panel.style.transition = ''; panel.style.transform = '';
-            if (dy > 90 && Math.abs(dy) > Math.abs(dx)) { this._hideMobileSectionDetails(); return; }
+            if (dy > 90 && atTop() && Math.abs(dy) > Math.abs(dx)) { this._hideMobileSectionDetails(); return; }
             if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy)) { this._sheetNavigate(dx > 0 ? -1 : 1); }
           });
         },
@@ -9070,7 +9983,7 @@ ${shareButtonHTML}
           if (!courseColorsHTML) courseColorsHTML = '<p style="color:var(--color-text-muted);font-size:0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
           let courseVisibilityHTML = Object.values(this.state.groupedCourses).sort((a, b) => a.code.localeCompare(b.code)).map(g => { const isHidden = this.state.hiddenCourseCodes.has(g.code); const label = this.state.isVisibilityNamesMode ? g.name : g.code; return `<button class="course-visibility-btn ${isHidden ? 'hidden' : 'visible'}" data-course-code="${g.code}" style="--item-color:${g.color};--item-color-rgb:${this._hexToRgb(g.color)};"><span class="color-dot"></span>${label}</button>`; }).join('');
           if (!courseVisibilityHTML) courseVisibilityHTML = '<p style="color:var(--color-text-muted);font-size:0.9rem;">لم يتم تحميل بيانات المقررات بعد.</p>';
-          modal.innerHTML = `<div class="modal-header"><h3><i class="ph ph-gear-six"></i> الإعدادات</h3><i class="ph ph-x modal-close-btn"></i></div><div class="modal-content custom-scrollbar"><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-palette"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span><small>اضغط على القلم لتبديل أي لون ثابت بلونك الخاص</small></div><div class="theme-picker" id="accent-color-picker"></div></div><div class="settings-item"><div class="settings-item-label"><span>وضع الأداء العالي</span><small>إلغاء تأثيرات الشفافية لتسريع الموقع</small></div><label class="toggle-switch"><input type="checkbox" id="high-perf-toggle"><span class="slider"></span></label></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-funnel"></i>ترشيح المقررات</h4><div class="settings-item"><div class="settings-item-label"><span>إخفاء الشعب المغلقة</span><small>لإزالة الشعب غير المتاحة من القائمة</small></div><label class="toggle-switch"><input type="checkbox" id="hide-closed-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>وضع الإضافة السريعة</span><small>عند تفعيله يقوم بمحاكاة أسلوب الإضافة بموقع الجامعة</small></div><label class="toggle-switch"><input type="checkbox" id="quick-add-toggle"><span class="slider"></span></label></div><div class="settings-group-title" style="margin-top:2rem; justify-content: space-between;"><div style="display:flex; align-items:center; gap:0.75rem;"><i class="ph ph-eye-slash"></i>التحكم في ظهور المقررات</div><button id="modal-visibility-swap-btn" class="data-btn" style="padding:0.2rem 0.6rem; font-size: 0.9rem;" title="تبديل الاسم/الرمز"><i class="ph ph-text-aa"></i></button></div><div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-paint-brush"></i>ألوان المقررات</h4><div id="course-colors-list">${courseColorsHTML}</div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-calendar"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>موقع عمود الوقت</span><small>يمين أو يسار الجدول</small></div><div class="mode-toggle" id="time-axis-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-magic-wand"></i>أدوات الجدول</h4><div class="settings-item"><div class="settings-item-label"><span>إنشاء الجدول الذكي</span><small>نمط الجدول، أيام الإجازة، ودكاترتك المفضلون لكل مقرر.</small></div><button class="data-btn" id="auto-generate-btn"><i class="ph ph-magic-wand"></i>ابدأ</button></div><div class="settings-item"><div class="settings-item-label"><span>تصدير للتقويم (.ics)</span><small>يفتح جدولك في Google أو Apple Calendar مع تنبيهات.</small></div><button class="data-btn" id="export-ics-btn"><i class="ph ph-calendar-plus"></i>تصدير</button></div><div class="settings-item"><div class="settings-item-label"><span>تصدير الاختبارات (.ics)</span><small>مواعيد اختباراتك النهائية مع تذكير قبل يوم.</small></div><button class="data-btn" id="export-exams-btn"><i class="ph ph-file-text"></i>تصدير</button></div><div class="settings-item"><div class="settings-item-label"><span>تحليل الوقت</span><small>ساعات الحضور، الفراغات، وأيام الإجازة.</small></div><button class="data-btn" id="time-analysis-btn"><i class="ph ph-chart-bar"></i>عرض</button></div><div class="settings-item"><div class="settings-item-label"><span>مقارنة الجداول</span><small>قارن سيناريوهاتك: الأيام، الفراغات، والتعارضات.</small></div><button class="data-btn" id="compare-schedules-btn"><i class="ph ph-scales"></i>قارن</button></div><div class="settings-item"><div class="settings-item-label"><span>مقارنة مع صديق</span><small>الصق رابط جدوله لعرض الفراغات المشتركة بينكما.</small></div><button class="data-btn" id="friend-compare-btn"><i class="ph ph-users-three"></i>ابدأ</button></div><div class="settings-item"><div class="settings-item-label"><span>الجولة التعريفية</span><small>شرح سريع لأهم أجزاء الموقع.</small></div><button class="data-btn" id="start-tour-btn"><i class="ph ph-compass"></i>ابدأ</button></div><div class="settings-item"><div class="settings-item-label"><span>المميزات</span><small>قائمة كل ما يقدمه الموقع.</small></div><button class="data-btn" id="settings-features-btn"><i class="ph ph-sparkle"></i>عرض</button></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-database"></i>إدارة البيانات</h4><div class="settings-item"><div class="settings-item-label"><span>بيانات المقررات</span><small>آخر تحديث: ${this._getDataUpdatedText()}</small></div></div><div class="settings-item"><div class="settings-item-label"><span>مشاركة وتصدير</span><small>شارك جدولك برابط أو رمز QR، أو احفظه كملف.</small></div><div class="data-actions-group"><button class="data-btn" id="share-btn"><i class="ph ph-share-network"></i>مشاركة</button><button class="data-btn" id="export-btn"><i class="ph ph-cloud-arrow-down"></i>تصدير</button><button class="data-btn" id="import-btn"><i class="ph ph-cloud-arrow-up"></i>استيراد</button><input type="file" id="import-file-input" accept=".json" style="display:none;"></div></div><div class="settings-item"><div class="settings-item-label"><span>استيراد باللصق</span><small>الصق JSON لجدول أو بيانات مقررات.</small></div><button class="data-btn" id="import-paste-btn"><i class="ph ph-clipboard-text"></i>لصق</button></div><div class="settings-item"><div class="settings-item-label"><span>إعادة تعيين التطبيق</span><small>سيؤدي هذا إلى مسح جميع بيانات التطبيق نهائياً.</small></div><button class="data-btn danger" id="reset-app-btn"><i class="ph ph-arrow-counter-clockwise"></i>إعادة تعيين</button></div></div><div style="text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--color-border); margin-top: .5rem;"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ph ph-telegram-logo"></i> MUTLAQ1</a></div></div>`;
+          modal.innerHTML = `<div class="modal-header"><h3><i class="ph ph-gear-six"></i> الإعدادات</h3><i class="ph ph-x modal-close-btn"></i></div><div class="modal-content custom-scrollbar"><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-palette"></i>المظهر</h4><div class="settings-item"><div class="settings-item-label"><span>الوضع</span></div><div class="mode-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>اللون الأساسي</span><small>اضغط على القلم لتبديل أي لون ثابت بلونك الخاص</small></div><div class="theme-picker" id="accent-color-picker"></div></div><div class="settings-item"><div class="settings-item-label"><span>وضع الأداء العالي</span><small>إلغاء تأثيرات الشفافية لتسريع الموقع</small></div><label class="toggle-switch"><input type="checkbox" id="high-perf-toggle"><span class="slider"></span></label></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-funnel"></i>ترشيح المقررات</h4><div class="settings-item"><div class="settings-item-label"><span>إخفاء الشعب المغلقة</span><small>لإزالة الشعب غير المتاحة من القائمة</small></div><label class="toggle-switch"><input type="checkbox" id="hide-closed-toggle"><span class="slider"></span></label></div><div class="settings-item"><div class="settings-item-label"><span>وضع الإضافة السريعة</span><small>عند تفعيله يقوم بمحاكاة أسلوب الإضافة بموقع الجامعة</small></div><label class="toggle-switch"><input type="checkbox" id="quick-add-toggle"><span class="slider"></span></label></div><div class="settings-group-title" style="margin-top:2rem; justify-content: space-between;"><div style="display:flex; align-items:center; gap:0.75rem;"><i class="ph ph-eye-slash"></i>التحكم في ظهور المقررات</div><button id="modal-visibility-swap-btn" class="data-btn" style="padding:0.2rem 0.6rem; font-size: 0.9rem;" title="تبديل الاسم/الرمز"><i class="ph ph-text-aa"></i></button></div><div id="course-visibility-list" class="course-visibility-grid">${courseVisibilityHTML}</div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-paint-brush"></i>ألوان المقررات</h4><div id="course-colors-list">${courseColorsHTML}</div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-calendar"></i>عرض التقويم</h4><div class="settings-item"><div class="settings-item-label"><span>موقع عمود الوقت</span><small>يمين أو يسار الجدول</small></div><div class="mode-toggle" id="time-axis-toggle"></div></div><div class="settings-item"><div class="settings-item-label"><span>إظهار عطلة نهاية الأسبوع</span><small>لعرض يومي الجمعة والسبت</small></div><label class="toggle-switch"><input type="checkbox" id="show-weekend-toggle"><span class="slider"></span></label></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-magic-wand"></i>أدوات الجدول</h4><div class="settings-item"><div class="settings-item-label"><span>إنشاء الجدول الذكي</span><small>نمط الجدول، أيام الإجازة، ودكاترتك المفضلون لكل مقرر.</small></div><button class="data-btn" id="auto-generate-btn"><i class="ph ph-magic-wand"></i>ابدأ</button></div><div class="settings-item"><div class="settings-item-label"><span>تصدير للتقويم (.ics)</span><small>يفتح جدولك في Google أو Apple Calendar مع تنبيهات.</small></div><button class="data-btn" id="export-ics-btn"><i class="ph ph-calendar-plus"></i>تصدير</button></div><div class="settings-item"><div class="settings-item-label"><span>تصدير الاختبارات (.ics)</span><small>مواعيد اختباراتك النهائية مع تذكير قبل يوم.</small></div><button class="data-btn" id="export-exams-btn"><i class="ph ph-file-text"></i>تصدير</button></div><div class="settings-item"><div class="settings-item-label"><span>تحليل الوقت</span><small>ساعات الحضور، الفراغات، وأيام الإجازة.</small></div><button class="data-btn" id="time-analysis-btn"><i class="ph ph-chart-bar"></i>عرض</button></div><div class="settings-item"><div class="settings-item-label"><span>مقارنة الجداول</span><small>قارن سيناريوهاتك: الأيام، الفراغات، والتعارضات.</small></div><button class="data-btn" id="compare-schedules-btn"><i class="ph ph-scales"></i>قارن</button></div><div class="settings-item"><div class="settings-item-label"><span>مقارنة مع صديق</span><small>الصق رابط جدوله لعرض الفراغات المشتركة بينكما.</small></div><button class="data-btn" id="friend-compare-btn"><i class="ph ph-users-three"></i>ابدأ</button></div><div class="settings-item"><div class="settings-item-label"><span>الجولة التعريفية</span><small>شرح سريع لأهم أجزاء الموقع.</small></div><button class="data-btn" id="start-tour-btn"><i class="ph ph-compass"></i>ابدأ</button></div><div class="settings-item"><div class="settings-item-label"><span>اختصارات لوحة المفاتيح</span><small>اختصارات سريعة لمستخدمي الحاسب.</small></div><button class="data-btn" id="settings-shortcuts-btn"><i class="ph ph-keyboard"></i>عرض</button></div><div class="settings-item"><div class="settings-item-label"><span>المميزات</span><small>قائمة كل ما يقدمه الموقع.</small></div><button class="data-btn" id="settings-features-btn"><i class="ph ph-sparkle"></i>عرض</button></div></div><div class="settings-group"><h4 class="settings-group-title"><i class="ph ph-database"></i>إدارة البيانات</h4><div class="settings-item"><div class="settings-item-label"><span>بيانات المقررات</span><small>آخر تحديث: ${this._getDataUpdatedText()}</small></div></div><div class="settings-item"><div class="settings-item-label"><span>مشاركة وتصدير</span><small>شارك جدولك برابط أو رمز QR، أو احفظه كملف.</small></div><div class="data-actions-group"><button class="data-btn" id="share-btn"><i class="ph ph-share-network"></i>مشاركة</button><button class="data-btn" id="export-btn"><i class="ph ph-cloud-arrow-down"></i>تصدير</button><button class="data-btn" id="import-btn"><i class="ph ph-cloud-arrow-up"></i>استيراد</button><input type="file" id="import-file-input" accept=".json" style="display:none;"></div></div><div class="settings-item"><div class="settings-item-label"><span>استيراد باللصق</span><small>الصق JSON لجدول أو بيانات مقررات.</small></div><button class="data-btn" id="import-paste-btn"><i class="ph ph-clipboard-text"></i>لصق</button></div><div class="settings-item"><div class="settings-item-label"><span>إعادة تعيين التطبيق</span><small>سيؤدي هذا إلى مسح جميع بيانات التطبيق نهائياً.</small></div><button class="data-btn danger" id="reset-app-btn"><i class="ph ph-arrow-counter-clockwise"></i>إعادة تعيين</button></div></div><div style="text-align: center; padding-top: 1.25rem; border-top: 1px solid var(--color-border); margin-top: .5rem;"><a href="https://t.me/mutlaq1" target="_blank" rel="noopener noreferrer" class="designer-credit"><i class="ph ph-telegram-logo"></i> MUTLAQ1</a></div></div>`;
 
           const newScrollContainer = modal.querySelector('.modal-content');
           if (newScrollContainer) {
@@ -9095,6 +10008,7 @@ ${shareButtonHTML}
           modal.querySelector('#export-exams-btn')?.addEventListener('click', () => this._handleExportExamsICS());
           modal.querySelector('#compare-schedules-btn')?.addEventListener('click', () => { this._toggleSettingsModal(false); this._handleCompareSchedules(); });
           modal.querySelector('#friend-compare-btn')?.addEventListener('click', () => { this._toggleSettingsModal(false); this._handleFriendCompare(); });
+          modal.querySelector('#settings-shortcuts-btn')?.addEventListener('click', () => { this._toggleSettingsModal(false); this._showShortcutsModal(); });
           modal.querySelector('#start-tour-btn')?.addEventListener('click', () => this._startTour());
           modal.querySelector('#settings-features-btn')?.addEventListener('click', () => this._showFeaturesModal());
           modal.querySelector('#import-paste-btn').addEventListener('click', () => this._handleImportPaste());
@@ -9256,7 +10170,7 @@ ${shareButtonHTML}
             timeAxisToggle.onclick = e => { if (e.target.matches('.mode-btn')) { this.state.userSettings.timeAxisPosition = e.target.dataset.axis; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); this._applySettings(); } };
           }
           const weekendToggle = this.dom.settingsModal.querySelector('#show-weekend-toggle');
-          if (weekendToggle) { weekendToggle.checked = this.state.userSettings.showWeekends; weekendToggle.onchange = e => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); this._initializeCalendar(); this.updateCalendarAndConflicts(); }; }
+          if (weekendToggle) { weekendToggle.checked = this.state.userSettings.showWeekends; weekendToggle.onchange = e => { this.state.userSettings.showWeekends = e.target.checked; this._saveSettings(); this._initializeCalendar(); this._renderFilterUI(); this.updateCalendarAndConflicts(); }; }
           const closedToggle = this.dom.settingsModal.querySelector('#hide-closed-toggle');
           if (closedToggle) { closedToggle.checked = this.state.userSettings.hideClosedCourses; closedToggle.onchange = e => { this.state.userSettings.hideClosedCourses = e.target.checked; this._saveSettings(); this._renderCoursesList(); this.updateCalendarAndConflicts(); }; }
           const quickAddToggle = this.dom.settingsModal.querySelector('#quick-add-toggle');
