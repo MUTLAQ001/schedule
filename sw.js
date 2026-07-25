@@ -1,5 +1,33 @@
-const CACHE = 'qu-schedule-v1';
-const CORE = ['./', './index.html', './tutorial.html'];
+const CACHE = 'qu-schedule-v2';
+
+const CORE = [
+  './',
+  './index.html',
+  './tutorial.html',
+  './manifest.json',
+  './extractor.js',
+  './css/styles.css',
+  './css/tutorial.css',
+  './js/tutorial.js',
+  './js/tutorial-starfield.js',
+  './js/starfield.js',
+  './js/env.js',
+  './js/main.js',
+  './js/app/core.js',
+  './js/app/schedule-ui.js',
+  './js/app/exams.js',
+  './js/app/dom-events.js',
+  './js/app/interactions.js',
+  './js/app/utils.js',
+  './js/app/generator.js',
+  './js/app/tools.js',
+  './js/app/calendar.js',
+  './js/app/settings.js',
+  './js/app/misc.js',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
+];
+
 const CDN = ['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net'];
 
 self.addEventListener('install', (e) => {
@@ -18,6 +46,33 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+function networkFirst(req) {
+  return fetch(req)
+    .then((res) => {
+      if (res && (res.ok || res.type === 'opaque')) {
+        const copy = res.clone();
+        caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => { });
+      }
+      return res;
+    })
+    .catch(() => caches.match(req).then((r) => r || (req.mode === 'navigate' ? caches.match('./index.html') : undefined)));
+}
+
+function staleWhileRevalidate(req) {
+  return caches.match(req).then((cached) => {
+    const network = fetch(req)
+      .then((res) => {
+        if (res && (res.ok || res.type === 'opaque')) {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => { });
+        }
+        return res;
+      })
+      .catch(() => cached);
+    return cached || network;
+  });
+}
+
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
@@ -30,33 +85,12 @@ self.addEventListener('fetch', (e) => {
   const isCDN = CDN.some((h) => url.hostname === h);
   if (!sameOrigin && !isCDN) return;
 
-  if (req.mode === 'navigate') {
-    e.respondWith(
-      fetch(req)
-        .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-          return res;
-        })
-        .catch(() => caches.match(req).then((r) => r || caches.match('./index.html')))
-    );
+  if (sameOrigin) {
+    e.respondWith(networkFirst(req));
     return;
   }
 
-  e.respondWith(
-    caches.match(req).then((cached) => {
-      const network = fetch(req)
-        .then((res) => {
-          if (res && (res.ok || res.type === 'opaque')) {
-            const copy = res.clone();
-            caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || network;
-    })
-  );
+  e.respondWith(staleWhileRevalidate(req));
 });
 
 self.addEventListener('message', (e) => {
