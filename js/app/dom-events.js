@@ -315,8 +315,8 @@ Object.assign(QU_ScheduleApp, {
           document.body.classList.add('exporting-image');
 
           setTimeout(() => {
-            const captureW = targetEl.scrollWidth;
-            const captureH = targetEl.scrollHeight;
+            const captureW = Math.ceil(Math.max(targetEl.scrollWidth, targetEl.offsetWidth, targetEl.getBoundingClientRect().width));
+            const captureH = Math.ceil(Math.max(targetEl.scrollHeight, targetEl.offsetHeight, targetEl.getBoundingClientRect().height));
 
             html2canvas(targetEl, {
               backgroundColor: solidBg,
