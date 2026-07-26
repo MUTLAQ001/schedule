@@ -22,8 +22,9 @@ Object.assign(QU_ScheduleApp, {
             const group = this.state.groupedCourses[section.code]; const activeSchedule = this.state.schedules[this.state.activeScheduleIndex]; if (!activeSchedule) return;
             if (isMobile) { this._showMobileSectionDetails(section, group); } else { if (activeSchedule.sections.has(uniqueId)) { this._removeWithUndo(uniqueId, activeSchedule); } else { this._addSectionAndLink(uniqueId, activeSchedule); this._vibrate(12); this.updateCalendarAndConflicts(); } }
           } else if (header) {
-            const courseItem = header.parentElement; const isOpening = !courseItem.classList.contains('open'); courseItem.classList.toggle('open'); header.setAttribute('aria-expanded', String(isOpening));
+            const courseItem = header.parentElement; const isOpening = !courseItem.classList.contains('open'); courseItem.classList.toggle('open'); courseItem.classList.remove('qs-auto-open'); header.setAttribute('aria-expanded', String(isOpening));
             if (isOpening) { const sections = courseItem.querySelectorAll('.section-btn'); sections.forEach((section, index) => { section.style.animationDelay = `${index * 25}ms`; }); }
+            else { courseItem.querySelectorAll('.section-btn.sec-settled').forEach(s => s.classList.remove('sec-settled')); }
           }
         },
         _addSectionAndLink(sectionId, schedule) {
