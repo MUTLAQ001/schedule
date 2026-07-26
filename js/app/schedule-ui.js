@@ -99,21 +99,183 @@ Object.assign(QU_ScheduleApp, {
               const isNoTime = section.time === 'غير محدد';
               const isOpen = section.status.includes('مفتوحة');
               const statusIndicatorHTML = !this.state.userSettings.hideClosedCourses ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
-              const favHTML = this._isFavInstructor(section.instructor) ? '<i class="ph-fill ph-star sec-fav"></i>' : '';
-              const aria = `شعبة ${section.section} ${this._typeLabel(section.type)} ${section.instructor || ''}`;
-              return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''}" role="button" tabindex="0" aria-pressed="${selectedSections.has(section.uniqueId)}" aria-label="${this._escapeHTML(aria)}" data-unique-id="${this._escapeHTML(section.uniqueId)}" style="${isNoTime ? '--item-color:' + group.color + ';--item-color-rgb:' + this._hexToRgb(group.color) : ''}">
+              const isFav = this._isFavInstructor(section.instructor);
+              const favHTML = isFav ? '<span class="sec-fav" title="محاضر مفضل" aria-hidden="true"><i class="ph-fill ph-star"></i></span>' : '';
+              const aria = `شعبة ${section.section} ${this._typeLabel(section.type)} ${section.instructor || ''}${isFav ? ' — محاضر مفضل' : ''}`;
+              return `<div class="section-btn ${selectedSections.has(section.uniqueId) ? 'selected' : ''} ${isNoTime ? 'no-time' : ''} ${isFav ? 'is-fav' : ''}" role="button" tabindex="0" aria-pressed="${selectedSections.has(section.uniqueId)}" aria-label="${this._escapeHTML(aria)}" data-unique-id="${this._escapeHTML(section.uniqueId)}" style="${isNoTime ? '--item-color:' + group.color + ';--item-color-rgb:' + this._hexToRgb(group.color) : ''}">
 ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHTML(section.section)}</div><div class="section-type">${isNoTime ? '<i class="ph ph-laptop"></i>' : ''}${this._escapeHTML(this._typeLabel(section.type))}</div></div>`;
             }).join('');
             const note = (this.state.userSettings.courseNotes || {})[group.code];
             const noteFlag = note ? `<span class="course-note-flag" title="${this._escapeHTML(note)}"><i class="ph-fill ph-note"></i>ملاحظة</span>` : '';
             const countText = matchedIds ? sectionsToDisplay.length + ' نتيجة مطابقة' : (hasFilters ? sectionsToDisplay.length + ' شعبة بعد الترشيح' : sectionsToDisplay.length + ' شعب متاحة');
-            return `<div class="course-item ${term || hasFilters ? 'open' : ''}" style="animation-delay: ${i * 30}ms"><div class="course-item-header" role="button" tabindex="0" aria-expanded="${!!(term || hasFilters)}"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${this._escapeHTML(group.name)} (${this._escapeHTML(group.code)})${noteFlag}</h3><p>${countText}</p></div><i class="ph ph-caret-down toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
+            const autoOpen = !!(term || hasFilters);
+            return `<div class="course-item ${autoOpen ? 'open qs-auto-open' : ''}" data-course-code="${this._escapeHTML(group.code)}" style="animation-delay: ${i * 30}ms"><div class="course-item-header" role="button" tabindex="0" aria-expanded="${autoOpen}"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${this._escapeHTML(group.name)} (${this._escapeHTML(group.code)})${noteFlag}</h3><p>${countText}</p></div><i class="ph ph-caret-down toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
           }).join('');
         },
         _renderCoursesList() {
           const html = this._createCoursesListHTML();
-          if (this.dom.desktopCoursesList) this.dom.desktopCoursesList.innerHTML = html || '';
-          if (this.dom.mobileCoursesList) this.dom.mobileCoursesList.innerHTML = html || `<div class="no-data"><i class="ph ph-clock"></i><h4>في انتظار البيانات...</h4><p>استخدم الأداة لتحميل بيانات المواد.</p></div>`;
+          if (this.dom.desktopCoursesList) this._syncCoursesList(this.dom.desktopCoursesList, html || '');
+          if (this.dom.mobileCoursesList) this._syncCoursesList(this.dom.mobileCoursesList, html || `<div class="no-data"><i class="ph ph-clock"></i><h4>في انتظار البيانات...</h4><p>استخدم الأداة لتحميل بيانات المواد.</p></div>`);
+        },
+        _listMotionDisabled() {
+          if (document.body.classList.contains('high-performance')) return true;
+          try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) { return false; }
+        },
+        _nextNonLeaving(node, cls) {
+          while (node && (node.nodeType !== 1 || node.classList.contains(cls))) node = node.nextSibling;
+          return node;
+        },
+        _syncCoursesList(host, html) {
+          const staging = document.createElement('div');
+          staging.innerHTML = html;
+          const nextItems = Array.from(staging.children).filter(el => el.classList && el.classList.contains('course-item'));
+          const prevItems = Array.from(host.children).filter(el => el.classList && el.classList.contains('course-item') && !el.classList.contains('qs-leaving'));
+          if (!prevItems.length || !nextItems.length) {
+            host.classList.remove('qs-live');
+            host.innerHTML = html;
+            return;
+          }
+          const reduce = this._listMotionDisabled();
+          host.classList.add('qs-live');
+          const nextCodes = new Set(nextItems.map(el => el.dataset.courseCode));
+          const prevMap = new Map(prevItems.map(el => [el.dataset.courseCode, el]));
+          prevItems.forEach(el => { if (!nextCodes.has(el.dataset.courseCode)) this._collapseAndRemove(el, reduce); });
+          let cursor = host.firstChild;
+          nextItems.forEach(nextEl => {
+            const existing = prevMap.get(nextEl.dataset.courseCode);
+            let node = nextEl;
+            if (existing) { this._patchCourseItem(existing, nextEl, reduce); node = existing; }
+            cursor = this._nextNonLeaving(cursor, 'qs-leaving');
+            if (node === cursor) cursor = cursor.nextSibling;
+            else host.insertBefore(node, cursor);
+            if (!existing) this._revealCourseItem(node, reduce);
+          });
+        },
+        _collapseAndRemove(el, reduce) {
+          if (reduce) { el.remove(); return; }
+          const h = el.offsetHeight;
+          el.classList.add('qs-leaving');
+          el.style.height = h + 'px';
+          void el.offsetHeight;
+          el.style.height = '0px';
+          el.style.opacity = '0';
+          el.style.marginBottom = '0px';
+          setTimeout(() => el.remove(), 320);
+        },
+        _revealCourseItem(el, reduce) {
+          if (reduce) return;
+          const h = el.offsetHeight;
+          el.classList.add('qs-entering');
+          el.style.height = '0px';
+          el.style.opacity = '0';
+          el.style.marginBottom = '0px';
+          void el.offsetHeight;
+          el.style.height = h + 'px';
+          el.style.opacity = '';
+          el.style.marginBottom = '';
+          setTimeout(() => { el.classList.remove('qs-entering'); el.style.height = ''; }, 320);
+        },
+        _patchCourseItem(oldEl, newEl, reduce) {
+          const oldHead = oldEl.querySelector('.course-item-header');
+          const newHead = newEl.querySelector('.course-item-header');
+          if (oldHead && newHead) {
+            const oldTitle = oldHead.querySelector('.course-info h3'), newTitle = newHead.querySelector('.course-info h3');
+            if (oldTitle && newTitle && oldTitle.innerHTML !== newTitle.innerHTML) oldTitle.innerHTML = newTitle.innerHTML;
+            const oldCount = oldHead.querySelector('.course-info p'), newCount = newHead.querySelector('.course-info p');
+            if (oldCount && newCount && oldCount.textContent !== newCount.textContent) oldCount.textContent = newCount.textContent;
+            const oldDot = oldHead.querySelector('.color-dot'), newDot = newHead.querySelector('.color-dot');
+            if (oldDot && newDot && oldDot.getAttribute('style') !== newDot.getAttribute('style')) oldDot.setAttribute('style', newDot.getAttribute('style'));
+          }
+          const autoOpen = newEl.classList.contains('qs-auto-open');
+          if (autoOpen) { oldEl.classList.add('open', 'qs-auto-open'); }
+          else if (oldEl.classList.contains('qs-auto-open')) {
+            oldEl.classList.remove('open', 'qs-auto-open');
+            oldEl.querySelectorAll('.section-btn.sec-settled').forEach(s => s.classList.remove('sec-settled'));
+          }
+          if (oldHead) oldHead.setAttribute('aria-expanded', String(oldEl.classList.contains('open')));
+          const oldGrid = oldEl.querySelector('.sections-grid'), newGrid = newEl.querySelector('.sections-grid');
+          if (oldGrid && newGrid) this._patchSectionsGrid(oldGrid, newGrid, reduce);
+        },
+        _patchSectionsGrid(oldGrid, newGrid, reduce) {
+          const prevBtns = Array.from(oldGrid.children).filter(b => b.classList && b.classList.contains('section-btn') && !b.classList.contains('sec-leaving'));
+          const nextBtns = Array.from(newGrid.children).filter(b => b.classList && b.classList.contains('section-btn'));
+          const gridRect = oldGrid.getBoundingClientRect();
+          const animate = !reduce && gridRect.height > 0 && gridRect.width > 0;
+          const nextIds = new Set(nextBtns.map(b => b.dataset.uniqueId));
+          const prevMap = new Map(prevBtns.map(b => [b.dataset.uniqueId, b]));
+          const firstRects = new Map();
+          if (animate) {
+            prevBtns.forEach(b => {
+              b.classList.add('sec-settled');
+              if (nextIds.has(b.dataset.uniqueId)) firstRects.set(b.dataset.uniqueId, b.getBoundingClientRect());
+            });
+          }
+          prevBtns.forEach(b => {
+            if (nextIds.has(b.dataset.uniqueId)) return;
+            if (!animate) { b.remove(); return; }
+            const r = b.getBoundingClientRect();
+            b.style.position = 'absolute';
+            b.style.margin = '0';
+            b.style.insetInlineStart = 'auto';
+            b.style.left = (r.left - gridRect.left) + 'px';
+            b.style.top = (r.top - gridRect.top) + 'px';
+            b.style.width = r.width + 'px';
+            b.style.height = r.height + 'px';
+            b.classList.add('sec-leaving');
+            requestAnimationFrame(() => { b.style.opacity = '0'; b.style.transform = 'scale(0.82)'; });
+            setTimeout(() => b.remove(), 260);
+          });
+          let cursor = oldGrid.firstChild;
+          nextBtns.forEach(nextBtn => {
+            const existing = prevMap.get(nextBtn.dataset.uniqueId);
+            let node = nextBtn;
+            if (existing) { this._patchSectionBtn(existing, nextBtn); node = existing; }
+            else node.style.animationDelay = '0ms';
+            cursor = this._nextNonLeaving(cursor, 'sec-leaving');
+            if (node === cursor) cursor = cursor.nextSibling;
+            else oldGrid.insertBefore(node, cursor);
+          });
+          if (!animate) return;
+          const endHeight = oldGrid.getBoundingClientRect().height;
+          if (Math.abs(endHeight - gridRect.height) > 1) {
+            oldGrid.style.transition = 'none';
+            oldGrid.style.height = gridRect.height + 'px';
+            void oldGrid.offsetHeight;
+            oldGrid.style.transition = 'height 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.3s';
+            oldGrid.style.height = endHeight + 'px';
+            clearTimeout(oldGrid._qsHeightTimer);
+            oldGrid._qsHeightTimer = setTimeout(() => { oldGrid.style.height = ''; oldGrid.style.transition = ''; }, 340);
+          }
+          if (!firstRects.size) return;
+          requestAnimationFrame(() => {
+            firstRects.forEach((first, id) => {
+              const el = prevMap.get(id);
+              if (!el || !el.isConnected) return;
+              const last = el.getBoundingClientRect();
+              const dx = first.left - last.left, dy = first.top - last.top;
+              if (Math.abs(dx) < 1 && Math.abs(dy) < 1) return;
+              el.style.transition = 'none';
+              el.style.transform = `translate(${dx}px, ${dy}px)`;
+              requestAnimationFrame(() => {
+                el.style.transition = 'transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1)';
+                el.style.transform = '';
+                setTimeout(() => { el.style.transition = ''; }, 360);
+              });
+            });
+          });
+        },
+        _patchSectionBtn(oldBtn, newBtn) {
+          const keep = [];
+          ['conflicted', 'sec-settled', 'quick-added'].forEach(c => { if (oldBtn.classList.contains(c)) keep.push(c); });
+          const nextClass = (newBtn.getAttribute('class') || '').trim() + (keep.length ? ' ' + keep.join(' ') : '');
+          if (oldBtn.getAttribute('class') !== nextClass) oldBtn.setAttribute('class', nextClass);
+          const newStyle = newBtn.getAttribute('style');
+          if (newStyle) newStyle.split(';').forEach(rule => { const i = rule.indexOf(':'); if (i > 0) oldBtn.style.setProperty(rule.slice(0, i).trim(), rule.slice(i + 1).trim()); });
+          ['aria-pressed', 'aria-label'].forEach(attr => {
+            const v = newBtn.getAttribute(attr);
+            if (v !== null && oldBtn.getAttribute(attr) !== v) oldBtn.setAttribute(attr, v);
+          });
+          if (oldBtn.innerHTML !== newBtn.innerHTML) oldBtn.innerHTML = newBtn.innerHTML;
         },
         _renderQuickVisibilityList() {
           if (!this.dom.quickVisibilityContent) return;
