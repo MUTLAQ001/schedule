@@ -300,6 +300,7 @@ ${noteBox}${altsBlock}
         _toggleFilterPanel(force) {
           this._filterPanelOpen = typeof force === 'boolean' ? force : !this._filterPanelOpen;
           document.querySelectorAll('.qs-filter-panel').forEach(p => p.classList.toggle('open', !!this._filterPanelOpen));
+          document.querySelectorAll('.qs-filter-toggle').forEach(t => t.setAttribute('aria-expanded', String(!!this._filterPanelOpen)));
         },
         _clearFilters() {
           this.state.filters = { days: [], period: 'any', noConflict: false, favOnly: false };
@@ -310,20 +311,25 @@ ${noteBox}${altsBlock}
         _renderFilterUI() {
           const hosts = [document.getElementById('qs-filter-desktop'), document.getElementById('qs-filter-mobile')].filter(Boolean);
           if (!hosts.length) return;
-          const f = this.state.filters;
           const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
           const days = this.state.userSettings.showWeekends ? [0, 1, 2, 3, 4, 5, 6] : [0, 1, 2, 3, 4];
-          const count = this._activeFilterCount();
-          const dayChips = days.map(d => `<button class="qs-chip ${f.days.includes(d) ? 'active' : ''}" data-filter="day" data-value="${d}">${dayNames[d]}</button>`).join('');
-          const periodChips = [['any', 'الكل'], ['am', 'قبل ١٢'], ['pm', 'بعد ١٢']].map(p => `<button class="qs-chip wide ${f.period === p[0] ? 'active' : ''}" data-filter="period" data-value="${p[0]}">${p[1]}</button>`).join('');
-          const html = `<button class="qs-filter-toggle ${count ? 'has-active' : ''}" data-filter="toggle" aria-label="ترشيح الشعب"><i class="ph ph-funnel"></i> ترشيح الشعب${count ? ` <span class="qs-count">${count}</span>` : ''}</button>
-<div class="qs-filter-panel ${this._filterPanelOpen ? 'open' : ''}">
+          const signature = days.join('-');
+          const dayChips = days.map(d => `<button class="qs-chip" data-filter="day" data-value="${d}">${dayNames[d]}</button>`).join('');
+          const periodChips = [['any', 'الكل'], ['am', 'قبل ١٢'], ['pm', 'بعد ١٢']].map(p => `<button class="qs-chip wide" data-filter="period" data-value="${p[0]}">${p[1]}</button>`).join('');
+          const html = `<button class="qs-filter-toggle" data-filter="toggle" aria-label="ترشيح الشعب" aria-expanded="false"><i class="ph ph-funnel"></i><span>ترشيح الشعب</span><span class="qs-count">0</span></button>
+<div class="qs-filter-panel"><div class="qs-filter-panel-clip"><div class="qs-filter-panel-inner">
 <div class="qs-filter-row"><span class="qs-row-label">الأيام — تُعرض الشعب التي تقع مواعيدها كلها داخلها</span><div class="qs-chips">${dayChips}</div></div>
 <div class="qs-filter-row"><span class="qs-row-label">الفترة</span><div class="qs-chips">${periodChips}</div></div>
-<div class="qs-filter-row"><div class="qs-chips"><button class="qs-chip wide ${f.noConflict ? 'active' : ''}" data-filter="noConflict"><i class="ph ph-check-circle"></i> بدون تعارض مع جدولي</button><button class="qs-chip wide ${f.favOnly ? 'active' : ''}" data-filter="favOnly"><i class="ph ph-star"></i> دكاترتي المفضلون</button></div></div>
-<div class="qs-filter-foot"><span>${count ? count + ' مرشِّح مفعّل' : 'لا يوجد ترشيح'}</span><button class="qs-clear-btn" data-filter="clear"><i class="ph ph-x-circle"></i> مسح الكل</button></div>
-</div>`;
-          hosts.forEach(h => { h.innerHTML = html; });
+<div class="qs-filter-row"><div class="qs-chips"><button class="qs-chip wide" data-filter="noConflict"><i class="ph ph-check-circle"></i> بدون تعارض مع جدولي</button><button class="qs-chip wide" data-filter="favOnly"><i class="ph ph-star"></i> دكاترتي المفضلون</button></div></div>
+<div class="qs-filter-foot"><span class="qs-foot-label">لا يوجد ترشيح</span><button class="qs-clear-btn" data-filter="clear"><i class="ph ph-x-circle"></i> مسح الكل</button></div>
+</div></div></div>`;
+          hosts.forEach(h => {
+            if (h.dataset.qsSignature !== signature || !h.querySelector('.qs-filter-panel')) {
+              h.innerHTML = html;
+              h.dataset.qsSignature = signature;
+            }
+            this._paintFilterUI(h);
+          });
           if (this._filterBound) return;
           this._filterBound = true;
           document.addEventListener('click', (e) => {
@@ -345,6 +351,29 @@ ${noteBox}${altsBlock}
             this._renderCoursesList();
             this.updateCalendarAndConflicts();
           });
+        },
+        _paintFilterUI(host) {
+          const f = this.state.filters;
+          const count = this._activeFilterCount();
+          const toggle = host.querySelector('.qs-filter-toggle');
+          if (toggle) {
+            toggle.classList.toggle('has-active', count > 0);
+            toggle.setAttribute('aria-expanded', String(!!this._filterPanelOpen));
+            const badge = toggle.querySelector('.qs-count');
+            if (badge) { if (count) badge.textContent = count; badge.classList.toggle('show', count > 0); }
+          }
+          host.querySelectorAll('.qs-chip[data-filter="day"]').forEach(c => c.classList.toggle('active', f.days.includes(parseInt(c.dataset.value, 10))));
+          host.querySelectorAll('.qs-chip[data-filter="period"]').forEach(c => c.classList.toggle('active', f.period === c.dataset.value));
+          const noConflictChip = host.querySelector('.qs-chip[data-filter="noConflict"]');
+          if (noConflictChip) noConflictChip.classList.toggle('active', !!f.noConflict);
+          const favChip = host.querySelector('.qs-chip[data-filter="favOnly"]');
+          if (favChip) favChip.classList.toggle('active', !!f.favOnly);
+          const foot = host.querySelector('.qs-foot-label');
+          if (foot) foot.textContent = count ? count + ' مرشِّح مفعّل' : 'لا يوجد ترشيح';
+          const clearBtn = host.querySelector('.qs-clear-btn');
+          if (clearBtn) clearBtn.classList.toggle('is-idle', count === 0);
+          const panel = host.querySelector('.qs-filter-panel');
+          if (panel) panel.classList.toggle('open', !!this._filterPanelOpen);
         },
         _examDataIsEmpty() {
           const d = this.constants.EXAM_DATA || {};
