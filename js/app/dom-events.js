@@ -209,13 +209,17 @@ Object.assign(QU_ScheduleApp, {
               const courseItems = document.querySelectorAll('.course-item');
               const btnIcon = this.dom.expandCollapseBtn.querySelector('i');
               courseItems.forEach(item => {
+                item.classList.remove('qs-auto-open');
+                const header = item.querySelector('.course-item-header');
                 if (this.state.areAllExpanded) {
                   item.classList.add('open');
                   const sections = item.querySelectorAll('.section-btn');
                   sections.forEach(s => s.style.animationDelay = '0ms');
                 } else {
                   item.classList.remove('open');
+                  item.querySelectorAll('.section-btn.sec-settled').forEach(s => s.classList.remove('sec-settled'));
                 }
+                if (header) header.setAttribute('aria-expanded', String(this.state.areAllExpanded));
               });
               if (this.state.areAllExpanded) {
                 btnIcon.className = 'ph-fill ph-stack';
