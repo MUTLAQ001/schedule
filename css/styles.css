@@ -962,7 +962,6 @@ body::-webkit-scrollbar {
   align-content: start;
 }
 
-/* تحديث القائمة عند الترشيح: إخفاء/إظهار سلس بدل إعادة بناء القائمة كاملة */
 .qs-live>.course-item {
   animation: none !important;
 }
@@ -6769,6 +6768,10 @@ body.exporting-image #calendar .fc .fc-timegrid-col.fc-day:hover {
 }
 
 .qs-filter-host .qs-filter-panel {
+  margin-top: 0;
+}
+
+.qs-filter-host .qs-filter-panel.open {
   margin-top: 0.5rem;
 }
 
@@ -6804,28 +6807,64 @@ body.exporting-image #calendar .fc .fc-timegrid-col.fc-day:hover {
   color: #fff;
   border-radius: var(--radius-full);
   font-size: 0.66rem;
-  min-width: 17px;
   height: 17px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  min-width: 0;
+  max-width: 0;
+  padding: 0;
+  margin-inline-start: -0.4rem;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: max-width 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), min-width 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), margin-inline-start 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), padding 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s ease, transform 0.3s cubic-bezier(0.2, 1.5, 0.4, 1);
+}
+
+.qs-filter-toggle .qs-count.show {
+  min-width: 17px;
+  max-width: 40px;
   padding: 0 4px;
+  margin-inline-start: 0;
+  opacity: 1;
+  transform: scale(1);
 }
 
 .qs-filter-panel {
-  display: none;
+  display: grid;
+  grid-template-rows: 0fr;
+  margin-top: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: grid-template-rows 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), margin-top 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.2s ease, visibility 0s linear 0.32s;
+}
+
+.qs-filter-panel.open {
+  grid-template-rows: 1fr;
+  margin-top: 0.7rem;
+  opacity: 1;
+  visibility: visible;
+  transition: grid-template-rows 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), margin-top 0.32s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.24s ease 0.04s, visibility 0s;
+}
+
+.qs-filter-panel-clip {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.qs-filter-panel-inner {
+  display: flex;
   flex-direction: column;
   gap: 0.7rem;
-  margin-top: 0.7rem;
   padding: 0.8rem;
   border-radius: var(--radius-md);
   background: rgba(var(--rgb-primary), 0.05);
   border: 1px solid var(--color-border);
 }
 
-.qs-filter-panel.open {
-  display: flex;
-  animation: fadeInUp 0.25s both;
+.qs-clear-btn.is-idle {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 .qs-filter-row {
@@ -6900,6 +6939,7 @@ body.exporting-image #calendar .fc .fc-timegrid-col.fc-day:hover {
   gap: 0.3rem;
   padding: 0.2rem 0.3rem;
   border-radius: 8px;
+  transition: opacity 0.25s ease, background-color 0.25s ease;
 }
 
 .qs-clear-btn:hover {
@@ -7274,6 +7314,19 @@ body.high-performance .section-btn .sec-fav {
 
 .esn-chip i {
   font-size: 0.75rem;
+}
+
+.mobile-view-content,
+.main-content,
+#mobile-my-schedule-list {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.mobile-view-content::-webkit-scrollbar,
+.main-content::-webkit-scrollbar,
+#mobile-my-schedule-list::-webkit-scrollbar {
+  display: none;
 }
 
 .section-btn:focus-visible,
