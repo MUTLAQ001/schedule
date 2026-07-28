@@ -261,6 +261,69 @@ Object.assign(QU_ScheduleApp, {
           const run = () => this._loadHtml2Canvas().catch(() => { });
           if ('requestIdleCallback' in window) { requestIdleCallback(run, { timeout: 8000 }); } else { setTimeout(run, 4000); }
         },
+        _isIOS() {
+          const ua = navigator.userAgent || '';
+          if (/iPad|iPhone|iPod/.test(ua)) return true;
+          return /Macintosh/.test(ua) && navigator.maxTouchPoints > 1;
+        },
+        _canDownloadFiles() {
+          return 'download' in document.createElement('a') && !this._isIOS();
+        },
+        _maxCanvasArea() {
+          return this._isIOS() ? 12000000 : 40000000;
+        },
+        _canvasToBlob(canvas) {
+          return new Promise((resolve, reject) => {
+            if (!canvas.toBlob) { reject(new Error('toBlob unsupported')); return; }
+            canvas.toBlob(blob => { blob ? resolve(blob) : reject(new Error('empty blob')); }, 'image/png');
+          });
+        },
+        async _deliverImage(canvas, filename) {
+          const blob = await this._canvasToBlob(canvas);
+          if (this._canDownloadFiles()) {
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            link.rel = 'noopener';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+            return 'download';
+          }
+          this._showImageSaveSheet(blob, filename);
+          return 'sheet';
+        },
+        _showImageSaveSheet(blob, filename) {
+          const url = URL.createObjectURL(blob);
+          let file = null;
+          try { file = new File([blob], filename, { type: 'image/png' }); } catch (e) { file = null; }
+          const canShare = !!(file && navigator.canShare && navigator.canShare({ files: [file] }) && navigator.share);
+          const shareBtn = canShare
+            ? `<button type="button" class="img-save-share" id="img-save-share"><i class="ph-fill ph-export"></i> حفظ في الصور</button>`
+            : '';
+          Swal.fire({
+            title: 'جدولك جاهز',
+            html: `<div class="img-save-sheet">
+                <img src="${url}" alt="صورة الجدول" class="img-save-preview">
+                ${shareBtn}
+                <div class="img-save-hint"><i class="ph ph-hand-tap"></i>
+                  <span>${canShare ? 'أو اضغط' : 'اضغط'} مطولاً على الصورة ثم اختر <b>«حفظ في الصور»</b>.</span>
+                </div>
+              </div>`,
+            showConfirmButton: false,
+            showCloseButton: true,
+            customClass: { popup: 'swal2-popup img-save-popup' },
+            didOpen: () => {
+              document.getElementById('img-save-share')?.addEventListener('click', async () => {
+                try { await navigator.share({ files: [file], title: filename }); }
+                catch (err) { if (err && err.name !== 'AbortError') this._showToast('error', 'تعذّر فتح نافذة الحفظ. اضغط مطولاً على الصورة بدلاً من ذلك.'); }
+              });
+            },
+            willClose: () => { setTimeout(() => URL.revokeObjectURL(url), 1000); }
+          });
+        },
         async _handleDownloadImage(isMobileContext) {
           const btn = isMobileContext ? this.dom.mobileDynamicActionBtn : this.dom.downloadImgBtn;
           if (!btn) return;
@@ -318,9 +381,13 @@ Object.assign(QU_ScheduleApp, {
             const captureW = Math.ceil(Math.max(targetEl.scrollWidth, targetEl.offsetWidth, targetEl.getBoundingClientRect().width));
             const captureH = Math.ceil(Math.max(targetEl.scrollHeight, targetEl.offsetHeight, targetEl.getBoundingClientRect().height));
 
+            const maxArea = this._maxCanvasArea();
+            let sc = 2;
+            while (sc > 0.75 && (captureW * sc + 120 * sc) * (captureH * sc + 120 * sc + 70 * sc) > maxArea) sc -= 0.25;
+
             html2canvas(targetEl, {
               backgroundColor: solidBg,
-              scale: 2,
+              scale: sc,
               useCORS: true,
               width: captureW,
               height: captureH,
@@ -335,7 +402,6 @@ Object.assign(QU_ScheduleApp, {
               if (this.state.calendar && !isMobileContext) { this.state.calendar.setOption('height', '100%'); this.state.calendar.updateSize(); }
 
               const accent = this.state.userSettings.accentColor || '#8b5cf6';
-              const sc = 2;
               const wmH = 70 * sc;
               const pad = 60 * sc;
 
@@ -531,13 +597,19 @@ Object.assign(QU_ScheduleApp, {
               ctx.font = `${10 * sc}px "Segoe UI", system-ui, sans-serif`;
               ctx.fillText('\u0623\u0646\u0634\u0626 \u062c\u062f\u0648\u0644\u0643 \u0628\u0630\u0643\u0627\u0621', cx, cy + 12 * sc);
 
-              const link = document.createElement('a');
-              link.download = `QU_Schedule_${this.state.schedules[this.state.activeScheduleIndex].name}.png`;
-              link.href = fc.toDataURL('image/png', 1.0);
-              link.click();
-              if (mobileCalViewPrevDisplay !== null && mobileCalView) mobileCalView.style.display = mobileCalViewPrevDisplay;
-              btn.innerHTML = originalHTML;
-              this._showToast('success', '\u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629 \u0628\u0627\u062d\u062a\u0631\u0627\u0641\u064a\u0629!');
+              const safeName = String(this.state.schedules[this.state.activeScheduleIndex].name || 'schedule').replace(/[\\/:*?"<>|]/g, '-').trim() || 'schedule';
+              this._deliverImage(fc, `QU_Schedule_${safeName}.png`)
+                .then((how) => {
+                  if (how === 'download') this._showToast('success', '\u062a\u0645 \u062d\u0641\u0638 \u0627\u0644\u0635\u0648\u0631\u0629 \u0628\u0627\u062d\u062a\u0631\u0627\u0641\u064a\u0629!');
+                })
+                .catch((err) => {
+                  console.error('image save error:', err);
+                  this._showToast('error', '\u062a\u0639\u0630\u0651\u0631 \u062a\u062c\u0647\u064a\u0632 \u0627\u0644\u0635\u0648\u0631\u0629. \u062c\u0631\u0651\u0628 \u0645\u0631\u0629 \u0623\u062e\u0631\u0649.');
+                })
+                .finally(() => {
+                  if (mobileCalViewPrevDisplay !== null && mobileCalView) mobileCalView.style.display = mobileCalViewPrevDisplay;
+                  btn.innerHTML = originalHTML;
+                });
             }).catch((e) => {
               document.body.classList.remove('exporting-image');
               restoreAll();
