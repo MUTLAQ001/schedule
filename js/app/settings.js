@@ -14,6 +14,7 @@ Object.assign(QU_ScheduleApp, {
             this.state.userSettings.highPerformance = false;
           }
           if (!this.state.userSettings.examScheduleMode) { this.state.userSettings.examScheduleMode = '3'; }
+          if (!this.state.userSettings.examModeOverrides || typeof this.state.userSettings.examModeOverrides !== 'object') { this.state.userSettings.examModeOverrides = {}; }
           if (!this.state.userSettings.customPalette || typeof this.state.userSettings.customPalette !== 'object') { this.state.userSettings.customPalette = {}; }
           this._applySettings();
         },
