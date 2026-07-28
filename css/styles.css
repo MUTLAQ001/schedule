@@ -5518,62 +5518,6 @@ body.high-performance .details-panel {
   border-color: rgba(var(--rgb-success), 0.25);
 }
 
-.exam-next-banner {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.8rem 1rem;
-  margin-bottom: 0.85rem;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, rgba(var(--rgb-primary), 0.14), rgba(var(--rgb-primary), 0.04));
-  border: 1px solid rgba(var(--rgb-primary), 0.22);
-  animation: fadeInUp 0.35s both;
-}
-
-.exam-next-banner i {
-  font-size: 1.5rem;
-  color: var(--color-primary);
-}
-
-.exam-next-banner .enb-text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
-.exam-next-banner .enb-label {
-  font-size: 0.72rem;
-  color: var(--color-text-muted);
-}
-
-.exam-next-banner .enb-title {
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: var(--color-text-dark);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.exam-next-banner .enb-days {
-  margin-inline-start: auto;
-  font-family: var(--font-title);
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--color-primary);
-  line-height: 1;
-  text-align: center;
-}
-
-.exam-next-banner .enb-days small {
-  display: block;
-  font-size: 0.6rem;
-  font-weight: 400;
-  color: var(--color-text-muted);
-  margin-top: 0.2rem;
-}
-
 .cmp-table-wrap {
   overflow-x: auto;
   border: 1px solid var(--color-border);
