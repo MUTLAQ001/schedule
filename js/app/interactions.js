@@ -32,6 +32,16 @@ Object.assign(QU_ScheduleApp, {
           if (!section) return false;
           const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
           if (this._isSectionConflicted(section, tempSelectedDetails)) { if (isMobile) { this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.'); } }
+          else {
+            const peers = this._sameDayExamPeers(section, tempSelectedDetails);
+            if (peers.length) {
+              const day = this._examDayOf(section.examPeriodId);
+              const withText = peers.length === 1 ? `اختبار ${peers[0].name}`
+                : peers.length === 2 ? 'اختبارين آخرين'
+                  : `${peers.length} اختبارات أخرى`;
+              this._showToast('warning', `تنبيه: اختبار ${section.name} بنفس يوم ${withText} (${day.label}).`);
+            }
+          }
           schedule.sections.add(sectionId);
           const linkedGroup = this.state.linkedCourseGroups[section.name];
           if (linkedGroup) {
