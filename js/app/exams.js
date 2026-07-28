@@ -70,24 +70,44 @@ Object.assign(QU_ScheduleApp, {
         _examPeriodsPerDay() {
           return this.state.userSettings.examScheduleMode === '2' ? 2 : 3;
         },
+        _examDayOf(periodId, info) {
+          const data = info !== undefined ? info : this._getExamDateInfo(periodId);
+          if (data && data.start) {
+            const d = data.start;
+            return {
+              key: `d:${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`,
+              label: d.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn', { weekday: 'long', day: '2-digit', month: '2-digit' }),
+              tier: 0, order: d.getTime()
+            };
+          }
+          const pid = parseInt(periodId, 10);
+          if (!Number.isFinite(pid) || pid <= 0) return null;
+          const day = Math.ceil(pid / this._examPeriodsPerDay());
+          return { key: `p:${day}`, label: `اليوم ${day} من الاختبارات`, tier: 1, order: day };
+        },
+        _sameDayExamPeers(section, selected) {
+          if (!section || !section.examPeriodId) return [];
+          const day = this._examDayOf(section.examPeriodId);
+          if (!day) return [];
+          const seen = new Set();
+          return selected.filter(s => {
+            if (!s.examPeriodId) return false;
+            if (s.code === section.code || s.name === section.name) return false;
+            if (String(s.examPeriodId) === String(section.examPeriodId)) return false;
+            const other = this._examDayOf(s.examPeriodId);
+            if (!other || other.key !== day.key) return false;
+            if (seen.has(s.code)) return false;
+            seen.add(s.code);
+            return true;
+          });
+        },
         _examDayGroups(entries) {
-          const perDay = this._examPeriodsPerDay();
           const map = new Map();
           entries.forEach(x => {
-            const pid = parseInt(x.exam.examPeriodId, 10);
-            let key, label, tier, order;
-            if (x.info && x.info.start) {
-              const d = x.info.start;
-              key = `d:${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-              label = d.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn', { weekday: 'long', day: '2-digit', month: '2-digit' });
-              tier = 0; order = d.getTime();
-            } else if (Number.isFinite(pid) && pid > 0) {
-              const day = Math.ceil(pid / perDay);
-              key = `p:${day}`;
-              label = `اليوم ${day} من الاختبارات`;
-              tier = 1; order = day;
-            } else return;
-            if (!map.has(key)) map.set(key, { key, label, tier, order, items: [] });
+            const day = this._examDayOf(x.exam.examPeriodId, x.info);
+            if (!day) return;
+            const key = day.key;
+            if (!map.has(key)) map.set(key, { key, label: day.label, tier: day.tier, order: day.order, items: [] });
             map.get(key).items.push(x);
           });
           return Array.from(map.values())
