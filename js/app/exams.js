@@ -67,6 +67,73 @@ Object.assign(QU_ScheduleApp, {
           const label = daysLeft <= 10 ? `بعد ${daysLeft} أيام` : `بعد ${daysLeft} يوماً`;
           return { text: label, cls: daysLeft <= 7 ? 'soon' : '', icon: 'ph-hourglass-low' };
         },
+        _examPeriodsPerDay() {
+          return this.state.userSettings.examScheduleMode === '2' ? 2 : 3;
+        },
+        _examDayGroups(entries) {
+          const perDay = this._examPeriodsPerDay();
+          const map = new Map();
+          entries.forEach(x => {
+            const pid = parseInt(x.exam.examPeriodId, 10);
+            let key, label, tier, order;
+            if (x.info && x.info.start) {
+              const d = x.info.start;
+              key = `d:${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+              label = d.toLocaleDateString('ar-SA-u-ca-gregory-nu-latn', { weekday: 'long', day: '2-digit', month: '2-digit' });
+              tier = 0; order = d.getTime();
+            } else if (Number.isFinite(pid) && pid > 0) {
+              const day = Math.ceil(pid / perDay);
+              key = `p:${day}`;
+              label = `اليوم ${day} من الاختبارات`;
+              tier = 1; order = day;
+            } else return;
+            if (!map.has(key)) map.set(key, { key, label, tier, order, items: [] });
+            map.get(key).items.push(x);
+          });
+          return Array.from(map.values())
+            .filter(g => g.items.length >= 2)
+            .map(g => {
+              g.items.sort((a, b) => parseInt(a.exam.examPeriodId, 10) - parseInt(b.exam.examPeriodId, 10));
+              return g;
+            })
+            .sort((a, b) => (a.tier - b.tier) || (a.order - b.order));
+        },
+        _examCountLabel(n) {
+          if (n === 2) return 'اختباران';
+          return `${n} اختبارات`;
+        },
+        _buildExamDayWarning(entries) {
+          const groups = this._examDayGroups(entries);
+          if (groups.length === 0) return '';
+          const approx = groups.some(g => g.tier === 1);
+          const n = groups.length;
+          const daysText = n === 1 ? 'يوم واحد فيه أكثر من اختبار'
+            : n === 2 ? 'يومان فيهما أكثر من اختبار'
+              : n <= 10 ? `${n} أيام فيها أكثر من اختبار`
+                : `${n} يوماً فيها أكثر من اختبار`;
+          const daysHTML = groups.map(g => {
+            const rows = g.items.map(x => {
+              const pid = this._escapeHTML(x.exam.examPeriodId);
+              const timeM = (x.info && x.info.raw) ? x.info.raw.match(/\(([^)]+)\)/) : null;
+              const meta = timeM ? `فترة ${pid} · ${this._escapeHTML(timeM[1].trim())}` : `فترة ${pid}`;
+              return `<li class="edw-row"><span class="edw-course">${this._escapeHTML(x.exam.name)}</span><span class="edw-meta">${meta}</span></li>`;
+            }).join('');
+            return `<div class="edw-day">
+                <div class="edw-day-head"><span class="edw-day-name">${this._escapeHTML(g.label)}</span><span class="edw-day-count">${this._examCountLabel(g.items.length)}</span></div>
+                <ol class="edw-list">${rows}</ol>
+              </div>`;
+          }).join('');
+          const foot = approx
+            ? `<p class="edw-foot"><i class="ph ph-info"></i> الأيام محسوبة من ترتيب الفترات (${this._examPeriodsPerDay()} فترات لكل يوم). بدّل نظام الفترات من الأعلى إذا كان مختلفاً.</p>`
+            : '';
+          return `<div class="exam-daywarn" role="status">
+              <div class="edw-head"><span class="edw-icon"><i class="ph-fill ph-warning"></i></span>
+                <div class="edw-head-text"><span class="edw-title">${daysText}</span><p class="edw-sub">اختباراتك متقاربة في هذي الأيام — رتّب مذاكرتك على أساسها.</p></div>
+              </div>
+              <div class="edw-days">${daysHTML}</div>
+              ${foot}
+            </div>`;
+        },
         _renderFinalExams(selectedCourses) {
           const uniqueExams = [...new Map(selectedCourses.filter(e => e.examPeriodId).map(e => [e.examPeriodId, e])).values()];
           const toggleBtnDesktop = this.dom.desktopDateToggle;
@@ -97,6 +164,8 @@ Object.assign(QU_ScheduleApp, {
             bannerHTML = `<div class="exam-next-banner"><i class="ph-fill ph-alarm"></i><div class="enb-text"><span class="enb-label">أقرب اختبار</span><span class="enb-title">${this._escapeHTML(upcoming.exam.name)}</span></div><div class="enb-days">${num}<small>${upcoming.info.daysLeft === 0 ? cd.text : 'يوم متبقٍ'}</small></div></div>`;
           }
 
+          const dayWarnHTML = this._buildExamDayWarning(sorted);
+
           const buildItem = (x, mobileMode) => {
             const exam = x.exam, info = x.info;
             const cd = info ? this._countdownText(info.daysLeft) : null;
@@ -117,7 +186,7 @@ Object.assign(QU_ScheduleApp, {
             if (sorted.length === 0) {
               this.dom.desktopExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.desktopExamsList.innerHTML = staleNote + bannerHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
+              this.dom.desktopExamsList.innerHTML = staleNote + bannerHTML + dayWarnHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.desktopExamsList);
           }
@@ -126,7 +195,7 @@ Object.assign(QU_ScheduleApp, {
             if (sorted.length === 0) {
               this.dom.mobileMyExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.mobileMyExamsList.innerHTML = staleNote + bannerHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
+              this.dom.mobileMyExamsList.innerHTML = staleNote + bannerHTML + dayWarnHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.mobileMyExamsList);
           }
