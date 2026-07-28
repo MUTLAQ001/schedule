@@ -20,15 +20,10 @@ Object.assign(QU_ScheduleApp, {
             return null;
           } catch (e) { return null; }
         },
-        _effectiveExamMode(code) {
-          const overrides = this.state.userSettings.examModeOverrides;
-          if (code && overrides && overrides[code]) return overrides[code];
-          return this.state.userSettings.examScheduleMode;
-        },
-        _getExamDateInfo(periodId, code) {
+        _getExamDateInfo(periodId) {
           if (!periodId) return null;
           if (!this._examDateCache) this._examDateCache = {};
-          const mode = this._effectiveExamMode(code);
+          const mode = this.state.userSettings.examScheduleMode;
           const key = `${mode}-${periodId}`;
           if (this._examDateCache[key] !== undefined) return this._examDateCache[key];
           const raw = this.constants.EXAM_DATA[mode][periodId];
@@ -51,9 +46,9 @@ Object.assign(QU_ScheduleApp, {
           this._examDateCache[key] = info;
           return info;
         },
-        _examSummaryText(periodId, code) {
+        _examSummaryText(periodId) {
           if (!periodId) return 'لا يوجد';
-          const info = this._getExamDateInfo(periodId, code);
+          const info = this._getExamDateInfo(periodId);
           if (!info) return `فترة ${periodId}`;
           const hijri = (info.raw || '').split('(')[0].trim();
           const time = (info.raw || '').match(/\(([^)]+)\)/);
@@ -72,11 +67,11 @@ Object.assign(QU_ScheduleApp, {
           const label = daysLeft <= 10 ? `بعد ${daysLeft} أيام` : `بعد ${daysLeft} يوماً`;
           return { text: label, cls: daysLeft <= 7 ? 'soon' : '', icon: 'ph-hourglass-low' };
         },
-        _examPeriodsPerDay(code) {
-          return this._effectiveExamMode(code) === '2' ? 2 : 3;
+        _examPeriodsPerDay() {
+          return this.state.userSettings.examScheduleMode === '2' ? 2 : 3;
         },
-        _examDayOf(periodId, info, code) {
-          const data = info !== undefined ? info : this._getExamDateInfo(periodId, code);
+        _examDayOf(periodId, info) {
+          const data = info !== undefined ? info : this._getExamDateInfo(periodId);
           if (data && data.start) {
             const d = data.start;
             return {
@@ -87,19 +82,19 @@ Object.assign(QU_ScheduleApp, {
           }
           const pid = parseInt(periodId, 10);
           if (!Number.isFinite(pid) || pid <= 0) return null;
-          const day = Math.ceil(pid / this._examPeriodsPerDay(code));
+          const day = Math.ceil(pid / this._examPeriodsPerDay());
           return { key: `p:${day}`, label: `اليوم ${day} من الاختبارات`, tier: 1, order: day };
         },
         _sameDayExamPeers(section, selected) {
           if (!section || !section.examPeriodId) return [];
-          const day = this._examDayOf(section.examPeriodId, undefined, section.code);
+          const day = this._examDayOf(section.examPeriodId);
           if (!day) return [];
           const seen = new Set();
           return selected.filter(s => {
             if (!s.examPeriodId) return false;
             if (s.code === section.code || s.name === section.name) return false;
             if (String(s.examPeriodId) === String(section.examPeriodId)) return false;
-            const other = this._examDayOf(s.examPeriodId, undefined, s.code);
+            const other = this._examDayOf(s.examPeriodId);
             if (!other || other.key !== day.key) return false;
             if (seen.has(s.code)) return false;
             seen.add(s.code);
@@ -109,7 +104,7 @@ Object.assign(QU_ScheduleApp, {
         _examDayGroups(entries) {
           const map = new Map();
           entries.forEach(x => {
-            const day = this._examDayOf(x.exam.examPeriodId, x.info, x.exam.code);
+            const day = this._examDayOf(x.exam.examPeriodId, x.info);
             if (!day) return;
             const key = day.key;
             if (!map.has(key)) map.set(key, { key, label: day.label, tier: day.tier, order: day.order, items: [] });
@@ -159,28 +154,8 @@ Object.assign(QU_ScheduleApp, {
               ${foot}
             </div>`;
         },
-        _bindExamModeToggles(container) {
-          if (!container) return;
-          container.querySelectorAll('[data-exam-mode-toggle]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-              e.stopPropagation();
-              const code = btn.dataset.courseCode;
-              if (!code) return;
-              if (!this.state.userSettings.examModeOverrides) this.state.userSettings.examModeOverrides = {};
-              const overrides = this.state.userSettings.examModeOverrides;
-              const cycle = [null, '2', '3'];
-              const next = cycle[(cycle.indexOf(overrides[code] || null) + 1) % cycle.length];
-              if (next === null) delete overrides[code]; else overrides[code] = next;
-              this._examDateCache = {};
-              this._saveSettings();
-              const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-              const sections = activeSchedule ? Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean) : [];
-              this._renderFinalExams(sections);
-            });
-          });
-        },
         _renderFinalExams(selectedCourses) {
-          const uniqueExams = [...new Map(selectedCourses.filter(e => e.examPeriodId).map(e => [e.code, e])).values()];
+          const uniqueExams = [...new Map(selectedCourses.filter(e => e.examPeriodId).map(e => [e.examPeriodId, e])).values()];
           const toggleBtnDesktop = this.dom.desktopDateToggle;
           const toggleBtnMobile = this.dom.mobileMyExamsDateToggle;
           [toggleBtnDesktop, toggleBtnMobile].forEach(btn => { if (btn) btn.classList.toggle('active', this.state.showExamDates); });
@@ -193,7 +168,7 @@ Object.assign(QU_ScheduleApp, {
           const staleNote = this._examDataIsEmpty() ? `<div class="exam-stale-note" role="status"><span class="esn-icon"><i class="ph-fill ph-calendar-dots"></i></span><div class="esn-body"><span class="esn-title">تواريخ فترات الاختبارات لم تُحدَّث بعد</span><p class="esn-text">تظهر أرقام الفترات فقط لهذا الفصل، بدون تواريخ أو عدّاد أيام.</p><span class="esn-chip"><i class="ph-fill ph-shield-check"></i> كشف تعارض الاختبارات يعمل بشكل طبيعي</span></div></div>` : '';
           const emptyHTML = `<div class="empty-state"><div class="es-icon"><i class="ph ph-file-text"></i></div><h4>لا توجد اختبارات</h4><p>لم تُحدَّد اختبارات نهائية للمقررات المختارة. أضف مقررات لجدولك لتظهر مواعيد اختباراتها هنا.</p><div class="es-actions"><button class="es-btn primary" data-empty-action="browse"><i class="ph ph-stack"></i> تصفح المقررات</button></div></div>`;
 
-          const sorted = uniqueExams.slice().map(e => ({ exam: e, info: this._getExamDateInfo(e.examPeriodId, e.code) }))
+          const sorted = uniqueExams.slice().map(e => ({ exam: e, info: this._getExamDateInfo(e.examPeriodId) }))
             .sort((a, b) => {
               const da = a.info && a.info.start ? a.info.start.getTime() : Infinity;
               const db = b.info && b.info.start ? b.info.start.getTime() : Infinity;
@@ -201,62 +176,56 @@ Object.assign(QU_ScheduleApp, {
               return parseInt(a.exam.examPeriodId, 10) - parseInt(b.exam.examPeriodId, 10);
             });
 
-          const dayWarnHTML = this._buildExamDayWarning(sorted);
+          const upcoming = sorted.filter(x => x.info && x.info.daysLeft !== null && x.info.daysLeft >= 0)[0];
+          let bannerHTML = '';
+          if (upcoming) {
+            const cd = this._countdownText(upcoming.info.daysLeft);
+            const num = upcoming.info.daysLeft === 0 ? 'اليوم' : upcoming.info.daysLeft;
+            bannerHTML = `<div class="exam-next-banner"><i class="ph-fill ph-alarm"></i><div class="enb-text"><span class="enb-label">أقرب اختبار</span><span class="enb-title">${this._escapeHTML(upcoming.exam.name)}</span></div><div class="enb-days">${num}<small>${upcoming.info.daysLeft === 0 ? cd.text : 'يوم متبقٍ'}</small></div></div>`;
+          }
 
-          const modeLabel = m => m === '2' ? 'فترتين' : '3 فترات';
-          const buildModeChip = (exam) => {
-            const overrides = this.state.userSettings.examModeOverrides || {};
-            const override = overrides[exam.code] || '';
-            const effective = override || this.state.userSettings.examScheduleMode;
-            const isCustom = !!override;
-            const icon = isCustom ? 'ph-fill ph-push-pin' : 'ph ph-clock';
-            const title = isCustom ? `نظام فترات مخصص لهذا المقرر — اضغط للتبديل` : 'نظام الفترات يتبع الإعداد العام — اضغط لتخصيص هذا المقرر';
-            return `<button type="button" class="exam-mode-chip${isCustom ? ' is-custom' : ''}" data-exam-mode-toggle data-course-code="${this._escapeHTML(exam.code)}" title="${this._escapeHTML(title)}"><i class="${icon}"></i> ${modeLabel(effective)}</button>`;
-          };
+          const dayWarnHTML = this._buildExamDayWarning(sorted);
 
           const buildItem = (x, mobileMode) => {
             const exam = x.exam, info = x.info;
             const cd = info ? this._countdownText(info.daysLeft) : null;
             const pill = cd ? `<span class="exam-countdown ${cd.cls}"><i class="ph ${cd.icon}"></i> ${cd.text}</span>` : '';
-            const modeChip = buildModeChip(exam);
             let examText = `فترة الاختبار: ${exam.examPeriodId}`;
             if (this.state.showExamDates) {
               if (info && info.raw) examText = info.gregorianText ? `${info.raw} — ${info.gregorianText}` : info.raw;
               else examText = `فترة: ${exam.examPeriodId} (غير مدرجة)`;
             }
             if (mobileMode) {
-              return `<div class="mobile-schedule-item mobile-exam-item"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${this._escapeHTML(exam.name)} (${this._escapeHTML(exam.code)})</h3><span class="mobile-exam-date">${examText}</span></div><div class="exam-item-actions">${pill}${modeChip}</div></div></div>`;
+              return `<div class="mobile-schedule-item mobile-exam-item"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${this._escapeHTML(exam.name)} (${this._escapeHTML(exam.code)})</h3><span class="mobile-exam-date">${examText}</span></div>${pill}</div></div>`;
             }
             const styled = this.state.showExamDates && info && info.raw ? `<span style="color:var(--color-primary); font-weight:700">${examText}</span>` : `<span style="${info && info.raw ? '' : 'opacity:0.6'}">${examText}</span>`;
-            return `<div class="course-item"><div class="course-item-header" style="cursor:default;"><div class="course-info"><h3>${this._escapeHTML(exam.name)} (${this._escapeHTML(exam.code)})</h3><p><strong>${styled}</strong></p></div><div class="exam-item-actions">${pill}${modeChip}</div></div></div>`;
+            return `<div class="course-item"><div class="course-item-header" style="cursor:default;"><div class="course-info"><h3>${this._escapeHTML(exam.name)} (${this._escapeHTML(exam.code)})</h3><p><strong>${styled}</strong></p></div>${pill}</div></div>`;
           };
 
           if (this.dom.desktopExamsList) {
             if (sorted.length === 0) {
               this.dom.desktopExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.desktopExamsList.innerHTML = staleNote + dayWarnHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
+              this.dom.desktopExamsList.innerHTML = staleNote + bannerHTML + dayWarnHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.desktopExamsList);
-            this._bindExamModeToggles(this.dom.desktopExamsList);
           }
 
           if (this.dom.mobileMyExamsList) {
             if (sorted.length === 0) {
               this.dom.mobileMyExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.mobileMyExamsList.innerHTML = staleNote + dayWarnHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
+              this.dom.mobileMyExamsList.innerHTML = staleNote + bannerHTML + dayWarnHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.mobileMyExamsList);
-            this._bindExamModeToggles(this.dom.mobileMyExamsList);
           }
         },
         _handleExportExamsICS() {
           const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
           const sections = activeSchedule ? Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean) : [];
-          const uniqueExams = [...new Map(sections.filter(e => e.examPeriodId).map(e => [e.code, e])).values()];
+          const uniqueExams = [...new Map(sections.filter(e => e.examPeriodId).map(e => [e.examPeriodId, e])).values()];
           if (uniqueExams.length === 0) { this._showToast('error', 'لا توجد اختبارات في جدولك الحالي.'); return; }
-          const withDates = uniqueExams.map(e => ({ exam: e, info: this._getExamDateInfo(e.examPeriodId, e.code) })).filter(x => x.info && x.info.start);
+          const withDates = uniqueExams.map(e => ({ exam: e, info: this._getExamDateInfo(e.examPeriodId) })).filter(x => x.info && x.info.start);
           if (withDates.length === 0) { this._showToast('error', 'تعذّر تحديد تواريخ الاختبارات.'); return; }
           const pad = n => String(n).padStart(2, '0');
           const now = new Date();
