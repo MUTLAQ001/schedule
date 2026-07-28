@@ -415,8 +415,11 @@ showUI();})();`;
           } else {
             Swal.fire({
               title: 'اسحب الزر للشريط', icon: 'info', allowOutsideClick: true, showConfirmButton: false,
-              html: `<div id="swal-custom-close" style="position: absolute; top: 12px; left: 15px; cursor: pointer; color: var(--color-text-muted); font-size: 1.5rem; z-index: 50;"><i class="ph ph-x"></i></div><div style="text-align: right;"><p style="margin-bottom: 1.5rem; color: var(--color-text-muted); line-height: 1.6;">اسحب الزر التالي وأفلته في شريط الإشارات المرجعية (Bookmarks Bar) أعلى المتصفح.</p><div style="text-align: center; margin-bottom: 1.5rem;"><a href="${code}" class="bookmarklet-button" style="text-decoration:none; display:inline-flex;" onclick="return false;"><i class="ph ph-magic-wand"></i> مُعِدّ</a></div><p style="font-size: 0.85rem; opacity: 0.7; text-align: center;">عند فتح صفحة الحذف والإضافة، اضغط على هذا الزر لتعبئة الشعب.</p></div>`,
-              didOpen: () => { document.getElementById('swal-custom-close').addEventListener('click', () => Swal.close()); }
+              html: `<div id="swal-custom-close" style="position: absolute; top: 12px; left: 15px; cursor: pointer; color: var(--color-text-muted); font-size: 1.5rem; z-index: 50;"><i class="ph ph-x"></i></div><div style="text-align: right;"><p style="margin-bottom: 1.5rem; color: var(--color-text-muted); line-height: 1.6;">اسحب الزر التالي وأفلته في شريط الإشارات المرجعية (Bookmarks Bar) أعلى المتصفح.</p><div style="text-align: center; margin-bottom: 1.5rem;"><a href="${code}" class="bookmarklet-button" style="text-decoration:none; display:inline-flex;" onclick="return false;"><i class="ph ph-magic-wand"></i> مُعِدّ</a></div><p style="font-size: 0.85rem; opacity: 0.7; text-align: center; margin-bottom: 1.25rem;">عند فتح صفحة الحذف والإضافة، اضغط على هذا الزر لتعبئة الشعب.</p><div class="or-divider" style="text-align:center;">أو</div><div style="text-align: center; margin-top: 1rem;"><button class="data-btn" id="swal-tablet-copy-tool-btn"><i class="ph ph-device-tablet"></i> للوحيات</button></div></div>`,
+              didOpen: () => {
+                document.getElementById('swal-custom-close').addEventListener('click', () => Swal.close());
+                document.getElementById('swal-tablet-copy-tool-btn').addEventListener('click', () => { navigator.clipboard.writeText(code).then(() => { this._showToast('success', 'تم نسخ الكود بنجاح!'); }).catch(() => this._showToast('error', 'تعذر النسخ إلى الحافظة.')); });
+              }
             });
           }
         },
