@@ -35,7 +35,7 @@ Object.assign(QU_ScheduleApp, {
           else {
             const peers = this._sameDayExamPeers(section, tempSelectedDetails);
             if (peers.length) {
-              const day = this._examDayOf(section.examPeriodId);
+              const day = this._examDayOf(section.examPeriodId, undefined, section.code);
               const withText = peers.length === 1 ? `اختبار ${peers[0].name}`
                 : peers.length === 2 ? 'اختبارين آخرين'
                   : `${peers.length} اختبارات أخرى`;
