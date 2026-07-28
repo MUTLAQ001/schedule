@@ -176,14 +176,6 @@ Object.assign(QU_ScheduleApp, {
               return parseInt(a.exam.examPeriodId, 10) - parseInt(b.exam.examPeriodId, 10);
             });
 
-          const upcoming = sorted.filter(x => x.info && x.info.daysLeft !== null && x.info.daysLeft >= 0)[0];
-          let bannerHTML = '';
-          if (upcoming) {
-            const cd = this._countdownText(upcoming.info.daysLeft);
-            const num = upcoming.info.daysLeft === 0 ? 'اليوم' : upcoming.info.daysLeft;
-            bannerHTML = `<div class="exam-next-banner"><i class="ph-fill ph-alarm"></i><div class="enb-text"><span class="enb-label">أقرب اختبار</span><span class="enb-title">${this._escapeHTML(upcoming.exam.name)}</span></div><div class="enb-days">${num}<small>${upcoming.info.daysLeft === 0 ? cd.text : 'يوم متبقٍ'}</small></div></div>`;
-          }
-
           const dayWarnHTML = this._buildExamDayWarning(sorted);
 
           const buildItem = (x, mobileMode) => {
@@ -206,7 +198,7 @@ Object.assign(QU_ScheduleApp, {
             if (sorted.length === 0) {
               this.dom.desktopExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.desktopExamsList.innerHTML = staleNote + bannerHTML + dayWarnHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
+              this.dom.desktopExamsList.innerHTML = staleNote + dayWarnHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.desktopExamsList);
           }
@@ -215,7 +207,7 @@ Object.assign(QU_ScheduleApp, {
             if (sorted.length === 0) {
               this.dom.mobileMyExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.mobileMyExamsList.innerHTML = staleNote + bannerHTML + dayWarnHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
+              this.dom.mobileMyExamsList.innerHTML = staleNote + dayWarnHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.mobileMyExamsList);
           }
