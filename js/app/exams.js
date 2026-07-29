@@ -109,20 +109,22 @@ Object.assign(QU_ScheduleApp, {
         _buildExamDayNotice(section, selected) {
           const peers = this._sameDayExamPeers(section, selected);
           if (!peers.length) return '';
-          const n = peers.length;
-          const countTxt = n === 1 ? 'اختبار آخر' : n === 2 ? 'اختبارين آخرين' : `${n} اختبارات أخرى`;
           const day = this._examDayOf(section.examPeriodId);
-          const dayLabel = day ? this._escapeHTML(day.label) : '';
-          const metaOf = (pid) => {
-            const parts = [`الفترة ${this._escapeHTML(String(pid))}`];
-            const t = this._examTimeOf(pid);
-            if (t) parts.push(this._escapeHTML(t));
-            return parts.join('<i class="cb-dot"></i>');
+          const hasRealDate = !!(day && day.tier === 0);
+          const dateChip = hasRealDate ? `<span class="edn-date-chip"><i class="ph-fill ph-calendar-blank"></i>${this._escapeHTML(day.label)}</span>` : '';
+          const item = (exam, label, isMine) => {
+            const time = this._examTimeOf(exam.examPeriodId);
+            const meta = time ? `${label}<i class="cb-dot"></i><span class="edn-time">${this._escapeHTML(time)}</span>` : label;
+            return `<div class="edn-item${isMine ? ' is-mine' : ''}"><span class="edn-period"><b>${this._escapeHTML(String(exam.examPeriodId))}</b><small>الفترة</small></span><div class="edn-info"><span class="edn-name">${this._escapeHTML(exam.name)}</span><span class="edn-meta">${meta}</span></div></div>`;
           };
-          const mineRow = `<div class="cb-row cb-mine"><span class="cb-badge day-mine"><i class="ph-fill ph-bookmark-simple"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(section.name)}<span class="cb-sec">هذي الشعبة</span></div><div class="cb-sub">${metaOf(section.examPeriodId)}</div></div></div>`;
-          const rows = peers.map(p => `<div class="cb-row"><span class="cb-badge day"><i class="ph-fill ph-calendar-blank"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(p.name)}<span class="cb-sec">شعبة ${this._escapeHTML(p.section)}</span></div><div class="cb-sub">${metaOf(p.examPeriodId)}</div></div></div>`).join('');
-          const sub = dayLabel ? `${dayLabel} — الأوقات مختلفة، لكن اليوم مزدحم` : 'الأوقات مختلفة، لكن اليوم مزدحم';
-          return `<div class="conflict-banner exam-day-banner"><div class="cb-head"><span class="cb-head-icon"><i class="ph-fill ph-calendar-x"></i></span><div class="cb-head-text"><span class="cb-head-title">اختبارها بنفس يوم ${countTxt}</span><span class="cb-head-sub">${sub}</span></div></div><div class="cb-list">${mineRow}${rows}</div></div>`;
+          const ordered = [{ exam: section, label: 'هذه الشعبة', mine: true }]
+            .concat(peers.map(p => ({ exam: p, label: `شعبة ${this._escapeHTML(p.section)}`, mine: false })))
+            .sort((a, b) => parseInt(a.exam.examPeriodId, 10) - parseInt(b.exam.examPeriodId, 10));
+          const items = ordered.map(o => item(o.exam, o.label, o.mine)).join('');
+          const note = hasRealDate
+            ? (peers.length === 1 ? 'لا تعارض في الوقت — فترتان منفصلتان بنفس اليوم' : 'لا تعارض في الوقت — فترات منفصلة بنفس اليوم')
+            : 'وفقًا لترتيب الفترات - ليس تعارضًا في الوقت';
+          return `<div class="conflict-banner exam-day-banner"><div class="cb-head"><span class="cb-head-icon"><i class="ph-fill ph-calendar-x"></i></span><div class="cb-head-text"><span class="cb-head-title">${this._examCountLabel(peers.length + 1)} بنفس اليوم</span>${dateChip}</div></div><div class="edn-list">${items}</div><p class="edn-note"><i class="ph ph-info"></i> ${note}</p></div>`;
         },
         _examDayGroups(entries) {
           const map = new Map();
