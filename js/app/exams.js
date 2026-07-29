@@ -101,6 +101,29 @@ Object.assign(QU_ScheduleApp, {
             return true;
           });
         },
+        _examTimeOf(periodId) {
+          const info = this._getExamDateInfo(periodId);
+          const m = (info && info.raw) ? info.raw.match(/\(([^)]+)\)/) : null;
+          return m ? m[1].trim() : '';
+        },
+        _buildExamDayNotice(section, selected) {
+          const peers = this._sameDayExamPeers(section, selected);
+          if (!peers.length) return '';
+          const n = peers.length;
+          const countTxt = n === 1 ? 'اختبار آخر' : n === 2 ? 'اختبارين آخرين' : `${n} اختبارات أخرى`;
+          const day = this._examDayOf(section.examPeriodId);
+          const dayLabel = day ? this._escapeHTML(day.label) : '';
+          const metaOf = (pid) => {
+            const parts = [`الفترة ${this._escapeHTML(String(pid))}`];
+            const t = this._examTimeOf(pid);
+            if (t) parts.push(this._escapeHTML(t));
+            return parts.join('<i class="cb-dot"></i>');
+          };
+          const mineRow = `<div class="cb-row cb-mine"><span class="cb-badge day-mine"><i class="ph-fill ph-bookmark-simple"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(section.name)}<span class="cb-sec">هذي الشعبة</span></div><div class="cb-sub">${metaOf(section.examPeriodId)}</div></div></div>`;
+          const rows = peers.map(p => `<div class="cb-row"><span class="cb-badge day"><i class="ph-fill ph-calendar-blank"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(p.name)}<span class="cb-sec">شعبة ${this._escapeHTML(p.section)}</span></div><div class="cb-sub">${metaOf(p.examPeriodId)}</div></div></div>`).join('');
+          const sub = dayLabel ? `${dayLabel} — الأوقات مختلفة، لكن اليوم مزدحم` : 'الأوقات مختلفة، لكن اليوم مزدحم';
+          return `<div class="conflict-banner exam-day-banner"><div class="cb-head"><span class="cb-head-icon"><i class="ph-fill ph-calendar-x"></i></span><div class="cb-head-text"><span class="cb-head-title">اختبارها بنفس يوم ${countTxt}</span><span class="cb-head-sub">${sub}</span></div></div><div class="cb-list">${mineRow}${rows}</div></div>`;
+        },
         _examDayGroups(entries) {
           const map = new Map();
           entries.forEach(x => {
@@ -122,16 +145,17 @@ Object.assign(QU_ScheduleApp, {
           if (n === 2) return 'اختباران';
           return `${n} اختبارات`;
         },
-        _buildExamDayWarning(entries) {
-          const groups = this._examDayGroups(entries);
-          if (groups.length === 0) return '';
-          const approx = groups.some(g => g.tier === 1);
-          const n = groups.length;
-          const daysText = n === 1 ? 'يوم واحد فيه أكثر من اختبار'
+        _examDaysText(n) {
+          return n === 1 ? 'يوم واحد فيه أكثر من اختبار'
             : n === 2 ? 'يومان فيهما أكثر من اختبار'
               : n <= 10 ? `${n} أيام فيها أكثر من اختبار`
                 : `${n} يوماً فيها أكثر من اختبار`;
-          const daysHTML = groups.map(g => {
+        },
+        _examDaysPhrase(n) {
+          return n === 1 ? 'يوم واحد' : n === 2 ? 'يومين' : n <= 10 ? `${n} أيام` : `${n} يوماً`;
+        },
+        _examDayGroupsHTML(groups) {
+          return groups.map(g => {
             const rows = g.items.map(x => {
               const pid = this._escapeHTML(x.exam.examPeriodId);
               const timeM = (x.info && x.info.raw) ? x.info.raw.match(/\(([^)]+)\)/) : null;
@@ -143,16 +167,86 @@ Object.assign(QU_ScheduleApp, {
                 <ol class="edw-list">${rows}</ol>
               </div>`;
           }).join('');
-          const foot = approx
+        },
+        _examApproxNote(groups) {
+          return groups.some(g => g.tier === 1)
             ? `<p class="edw-foot"><i class="ph ph-info"></i> الأيام محسوبة من ترتيب الفترات (${this._examPeriodsPerDay()} فترات لكل يوم). بدّل نظام الفترات من الأعلى إذا كان مختلفاً.</p>`
             : '';
+        },
+        _buildExamDayWarning(entries) {
+          const groups = this._examDayGroups(entries);
+          if (groups.length === 0) return '';
           return `<div class="exam-daywarn" role="status">
               <div class="edw-head"><span class="edw-icon"><i class="ph-fill ph-warning"></i></span>
-                <div class="edw-head-text"><span class="edw-title">${daysText}</span><p class="edw-sub">اختباراتك متقاربة في هذي الأيام — رتّب مذاكرتك على أساسها.</p></div>
+                <div class="edw-head-text"><span class="edw-title">${this._examDaysText(groups.length)}</span><p class="edw-sub">اختباراتك متقاربة في هذي الأيام — رتّب مذاكرتك على أساسها.</p></div>
               </div>
-              <div class="edw-days">${daysHTML}</div>
-              ${foot}
+              <div class="edw-days">${this._examDayGroupsHTML(groups)}</div>
+              ${this._examApproxNote(groups)}
             </div>`;
+        },
+        _examEntriesFor(selectedCourses) {
+          const uniqueExams = [...new Map(selectedCourses.filter(e => e.examPeriodId).map(e => [e.examPeriodId, e])).values()];
+          return uniqueExams.map(e => ({ exam: e, info: this._getExamDateInfo(e.examPeriodId) }))
+            .sort((a, b) => {
+              const da = a.info && a.info.start ? a.info.start.getTime() : Infinity;
+              const db = b.info && b.info.start ? b.info.start.getTime() : Infinity;
+              if (da !== db) return da - db;
+              return parseInt(a.exam.examPeriodId, 10) - parseInt(b.exam.examPeriodId, 10);
+            });
+        },
+        _examClashGroups(selectedCourses) {
+          if (!selectedCourses || selectedCourses.length === 0) return [];
+          return this._examDayGroups(this._examEntriesFor(selectedCourses));
+        },
+        _buildExamClashAlert(groups, idPrefix) {
+          if (!groups || groups.length === 0) return '';
+          const n = groups.length;
+          const title = n === 1
+            ? `عندك ${this._examCountLabel(groups[0].items.length)} في نفس اليوم`
+            : `عندك ${this._examDaysText(n)}`;
+          const shown = groups.slice(0, 3);
+          const chips = shown.map(g => `<span class="eca-chip"><span class="eca-chip-day">${this._escapeHTML(g.label)}</span><span class="eca-chip-n">${g.items.length}</span></span>`).join('');
+          const more = groups.length > shown.length ? `<span class="eca-chip eca-more">+${groups.length - shown.length}</span>` : '';
+          const total = groups.reduce((s, g) => s + g.items.length, 0);
+          return `<div class="exam-clash-alert" role="status">
+              <span class="eca-icon"><i class="ph-fill ph-calendar-x"></i></span>
+              <div class="eca-body">
+                <div class="eca-headline"><span class="eca-title">${title}</span><span class="eca-tag"><i class="ph-fill ph-warning-circle"></i> تنبيه</span></div>
+                <p class="eca-sub">${this._examCountLabel(total)} في ${this._examDaysPhrase(n)} — راجع المواعيد ووزّع مذاكرتك.</p>
+                <div class="eca-chips">${chips}${more}</div>
+              </div>
+              <button type="button" class="eca-btn" id="${idPrefix}-exam-clash-btn"><i class="ph-fill ph-list-magnifying-glass"></i><span>التفاصيل</span><i class="ph ph-caret-left eca-btn-caret"></i></button>
+            </div>`;
+        },
+        _handleViewExamClashes(groups) {
+          if (!groups || groups.length === 0) return;
+          Swal.fire({
+            title: this._examDaysText(groups.length),
+            html: `<div class="exam-clash-modal custom-scrollbar">
+                <p class="ecm-lead">هذي الأيام فيها أكثر من اختبار. راجعها ورتّب مذاكرتك قبل لا تقرب المواعيد.</p>
+                <div class="edw-days">${this._examDayGroupsHTML(groups)}</div>
+                ${this._examApproxNote(groups)}
+              </div>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'فتح الاختبارات',
+            cancelButtonText: 'إغلاق',
+            customClass: { popup: 'swal2-popup' },
+          }).then(res => { if (res.isConfirmed) this._openExamsView(); });
+        },
+        _openExamsView() {
+          if (isMobile) {
+            const navBtn = document.querySelector('.mobile-nav-btn[data-view="mobile-my-exams-view"]');
+            if (navBtn) this._handleMobileNav(navBtn);
+          } else {
+            const tabBtn = document.querySelector('.page-wrapper .sidebar .tab-btn[data-tab="exams-tab"]');
+            if (tabBtn) this._handleTabClick(tabBtn);
+          }
+          setTimeout(() => {
+            const list = isMobile ? this.dom.mobileMyExamsList : this.dom.desktopExamsList;
+            const warn = list && list.querySelector('.exam-daywarn');
+            if (warn) warn.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 120);
         },
         _renderFinalExams(selectedCourses) {
           const uniqueExams = [...new Map(selectedCourses.filter(e => e.examPeriodId).map(e => [e.examPeriodId, e])).values()];
@@ -168,13 +262,7 @@ Object.assign(QU_ScheduleApp, {
           const staleNote = this._examDataIsEmpty() ? `<div class="exam-stale-note" role="status"><span class="esn-icon"><i class="ph-fill ph-calendar-dots"></i></span><div class="esn-body"><span class="esn-title">تواريخ فترات الاختبارات لم تُحدَّث بعد</span><p class="esn-text">تظهر أرقام الفترات فقط لهذا الفصل، بدون تواريخ أو عدّاد أيام.</p><span class="esn-chip"><i class="ph-fill ph-shield-check"></i> كشف تعارض الاختبارات يعمل بشكل طبيعي</span></div></div>` : '';
           const emptyHTML = `<div class="empty-state"><div class="es-icon"><i class="ph ph-file-text"></i></div><h4>لا توجد اختبارات</h4><p>لم تُحدَّد اختبارات نهائية للمقررات المختارة. أضف مقررات لجدولك لتظهر مواعيد اختباراتها هنا.</p><div class="es-actions"><button class="es-btn primary" data-empty-action="browse"><i class="ph ph-stack"></i> تصفح المقررات</button></div></div>`;
 
-          const sorted = uniqueExams.slice().map(e => ({ exam: e, info: this._getExamDateInfo(e.examPeriodId) }))
-            .sort((a, b) => {
-              const da = a.info && a.info.start ? a.info.start.getTime() : Infinity;
-              const db = b.info && b.info.start ? b.info.start.getTime() : Infinity;
-              if (da !== db) return da - db;
-              return parseInt(a.exam.examPeriodId, 10) - parseInt(b.exam.examPeriodId, 10);
-            });
+          const sorted = this._examEntriesFor(selectedCourses);
 
           const upcoming = sorted.filter(x => x.info && x.info.daysLeft !== null && x.info.daysLeft >= 0)[0];
           let bannerHTML = '';
