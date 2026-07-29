@@ -242,6 +242,7 @@ Object.assign(QU_ScheduleApp, {
           const note = (this.state.userSettings.courseNotes || {})[section.code] || '';
           const row = (icon, label, value) => `<div class="details-row"><span class="details-row-icon"><i class="ph ${icon}"></i></span><div class="details-row-text"><span>${label}</span><strong>${value}</strong></div></div>`;
           const conflictBanner = isSelected ? '' : this._buildConflictBanner(this._getConflictDetails(section, selectedDetails));
+          const examDayBanner = isSelected ? '' : this._buildExamDayNotice(section, selectedDetails);
           const alts = this._visibleSectionsOf(group).filter(sec => sec.uniqueId !== section.uniqueId);
           const altsHTML = alts.map(sec => {
             const conflicted = this._isSectionConflicted(sec, selectedDetails.filter(d => d.uniqueId !== section.uniqueId));
@@ -251,7 +252,7 @@ Object.assign(QU_ScheduleApp, {
           const noteBox = `<div class="qv-note-box"><div class="qv-note-head"><span><i class="ph-fill ph-note"></i> ملاحظتي على المقرر</span><button class="qv-note-edit" data-qv="note"><i class="ph ph-pencil-simple"></i>${note ? 'تعديل' : 'إضافة'}</button></div><div class="qv-note-text">${note ? this._escapeHTML(note) : 'لا توجد ملاحظة بعد.'}</div></div>`;
           Swal.fire({
             title: `${this._escapeHTML(section.name)} (${this._escapeHTML(section.code)})`,
-            html: `${conflictBanner}<div class="details-status-row" style="justify-content:center;"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status || '')}</span><span class="details-type-chip"><i class="ph ${typeIcon}"></i> ${this._escapeHTML(typeStr || '')}</span><span class="details-type-chip"><i class="ph ph-hash"></i> شعبة ${this._escapeHTML(section.section)}</span></div>
+            html: `${conflictBanner}${examDayBanner}<div class="details-status-row" style="justify-content:center;"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status || '')}</span><span class="details-type-chip"><i class="ph ${typeIcon}"></i> ${this._escapeHTML(typeStr || '')}</span><span class="details-type-chip"><i class="ph ph-hash"></i> شعبة ${this._escapeHTML(section.section)}</span></div>
 <div class="details-list" style="margin-top:0.8rem;">${row('ph-user', 'المحاضر', this._escapeHTML(section.instructor || 'غير محدد'))}${row('ph-clock', 'المواعيد', this._escapeHTML(timeStr))}${row('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${row('ph-file-text', 'فترة الاختبار', this._escapeHTML(section.examPeriodId || 'لا يوجد'))}</div>
 ${noteBox}${altsBlock}
 <div class="qv-actions"><button class="qv-btn" data-qv="crn"><i class="ph ph-copy"></i> نسخ رقم الشعبة</button><button class="qv-btn qv-fav-btn ${isFav ? 'on' : ''}" data-qv="fav"><i class="${isFav ? 'ph-fill' : 'ph'} ph-star"></i> ${isFav ? 'محاضر مفضل' : 'أضف للمفضلين'}</button><button class="qv-btn ${isSelected ? 'danger' : 'primary'}" data-qv="toggle"><i class="ph ${isSelected ? 'ph-trash' : 'ph-plus'}"></i> ${isSelected ? 'إزالة من الجدول' : 'إضافة للجدول'}</button></div>`,
