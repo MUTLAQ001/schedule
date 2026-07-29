@@ -83,7 +83,7 @@ Object.assign(QU_ScheduleApp, {
           const pid = parseInt(periodId, 10);
           if (!Number.isFinite(pid) || pid <= 0) return null;
           const day = Math.ceil(pid / this._examPeriodsPerDay());
-          return { key: `p:${day}`, label: `اليوم ${day} من الاختبارات`, tier: 1, order: day };
+          return { key: `p:${day}`, label: '', tier: 1, order: day };
         },
         _sameDayExamPeers(section, selected) {
           if (!section || !section.examPeriodId) return [];
@@ -112,15 +112,14 @@ Object.assign(QU_ScheduleApp, {
           const day = this._examDayOf(section.examPeriodId);
           const hasRealDate = !!(day && day.tier === 0);
           const dateChip = hasRealDate ? `<span class="edn-date-chip"><i class="ph-fill ph-calendar-blank"></i>${this._escapeHTML(day.label)}</span>` : '';
-          const item = (exam, label, isMine) => {
-            const time = this._examTimeOf(exam.examPeriodId);
-            const meta = time ? `${label}<i class="cb-dot"></i><span class="edn-time">${this._escapeHTML(time)}</span>` : label;
-            return `<div class="edn-item${isMine ? ' is-mine' : ''}"><span class="edn-period"><b>${this._escapeHTML(String(exam.examPeriodId))}</b><small>الفترة</small></span><div class="edn-info"><span class="edn-name">${this._escapeHTML(exam.name)}</span><span class="edn-meta">${meta}</span></div></div>`;
-          };
           const ordered = [{ exam: section, label: 'هذه الشعبة', mine: true }]
             .concat(peers.map(p => ({ exam: p, label: `شعبة ${this._escapeHTML(p.section)}`, mine: false })))
             .sort((a, b) => parseInt(a.exam.examPeriodId, 10) - parseInt(b.exam.examPeriodId, 10));
-          const items = ordered.map(o => item(o.exam, o.label, o.mine)).join('');
+          const items = ordered.map(o => {
+            const time = this._examTimeOf(o.exam.examPeriodId);
+            const meta = time ? `${o.label}<i class="cb-dot"></i><span class="edn-time">${this._escapeHTML(time)}</span>` : o.label;
+            return this._examItemHTML(o.exam.name, o.exam.examPeriodId, meta, o.mine);
+          }).join('');
           const note = hasRealDate
             ? (peers.length === 1 ? 'لا تعارض في الوقت — فترتان منفصلتان بنفس اليوم' : 'لا تعارض في الوقت — فترات منفصلة بنفس اليوم')
             : 'وفقًا لترتيب الفترات - ليس تعارضًا في الوقت';
@@ -156,17 +155,21 @@ Object.assign(QU_ScheduleApp, {
         _examDaysPhrase(n) {
           return n === 1 ? 'يوم واحد' : n === 2 ? 'يومين' : n <= 10 ? `${n} أيام` : `${n} يوماً`;
         },
+        _examItemHTML(name, periodId, meta, isMine) {
+          const metaHTML = meta ? `<span class="edn-meta">${meta}</span>` : '';
+          return `<div class="edn-item${isMine ? ' is-mine' : ''}"><span class="edn-period"><b>${this._escapeHTML(String(periodId))}</b><small>الفترة</small></span><div class="edn-info"><span class="edn-name">${this._escapeHTML(name)}</span>${metaHTML}</div></div>`;
+        },
         _examDayGroupsHTML(groups) {
           return groups.map(g => {
             const rows = g.items.map(x => {
-              const pid = this._escapeHTML(x.exam.examPeriodId);
               const timeM = (x.info && x.info.raw) ? x.info.raw.match(/\(([^)]+)\)/) : null;
-              const meta = timeM ? `فترة ${pid} · ${this._escapeHTML(timeM[1].trim())}` : `فترة ${pid}`;
-              return `<li class="edw-row"><span class="edw-course">${this._escapeHTML(x.exam.name)}</span><span class="edw-meta">${meta}</span></li>`;
+              const meta = timeM ? `<span class="edn-time">${this._escapeHTML(timeM[1].trim())}</span>` : '';
+              return this._examItemHTML(x.exam.name, x.exam.examPeriodId, meta, false);
             }).join('');
+            const dayName = g.label ? `<span class="edw-day-name">${this._escapeHTML(g.label)}</span>` : '';
             return `<div class="edw-day">
-                <div class="edw-day-head"><span class="edw-day-name">${this._escapeHTML(g.label)}</span><span class="edw-day-count">${this._examCountLabel(g.items.length)}</span></div>
-                <ol class="edw-list">${rows}</ol>
+                <div class="edw-day-head">${dayName}<span class="edw-day-count">${this._examCountLabel(g.items.length)}</span></div>
+                <div class="edn-list">${rows}</div>
               </div>`;
           }).join('');
         },
@@ -179,8 +182,8 @@ Object.assign(QU_ScheduleApp, {
           const groups = this._examDayGroups(entries);
           if (groups.length === 0) return '';
           return `<div class="exam-daywarn" role="status">
-              <div class="edw-head"><span class="edw-icon"><i class="ph-fill ph-warning"></i></span>
-                <div class="edw-head-text"><span class="edw-title">${this._examDaysText(groups.length)}</span><p class="edw-sub">اختباراتك متقاربة في هذي الأيام — رتّب مذاكرتك على أساسها.</p></div>
+              <div class="edw-head"><span class="edw-icon"><i class="ph-fill ph-calendar-x"></i></span>
+                <div class="edw-head-text"><span class="edw-title">${this._examDaysText(groups.length)}</span><p class="edw-sub">اختباراتك متقاربة في هذه الأيام — رتّب مذاكرتك على أساسها.</p></div>
               </div>
               <div class="edw-days">${this._examDayGroupsHTML(groups)}</div>
               ${this._examApproxNote(groups)}
@@ -206,16 +209,18 @@ Object.assign(QU_ScheduleApp, {
           const title = n === 1
             ? `عندك ${this._examCountLabel(groups[0].items.length)} في نفس اليوم`
             : `عندك ${this._examDaysText(n)}`;
-          const shown = groups.slice(0, 3);
+          const dated = groups.filter(g => g.label);
+          const shown = dated.slice(0, 3);
           const chips = shown.map(g => `<span class="eca-chip"><span class="eca-chip-day">${this._escapeHTML(g.label)}</span><span class="eca-chip-n">${g.items.length}</span></span>`).join('');
-          const more = groups.length > shown.length ? `<span class="eca-chip eca-more">+${groups.length - shown.length}</span>` : '';
+          const more = dated.length > shown.length ? `<span class="eca-chip eca-more">+${dated.length - shown.length}</span>` : '';
+          const chipsHTML = dated.length ? `<div class="eca-chips">${chips}${more}</div>` : '';
           const total = groups.reduce((s, g) => s + g.items.length, 0);
           return `<div class="exam-clash-alert" role="status">
               <span class="eca-icon"><i class="ph-fill ph-calendar-x"></i></span>
               <div class="eca-body">
-                <div class="eca-headline"><span class="eca-title">${title}</span><span class="eca-tag"><i class="ph-fill ph-warning-circle"></i> تنبيه</span></div>
+                <div class="eca-headline"><span class="eca-title">${title}</span></div>
                 <p class="eca-sub">${this._examCountLabel(total)} في ${this._examDaysPhrase(n)} — راجع المواعيد ووزّع مذاكرتك.</p>
-                <div class="eca-chips">${chips}${more}</div>
+                ${chipsHTML}
               </div>
               <button type="button" class="eca-btn" id="${idPrefix}-exam-clash-btn"><i class="ph-fill ph-list-magnifying-glass"></i><span>التفاصيل</span><i class="ph ph-caret-left eca-btn-caret"></i></button>
             </div>`;
