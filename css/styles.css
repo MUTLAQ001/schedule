@@ -551,8 +551,287 @@ body.sidebar-right .page-wrapper > .sidebar {
   background-position: top;
 }
 
-body.mobile-view #sidebar-position-item {
+body.mobile-view #sidebar-position-item,
+body.mobile-view #layout-editor-item,
+body.custom-layout #sidebar-position-item {
   display: none;
+}
+
+.page-wrapper [data-block="calendar"] {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  flex: 1 1 auto;
+}
+
+@media (min-width: 1024px) {
+  body.custom-layout .page-wrapper {
+    display: block;
+  }
+
+  body.custom-layout .page-wrapper > .main-content {
+    height: 100%;
+  }
+
+  body.custom-layout .layout-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-flow: row dense;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+
+  body.custom-layout .layout-grid > [data-block] {
+    grid-column: span var(--layout-w, 6);
+    grid-row: span var(--layout-h, 1);
+    min-width: 0;
+  }
+
+  body.custom-layout .layout-grid > [data-block="courses"] {
+    width: auto !important;
+    height: auto;
+    min-height: 320px;
+    max-height: calc(var(--layout-h, 1) * 82vh);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    box-shadow: var(--glass-shadow);
+    overflow: hidden;
+  }
+}
+
+.lay-hint {
+  margin: 0 0 0.85rem;
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.lay-canvas {
+  padding: 0.9rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--color-border);
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.light .lay-canvas {
+  background: rgba(84, 60, 160, 0.04);
+}
+
+.lay-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-auto-rows: 78px;
+  grid-auto-flow: row dense;
+  gap: 0.7rem;
+}
+
+.lay-chip {
+  grid-column: span var(--lay-w, 6);
+  grid-row: span var(--lay-h, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.55rem;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: linear-gradient(160deg, rgba(var(--rgb-primary), 0.16), rgba(var(--rgb-primary), 0.06));
+  cursor: grab;
+  user-select: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.light .lay-chip {
+  background: linear-gradient(160deg, rgba(var(--rgb-primary), 0.12), rgba(var(--rgb-primary), 0.04));
+}
+
+.lay-chip:hover {
+  border-color: rgba(var(--rgb-primary), 0.5);
+}
+
+.lay-chip:active {
+  cursor: grabbing;
+}
+
+.lay-chip.dragging {
+  opacity: 0.35;
+}
+
+.lay-chip.drop-target {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(var(--rgb-primary), 0.4);
+  transform: translateY(-2px);
+}
+
+.lay-chip-top {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.lay-chip-icon {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: rgba(var(--rgb-primary), 0.22);
+  color: var(--color-primary);
+  font-size: 0.95rem;
+}
+
+.lay-chip-title {
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--color-text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lay-grip {
+  margin-inline-start: auto;
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+}
+
+.lay-chip-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.lay-stepper {
+  display: inline-flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  height: 26px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.light .lay-stepper {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.lay-size {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  padding: 0 0.15rem;
+  direction: ltr;
+  unicode-bidi: isolate;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--color-text-dark);
+  border-inline: 1px solid var(--color-border);
+}
+
+.lay-size em {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.lay-step {
+  width: 26px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 0.95rem;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.lay-step:hover:not(:disabled) {
+  background: rgba(var(--rgb-primary), 0.2);
+  color: var(--color-primary);
+}
+
+.lay-step:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.lay-tall {
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  font-size: 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.2);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: border-color 0.18s ease, color 0.18s ease, background 0.18s ease;
+}
+
+.light .lay-tall {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.lay-tall:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.lay-tall:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.lay-tall.on {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.lay-legend {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-top: 0.85rem;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.lay-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.lay-legend b {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 0.75rem;
 }
 
 .main-header {
@@ -1163,6 +1442,7 @@ body.mobile-view #sidebar-position-item {
 
 .my-schedule-table-wrapper {
   overflow-x: auto;
+  border-radius: 10px;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
