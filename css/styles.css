@@ -511,6 +511,50 @@ body::-webkit-scrollbar {
   z-index: 50;
 }
 
+body.sidebar-right .page-wrapper {
+  flex-direction: row-reverse;
+}
+
+.page-wrapper > .sidebar {
+  background:
+    linear-gradient(to right, transparent, var(--color-bg)) right / 2.5rem 100% no-repeat,
+    radial-gradient(circle at 50% 0%, rgba(var(--rgb-primary), 0.08), transparent 40%),
+    var(--color-card);
+}
+
+body.sidebar-right .page-wrapper > .sidebar {
+  border-left: none;
+  border-right: 1px solid var(--color-border);
+  background:
+    linear-gradient(to left, transparent, var(--color-bg)) left / 2.5rem 100% no-repeat,
+    radial-gradient(circle at 50% 0%, rgba(var(--rgb-primary), 0.08), transparent 40%),
+    var(--color-card);
+}
+
+.page-wrapper > .sidebar .sidebar-header,
+.page-wrapper > .sidebar .sidebar-tabs,
+.page-wrapper > .sidebar #quick-visibility-wrapper,
+.page-wrapper > .sidebar .sidebar-footer {
+  border-color: transparent;
+  background-image: linear-gradient(to right, transparent, var(--color-border) 20%, var(--color-border) 80%, transparent);
+  background-repeat: no-repeat;
+  background-size: 100% 1px;
+}
+
+.page-wrapper > .sidebar .sidebar-header,
+.page-wrapper > .sidebar .sidebar-tabs {
+  background-position: bottom;
+}
+
+.page-wrapper > .sidebar #quick-visibility-wrapper,
+.page-wrapper > .sidebar .sidebar-footer {
+  background-position: top;
+}
+
+body.mobile-view #sidebar-position-item {
+  display: none;
+}
+
 .main-header {
   display: flex;
   justify-content: space-between;
