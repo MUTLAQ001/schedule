@@ -65,13 +65,15 @@
           <button id="clear-calendar-btn" title="مسح المقررات من هذا الجدول" aria-label="مسح الجدول"><i class="ph ph-trash"></i> <span class="btn-text">مسح الجدول الحالي</span></button>
         </div>
       </header>
-      <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
-      <div class="calendar-wrapper card">
-        <div id='calendar'></div>
+      <div class="layout-block" data-block="calendar">
+        <div class="schedule-tabs-container" id="schedule-tabs-container"></div>
+        <div class="calendar-wrapper card">
+          <div id='calendar'></div>
+        </div>
       </div>
-      <div class="my-schedule-container" id="my-schedule-container"></div>
+      <div class="my-schedule-container layout-block" id="my-schedule-container" data-block="myschedule"></div>
     </main>
-    <aside class="sidebar">
+    <aside class="sidebar layout-block" data-block="courses">
       <header class="sidebar-header">
         <div class="sidebar-title-row">
           <h2><i class="ph ph-stack"></i> المقررات</h2>
@@ -218,6 +220,7 @@
   <script defer src="js/app/generator.js"></script>
   <script defer src="js/app/tools.js"></script>
   <script defer src="js/app/calendar.js"></script>
+  <script defer src="js/app/layout.js"></script>
   <script defer src="js/app/settings.js"></script>
   <script defer src="js/app/misc.js"></script>
   <script defer src="js/main.js"></script>
