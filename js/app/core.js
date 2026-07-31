@@ -15,12 +15,16 @@
           areAllExpanded: false,
           history: [],
           filters: { days: [], period: 'any', noConflict: false, favOnly: false },
-          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, examScheduleMode: '3', highPerformance: false, timeAxisPosition: 'left', sidebarPosition: 'left', quickAddMode: false, courseNotes: {}, favInstructors: [] }
+          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, examScheduleMode: '3', highPerformance: false, timeAxisPosition: 'left', sidebarPosition: 'left', customLayout: null, quickAddMode: false, courseNotes: {}, favInstructors: [] }
         },
         constants: {
           PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316', red: '#ef4444' },
           COLOR_PALETTE: ['#7c5cf0', '#3b74d9', '#d94f70', '#2f9e6e', '#d97706', '#0d9488', '#a44fc9', '#5872a3', '#e0576b', '#4f8fdb', '#c2703d', '#3fa796', '#9b6bd6', '#5a9c3f'],
           DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
+          LAYOUT_BLOCKS: { courses: { label: 'المقررات', icon: 'ph-stack' }, calendar: { label: 'الجدول', icon: 'ph-calendar-blank' }, myschedule: { label: 'جدولي', icon: 'ph-list-checks' } },
+          LAYOUT_COLUMNS: 6,
+          LAYOUT_MIN_WIDTH: 2,
+          DEFAULT_LAYOUT: [{ id: 'calendar', w: 4, h: 1 }, { id: 'courses', w: 2, h: 1 }, { id: 'myschedule', w: 6, h: 1 }],
           STORAGE_KEYS: { SETTINGS: 'quScheduleSettings_v20', COURSES: 'quScheduleCourses_v20', SCHEDULES: 'quScheduleSchedules_v20', COLORS: 'quScheduleColors_v20' },
           EXAM_DATA: {
             '3': {},
