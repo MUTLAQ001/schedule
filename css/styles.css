@@ -590,12 +590,16 @@ body.custom-layout #sidebar-position-item {
   body.custom-layout .layout-grid > [data-block="courses"] {
     width: auto !important;
     height: auto;
-    min-height: 320px;
-    max-height: calc(var(--layout-h, 1) * 82vh);
+    min-height: calc(var(--layout-h, 1) * 62vh);
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     box-shadow: var(--glass-shadow);
     overflow: hidden;
+  }
+
+  body.custom-layout .layout-grid > [data-block="courses"] .tab-content {
+    height: 0;
+    min-height: 0;
   }
 }
 
