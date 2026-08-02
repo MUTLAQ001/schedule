@@ -178,6 +178,13 @@ Object.assign(QU_ScheduleApp, {
             ? `<p class="edw-foot"><i class="ph ph-info"></i> الأيام محسوبة من ترتيب الفترات (${this._examPeriodsPerDay()} فترات لكل يوم). بدّل نظام الفترات من الأعلى إذا كان مختلفاً.</p>`
             : '';
         },
+        _examDataNoteHTML() {
+          if (this._examDataIsEmpty()) {
+            return `<div class="exam-stale-note" role="status"><span class="esn-icon"><i class="ph-fill ph-calendar-dots"></i></span><div class="esn-body"><span class="esn-title">تواريخ فترات الاختبارات لم تُحدَّث بعد</span><p class="esn-text">تظهر أرقام الفترات فقط لهذا الفصل، بدون تواريخ أو عدّاد أيام.</p><span class="esn-chip"><i class="ph-fill ph-shield-check"></i> كشف تعارض الاختبارات يعمل بشكل طبيعي</span></div></div>`;
+          }
+          if (!this.constants.EXAM_DATA_APPROX) return '';
+          return `<div class="exam-stale-note" role="status"><span class="esn-icon"><i class="ph-fill ph-calendar-dots"></i></span><div class="esn-body"><span class="esn-title">التواريخ تقريبية في الوقت الحالي</span><p class="esn-text">هذي التواريخ تقديرية إلى أن ينزل التقويم الرسمي للترم، وممكن تتغير. اعتمد عليها للتخطيط فقط.</p><span class="esn-chip"><i class="ph-fill ph-shield-check"></i> أرقام الفترات وكشف التعارض دقيقة</span></div></div>`;
+        },
         _buildExamDayWarning(entries) {
           const groups = this._examDayGroups(entries);
           if (groups.length === 0) return '';
@@ -266,18 +273,10 @@ Object.assign(QU_ScheduleApp, {
             footerHtml = '<div style="margin-top:1rem; animation:fadeInUp 0.3s both;"><a href="https://t.me/Qassim_U/4414294" target="_blank" rel="noopener noreferrer" class="exam-source-link"><span class="esl-icon"><i class="ph ph-file-arrow-down"></i></span><span class="esl-text"><span class="esl-title">تواريخ الفترات كاملة</span><span class="esl-sub">ملف جدول الاختبارات · اجتهاد فيصل</span></span><i class="ph ph-arrow-up-left esl-arrow"></i></a></div>';
           }
 
-          const staleNote = this._examDataIsEmpty() ? `<div class="exam-stale-note" role="status"><span class="esn-icon"><i class="ph-fill ph-calendar-dots"></i></span><div class="esn-body"><span class="esn-title">تواريخ فترات الاختبارات لم تُحدَّث بعد</span><p class="esn-text">تظهر أرقام الفترات فقط لهذا الفصل، بدون تواريخ أو عدّاد أيام.</p><span class="esn-chip"><i class="ph-fill ph-shield-check"></i> كشف تعارض الاختبارات يعمل بشكل طبيعي</span></div></div>` : '';
+          const staleNote = this._examDataNoteHTML();
           const emptyHTML = `<div class="empty-state"><div class="es-icon"><i class="ph ph-file-text"></i></div><h4>لا توجد اختبارات</h4><p>لم تُحدَّد اختبارات نهائية للمقررات المختارة. أضف مقررات لجدولك لتظهر مواعيد اختباراتها هنا.</p><div class="es-actions"><button class="es-btn primary" data-empty-action="browse"><i class="ph ph-stack"></i> تصفح المقررات</button></div></div>`;
 
           const sorted = this._examEntriesFor(selectedCourses);
-
-          const upcoming = sorted.filter(x => x.info && x.info.daysLeft !== null && x.info.daysLeft >= 0)[0];
-          let bannerHTML = '';
-          if (upcoming) {
-            const cd = this._countdownText(upcoming.info.daysLeft);
-            const num = upcoming.info.daysLeft === 0 ? 'اليوم' : upcoming.info.daysLeft;
-            bannerHTML = `<div class="exam-next-banner"><i class="ph-fill ph-alarm"></i><div class="enb-text"><span class="enb-label">أقرب اختبار</span><span class="enb-title">${this._escapeHTML(upcoming.exam.name)}</span></div><div class="enb-days">${num}<small>${upcoming.info.daysLeft === 0 ? cd.text : 'يوم متبقٍ'}</small></div></div>`;
-          }
 
           const dayWarnHTML = this._buildExamDayWarning(sorted);
 
@@ -301,7 +300,7 @@ Object.assign(QU_ScheduleApp, {
             if (sorted.length === 0) {
               this.dom.desktopExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.desktopExamsList.innerHTML = staleNote + bannerHTML + dayWarnHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
+              this.dom.desktopExamsList.innerHTML = staleNote + dayWarnHTML + sorted.map(x => buildItem(x, false)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.desktopExamsList);
           }
@@ -310,7 +309,7 @@ Object.assign(QU_ScheduleApp, {
             if (sorted.length === 0) {
               this.dom.mobileMyExamsList.innerHTML = emptyHTML;
             } else {
-              this.dom.mobileMyExamsList.innerHTML = staleNote + bannerHTML + dayWarnHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
+              this.dom.mobileMyExamsList.innerHTML = staleNote + dayWarnHTML + sorted.map(x => buildItem(x, true)).join('') + footerHtml;
             }
             this._bindEmptyStateActions(this.dom.mobileMyExamsList);
           }
