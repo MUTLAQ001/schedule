@@ -1,5 +1,5 @@
 Object.assign(QU_ScheduleApp, {
-        updateFullUI() { this._renderScheduleTabs(); this.updateCalendarAndConflicts(); if (isMobile) { this._updateMobileHeader(); } },
+        updateFullUI() { this._renderScheduleTabs(); this.updateCalendarAndConflicts(); this._renderStaleDataBanner(); if (isMobile) { this._updateMobileHeader(); } },
         updateCalendarAndConflicts() {
           if (!this.state.calendar) return;
           const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
