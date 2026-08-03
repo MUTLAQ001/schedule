@@ -8452,11 +8452,15 @@ body.high-performance .section-btn .sec-fav {
   border-radius: var(--radius-md);
 }
 
+.swal2-popup.wide-swal.arch-swal {
+  max-width: 900px;
+}
+
 .arch-table {
   width: 100%;
   border-collapse: collapse;
   font-size: 0.82rem;
-  min-width: 620px;
+  min-width: 660px;
 }
 
 .arch-table th,
@@ -8466,6 +8470,17 @@ body.high-performance .section-btn .sec-fav {
   border-bottom: 1px solid var(--color-border);
   vertical-align: middle;
 }
+
+.arch-table th:nth-child(2),
+.arch-table td:nth-child(2),
+.arch-table th:nth-child(3),
+.arch-table td:nth-child(3),
+.arch-table th:nth-child(4) {
+  white-space: nowrap;
+  width: 1%;
+}
+
+.arch-table td:nth-child(5) { min-width: 8.5rem; }
 
 .arch-table thead th {
   font-family: var(--font-title);
