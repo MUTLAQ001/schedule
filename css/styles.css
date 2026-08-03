@@ -8158,3 +8158,289 @@ body.high-performance .section-btn .sec-fav {
     justify-content: center;
   }
 }
+
+.stale-data-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid rgba(var(--rgb-warning), 0.38);
+  background: linear-gradient(135deg, rgba(var(--rgb-warning), 0.16), rgba(var(--rgb-warning), 0.06));
+  border-radius: var(--radius-md);
+  flex: 0 0 auto;
+  animation: staleIn 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes staleIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.stale-data-banner .sdb-icon {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: rgba(var(--rgb-warning), 0.2);
+  color: var(--color-warning);
+  font-size: 1.25rem;
+}
+
+.stale-data-banner .sdb-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.stale-data-banner .sdb-title {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.stale-data-banner .sdb-sub {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+.stale-data-banner .sdb-update {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius-full);
+  border: 1px solid rgba(var(--rgb-warning), 0.45);
+  background: rgba(var(--rgb-warning), 0.16);
+  color: var(--color-warning);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.stale-data-banner .sdb-update:hover {
+  background: rgba(var(--rgb-warning), 0.28);
+}
+
+.stale-data-banner .sdb-close {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.stale-data-banner .sdb-close:hover {
+  background: rgba(var(--rgb-warning), 0.14);
+  color: var(--color-text);
+}
+
+#mobile-calendar-view > .stale-data-banner {
+  margin: 0.9rem 1rem 0;
+}
+
+@media (max-width: 640px) {
+  .stale-data-banner {
+    flex-wrap: wrap;
+    gap: 0.7rem;
+  }
+
+  .stale-data-banner .sdb-body { flex: 1 1 60%; }
+  .stale-data-banner .sdb-update { flex: 1 1 100%; justify-content: center; }
+}
+
+#install-section-container { position: relative; }
+
+.install-close-btn {
+  position: absolute;
+  top: 0.9rem;
+  left: 0.9rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: var(--color-card);
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  z-index: 5;
+  transition: var(--transition);
+}
+
+.install-close-btn:hover {
+  color: var(--color-text);
+  border-color: var(--color-border-hover);
+}
+
+#arch-modal-content,
+#arch-view-content {
+  max-height: 65vh;
+  overflow-y: auto;
+  text-align: right;
+  padding-left: 0.35rem;
+}
+
+.arch-note {
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  margin: 0 0 0.9rem;
+  line-height: 1.6;
+}
+
+.arch-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 0.95rem;
+  margin-bottom: 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(var(--rgb-primary), 0.05);
+  transition: var(--transition);
+}
+
+.arch-card:hover { border-color: var(--color-border-hover); }
+
+.arch-main { flex: 1 1 auto; min-width: 0; }
+
+.arch-name {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  color: var(--color-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.arch-meta {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  margin-top: 0.2rem;
+}
+
+.arch-actions {
+  display: flex;
+  gap: 0.3rem;
+  flex: 0 0 auto;
+}
+
+.arch-actions button {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.arch-actions button:hover {
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+  background: rgba(var(--rgb-primary), 0.1);
+}
+
+.arch-actions button.danger:hover {
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+  background: rgba(var(--rgb-danger), 0.1);
+}
+
+.arch-empty {
+  text-align: center;
+  color: var(--color-text-muted);
+  padding: 1.5rem 0.5rem;
+}
+
+.arch-empty i { font-size: 2.6rem; opacity: 0.5; }
+.arch-empty p { margin: 0.7rem 0 0; font-size: 0.9rem; }
+.arch-empty .arch-empty-sub { font-size: 0.8rem; line-height: 1.7; margin-top: 0.45rem; }
+
+.arch-sched { margin-bottom: 1.3rem; }
+
+.arch-sched-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.55rem;
+}
+
+.arch-sched-head h5 {
+  margin: 0;
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+.arch-sched-head span { font-size: 0.78rem; color: var(--color-text-muted); }
+
+.arch-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.arch-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  min-width: 620px;
+}
+
+.arch-table th,
+.arch-table td {
+  padding: 0.6rem 0.7rem;
+  text-align: right;
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.arch-table thead th {
+  font-family: var(--font-title);
+  font-weight: 400;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+  background: rgba(var(--rgb-primary), 0.07);
+}
+
+.arch-table tbody tr:last-child td { border-bottom: none; }
+
+.arch-course { display: flex; align-items: center; gap: 0.5rem; }
+
+.arch-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: var(--radius-full);
+  flex: 0 0 auto;
+}
+
+.arch-c-code { font-weight: 600; color: var(--color-text); }
+.arch-c-name { font-size: 0.75rem; color: var(--color-text-muted); }
+.arch-table .arch-time { line-height: 1.7; white-space: nowrap; }
+
+.arch-copy-crns { margin-top: 0.6rem; }
