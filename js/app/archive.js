@@ -228,7 +228,7 @@ Object.assign(QU_ScheduleApp, {
             title: this._escapeHTML(a.name),
             html: `<div id="arch-view-content" class="custom-scrollbar"><p class="arch-note">محفوظ في ${this._escapeHTML(this._archiveDateText(a))} — للعرض فقط.</p>${blocks || '<p class="arch-note">لا توجد مقررات في هذا الأرشيف.</p>'}</div>`,
             confirmButtonText: 'رجوع',
-            customClass: { popup: 'swal2-popup wide-swal' },
+            customClass: { popup: 'swal2-popup wide-swal arch-swal' },
             didOpen: () => {
               document.getElementById('arch-view-content')?.addEventListener('click', (e) => {
                 const btn = e.target.closest('.arch-copy-crns');
