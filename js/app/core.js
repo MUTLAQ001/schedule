@@ -151,6 +151,7 @@
               this._showToast('error', 'البيانات المستلمة غير صالحة.');
               return;
             }
+            this._autoArchiveBeforeReset();
             this.state.isDemoMode = false;
             localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
             this._markDataUpdated();
