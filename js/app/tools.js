@@ -56,6 +56,7 @@ Object.assign(QU_ScheduleApp, {
             try {
               if (Array.isArray(data)) {
                 const courses = this._sanitizeCourses(data);
+                this._autoArchiveBeforeReset();
                 this.state.isDemoMode = false;
                 localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
                 this._markDataUpdated();
