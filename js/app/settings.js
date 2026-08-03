@@ -196,7 +196,8 @@ Object.assign(QU_ScheduleApp, {
         },
         _applySettings() {
           const isLightTheme = this.state.userSettings.theme === 'light';
-          document.body.className = isLightTheme ? 'light' : '';
+          document.body.classList.remove('high-performance', 'time-axis-right', 'sidebar-right', 'mobile-view', 'desktop-view');
+          document.body.classList.toggle('light', isLightTheme);
           document.documentElement.classList.toggle('light-root', isLightTheme);
           document.documentElement.style.colorScheme = isLightTheme ? 'light' : 'dark';
           document.documentElement.style.backgroundColor = isLightTheme ? '#f7f6fc' : '#0b0a12';
