@@ -81,9 +81,12 @@ Object.assign(QU_ScheduleApp, {
         },
         _defaultArchiveName() {
           let d = '';
-          try { d = new Date().toLocaleDateString('ar-SA-u-ca-islamic', { year: 'numeric', month: 'long' }); } catch (e) { }
+          try { d = new Date().toLocaleDateString('ar-SA-u-ca-islamic-nu-latn', { year: 'numeric', month: 'long' }); } catch (e) { }
           if (!d) { try { d = new Date().toLocaleDateString('ar'); } catch (e2) { d = ''; } }
           return d ? `أرشيف ${d}` : 'أرشيف فصل سابق';
+        },
+        _coursesWord(n) {
+          return n === 1 ? 'مقرر' : n === 2 ? 'مقرران' : n <= 10 ? 'مقررات' : 'مقرراً';
         },
         _archiveSignature(a) {
           return (a.schedules || []).map(s => (s.sections || []).slice().sort().join(',')).sort().join('|');
@@ -143,7 +146,7 @@ Object.assign(QU_ScheduleApp, {
           this._showArchivesModal();
         },
         _archiveDateText(a) {
-          try { return new Date(a.savedAt).toLocaleDateString('ar-SA-u-ca-islamic', { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { }
+          try { return new Date(a.savedAt).toLocaleDateString('ar-SA-u-ca-islamic-nu-latn', { year: 'numeric', month: 'long', day: 'numeric' }); } catch (e) { }
           try { return new Date(a.savedAt).toLocaleDateString('ar-SA'); } catch (e) { return ''; }
         },
         _showArchivesModal() {
@@ -158,8 +161,14 @@ Object.assign(QU_ScheduleApp, {
           }
           const cards = list.map(a => {
             const s = this._archiveStats(a);
-            const meta = [this._archiveDateText(a), `${s.courses} مقرر`, `${s.credits} ساعة`, s.schedules > 1 ? `${s.schedules} جداول` : ''].filter(Boolean).join(' · ');
-            return `<div class="arch-card" data-id="${this._escapeHTML(a.id)}"><div class="arch-main"><div class="arch-name">${this._escapeHTML(a.name)}</div><div class="arch-meta">${this._escapeHTML(meta)}</div></div><div class="arch-actions"><button type="button" data-act="view" title="عرض الجدول" aria-label="عرض"><i class="ph ph-eye"></i></button><button type="button" data-act="rename" title="إعادة تسمية" aria-label="إعادة تسمية"><i class="ph ph-pencil-simple"></i></button><button type="button" data-act="export" title="تنزيل كملف" aria-label="تنزيل"><i class="ph ph-download-simple"></i></button><button type="button" data-act="delete" class="danger" title="حذف" aria-label="حذف"><i class="ph ph-trash"></i></button></div></div>`;
+            const chips = [
+              { i: 'ph-calendar-blank', t: this._archiveDateText(a) },
+              { i: 'ph-books', t: `${s.courses} ${this._coursesWord(s.courses)}` },
+              { i: 'ph-timer', t: `${s.credits} ساعة` }
+            ];
+            if (s.schedules > 1) chips.push({ i: 'ph-stack', t: `${s.schedules} جداول` });
+            const meta = chips.map(c => `<span><i class="ph ${c.i}"></i>${this._escapeHTML(c.t)}</span>`).join('');
+            return `<div class="arch-card" data-id="${this._escapeHTML(a.id)}"><span class="arch-icon"><i class="ph-fill ph-archive"></i></span><div class="arch-main"><div class="arch-name">${this._escapeHTML(a.name)}</div><div class="arch-meta">${meta}</div></div><div class="arch-actions"><button type="button" data-act="view" title="عرض الجدول" aria-label="عرض"><i class="ph ph-eye"></i></button><button type="button" data-act="rename" title="إعادة تسمية" aria-label="إعادة تسمية"><i class="ph ph-pencil-simple"></i></button><button type="button" data-act="export" title="تنزيل كملف" aria-label="تنزيل"><i class="ph ph-download-simple"></i></button><button type="button" data-act="delete" class="danger" title="حذف" aria-label="حذف"><i class="ph ph-trash"></i></button></div></div>`;
           }).join('');
           Swal.fire({
             title: 'الفصول المؤرشفة',
@@ -199,15 +208,21 @@ Object.assign(QU_ScheduleApp, {
               if (!counted.has(c.code)) { counted.add(c.code); const h = parseInt(c.hours, 10); if (!isNaN(h)) credits += h; }
               (c.timeSlots || []).forEach(t => days.add(t.day));
             });
-            const rows = secs.map(c => {
-              const color = (a.colors || {})[c.code] || 'var(--color-primary)';
-              const times = (c.timeSlots || []).length
-                ? (c.timeSlots || []).map(t => `${dayNames[t.day] || ''} ${this._formatClock(this._toMin(t.start))} – ${this._formatClock(this._toMin(t.end))}`).join('<br>')
-                : this._escapeHTML(String(c.time || 'غير محدد')).replace(/&lt;br&gt;/g, '<br>');
-              return `<tr><td class="arch-course"><span class="arch-dot" style="background:${this._escapeHTML(color)}"></span><div><div class="arch-c-code">${this._escapeHTML(c.code)}</div><div class="arch-c-name">${this._escapeHTML(c.name)}</div></div></td><td>${this._escapeHTML(String(c.section))}</td><td>${this._escapeHTML(this._typeLabel ? this._typeLabel(c.type) : String(c.type || ''))}</td><td class="arch-time">${times}</td><td>${this._escapeHTML(c.instructor || 'غير محدد')}</td><td>${this._escapeHTML(c.location || '—')}</td></tr>`;
-            }).join('');
+            const timesOf = (c) => (c.timeSlots || []).length
+              ? (c.timeSlots || []).map(t => `${dayNames[t.day] || ''} ${this._formatClock(this._toMin(t.start))} – ${this._formatClock(this._toMin(t.end))}`).join('<br>')
+              : this._escapeHTML(String(c.time || 'غير محدد')).replace(/&lt;br&gt;/g, '<br>');
+            const body = isMobile
+              ? `<div class="arch-items">${secs.map(c => {
+                const color = (a.colors || {})[c.code] || 'var(--color-primary)';
+                return `<div class="arch-item" style="--item-color:${this._escapeHTML(color)}"><div class="arch-item-head"><div class="arch-item-title"><div class="arch-c-code">${this._escapeHTML(c.code)}</div><div class="arch-c-name">${this._escapeHTML(c.name)}</div></div><span class="arch-sec-badge">${this._escapeHTML(String(c.section))}</span></div><div class="arch-item-rows"><div><i class="ph ph-clock"></i><span>${timesOf(c)}</span></div><div><i class="ph ${this._typeIcon(this._canonType(c.type))}"></i><span>${this._escapeHTML(this._typeLabel ? this._typeLabel(c.type) : String(c.type || ''))}</span></div><div><i class="ph ph-user"></i><span>${this._escapeHTML(c.instructor || 'غير محدد')}</span></div><div><i class="ph ph-map-pin"></i><span>${this._escapeHTML(c.location || '—')}</span></div></div></div>`;
+              }).join('')}</div>`
+              : `<div class="arch-table-wrap"><table class="arch-table"><thead><tr><th>المقرر</th><th>الشعبة</th><th>النوع</th><th>المواعيد</th><th>المحاضر</th><th>القاعة</th></tr></thead><tbody>${secs.map(c => {
+                const color = (a.colors || {})[c.code] || 'var(--color-primary)';
+                return `<tr><td class="arch-course"><span class="arch-dot" style="background:${this._escapeHTML(color)}"></span><div><div class="arch-c-code">${this._escapeHTML(c.code)}</div><div class="arch-c-name">${this._escapeHTML(c.name)}</div></div></td><td>${this._escapeHTML(String(c.section))}</td><td>${this._escapeHTML(this._typeLabel ? this._typeLabel(c.type) : String(c.type || ''))}</td><td class="arch-time">${timesOf(c)}</td><td>${this._escapeHTML(c.instructor || 'غير محدد')}</td><td>${this._escapeHTML(c.location || '—')}</td></tr>`;
+              }).join('')}</tbody></table></div>`;
             const crns = secs.map(c => String(c.section)).join(', ');
-            return `<div class="arch-sched"><div class="arch-sched-head"><h5>${this._escapeHTML(sch.name || 'جدول')}</h5><span>${secs.length} شعبة · ${counted.size} مقرر · ${credits} ساعة · ${days.size} يوم</span></div><div class="arch-table-wrap"><table class="arch-table"><thead><tr><th>المقرر</th><th>الشعبة</th><th>النوع</th><th>المواعيد</th><th>المحاضر</th><th>القاعة</th></tr></thead><tbody>${rows}</tbody></table></div><button type="button" class="data-btn arch-copy-crns" data-crns="${this._escapeHTML(crns)}"><i class="ph ph-clipboard-text"></i> نسخ أرقام الشعب</button></div>`;
+            const summary = `${this._getPluralizedSectionString(secs.length)} · ${counted.size} ${this._coursesWord(counted.size)} · ${credits} ساعة · ${this._daysPhrase(days.size)}`;
+            return `<div class="arch-sched"><div class="arch-sched-head"><h5>${this._escapeHTML(sch.name || 'جدول')}</h5><span>${this._escapeHTML(summary)}</span></div>${body}<button type="button" class="data-btn arch-copy-crns" data-crns="${this._escapeHTML(crns)}"><i class="ph ph-clipboard-text"></i> نسخ أرقام الشعب</button></div>`;
           }).join('');
           Swal.fire({
             title: this._escapeHTML(a.name),
