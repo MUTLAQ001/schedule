@@ -56,13 +56,9 @@ Object.assign(QU_ScheduleApp, {
             try {
               if (Array.isArray(data)) {
                 const courses = this._sanitizeCourses(data);
-                this._autoArchiveBeforeReset();
-                this.state.isDemoMode = false;
-                localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
-                this._markDataUpdated();
-                this.state.schedules = []; this._addSchedule(null, true); this.state.activeScheduleIndex = 0; this._saveSchedules();
-                this._processAndDisplayData(courses); this.updateFullUI(); this._toggleSettingsModal(false);
-                this._showToast('success', `تم تحميل ${courses.length} شعبة.`);
+                const applied = this._applyNewCoursesData(courses);
+                this._toggleSettingsModal(false);
+                this._afterDataUpdate(applied);
               } else if (data && Array.isArray(data.schedule)) {
                 if (this.state.allCoursesData.length === 0) { this._showToast('error', 'حمّل بيانات المقررات أولاً.'); return; }
                 const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
@@ -128,6 +124,7 @@ Object.assign(QU_ScheduleApp, {
               { i: 'ph-gauge', t: 'وضع الأداء العالي', d: 'إلغاء التأثيرات البصرية لتجربة أسرع على الأجهزة الضعيفة.' }
             ]},
             { icon: 'ph-sparkle', title: 'أدوات ذكية', items: [
+              { i: 'ph-git-diff', t: 'ما الذي تغيّر؟', d: 'عند كل تحديث للبيانات: تقرير بما فُتح وأُغلق وتغيّرت مواعيده أو محاضروه، ومقرراتك أنت في المقدمة — مع الحفاظ على جدولك.' },
               { i: 'ph-chart-bar', t: 'تحليل الوقت', d: 'ساعات الحضور، الفراغات، وأيام الإجازة في لمحة واحدة.' },
               { i: 'ph-note-pencil', t: 'ملاحظات المقررات', d: 'دوّن رابط قروب المقرر أو تغيير القاعة أو أي تفصيلة، وتبقى محفوظة مع الجدول.' },
               { i: 'ph-eye', t: 'وضع المعاينة', d: 'جرّب الموقع ببيانات تجريبية كاملة قبل تثبيت الأداة.' }
