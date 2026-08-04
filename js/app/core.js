@@ -151,17 +151,9 @@
               this._showToast('error', 'البيانات المستلمة غير صالحة.');
               return;
             }
-            this._autoArchiveBeforeReset();
-            this.state.isDemoMode = false;
-            localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
-            this._markDataUpdated();
-            this.state.schedules = [];
-            this._addSchedule(null, true);
-            this.state.activeScheduleIndex = 0;
-            this._saveSchedules();
-            this._processAndDisplayData(courses);
-            this.updateFullUI();
+            const res = this._applyNewCoursesData(courses);
             this._checkUrlForSharedSchedule();
+            this._afterDataUpdate(res);
           }, false);
           if (window.opener) {
             let target = '*';
