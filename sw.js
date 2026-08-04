@@ -1,4 +1,4 @@
-const CACHE = 'qu-schedule-v8';
+const CACHE = 'qu-schedule-v9';
 
 const CORE = [
   './',
@@ -22,9 +22,11 @@ const CORE = [
   './js/app/generator.js',
   './js/app/tools.js',
   './js/app/calendar.js',
+  './js/app/layout.js',
   './js/app/settings.js',
   './js/app/misc.js',
   './js/app/archive.js',
+  './js/app/data-diff.js',
   './icons/icon-192.png',
   './icons/icon-512.png'
 ];
