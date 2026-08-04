@@ -601,6 +601,17 @@ body.custom-layout #sidebar-position-item {
     height: 0;
     min-height: 0;
   }
+
+  body.custom-layout .layout-grid > [data-block].layout-tall-full {
+    min-height: calc(var(--layout-h, 1) * 62vh);
+  }
+
+  body.custom-layout .layout-grid > [data-block="myschedule"].layout-tall-full > .my-schedule-card {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .lay-hint {
