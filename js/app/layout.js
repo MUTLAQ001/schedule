@@ -28,6 +28,7 @@ Object.assign(QU_ScheduleApp, {
           const wrapper = document.querySelector('.page-wrapper');
           const main = wrapper && wrapper.querySelector('.main-content');
           if (!wrapper || !main) return;
+          const cols = this.constants.LAYOUT_COLUMNS;
           const saved = this.state.userSettings.customLayout;
           const isCustom = Array.isArray(saved) && saved.length > 0;
           document.body.classList.toggle('custom-layout', isCustom);
@@ -38,6 +39,7 @@ Object.assign(QU_ScheduleApp, {
             blocks[id] = el;
             el.style.removeProperty('--layout-w');
             el.style.removeProperty('--layout-h');
+            el.classList.remove('layout-tall-full');
             el.remove();
           });
           wrapper.querySelectorAll('.layout-grid').forEach(grid => grid.remove());
@@ -53,6 +55,7 @@ Object.assign(QU_ScheduleApp, {
               if (!el) return;
               el.style.setProperty('--layout-w', String(item.w));
               el.style.setProperty('--layout-h', String(item.h));
+              el.classList.toggle('layout-tall-full', item.w >= cols && item.h > 1);
               grid.appendChild(el);
             });
             if (grid.children.length) main.appendChild(grid);
@@ -64,7 +67,7 @@ Object.assign(QU_ScheduleApp, {
           const cols = this.constants.LAYOUT_COLUMNS;
           const minW = this.constants.LAYOUT_MIN_WIDTH;
           const items = this.state.layoutDraft;
-          const cells = items.map((item, i) => `<div class="lay-chip" draggable="true" data-index="${i}" style="--lay-w:${item.w};--lay-h:${item.h};"><div class="lay-chip-top"><span class="lay-chip-icon"><i class="ph ${blocks[item.id].icon}"></i></span><span class="lay-chip-title">${blocks[item.id].label}</span><i class="ph ph-dots-six-vertical lay-grip"></i></div><div class="lay-chip-bar"><span class="lay-stepper"><button type="button" class="lay-step" data-index="${i}" data-act="narrow" aria-label="تضييق"${item.w <= minW ? ' disabled' : ''}>−</button><span class="lay-size">${item.w}<em>/${cols}</em></span><button type="button" class="lay-step" data-index="${i}" data-act="widen" aria-label="توسيع"${item.w >= cols ? ' disabled' : ''}>+</button></span><button type="button" class="lay-tall ${item.h === 2 ? 'on' : ''}" data-index="${i}" data-act="tall"${item.w >= cols ? ' disabled' : ''} title="${item.w >= cols ? 'ضيّق القسم أولاً حتى يصير بجانبه قسم آخر' : item.h === 2 ? 'إرجاعه لصف واحد' : 'مدّه على صفّين'}" aria-label="مدّ رأسي"><i class="ph ph-arrows-vertical"></i></button></div></div>`).join('');
+          const cells = items.map((item, i) => `<div class="lay-chip" draggable="true" data-index="${i}" style="--lay-w:${item.w};--lay-h:${item.h};"><div class="lay-chip-top"><span class="lay-chip-icon"><i class="ph ${blocks[item.id].icon}"></i></span><span class="lay-chip-title">${blocks[item.id].label}</span><i class="ph ph-dots-six-vertical lay-grip"></i></div><div class="lay-chip-bar"><span class="lay-stepper"><button type="button" class="lay-step" data-index="${i}" data-act="narrow" aria-label="تضييق"${item.w <= minW ? ' disabled' : ''}>−</button><span class="lay-size">${item.w}<em>/${cols}</em></span><button type="button" class="lay-step" data-index="${i}" data-act="widen" aria-label="توسيع"${item.w >= cols ? ' disabled' : ''}>+</button></span><button type="button" class="lay-tall ${item.h === 2 ? 'on' : ''}" data-index="${i}" data-act="tall" title="${item.h === 2 ? 'إرجاعه لصف واحد' : 'مدّه على صفّين'}" aria-label="مدّ رأسي"><i class="ph ph-arrows-vertical"></i></button></div></div>`).join('');
           host.innerHTML = `<p class="lay-hint">اسحب أي قسم وأفلته على قسم آخر ليأخذ مكانه.</p><div class="lay-canvas"><div class="lay-grid">${cells}</div></div><div class="lay-legend"><span><b>−</b><b>+</b> عرض القسم</span><span><b><i class="ph ph-arrows-vertical"></i></b> مدّه على صفّين</span></div>`;
           this._bindLayoutEditor(host);
         },
@@ -81,7 +84,7 @@ Object.assign(QU_ScheduleApp, {
             btn.addEventListener('click', () => {
               const item = this.state.layoutDraft[+btn.dataset.index];
               if (!item) return;
-              if (btn.dataset.act === 'widen') { item.w = Math.min(cols, item.w + 1); if (item.w >= cols) item.h = 1; }
+              if (btn.dataset.act === 'widen') item.w = Math.min(cols, item.w + 1);
               else if (btn.dataset.act === 'narrow') item.w = Math.max(minW, item.w - 1);
               else if (btn.dataset.act === 'tall') item.h = item.h === 2 ? 1 : 2;
               commit();
