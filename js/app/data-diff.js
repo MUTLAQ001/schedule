@@ -11,6 +11,7 @@ Object.assign(QU_ScheduleApp, {
           changed: { icon: 'ph-pencil-simple-line', label: 'تعديل', note: '', cls: 'warn' }
         },
         _DIFF_ORDER: ['opened', 'closed', 'removed', 'changed', 'added'],
+        _MERGE_MAX: 20000,
 
         _secKey(c) { return `${c.code}|${c.section}`; },
         _isClosedStatus(s) { return String(s || '').includes('مغلقة'); },
@@ -116,17 +117,44 @@ Object.assign(QU_ScheduleApp, {
           return { kept, dropped };
         },
 
+        _plainCourse(c) {
+          return {
+            code: c.code, name: c.name, section: c.section, time: c.time, location: c.location,
+            instructor: c.instructor, examPeriodId: c.examPeriodId == null ? null : c.examPeriodId,
+            hours: c.hours, type: c.type, status: c.status, campus: c.campus
+          };
+        },
+        _mergeCoursesPayload(prev, next) {
+          const merged = []; const at = new Map();
+          prev.forEach(c => { const k = this._secKey(c); if (at.has(k)) return; at.set(k, merged.length); merged.push(this._plainCourse(c)); });
+          let added = 0, updated = 0, skipped = 0;
+          next.forEach(c => {
+            const k = this._secKey(c); const i = at.get(k);
+            if (i === undefined) {
+              if (merged.length >= this._MERGE_MAX) { skipped++; return; }
+              at.set(k, merged.length); merged.push(this._plainCourse(c)); added++;
+            } else { merged[i] = this._plainCourse(c); updated++; }
+          });
+          return { merged, added, updated, skipped };
+        },
+
         _applyNewCoursesData(courses) {
           const prev = this.state.isDemoMode ? [] : (this.state.allCoursesData || []).slice();
           const hadData = prev.length > 0;
-          const newTerm = !hadData || this._looksLikeNewTerm(prev, courses);
+          let merge = null;
+          if (hadData && this.state.userSettings.mergeCoursesData) {
+            merge = this._mergeCoursesPayload(prev, courses);
+            courses = merge.merged;
+          }
+          const newTerm = !merge && (!hadData || this._looksLikeNewTerm(prev, courses));
           const rel = hadData ? this._scheduleRelevance(prev) : { mySecKeys: new Set(), myCodes: new Set() };
-          const keepSchedules = hadData && !newTerm && rel.mySecKeys.size > 0;
+          const keepSchedules = !!merge || (hadData && !newTerm && rel.mySecKeys.size > 0);
           const prevAt = this._dataStamp();
 
           if (!keepSchedules) this._autoArchiveBeforeReset();
           this.state.isDemoMode = false;
-          try { localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses)); } catch (e) { }
+          let persisted = true;
+          try { localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses)); } catch (e) { persisted = false; }
           this._markDataUpdated();
           if (!keepSchedules) {
             this.state.schedules = [];
@@ -149,10 +177,21 @@ Object.assign(QU_ScheduleApp, {
           } else if (newTerm) {
             try { localStorage.removeItem(this._DIFF_KEY); } catch (e) { }
           }
-          return { diff, newTerm, keepSchedules, remap, count: courses.length };
+          return { diff, newTerm, keepSchedules, remap, merge, persisted, count: courses.length };
         },
         _afterDataUpdate(res) {
           if (!res) return;
+          if (res.persisted === false) { this._showToast('warning', 'تعذّر حفظ البيانات محلياً — المساحة ممتلئة، وستضيع البيانات عند إغلاق الصفحة.'); return; }
+          if (res.merge) {
+            const m = res.merge;
+            let msg = m.added > 0
+              ? `أُضيفت ${this._sectionsWord(m.added)} من تخصص آخر — الإجمالي ${res.count} شعبة.`
+              : 'لا شعب جديدة — كل ما حمّلته موجود لديك مسبقاً.';
+            if (m.skipped > 0) msg += ` (تعذّرت إضافة ${m.skipped} لبلوغ الحد الأقصى)`;
+            this._showToast(m.added > 0 ? 'success' : 'info', msg);
+            if (res.diff && this._diffTotal(res.diff) > 0) setTimeout(() => this._showDataDiffModal(res.diff), 700);
+            return;
+          }
           if (res.newTerm) { this._showToast('success', `تم تحميل ${this._sectionsWord(res.count)}.`); return; }
           if (res.keepSchedules) this._showToast('success', 'تم تحديث البيانات مع الحفاظ على جدولك.');
           if (!res.diff || this._diffTotal(res.diff) === 0) {
