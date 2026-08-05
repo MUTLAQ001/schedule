@@ -1,4 +1,4 @@
-const CACHE = 'qu-schedule-v9';
+const CACHE = 'qu-schedule-v10';
 
 const CORE = [
   './',
@@ -87,6 +87,8 @@ self.addEventListener('fetch', (e) => {
   const sameOrigin = url.origin === self.location.origin;
   const isCDN = CDN.some((h) => url.hostname === h);
   if (!sameOrigin && !isCDN) return;
+
+  if (/\.(mp4|webm|mov)$/i.test(url.pathname) || req.headers.has('range')) return;
 
   if (sameOrigin) {
     e.respondWith(networkFirst(req));
