@@ -288,6 +288,37 @@ i.ph, i.ph-fill{line-height:1}
 .drag-hint i{animation:floatUp 1.6s ease-in-out infinite}
 @keyframes floatUp{0%,100%{transform:translateY(2px)}50%{transform:translateY(-4px)}}
 
+.bar-tip{max-width:720px; margin:16px auto 0; padding:20px 22px}
+.bar-tip .bt-head{display:flex; align-items:center; gap:9px; font-family:var(--font-title); font-weight:600; font-size:15.5px}
+.bar-tip .bt-head i{color:var(--color-warning); font-size:20px}
+.bar-tip .bt-sub{color:var(--muted); font-size:13.5px; margin:8px 0 16px; line-height:1.9}
+.bt-rows{display:flex; flex-wrap:wrap; gap:10px}
+.bt-row{
+  flex:1 1 240px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+  background:rgba(var(--rgb-primary),.07); border:1px solid var(--border);
+  border-radius:var(--radius-md); padding:11px 14px;
+}
+.bt-os{display:flex; align-items:center; gap:8px; font-size:13.5px; font-weight:600; color:var(--text)}
+.bt-os i{color:var(--color-primary); font-size:18px}
+.bt-keys{display:inline-flex; align-items:center; gap:5px; direction:ltr}
+.bt-keys b{color:var(--muted); font-size:12px; font-weight:600}
+.bt-keys kbd{
+  font-family:var(--font-body); font-size:12.5px; font-weight:600; line-height:1;
+  color:var(--text); background:rgba(255,255,255,.06);
+  border:1px solid var(--border-hover); border-bottom-width:2px; border-radius:7px;
+  padding:6px 9px; min-width:26px; text-align:center;
+}
+.bar-tip .bt-foot{
+  display:flex; align-items:flex-start; gap:8px; color:var(--muted); font-size:12.5px; line-height:1.9;
+  margin-top:15px; padding-top:13px; border-top:1px solid var(--border);
+}
+.bar-tip .bt-foot i{color:var(--color-info); font-size:16px; flex:none; margin-top:2px}
+.bar-tip .bt-foot b{color:var(--text)}
+.light .bt-keys kbd{background:#fff}
+@media (max-width:520px){
+  .bt-row{flex-direction:column; align-items:flex-start; gap:9px}
+}
+
 .browser{border-radius:var(--radius-md); overflow:hidden; border:1px solid var(--border); box-shadow:0 22px 50px -20px rgba(0,0,0,.6); background:#fff}
 .b-chrome{background:#1b1926; padding:9px 14px; display:flex; align-items:center; gap:12px}
 .b-url{flex:1; display:flex; align-items:center; gap:8px; direction:ltr; font-size:11.5px; color:#bdb8d6; background:rgba(0,0,0,.32); border-radius:8px; padding:6px 12px; overflow:hidden; white-space:nowrap}
