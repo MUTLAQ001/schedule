@@ -2018,6 +2018,7 @@ body.swal2-toast-shown .swal2-container {
   display: inline-block;
   width: 44px;
   height: 24px;
+  flex-shrink: 0;
 }
 
 .toggle-switch input {
