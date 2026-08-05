@@ -140,14 +140,70 @@ Object.assign(QU_ScheduleApp, {
           const html = `<div id="features-modal-content" class="custom-scrollbar">${groups.map(g => `<div class="features-group"><div class="features-group-header"><span class="fg-icon"><i class="ph ${g.icon}"></i></span><h4>${g.title}</h4></div><div class="features-items">${g.items.map(f => `<div class="feature-item"><i class="ph ${f.i}"></i><div><div class="f-title">${f.t}</div><div class="f-desc">${f.d}</div></div></div>`).join('')}</div></div>`).join('')}</div>`;
           Swal.fire({ title: 'مميزات QU Schedule', html, confirmButtonText: 'رائع!', customClass: { popup: 'swal2-popup wide-swal' } });
         },
+        _guideClips() {
+          return [
+            { id: 'mobile', icon: 'ph-device-mobile', label: 'جوال', file: 'guide-mobile.mp4', ratio: '592 / 1200', portrait: true, title: 'التثبيت على الجوال', desc: 'انسخ الكود، افتح صفحة المقررات المطروحة، ثم الصقه في شريط العنوان.' },
+            { id: 'tablet', icon: 'ph-device-tablet', label: 'جهاز لوحي', file: 'guide-tablet.mp4', ratio: '1920 / 1216', portrait: false, title: 'التثبيت على الجهاز اللوحي', desc: 'الصفحة تفتح بشكل الكمبيوتر، فانسخ الكود من زر «للوحيات» ثم الصقه في شريط العنوان.' },
+            { id: 'desktop', icon: 'ph-desktop', label: 'كمبيوتر', file: 'guide-desktop.mp4', ratio: '2874 / 1798', portrait: false, title: 'التثبيت على الكمبيوتر', desc: 'اسحب زر QU Schedule إلى شريط الإشارات المرجعية، ثم اضغطه داخل صفحة المقررات المطروحة.' }
+          ];
+        },
+        _guessDevice() {
+          const isTouch = window.matchMedia('(pointer:coarse)').matches || ('ontouchstart' in window) || window.innerWidth < 760;
+          if (!isTouch) return 'desktop';
+          return Math.min(window.innerWidth, window.innerHeight) >= 600 ? 'tablet' : 'mobile';
+        },
+        _showGuideModal(preferred) {
+          const clips = this._guideClips();
+          const active = clips.some(c => c.id === preferred) ? preferred : this._guessDevice();
+          const tabs = clips.map(c => `<button type="button" class="guide-tab${c.id === active ? ' active' : ''}" data-clip="${c.id}"><i class="ph ${c.icon}"></i><span>${c.label}</span></button>`).join('');
+          const html = `<div id="guide-modal-content">
+  <div class="guide-tabs" role="tablist">${tabs}</div>
+  <div class="guide-stage" id="guide-stage">
+    <video id="guide-video" controls playsinline preload="metadata" controlsList="nodownload" disablepictureinpicture></video>
+  </div>
+  <div class="guide-caption"><div class="gc-title" id="guide-title"></div><div class="gc-desc" id="guide-desc"></div></div>
+  <div class="guide-contact">
+    <span class="gct-icon"><i class="ph-fill ph-question"></i></span>
+    <div class="gct-body"><div class="gct-line">إذا واجهتك مشكلة</div><div class="gct-note">لا تنسَ ذكر نوع جهازك والمتصفح ليسهل حل المشكلة.</div></div>
+    <a class="gct-btn" href="https://t.me/Mutlaq_ai_bot" target="_blank" rel="noopener noreferrer"><i class="ph ph-telegram-logo"></i> للتواصل</a>
+  </div>
+</div>`;
+          Swal.fire({
+            title: 'مقاطع الشرح', html, confirmButtonText: 'تم',
+            customClass: { popup: 'swal2-popup wide-swal guide-swal' },
+            didOpen: (popup) => {
+              const video = popup.querySelector('#guide-video');
+              const stage = popup.querySelector('#guide-stage');
+              const titleEl = popup.querySelector('#guide-title');
+              const descEl = popup.querySelector('#guide-desc');
+              const select = (id) => {
+                const clip = clips.find(c => c.id === id) || clips[0];
+                popup.querySelectorAll('.guide-tab').forEach(b => b.classList.toggle('active', b.dataset.clip === clip.id));
+                video.pause();
+                video.style.aspectRatio = clip.ratio;
+                stage.classList.toggle('portrait', clip.portrait);
+                video.src = `${clip.file}#t=0.1`;
+                video.load();
+                titleEl.textContent = clip.title;
+                descEl.textContent = clip.desc;
+              };
+              popup.querySelectorAll('.guide-tab').forEach(btn => btn.addEventListener('click', () => select(btn.dataset.clip)));
+              video.addEventListener('error', () => { stage.classList.add('failed'); });
+              video.addEventListener('loadeddata', () => { stage.classList.remove('failed'); });
+              select(active);
+            },
+            willClose: (popup) => { const v = popup.querySelector('#guide-video'); if (v) { v.pause(); v.removeAttribute('src'); v.load(); } }
+          });
+        },
         _updateBookmarkletCode() {
           const code = `javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();`;
           const container = this.dom.installSectionContainer;
           const demoBtn = `<button class="data-btn" id="demo-mode-btn"><i class="ph ph-eye"></i> ألقِ نظرة</button>`;
-          const helpBtnStyle = `text-decoration: none;`;
-          if (isMobile) { container.innerHTML = `<div id="install-header"><i class="ph ph-device-mobile"></i><h2>التثبيت على الجوال</h2></div><div id="install-section-mobile"><ol><li data-step="1">اضغط على زر "نسخ الكود" بالأسفل.</li><li data-step="2">اذهب لصفحة "المقررات المطروحة" في موقع الجامعة.</li><li data-step="3">الصق الكود في شريط العنوان ثم اضغط "اذهب".</li></ol><div class="install-actions"><button id="copy-code-btn"><i class="ph ph-clipboard-text"></i> نسخ الكود</button><div class="or-divider">أو</div><div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">${demoBtn}<a href="https://t.me/zalam_0/66" target="_blank" class="data-btn" style="${helpBtnStyle}"><i class="ph ph-question"></i> شرح</a><button class="data-btn" id="features-btn"><i class="ph ph-sparkle"></i> المميزات</button><a href="tutorial.html" class="tutorial-cta"><i class="ph-fill ph-play-circle"></i> شرح تفاعلي</a></div></div><div class="js-warning">قد يحذف المتصفح <code>javascript:</code> تأكد من إعادتها يدوياً.</div></div>`; const copyBtn = container.querySelector('#copy-code-btn'); copyBtn.addEventListener('click', (e) => { e.preventDefault(); navigator.clipboard.writeText(code).then(() => { this._showToast('success', 'تم نسخ الكود بنجاح!'); }).catch(() => this._showToast('error', 'تعذر النسخ إلى الحافظة.')); }); }
-          else { container.innerHTML = `<div id="install-header"><i class="ph ph-arrows-out-cardinal"></i><h2>التثبيت على الكمبيوتر</h2></div><p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك، ثم اضغط عليه وأنت في صفحة المقررات المطروحة.</p><div class="install-actions"><a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ph ph-magic-wand"></i> QU Schedule</a><div class="or-divider">أو</div><div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">${demoBtn}<button class="data-btn" id="tablet-mode-btn"><i class="ph ph-device-tablet"></i> للوحيات</button><a href="https://t.me/Qassim_QU/202" target="_blank" class="data-btn" style="${helpBtnStyle}"><i class="ph ph-question"></i> شرح</a><button class="data-btn" id="features-btn"><i class="ph ph-sparkle"></i> المميزات</button><a href="tutorial.html" class="tutorial-cta"><i class="ph-fill ph-play-circle"></i> شرح تفاعلي</a></div></div>`; container.querySelector('#tablet-mode-btn')?.addEventListener('click', () => { navigator.clipboard.writeText(code).then(() => { this._showToast('success', 'تم نسخ كود اللوحيات بنجاح!'); }).catch(() => this._showToast('error', 'تعذر النسخ إلى الحافظة.')); }); }
+          const guideBtn = `<button class="data-btn" id="guide-videos-btn"><i class="ph ph-monitor-play"></i> مقاطع الشرح</button>`;
+          if (isMobile) { container.innerHTML = `<div id="install-header"><i class="ph ph-device-mobile"></i><h2>التثبيت على الجوال</h2></div><div id="install-section-mobile"><ol><li data-step="1">اضغط على زر "نسخ الكود" بالأسفل.</li><li data-step="2">اذهب لصفحة "المقررات المطروحة" في موقع الجامعة.</li><li data-step="3">الصق الكود في شريط العنوان ثم اضغط "اذهب".</li></ol><div class="install-actions"><button id="copy-code-btn"><i class="ph ph-clipboard-text"></i> نسخ الكود</button><div class="or-divider">أو</div><div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">${demoBtn}${guideBtn}<button class="data-btn" id="features-btn"><i class="ph ph-sparkle"></i> المميزات</button><a href="tutorial.html" class="tutorial-cta"><i class="ph-fill ph-play-circle"></i> شرح تفاعلي</a></div></div><div class="js-warning">قد يحذف المتصفح <code>javascript:</code> تأكد من إعادتها يدوياً.</div></div>`; const copyBtn = container.querySelector('#copy-code-btn'); copyBtn.addEventListener('click', (e) => { e.preventDefault(); navigator.clipboard.writeText(code).then(() => { this._showToast('success', 'تم نسخ الكود بنجاح!'); }).catch(() => this._showToast('error', 'تعذر النسخ إلى الحافظة.')); }); }
+          else { container.innerHTML = `<div id="install-header"><i class="ph ph-arrows-out-cardinal"></i><h2>التثبيت على الكمبيوتر</h2></div><p>اسحب هذا الزر إلى شريط الإشارات المرجعية في متصفحك، ثم اضغط عليه وأنت في صفحة المقررات المطروحة.</p><div class="install-actions"><a class="bookmarklet-button" href="${code}" onclick="Swal.fire({title:'خطأ!', text:'لا تضغط على الزر، بل قم بسحبه إلى شريط الإشارات المرجعية.', icon:'error'}); return false;"><i class="ph ph-magic-wand"></i> QU Schedule</a><div class="or-divider">أو</div><div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">${demoBtn}<button class="data-btn" id="tablet-mode-btn"><i class="ph ph-device-tablet"></i> للوحيات</button>${guideBtn}<button class="data-btn" id="features-btn"><i class="ph ph-sparkle"></i> المميزات</button><a href="tutorial.html" class="tutorial-cta"><i class="ph-fill ph-play-circle"></i> شرح تفاعلي</a></div></div>`; container.querySelector('#tablet-mode-btn')?.addEventListener('click', () => { navigator.clipboard.writeText(code).then(() => { this._showToast('success', 'تم نسخ كود اللوحيات بنجاح!'); }).catch(() => this._showToast('error', 'تعذر النسخ إلى الحافظة.')); }); }
           document.getElementById('demo-mode-btn')?.addEventListener('click', () => this._startDemoMode());
           document.getElementById('features-btn')?.addEventListener('click', () => this._showFeaturesModal());
+          document.getElementById('guide-videos-btn')?.addEventListener('click', () => this._showGuideModal());
         },
       });
