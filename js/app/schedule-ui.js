@@ -300,6 +300,8 @@ ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHT
               if (crnGenBtn) crnGenBtn.addEventListener('click', () => this._handleCRNGenerator());
               const desktopExamClashBtn = desktopContainer.querySelector('#desktop-exam-clash-btn');
               if (desktopExamClashBtn) desktopExamClashBtn.addEventListener('click', () => this._handleViewExamClashes(this._examClashGroups(selectedCourses)));
+              const desktopCreditBtn = desktopContainer.querySelector('#desktop-credit-btn');
+              if (desktopCreditBtn) desktopCreditBtn.addEventListener('click', () => this._showCreditLimitsModal(this._totalCreditsOf(selectedCourses)));
             }
           }
           if (mobileContainer) {
@@ -313,6 +315,8 @@ ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHT
               if (mobileCrnGenBtn) mobileCrnGenBtn.addEventListener('click', () => this._handleCRNGenerator());
               const mobileShareBtn = mobileContainer.querySelector('#mobile-share-schedule-btn');
               if (mobileShareBtn) mobileShareBtn.addEventListener('click', () => this._handleShare());
+              const mobileCreditBtn = mobileContainer.querySelector('#mobile-credit-btn');
+              if (mobileCreditBtn) mobileCreditBtn.addEventListener('click', () => this._showCreditLimitsModal(this._totalCreditsOf(selectedCourses)));
             }
           }
         },
@@ -429,6 +433,14 @@ showUI();})();`;
           let totalCredits = 0; const uniqueCourseCodes = new Set();
           selectedCourses.forEach(c => { if (!uniqueCourseCodes.has(c.code)) { totalCredits += parseInt(c.hours, 10) || 0; uniqueCourseCodes.add(c.code); } });
           let statsHTML = this._createScheduleStatsHTML(selectedCourses, uniqueCourseCodes.size);
+          const creditHTML = this._buildCreditAlert(totalCredits, 'desktop');
+          const creditIsChip = this._creditStatus(totalCredits).state === 'ok';
+          let creditAlertHTML = '';
+          if (creditIsChip) {
+            statsHTML = statsHTML ? statsHTML.replace('</div>', `${creditHTML}</div>`) : `<div class="schedule-stats">${creditHTML}</div>`;
+          } else {
+            creditAlertHTML = `<div class="credit-slot">${creditHTML}</div>`;
+          }
           const conflictBtnHTML = conflictMap.size > 0 ? `<button class="view-conflicts-btn" id="desktop-view-conflicts-btn"><i class="ph-fill ph-wrench"></i> حل التعارض</button>` : '';
           if (conflictBtnHTML) {
             statsHTML = statsHTML ? statsHTML.replace('</div>', `${conflictBtnHTML}</div>`) : `<div class="schedule-stats">${conflictBtnHTML}</div>`;
@@ -460,7 +472,7 @@ showUI();})();`;
             }).join('');
           }).join('');
           const gridItemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => { const isClosed = !!(course.status && course.status.includes('مغلقة')); return `<div class="mobile-schedule-item" style="animation-delay:${i * 30}ms;"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${this._escapeHTML(course.name)}</h3><span>${this._escapeHTML(course.code)} - شعبة ${this._escapeHTML(course.section)}${isClosed ? '<span class="closed-badge"><i class="ph-fill ph-lock-simple"></i>مغلقة</span>' : ''}</span></div>${conflictMap.has(course.uniqueId) ? '<i class="ph-fill ph-warning mobile-conflict-icon"></i>' : ''}</div><div class="mobile-schedule-details"><div class="mobile-detail-row"><i class="ph ph-clock"></i> <strong>المواعيد:</strong> ${this._escapeHTML(course.time.replace(/<br>/g, ' / ') || 'غير محدد')}</div><div class="mobile-detail-row"><i class="ph ph-user"></i> <strong>المحاضر:</strong> ${this._escapeHTML(course.instructor || 'غير محدد')}</div></div></div>`; }).join('');
-          return `<div class="card my-schedule-card"><div class="my-schedule-section"><div class="card-header-inline"><div class="card-header-actions"><h3><i class="ph ph-calendar-check"></i> جدولـي</h3><button class="copy-crn-btn" id="desktop-copy-crn-btn" title="نسخ أرقام الشعب"><i class="ph ph-copy"></i> نسخ الشعب</button></div><div style="display:flex;align-items:center;gap:0.75rem;"><button class="moad-btn" id="generate-crn-tool-btn"><i class="ph ph-magic-wand"></i> مُعِدّ</button><div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div></div></div>${statsHTML}${examAlertHTML}<div class="my-schedule-table-wrapper"><table class="my-schedule-table"><thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead><tbody>${tableRowsHTML}</tbody></table></div><div class="my-schedule-grid-wrapper hidden">${gridItemsHTML}</div></div></div>`;
+          return `<div class="card my-schedule-card"><div class="my-schedule-section"><div class="card-header-inline"><div class="card-header-actions"><h3><i class="ph ph-calendar-check"></i> جدولـي</h3><button class="copy-crn-btn" id="desktop-copy-crn-btn" title="نسخ أرقام الشعب"><i class="ph ph-copy"></i> نسخ الشعب</button></div><div style="display:flex;align-items:center;gap:0.75rem;"><button class="moad-btn" id="generate-crn-tool-btn"><i class="ph ph-magic-wand"></i> مُعِدّ</button><div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div></div></div>${statsHTML}${creditAlertHTML}${examAlertHTML}<div class="my-schedule-table-wrapper"><table class="my-schedule-table"><thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead><tbody>${tableRowsHTML}</tbody></table></div><div class="my-schedule-grid-wrapper hidden">${gridItemsHTML}</div></div></div>`;
         },
         _createScheduleStatsHTML(selectedCourses, coursesCount) {
           const daySet = new Set(); let weeklyMin = 0;
@@ -484,7 +496,9 @@ showUI();})();`;
           const daySet = new Set(); let weeklyMin = 0;
           selectedCourses.forEach(c => c.timeSlots.forEach(s => { daySet.add(s.day); weeklyMin += this._toMin(s.end) - this._toMin(s.start); }));
           const weeklyHours = Math.round((weeklyMin / 60) * 10) / 10;
-          const summaryHTML = `<div class="schedule-summary"><div class="summary-cell"><span class="summary-value">${uniqueCourseCodes.size}</span><span class="summary-label">مقررات</span></div><div class="summary-cell accent"><span class="summary-value">${totalCredits}</span><span class="summary-label">ساعة معتمدة</span></div><div class="summary-cell"><span class="summary-value">${daySet.size}</span><span class="summary-label">أيام دوام</span></div><div class="summary-cell"><span class="summary-value">${weeklyHours}</span><span class="summary-label">ساعة أسبوعياً</span></div></div>`;
+          const cs = this._creditStatus(totalCredits);
+          const creditCellHTML = `<button type="button" class="summary-cell credit-cell ${cs.state}" id="mobile-credit-btn" aria-label="حدود الساعات المسموحة"><span class="summary-value">${cs.total}<small>/${cs.max}</small></span><span class="summary-label">${cs.state === 'ok' ? 'ساعة معتمدة' : cs.state === 'over' ? 'تجاوزت الحد' : 'أقل من الأدنى'} <i class="ph ph-caret-left cc-caret"></i></span></button>`;
+          const summaryHTML = `<div class="schedule-summary"><div class="summary-cell"><span class="summary-value">${uniqueCourseCodes.size}</span><span class="summary-label">مقررات</span></div>${creditCellHTML}<div class="summary-cell"><span class="summary-value">${daySet.size}</span><span class="summary-label">أيام دوام</span></div><div class="summary-cell"><span class="summary-value">${weeklyHours}</span><span class="summary-label">ساعة أسبوعياً</span></div></div>`;
           return `<div id="mobile-my-schedule-list">${itemsHTML}</div>
 <div class="mobile-schedule-footer">
 ${summaryHTML}
