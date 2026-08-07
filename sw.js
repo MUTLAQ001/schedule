@@ -1,4 +1,4 @@
-const CACHE = 'qu-schedule-v13';
+const CACHE = 'qu-schedule-v14';
 
 const CORE = [
   './',
@@ -30,7 +30,13 @@ const CORE = [
   './js/app/free-courses-data.js',
   './js/app/free-courses.js',
   './icons/icon-192.png',
-  './icons/icon-512.png'
+  './icons/icon-512.png',
+  './issue-url-mobile.jpg',
+  './issue-popup-mobile.jpg',
+  './issue-safari-mobile.jpg',
+  './issue-jsprefix-mobile.jpg',
+  './issue-nodata-mobile.jpg',
+  './issue-edge-mobile.jpg'
 ];
 
 const CDN = ['fonts.googleapis.com', 'fonts.gstatic.com', 'cdn.jsdelivr.net'];
