@@ -206,6 +206,7 @@ i.ph, i.ph-fill{line-height:1}
   border-radius:99px; padding:8px 18px; opacity:0; transform:scale(.85); transition:var(--tr-smooth);
 }
 .copied-chip.show{opacity:1; transform:scale(1)}
+.copied-chip.failed{color:#fca5a5; background:rgba(var(--rgb-danger),.12); border-color:rgba(var(--rgb-danger),.35)}
 
 .tablet-sim{max-width:600px}
 .tsim-panel{
@@ -707,6 +708,7 @@ i.ph, i.ph-fill{line-height:1}
 .light .sg-row .sg-main{color:#2c2a45}
 .light .phone-actions{background:#f2f0fa}
 .light .copied-chip{color:var(--color-success)}
+.light .copied-chip.failed{color:var(--color-danger)}
 .light .addr-note{color:var(--color-danger)}
 .light .addr-note.good{color:var(--color-success)}
 .light .sg-tag.ok{color:var(--color-success)}
