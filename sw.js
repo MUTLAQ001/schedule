@@ -6,6 +6,7 @@ const CORE = [
   './tutorial.html',
   './manifest.json',
   './extractor.js',
+  './filler.js',
   './css/styles.css',
   './css/tutorial.css',
   './js/tutorial.js',
