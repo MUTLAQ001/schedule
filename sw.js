@@ -21,6 +21,7 @@ const CORE = [
   './js/app/utils.js',
   './js/app/generator.js',
   './js/app/tools.js',
+  './js/app/help.js',
   './js/app/calendar.js',
   './js/app/layout.js',
   './js/app/settings.js',
