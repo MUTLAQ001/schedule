@@ -286,7 +286,7 @@ ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHT
         _renderMyScheduleSummary(selectedCourses, conflictMap) {
           const desktopContainer = this.dom.myScheduleContainer;
           const mobileContainer = this.dom.mobileMyScheduleContainer;
-          const emptyScheduleHTML = `<div class="empty-state" style="width:100%"><div class="es-icon"><i class="ph ph-calendar-plus"></i></div><h4>جدولك فارغ</h4><p>اختر شعب المقررات من القائمة، أو دع الجدول الذكي يبني لك جدولاً بلا تعارضات.</p><div class="es-actions"><button class="es-btn primary" data-empty-action="browse"><i class="ph ph-stack"></i> تصفح المقررات</button><button class="es-btn" data-empty-action="auto"><i class="ph ph-magic-wand"></i> الجدول الذكي</button></div></div>`;
+          const emptyScheduleHTML = `<div class="empty-state" style="width:100%"><div class="es-icon"><i class="ph ph-calendar-plus"></i></div><h4>جدولك فارغ</h4><p>اختر شعب المقررات من القائمة، أو دع الجدول الذكي يبني لك جدولاً بلا تعارضات.</p><div class="es-actions"><button class="es-btn primary" data-empty-action="browse"><i class="ph ph-stack"></i> تصفح المقررات</button><button class="es-btn" data-empty-action="auto"><i class="ph ph-magic-wand"></i> الجدول الذكي</button><button class="es-btn" data-empty-action="free"><i class="ph ph-books"></i> المقررات الحرة</button></div></div>`;
           if (desktopContainer) {
             desktopContainer.style.display = 'flex';
             if (selectedCourses.length === 0) { desktopContainer.innerHTML = emptyScheduleHTML; this._bindEmptyStateActions(desktopContainer); }
@@ -302,6 +302,8 @@ ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHT
               if (desktopExamClashBtn) desktopExamClashBtn.addEventListener('click', () => this._handleViewExamClashes(this._examClashGroups(selectedCourses)));
               const desktopCreditBtn = desktopContainer.querySelector('#desktop-credit-btn');
               if (desktopCreditBtn) desktopCreditBtn.addEventListener('click', () => this._showCreditLimitsModal(this._totalCreditsOf(selectedCourses)));
+              const desktopFreeBtn = desktopContainer.querySelector('#desktop-free-courses-btn');
+              if (desktopFreeBtn) desktopFreeBtn.addEventListener('click', () => this._showFreeCoursesModal());
             }
           }
           if (mobileContainer) {
@@ -317,6 +319,8 @@ ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHT
               if (mobileShareBtn) mobileShareBtn.addEventListener('click', () => this._handleShare());
               const mobileCreditBtn = mobileContainer.querySelector('#mobile-credit-btn');
               if (mobileCreditBtn) mobileCreditBtn.addEventListener('click', () => this._showCreditLimitsModal(this._totalCreditsOf(selectedCourses)));
+              const mobileFreeBtn = mobileContainer.querySelector('#mobile-free-courses-btn');
+              if (mobileFreeBtn) mobileFreeBtn.addEventListener('click', () => this._showFreeCoursesModal());
             }
           }
         },
@@ -330,17 +334,29 @@ ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHT
           const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
           if (selectedSections.size === 0) { this._showToast('error', 'الجدول فارغ!'); return; }
           const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+          const freeKeys = this._freeSecKeySet();
+          const planCourses = selectedCourseDetails.filter(c => !freeKeys.has(this._secKey(c)));
+          const freeCourses = selectedCourseDetails.filter(c => freeKeys.has(this._secKey(c)));
+          const autoFreeCRNs = freeCourses.map(c => String(c.section));
+          const one = freeCourses.length === 1;
+          const freeRow = freeCourses.length
+            ? `<div class="info-row is-free">
+<i class="ph ph-books"></i>
+<span><b>${this._escapeHTML(freeCourses.map(c => c.name).join('، '))}</b> ${one ? 'مقرر حر لا يظهر في جدول خطتك، فوُضع رقم شعبته' : 'مقررات حرة لا تظهر في جدول خطتك، فوُضعت أرقام شعبها'} في خانة «الشعب الحرة» تلقائياً — والأداة تعبّئها في حقول المقررات الحرة بصفحة الحذف والإضافة.</span>
+</div>`
+            : '';
           Swal.fire({
             title: 'مُعِدّ أداة التعبئة',
             html: `
 <div class="crn-generator-content">
 <div class="info-row">
 <i class="ph ph-check-circle"></i>
-<span>تم استخراج أرقام الشعب من جدولك الحالي.</span>
+<span>تم استخراج أرقام الشعب من جدولك الحالي${planCourses.length ? ` (${this._sectionsWord(planCourses.length)} من خطتك)` : ''}.</span>
 </div>
+${freeRow}
 <div class="input-group">
 <label>أرقام الشعب الحرة (اختياري)</label>
-<textarea id="swal-free-crns" class="custom-textarea" placeholder="أدخل أرقام الشعب الحرة هنا (مثلاً: 12345, 67890)..."></textarea>
+<textarea id="swal-free-crns" class="custom-textarea" placeholder="أدخل أرقام الشعب الحرة هنا (مثلاً: 12345, 67890)...">${this._escapeHTML(autoFreeCRNs.join(', '))}</textarea>
 </div>
 </div>
 `,
@@ -352,8 +368,8 @@ ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHT
             }
           }).then((result) => {
             if (result.isConfirmed) {
-              const freeCRNs = result.value.split(/[\n\s,]+/).map(s => s.trim()).filter(Boolean);
-              const code = this._generateFillerCode(selectedCourseDetails, freeCRNs);
+              const freeCRNs = [...new Set(result.value.split(/[\n\s,]+/).map(s => s.trim()).filter(Boolean))];
+              const code = this._generateFillerCode(planCourses, freeCRNs);
               this._showFillerTool(code);
             }
           });
@@ -472,7 +488,7 @@ showUI();})();`;
             }).join('');
           }).join('');
           const gridItemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => { const isClosed = !!(course.status && course.status.includes('مغلقة')); return `<div class="mobile-schedule-item" style="animation-delay:${i * 30}ms;"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${this._escapeHTML(course.name)}</h3><span>${this._escapeHTML(course.code)} - شعبة ${this._escapeHTML(course.section)}${isClosed ? '<span class="closed-badge"><i class="ph-fill ph-lock-simple"></i>مغلقة</span>' : ''}</span></div>${conflictMap.has(course.uniqueId) ? '<i class="ph-fill ph-warning mobile-conflict-icon"></i>' : ''}</div><div class="mobile-schedule-details"><div class="mobile-detail-row"><i class="ph ph-clock"></i> <strong>المواعيد:</strong> ${this._escapeHTML(course.time.replace(/<br>/g, ' / ') || 'غير محدد')}</div><div class="mobile-detail-row"><i class="ph ph-user"></i> <strong>المحاضر:</strong> ${this._escapeHTML(course.instructor || 'غير محدد')}</div></div></div>`; }).join('');
-          return `<div class="card my-schedule-card"><div class="my-schedule-section"><div class="card-header-inline"><div class="card-header-actions"><h3><i class="ph ph-calendar-check"></i> جدولـي</h3><button class="copy-crn-btn" id="desktop-copy-crn-btn" title="نسخ أرقام الشعب"><i class="ph ph-copy"></i> نسخ الشعب</button></div><div style="display:flex;align-items:center;gap:0.75rem;"><button class="moad-btn" id="generate-crn-tool-btn"><i class="ph ph-magic-wand"></i> مُعِدّ</button><div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div></div></div>${statsHTML}${creditAlertHTML}${examAlertHTML}<div class="my-schedule-table-wrapper"><table class="my-schedule-table"><thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead><tbody>${tableRowsHTML}</tbody></table></div><div class="my-schedule-grid-wrapper hidden">${gridItemsHTML}</div></div></div>`;
+          return `<div class="card my-schedule-card"><div class="my-schedule-section"><div class="card-header-inline"><div class="card-header-actions"><h3><i class="ph ph-calendar-check"></i> جدولـي</h3><button class="copy-crn-btn" id="desktop-copy-crn-btn" title="نسخ أرقام الشعب"><i class="ph ph-copy"></i> نسخ الشعب</button></div><div style="display:flex;align-items:center;gap:0.75rem;"><button class="moad-btn" id="generate-crn-tool-btn"><i class="ph ph-magic-wand"></i> مُعِدّ</button><button class="free-courses-btn" id="desktop-free-courses-btn" title="شعب المقررات الحرة المقترحة"><i class="ph ph-books"></i> المقررات الحرة</button><div class="total-credits-pill">إجمالي الساعات: <span>${totalCredits}</span></div></div></div>${statsHTML}${creditAlertHTML}${examAlertHTML}<div class="my-schedule-table-wrapper"><table class="my-schedule-table"><thead><tr><th>المقرر</th><th>الشعبة</th><th>المحاضر</th><th>المواعيد</th><th>فترة الاختبار</th><th>المكان</th><th>الساعات</th></tr></thead><tbody>${tableRowsHTML}</tbody></table></div><div class="my-schedule-grid-wrapper hidden">${gridItemsHTML}</div></div></div>`;
         },
         _createScheduleStatsHTML(selectedCourses, coursesCount) {
           const daySet = new Set(); let weeklyMin = 0;
@@ -492,6 +508,7 @@ showUI();})();`;
           const hasConflict = conflictMap.size > 0;
           const conflictButtonHTML = hasConflict ? `<button class="view-conflicts-btn" id="mobile-view-conflicts-btn"><i class="ph-fill ph-wrench"></i> حل التعارض</button>` : '';
           const moadButtonHTML = `<button class="moad-btn" id="mobile-generate-crn-tool-btn"><i class="ph ph-magic-wand"></i> مُعِدّ</button>`;
+          const freeButtonHTML = `<button class="footer-icon-btn" id="mobile-free-courses-btn" aria-label="المقررات الحرة" title="المقررات الحرة"><i class="ph ph-books"></i></button>`;
           const shareButtonHTML = `<button class="footer-icon-btn" id="mobile-share-schedule-btn" aria-label="مشاركة الجدول" title="مشاركة الجدول"><i class="ph ph-share-network"></i></button>`;
           const daySet = new Set(); let weeklyMin = 0;
           selectedCourses.forEach(c => c.timeSlots.forEach(s => { daySet.add(s.day); weeklyMin += this._toMin(s.end) - this._toMin(s.start); }));
@@ -505,6 +522,7 @@ ${summaryHTML}
 <div class="footer-actions-row">
 ${moadButtonHTML}
 ${conflictButtonHTML}
+${freeButtonHTML}
 ${shareButtonHTML}
 </div>
 </div>`;
