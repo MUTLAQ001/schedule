@@ -4,6 +4,37 @@
   function toAr(n){return String(n).replace(/[0-9]/g,function(d){return '٠١٢٣٤٥٦٧٨٩'[d]})}
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  var BOOKMARKLET = "javascript:!function(){var e=document.createElement('script');e.src='https://mutlaq001.github.io/schedule/extractor.js?v='+Date.now(),document.head.appendChild(e)}();";
+
+  function legacyCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.setAttribute('readonly','');
+    ta.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    ta.setSelectionRange(0, text.length);
+    var ok = false;
+    try { ok = document.execCommand('copy') } catch(e){}
+    document.body.removeChild(ta);
+    return ok;
+  }
+
+  function copyCode(){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      return navigator.clipboard.writeText(BOOKMARKLET).then(function(){return true}).catch(function(){return legacyCopy(BOOKMARKLET)});
+    }
+    return Promise.resolve(legacyCopy(BOOKMARKLET));
+  }
+
+  function markCopied(chip, ok){
+    chip.classList.toggle('failed', !ok);
+    chip.innerHTML = ok
+      ? '<i class="ph-fill ph-check-circle"></i> تم نسخ الكود فعلياً — صار جاهزاً في الحافظة'
+      : '<i class="ph-fill ph-warning-circle"></i> تعذّر النسخ تلقائياً — انسخ الكود من الصفحة الأساسية';
+    chip.classList.add('show');
+  }
+
   var device = null;
   var STAGES = {
     's-intro':      {p:2,  label:'مرحباً بك'},
@@ -162,9 +193,10 @@
   $('#back-copy-d').addEventListener('click', function(){ goTo('s-intro') });
 
   $('#copy-btn-t').addEventListener('click', function(){
-    this.classList.add('done');
-    $('#copied-t').classList.add('show');
+    var btn=this;
+    btn.classList.add('done');
     $('#next-copy-t').disabled=false;
+    copyCode().then(function(ok){ markCopied($('#copied-t'), ok) });
   });
   $('#next-copy-t').addEventListener('click', function(){ goTo('s-uni') });
   $('#replay-btn').addEventListener('click', function(){ location.reload() });
@@ -173,10 +205,11 @@
   $('#copy-btn-m').addEventListener('click', function(){
     fakeLink.classList.add('pressing');
     clearTimeout(pressTimer);
+    var copied=copyCode();
     pressTimer=setTimeout(function(){
       fakeLink.classList.remove('pressing');
-      $('#copied-m').classList.add('show');
       $('#next-copy-m').disabled=false;
+      copied.then(function(ok){ markCopied($('#copied-m'), ok) });
     }, reduceMotion?50:900);
   });
   $('#next-copy-m').addEventListener('click', function(){ goTo('s-uni') });
