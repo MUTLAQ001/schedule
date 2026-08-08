@@ -42,7 +42,60 @@ Object.assign(QU_ScheduleApp, {
           });
           return out;
         },
+        _quickUnits(bundle, includeClosed) {
+          const isOpen = s => includeClosed || !(s.status && s.status.includes('مغلقة'));
+          const units = [];
+          bundle.codes.forEach(code => {
+            const ordered = this.state.groupedCourses[code]?.sections || [];
+            const paired = ordered.some(s => this._qaCompanion(s)) && ordered.some(s => !this._qaCompanion(s));
+            ordered.forEach((sec, i) => {
+              if (!isOpen(sec)) return;
+              if (!paired) { units.push([sec]); return; }
+              if (this._qaCompanion(sec)) return;
+              const byType = new Map();
+              for (let j = i + 1; j < ordered.length; j++) {
+                if (!this._qaCompanion(ordered[j])) break;
+                if (!isOpen(ordered[j])) continue;
+                const k = this._typeLabel(ordered[j].type) || 'مرافقة';
+                if (!byType.has(k)) byType.set(k, []);
+                byType.get(k).push(ordered[j]);
+              }
+              let combos = [[sec]];
+              byType.forEach(arr => {
+                const next = [];
+                combos.forEach(c => arr.forEach(x => { if (next.length < 80) next.push(c.concat([x])); }));
+                if (next.length) combos = next;
+              });
+              combos.forEach(c => units.push(c));
+            });
+          });
+          return units;
+        },
+        _quickBundleOptions(bundle, prefs, useInst, useDays, relaxed, cap) {
+          const includeClosed = !!(prefs && prefs.includeClosed);
+          const wantedMap = prefs.instructors || {};
+          const seen = new Set();
+          let options = [];
+          this._quickUnits(bundle, includeClosed).forEach(unit => {
+            const full = this._expandLinked(unit, includeClosed);
+            for (let a = 0; a < full.length; a++) { for (let b = a + 1; b < full.length; b++) { if (this._secOverlap(full[a], full[b])) return; } }
+            const sig = full.map(s => s.uniqueId).sort().join('|');
+            if (seen.has(sig)) return;
+            seen.add(sig);
+            options.push(full);
+          });
+          if (useInst && Object.keys(wantedMap).some(k => k.startsWith(bundle.key + '|'))) {
+            const ok = options.filter(o => o.every(s => { const w = wantedMap[bundle.key + '|' + this._canonType(s.type)]; return !w || !w.length || w.includes((s.instructor || '').trim()); }));
+            if (ok.length) options = ok; else if (relaxed) relaxed.add(`${bundle.name} (الدكاترة المفضلون)`);
+          }
+          if (useDays && prefs.daysOff && prefs.daysOff.length) {
+            const ok = options.filter(o => !o.some(s => (s.timeSlots || []).some(t => prefs.daysOff.includes(t.day))));
+            if (ok.length) options = ok; else if (relaxed) relaxed.add(`${bundle.name} (أيام الإجازة)`);
+          }
+          return options.slice(0, cap || 120);
+        },
         _bundleOptions(bundle, prefs, useInst, useDays, relaxed, cap) {
+          if (prefs && prefs.mode === 'quick') return this._quickBundleOptions(bundle, prefs, useInst, useDays, relaxed, cap);
           const limit = cap || 120;
           const wantedMap = prefs.instructors || {};
           const parts = bundle.parts.map(p => {
@@ -105,7 +158,7 @@ Object.assign(QU_ScheduleApp, {
           const includeClosedToggleHTML = `<div class="settings-item gen-closed-toggle"><div class="settings-item-label"><span>تضمين الشعب المغلقة</span><small>اعتبارها خياراً عند بناء الجدول رغم أنها مغلقة حالياً</small></div><label class="toggle-switch"><input type="checkbox" id="gen-include-closed"${includeClosed ? ' checked' : ''}><span class="slider"></span></label></div>`;
           const coursesHTML = `${includeClosedToggleHTML}<div class="gen-select-bar"><span class="gen-count" id="gen-course-count"></span><button type="button" class="gen-mini-btn" id="gen-courses-all"><i class="ph ph-checks"></i>الكل</button><button type="button" class="gen-mini-btn" id="gen-courses-none"><i class="ph ph-prohibit"></i>لا شيء</button></div><div class="gen-course-grid" id="gen-courses">${buildCourseCardsHTML()}</div>`;
           const modesHTML = `<div class="gen-options" id="gen-options">
-<div class="gen-option gen-option-quick ${saved.mode === 'quick' ? 'selected' : ''}" data-mode="quick"><i class="ph ph-lightning"></i><div><div class="g-title">الوضع السريع <span class="gen-quick-badge">الأسرع</span></div><div class="g-desc">ينزّل المقرر واللي يتبع له مثل طريقة الإضافة بموقع الجامعة</div></div></div>
+<div class="gen-option gen-option-quick ${saved.mode === 'quick' ? 'selected' : ''}" data-mode="quick"><i class="ph ph-lightning"></i><div><div class="g-title">الوضع السريع <span class="gen-quick-badge">ينصح به</span></div><div class="g-desc">ينزّل المقرر واللي يتبع له مثل طريقة الإضافة بموقع الجامعة</div></div></div>
 <div class="gen-option ${(saved.mode || 'any') === 'any' ? 'selected' : ''}" data-mode="any"><i class="ph ph-shuffle"></i><div><div class="g-title">أي جدول متاح</div><div class="g-desc">تركيبة خالية من التعارض</div></div></div>
 <div class="gen-option ${saved.mode === 'late' ? 'selected' : ''}" data-mode="late"><i class="ph ph-sun-horizon"></i><div><div class="g-title">بدون محاضرات مبكرة</div><div class="g-desc">تفضيل الشعب المتأخرة صباحاً</div></div></div>
 <div class="gen-option ${saved.mode === 'compact' ? 'selected' : ''}" data-mode="compact"><i class="ph ph-arrows-in-line-vertical"></i><div><div class="g-title">أقل فراغات</div><div class="g-desc">تقليل الفجوات بين المحاضرات</div></div></div>
@@ -385,6 +438,17 @@ Object.assign(QU_ScheduleApp, {
                 linkedIds.add(comp.uniqueId);
               });
             });
+            if (prefs.mode === 'quick') {
+              const inSol = new Set(sol.map(s => s.uniqueId));
+              sol.forEach(s => {
+                if (!this._qaCompanion(s) || linkedIds.has(s.uniqueId)) return;
+                const anchor = this._qaAnchorOf(s);
+                if (!anchor || !inSol.has(anchor.uniqueId)) return;
+                if (!sched.linkedSections.has(anchor.uniqueId)) sched.linkedSections.set(anchor.uniqueId, new Set());
+                sched.linkedSections.get(anchor.uniqueId).add(s.uniqueId);
+                linkedIds.add(s.uniqueId);
+              });
+            }
             this.state.activeScheduleIndex = this.state.schedules.length - 1;
             this.updateFullUI(); this._toggleSettingsModal(false); this._vibrate([15, 40, 15]);
             this._showToast('success', `تم اعتماد الجدول المقترح (${sol.length} شعبة).`);
