@@ -46,8 +46,7 @@ Object.assign(QU_ScheduleApp, {
               this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
             }
           }
-          const _qaHours = s => { const t = String(s.hours == null ? '' : s.hours).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)); const n = parseInt(t, 10); return isNaN(n) ? 0 : n; };
-          const _qaCompanion = s => { const t = String(s.type || ''); if (/نظري|نظرى|محاضرة/.test(t)) return false; return /عملي|عمليه|عملية|معمل|مختبر|تطبيق|تدريب|تمارين|تمرين|مناقشة|سكشن/.test(t) || _qaHours(s) === 0; };
+          const _qaCompanion = s => this._qaCompanion(s);
           if (this.state.userSettings.quickAddMode) {
             const ownGroup = this.state.groupedCourses[section.code];
             const ordered = ownGroup ? ownGroup.sections : [];
