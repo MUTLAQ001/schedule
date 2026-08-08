@@ -345,7 +345,7 @@ Object.assign(QU_ScheduleApp, {
           const head = `<div class="gp-corner"></div>` + days.map(d => `<div class="gp-day ${used.has(d) ? '' : 'free'}">${dayNames[d]}</div>`).join('');
           const cols = days.map(d => {
             const dayItems = items.filter(i => i.day === d).sort((a, b) => a.from - b.from);
-            if (!dayItems.length) return `<div class="gp-col free"><span class="gp-free">يوم فاضي</span></div>`;
+            if (!dayItems.length) return `<div class="gp-col free"><span class="gp-free">إجازة</span></div>`;
             const blocks = dayItems.map(it => {
               const color = this.state.groupedCourses[it.sec.code]?.color || '#8b5cf6';
               const top = ((it.from - min) / span) * 100;
@@ -353,7 +353,7 @@ Object.assign(QU_ScheduleApp, {
               const dur = it.to - it.from;
               const type = this._canonType(it.sec.type);
               const title = `${it.sec.name} — ${type} — شعبة ${it.sec.section} — ${this._formatClock(it.from)} إلى ${this._formatClock(it.to)}${it.sec.instructor ? ' — ' + it.sec.instructor : ''}`;
-              return `<div class="gp-block ${dur < 60 ? 'short' : ''}" style="top:${top.toFixed(2)}%;height:${h.toFixed(2)}%;--gp-c:${color};--gp-rgb:${this._hexToRgb(color)}" title="${this._escapeHTML(title)}"><b>${this._escapeHTML(it.sec.name)}</b><small>${this._escapeHTML(String(it.sec.section))} · ${this._formatClock(it.from)}</small></div>`;
+              return `<div class="gp-block ${dur < 60 ? 'short' : ''}" style="top:${top.toFixed(2)}%;height:${h.toFixed(2)}%;--gp-c:${color};--gp-rgb:${this._hexToRgb(color)}" title="${this._escapeHTML(title)}"><b>${this._escapeHTML(it.sec.name)}</b><small>${this._escapeHTML(String(it.sec.section))}</small></div>`;
             }).join('');
             return `<div class="gp-col">${blocks}</div>`;
           }).join('');
