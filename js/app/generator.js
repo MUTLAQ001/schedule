@@ -105,6 +105,7 @@ Object.assign(QU_ScheduleApp, {
           const includeClosedToggleHTML = `<div class="settings-item gen-closed-toggle"><div class="settings-item-label"><span>تضمين الشعب المغلقة</span><small>اعتبارها خياراً عند بناء الجدول رغم أنها مغلقة حالياً</small></div><label class="toggle-switch"><input type="checkbox" id="gen-include-closed"${includeClosed ? ' checked' : ''}><span class="slider"></span></label></div>`;
           const coursesHTML = `${includeClosedToggleHTML}<div class="gen-select-bar"><span class="gen-count" id="gen-course-count"></span><button type="button" class="gen-mini-btn" id="gen-courses-all"><i class="ph ph-checks"></i>الكل</button><button type="button" class="gen-mini-btn" id="gen-courses-none"><i class="ph ph-prohibit"></i>لا شيء</button></div><div class="gen-course-grid" id="gen-courses">${buildCourseCardsHTML()}</div>`;
           const modesHTML = `<div class="gen-options" id="gen-options">
+<div class="gen-option gen-option-quick ${saved.mode === 'quick' ? 'selected' : ''}" data-mode="quick"><i class="ph ph-lightning"></i><div><div class="g-title">الوضع السريع <span class="gen-quick-badge">الأسرع</span></div><div class="g-desc">ينزّل المقرر واللي يتبع له مثل طريقة الإضافة بموقع الجامعة</div></div></div>
 <div class="gen-option ${(saved.mode || 'any') === 'any' ? 'selected' : ''}" data-mode="any"><i class="ph ph-shuffle"></i><div><div class="g-title">أي جدول متاح</div><div class="g-desc">تركيبة خالية من التعارض</div></div></div>
 <div class="gen-option ${saved.mode === 'late' ? 'selected' : ''}" data-mode="late"><i class="ph ph-sun-horizon"></i><div><div class="g-title">بدون محاضرات مبكرة</div><div class="g-desc">تفضيل الشعب المتأخرة صباحاً</div></div></div>
 <div class="gen-option ${saved.mode === 'compact' ? 'selected' : ''}" data-mode="compact"><i class="ph ph-arrows-in-line-vertical"></i><div><div class="g-title">أقل فراغات</div><div class="g-desc">تقليل الفجوات بين المحاضرات</div></div></div>
@@ -275,32 +276,93 @@ Object.assign(QU_ScheduleApp, {
             this._showGeneratedPreview(solutions, 0, note ? note + ' ' + exNote : exNote, prefs);
           });
         },
+        _previewGridHTML(sol) {
+          const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+          const items = [];
+          sol.forEach(s => (s.timeSlots || []).forEach(t => items.push({ sec: s, day: t.day, from: this._toMin(t.start), to: this._toMin(t.end) })));
+          if (!items.length) return '<div class="gen-grid-empty"><i class="ph ph-calendar-x"></i>لا توجد أوقات محاضرات لعرضها في هذه التركيبة.</div>';
+          const used = new Set(items.map(i => i.day));
+          const days = [0, 1, 2, 3, 4].concat([5, 6].filter(d => used.has(d)));
+          let min = Math.floor(Math.min(...items.map(i => i.from)) / 60) * 60;
+          let max = Math.ceil(Math.max(...items.map(i => i.to)) / 60) * 60;
+          if (max - min < 240) max = min + 240;
+          const span = max - min;
+          const rowsCount = Math.round(span / 60);
+          const axis = Array.from({ length: rowsCount }, (_, i) => `<div class="gp-hour"><span>${this._formatClock(min + i * 60)}</span></div>`).join('');
+          const head = `<div class="gp-corner"></div>` + days.map(d => `<div class="gp-day ${used.has(d) ? '' : 'free'}">${dayNames[d]}</div>`).join('');
+          const cols = days.map(d => {
+            const dayItems = items.filter(i => i.day === d).sort((a, b) => a.from - b.from);
+            if (!dayItems.length) return `<div class="gp-col free"><span class="gp-free">يوم فاضي</span></div>`;
+            const blocks = dayItems.map(it => {
+              const color = this.state.groupedCourses[it.sec.code]?.color || '#8b5cf6';
+              const top = ((it.from - min) / span) * 100;
+              const h = ((it.to - it.from) / span) * 100;
+              const dur = it.to - it.from;
+              const type = this._canonType(it.sec.type);
+              const title = `${it.sec.name} — ${type} — شعبة ${it.sec.section} — ${this._formatClock(it.from)} إلى ${this._formatClock(it.to)}${it.sec.instructor ? ' — ' + it.sec.instructor : ''}`;
+              return `<div class="gp-block ${dur < 60 ? 'short' : ''}" style="top:${top.toFixed(2)}%;height:${h.toFixed(2)}%;--gp-c:${color};--gp-rgb:${this._hexToRgb(color)}" title="${this._escapeHTML(title)}"><b>${this._escapeHTML(it.sec.name)}</b><small>${this._escapeHTML(String(it.sec.section))} · ${this._formatClock(it.from)}</small></div>`;
+            }).join('');
+            return `<div class="gp-col">${blocks}</div>`;
+          }).join('');
+          return `<div class="gen-grid-wrap custom-scrollbar"><div class="gen-grid" style="--gp-days:${days.length};--gp-rows:${rowsCount}"><div class="gp-head">${head}</div><div class="gp-body"><div class="gp-axis">${axis}</div>${cols}</div></div></div>`;
+        },
         _showGeneratedPreview(solutions, index, note, prefs) {
-          const sol = solutions[index % solutions.length];
-          const daySet = new Set(); let weeklyMin = 0; let earliest = 24 * 60;
-          sol.forEach(s => (s.timeSlots || []).forEach(t => { daySet.add(t.day); const st = this._toMin(t.start); weeklyMin += this._toMin(t.end) - st; if (st < earliest) earliest = st; }));
-          const gaps = this._solutionGaps(sol);
-          const rows = sol.slice().sort((a, b) => a.name.localeCompare(b.name, 'ar') || this._typeRank(this._canonType(a.type)) - this._typeRank(this._canonType(b.type))).map(s => {
+          const total = solutions.length;
+          let idx = ((index % total) + total) % total;
+          let view = 'grid';
+          const esc = s => this._escapeHTML(s);
+          const statsHTML = (sol) => {
+            const daySet = new Set(); let earliest = 24 * 60;
+            sol.forEach(s => (s.timeSlots || []).forEach(t => { daySet.add(t.day); const st = this._toMin(t.start); if (st < earliest) earliest = st; }));
+            const gaps = this._solutionGaps(sol);
+            const startText = earliest === 24 * 60 ? 'غير محدد' : this._formatClock(earliest);
+            return `<div class="gen-summary-stats"><span class="stat-chip"><i class="ph ph-calendar-blank"></i>${daySet.size} أيام دوام</span><span class="stat-chip"><i class="ph ph-clock"></i>يبدأ ${startText}</span><span class="stat-chip"><i class="ph ph-hourglass-medium"></i>فراغات ${Math.round(gaps / 6) / 10}س</span><span class="stat-chip"><i class="ph ph-stack"></i>${sol.length} شعبة</span></div>`;
+          };
+          const rowsHTML = (sol) => sol.slice().sort((a, b) => a.name.localeCompare(b.name, 'ar') || this._typeRank(this._canonType(a.type)) - this._typeRank(this._canonType(b.type))).map(s => {
             const color = this.state.groupedCourses[s.code]?.color || 'var(--color-primary)';
             const wanted = (prefs.instructors || {})[this._instKeyOf(s)];
             const star = wanted && wanted.includes((s.instructor || '').trim()) ? ' <i class="ph-fill ph-star" style="color:var(--color-warning);font-size:0.7rem;"></i>' : '';
             const t = this._canonType(s.type);
-            const tag = `<span class="g-type ${this._typeCls(t)}">${this._escapeHTML(t)}</span>`;
-            return `<div class="gen-summary-row"><span class="color-dot" style="background:${color}"></span><div class="g-info"><div class="g-name">${this._escapeHTML(s.name)} ${tag}</div><div class="g-meta">${this._escapeHTML(s.instructor || 'غير محدد')}${star}</div></div><span class="g-sec">شعبة ${this._escapeHTML(s.section)}</span></div>`;
+            const tag = `<span class="g-type ${this._typeCls(t)}">${esc(t)}</span>`;
+            return `<div class="gen-summary-row"><span class="color-dot" style="background:${color}"></span><div class="g-info"><div class="g-name">${esc(s.name)} ${tag}</div><div class="g-meta">${esc(s.instructor || 'غير محدد')}${star}</div></div><span class="g-sec">شعبة ${esc(s.section)}</span></div>`;
           }).join('');
-          const stats = `<div class="gen-summary-stats"><span class="stat-chip"><i class="ph ph-calendar-blank"></i>${daySet.size} أيام دوام</span><span class="stat-chip"><i class="ph ph-clock"></i>يبدأ ${this._formatClock(earliest)}</span><span class="stat-chip"><i class="ph ph-hourglass-medium"></i>فراغات ${Math.round(gaps / 6) / 10}س</span><span class="stat-chip"><i class="ph ph-stack"></i>${sol.length} شعبة</span></div>`;
           const noteHTML = note ? `<div class="gen-note"><i class="ph-fill ph-warning"></i>${note}</div>` : '';
+          const bodyHTML = () => {
+            const sol = solutions[idx];
+            const nav = total > 1
+              ? `<div class="gen-nav"><button type="button" class="gen-nav-btn" id="gen-prev" aria-label="التركيبة السابقة"><i class="ph ph-caret-right"></i></button><span class="gen-nav-count">تركيبة <b>${idx + 1}</b> من ${total}</span><button type="button" class="gen-nav-btn" id="gen-next" aria-label="التركيبة التالية"><i class="ph ph-caret-left"></i></button></div>`
+              : `<div class="gen-alt-count">تركيبة واحدة متاحة</div>`;
+            const tabs = `<div class="gen-view-tabs" role="tablist"><button type="button" class="gvt-btn ${view === 'grid' ? 'active' : ''}" data-view="grid"><i class="ph ph-squares-four"></i>معاينة الجدول</button><button type="button" class="gvt-btn ${view === 'list' ? 'active' : ''}" data-view="list"><i class="ph ph-list-bullets"></i>الشعب</button></div>`;
+            const body = view === 'grid' ? this._previewGridHTML(sol) : rowsHTML(sol);
+            return `${noteHTML}${nav}${statsHTML(sol)}${tabs}<div class="gen-view-body">${body}</div>`;
+          };
+          const wire = () => {
+            const root = document.getElementById('gen-preview-body');
+            if (!root) return;
+            const go = step => { idx = (idx + step + total) % total; this._vibrate(8); render(); };
+            root.querySelector('#gen-prev')?.addEventListener('click', () => go(-1));
+            root.querySelector('#gen-next')?.addEventListener('click', () => go(1));
+            root.querySelectorAll('.gvt-btn').forEach(b => b.addEventListener('click', () => { view = b.dataset.view; render(); }));
+          };
+          const render = () => {
+            const root = document.getElementById('gen-preview-body');
+            if (!root) return;
+            root.innerHTML = bodyHTML();
+            root.scrollTop = 0;
+            wire();
+          };
           Swal.fire({
-            title: `جدول مقترح`,
-            html: `<div class="gen-summary custom-scrollbar">${noteHTML}${stats}${rows}<div class="gen-alt-count">تركيبة ${(index % solutions.length) + 1} من ${solutions.length}</div></div>`,
-            width: 560,
-            showCancelButton: true, showDenyButton: solutions.length > 1,
+            title: total > 1 ? 'اختر جدولك المقترح' : 'جدول مقترح',
+            html: `<div class="gen-summary custom-scrollbar" id="gen-preview-body">${bodyHTML()}</div>`,
+            width: 620,
+            showCancelButton: true,
             confirmButtonText: '<i class="ph ph-check"></i> اعتماد الجدول',
-            denyButtonText: '<i class="ph ph-arrows-clockwise"></i> تركيبة أخرى',
-            cancelButtonText: 'إلغاء'
+            cancelButtonText: 'إلغاء',
+            customClass: { popup: 'swal2-popup gen-preview-swal' },
+            didOpen: () => wire()
           }).then(r => {
-            if (r.isDenied) { this._showGeneratedPreview(solutions, index + 1, note, prefs); return; }
             if (!r.isConfirmed) return;
+            const sol = solutions[idx];
             const time = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' });
             this._addSchedule(`مقترح ${time}`, false);
             const sched = this.state.schedules[this.state.schedules.length - 1];
