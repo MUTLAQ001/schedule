@@ -120,6 +120,16 @@ Object.assign(QU_ScheduleApp, {
           if (t === 'تمارين') return 'ex';
           return 'other';
         },
+        _qaHours(s) { const t = String(s.hours == null ? '' : s.hours).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)); const n = parseInt(t, 10); return isNaN(n) ? 0 : n; },
+        _qaCompanion(s) { const t = String(s.type || ''); if (/نظري|نظرى|محاضرة/.test(t)) return false; return /عملي|عمليه|عملية|معمل|مختبر|تطبيق|تدريب|تمارين|تمرين|مناقشة|سكشن/.test(t) || this._qaHours(s) === 0; },
+        _qaAnchorOf(sec) {
+          const ordered = this.state.groupedCourses[sec.code]?.sections || [];
+          const i = ordered.findIndex(x => x.uniqueId === sec.uniqueId);
+          if (i === -1) return null;
+          let p = i - 1;
+          while (p >= 0 && this._qaCompanion(ordered[p])) p--;
+          return p >= 0 ? ordered[p] : null;
+        },
         _bundleKeyOf(sec) { return this.state.linkedCourseGroups[sec.name] ? 'n:' + sec.name : 'c:' + sec.code; },
         _instKeyOf(sec) { return this._bundleKeyOf(sec) + '|' + this._canonType(sec.type); },
       });
