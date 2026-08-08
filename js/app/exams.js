@@ -82,7 +82,9 @@ Object.assign(QU_ScheduleApp, {
           }
           const pid = parseInt(periodId, 10);
           if (!Number.isFinite(pid) || pid <= 0) return null;
-          const day = Math.ceil(pid / this._examPeriodsPerDay());
+          const day = pid > 50 ? Math.ceil((pid - 50) / 3)
+            : pid > 30 ? 5 + Math.ceil((pid - 30) / 2)
+              : 5 + Math.ceil(pid / this._examPeriodsPerDay());
           return { key: `p:${day}`, label: '', tier: 1, order: day };
         },
         _sameDayExamPeers(section, selected) {
