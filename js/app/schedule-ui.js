@@ -89,8 +89,11 @@ Object.assign(QU_ScheduleApp, {
           const selectedDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
           if (Object.keys(this.state.groupedCourses).length > 0 && visibleCourses.length === 0) return term ? `<div class="no-data"><i class="ph ph-magnifying-glass"></i><h4>لا توجد نتائج</h4><p>جرب كلمات بحث مختلفة.</p></div>` : `<div class="no-data"><i class="ph ph-eye-slash"></i><h4>لا توجد مقررات ظاهرة</h4><p>يمكنك إظهار المقررات من الإعدادات.</p></div>`;
           if (visibleCourses.length === 0) return '';
+          const hideClosed = this.state.userSettings.hideClosedCourses;
           return visibleCourses.sort((a, b) => a.code.localeCompare(b.code)).map((group, i) => {
-            let sectionsToDisplay = this.state.userSettings.hideClosedCourses ? group.sections.filter(section => !section.status.includes('مغلقة')) : group.sections;
+            const allClosed = group.sections.length > 0 && group.sections.every(section => this._isClosedStatus(section.status));
+            const showClosedOnly = hideClosed && allClosed;
+            let sectionsToDisplay = (hideClosed && !allClosed) ? group.sections.filter(section => !this._isClosedStatus(section.status)) : group.sections;
             const matchedIds = term ? sectionMatchIds.get(group.code) : null;
             if (matchedIds) sectionsToDisplay = sectionsToDisplay.filter(section => matchedIds.has(section.uniqueId));
             if (hasFilters) sectionsToDisplay = sectionsToDisplay.filter(section => this._sectionPassesFilters(section, selectedDetails, selectedSections));
@@ -98,7 +101,7 @@ Object.assign(QU_ScheduleApp, {
             const sectionsHTML = sectionsToDisplay.map(section => {
               const isNoTime = section.time === 'غير محدد';
               const isOpen = section.status.includes('مفتوحة');
-              const statusIndicatorHTML = !this.state.userSettings.hideClosedCourses ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
+              const statusIndicatorHTML = (!hideClosed || showClosedOnly) ? `<span class="section-status-dot ${isOpen ? 'open' : 'closed'}"></span>` : ``;
               const isFav = this._isFavInstructor(section.instructor);
               const favHTML = isFav ? '<span class="sec-fav" title="محاضر مفضل" aria-hidden="true"><i class="ph-fill ph-star"></i></span>' : '';
               const aria = `شعبة ${section.section} ${this._typeLabel(section.type)} ${section.instructor || ''}${isFav ? ' — محاضر مفضل' : ''}`;
@@ -107,7 +110,7 @@ ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHT
             }).join('');
             const note = (this.state.userSettings.courseNotes || {})[group.code];
             const noteFlag = note ? `<span class="course-note-flag" title="${this._escapeHTML(note)}"><i class="ph-fill ph-note"></i>ملاحظة</span>` : '';
-            const countText = matchedIds ? sectionsToDisplay.length + ' نتيجة مطابقة' : (hasFilters ? sectionsToDisplay.length + ' شعبة بعد الترشيح' : sectionsToDisplay.length + ' شعب متاحة');
+            const countText = matchedIds ? sectionsToDisplay.length + ' نتيجة مطابقة' : (hasFilters ? sectionsToDisplay.length + ' شعبة بعد الترشيح' : (showClosedOnly ? this._sectionsWord(sectionsToDisplay.length) + ' · كلها مغلقة' : sectionsToDisplay.length + ' شعب متاحة'));
             const autoOpen = !!(term || hasFilters);
             return `<div class="course-item ${autoOpen ? 'open qs-auto-open' : ''}" data-course-code="${this._escapeHTML(group.code)}" style="animation-delay: ${i * 30}ms"><div class="course-item-header" role="button" tabindex="0" aria-expanded="${autoOpen}"><span class="color-dot" style="background-color: ${group.color};"></span><div class="course-info"><h3>${this._escapeHTML(group.name)} (${this._escapeHTML(group.code)})${noteFlag}</h3><p>${countText}</p></div><i class="ph ph-caret-down toggle-icon"></i></div><div class="sections-wrapper"><div class="sections-grid">${sectionsHTML}</div></div></div>`;
           }).join('');
