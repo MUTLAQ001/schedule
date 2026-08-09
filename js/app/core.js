@@ -15,7 +15,7 @@
           areAllExpanded: false,
           history: [],
           filters: { days: [], period: 'any', noConflict: false, favOnly: false },
-          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, mergeCoursesData: false, highPerformance: false, timeAxisPosition: 'left', sidebarPosition: 'left', customLayout: null, quickAddMode: false, courseNotes: {}, favInstructors: [], creditGpa: null, creditTermType: 'regular', creditGraduating: false }
+          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, mergeCoursesData: false, highPerformance: false, timeAxisPosition: 'left', sidebarPosition: 'left', customLayout: null, quickAddMode: true, quickAddMigrated: false, courseNotes: {}, favInstructors: [], creditGpa: null, creditTermType: 'regular', creditGraduating: false }
         },
         constants: {
           PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316', red: '#ef4444' },
