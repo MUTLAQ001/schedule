@@ -66,6 +66,18 @@ Object.assign(QU_ScheduleApp, {
           const label = daysLeft <= 10 ? `بعد ${daysLeft} أيام` : `بعد ${daysLeft} يوماً`;
           return { text: label, cls: daysLeft <= 7 ? 'soon' : '', icon: 'ph-hourglass-low' };
         },
+        _examPeriodsOverlap(a, b) {
+          if (!a || !b) return false;
+          if (String(a) === String(b)) return true;
+          const ia = this._getExamDateInfo(a), ib = this._getExamDateInfo(b);
+          if (!ia || !ib || !ia.start || !ib.start) return false;
+          return ia.start < ib.end && ia.end > ib.start;
+        },
+        _examOverlapMinutes(a, b) {
+          const ia = this._getExamDateInfo(a), ib = this._getExamDateInfo(b);
+          if (!ia || !ib || !ia.start || !ib.start) return 0;
+          return Math.max(0, Math.round((Math.min(ia.end, ib.end) - Math.max(ia.start, ib.start)) / 60000));
+        },
         _examDayOf(periodId, info) {
           const data = info !== undefined ? info : this._getExamDateInfo(periodId);
           if (data && data.start) {
@@ -91,7 +103,7 @@ Object.assign(QU_ScheduleApp, {
           return selected.filter(s => {
             if (!s.examPeriodId) return false;
             if (s.code === section.code || s.name === section.name) return false;
-            if (String(s.examPeriodId) === String(section.examPeriodId)) return false;
+            if (this._examPeriodsOverlap(section.examPeriodId, s.examPeriodId)) return false;
             const other = this._examDayOf(s.examPeriodId);
             if (!other || other.key !== day.key) return false;
             if (seen.has(s.code)) return false;
