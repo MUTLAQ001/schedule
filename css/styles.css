@@ -11233,17 +11233,22 @@ input.crf-input[type="number"] {
 }
 
 .gen-option-quick {
-  background: linear-gradient(135deg, rgba(var(--rgb-primary), 0.10), rgba(var(--rgb-warning), 0.06));
-  border-color: rgba(var(--rgb-primary), 0.35);
+  background: linear-gradient(135deg, rgba(var(--rgb-success), 0.12), rgba(var(--rgb-success), 0.04));
+  border-color: rgba(var(--rgb-success), 0.35);
+}
+
+.gen-option-quick:hover {
+  border-color: rgba(var(--rgb-success), 0.6);
 }
 
 .gen-option-quick.selected {
-  border-color: var(--color-primary);
-  background: linear-gradient(135deg, rgba(var(--rgb-primary), 0.18), rgba(var(--rgb-warning), 0.10));
+  border-color: var(--color-success);
+  background: linear-gradient(135deg, rgba(var(--rgb-success), 0.2), rgba(var(--rgb-success), 0.07));
+  box-shadow: var(--surface-sheen), 0 8px 20px -14px rgba(var(--rgb-success), 0.8);
 }
 
 .gen-option-quick i {
-  color: var(--color-warning);
+  color: var(--color-success);
 }
 
 .gen-quick-badge {
@@ -11253,8 +11258,8 @@ input.crf-input[type="number"] {
   border-radius: 999px;
   font-size: 0.6rem;
   font-weight: 700;
-  background: rgba(var(--rgb-warning), 0.16);
-  color: var(--color-warning);
+  background: rgba(var(--rgb-success), 0.16);
+  color: var(--color-success);
   vertical-align: middle;
 }
 
