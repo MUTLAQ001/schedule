@@ -23,10 +23,9 @@ Object.assign(QU_ScheduleApp, {
         _getExamDateInfo(periodId) {
           if (!periodId) return null;
           if (!this._examDateCache) this._examDateCache = {};
-          const mode = this.state.userSettings.examScheduleMode;
-          const key = `${mode}-${periodId}`;
+          const key = String(periodId);
           if (this._examDateCache[key] !== undefined) return this._examDateCache[key];
-          const raw = this.constants.EXAM_DATA[mode][periodId];
+          const raw = this.constants.EXAM_DATA[periodId];
           let info = null;
           if (raw) {
             const m = raw.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})\s*\((\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})\)/);
@@ -67,9 +66,6 @@ Object.assign(QU_ScheduleApp, {
           const label = daysLeft <= 10 ? `بعد ${daysLeft} أيام` : `بعد ${daysLeft} يوماً`;
           return { text: label, cls: daysLeft <= 7 ? 'soon' : '', icon: 'ph-hourglass-low' };
         },
-        _examPeriodsPerDay() {
-          return this.state.userSettings.examScheduleMode === '2' ? 2 : 3;
-        },
         _examDayOf(periodId, info) {
           const data = info !== undefined ? info : this._getExamDateInfo(periodId);
           if (data && data.start) {
@@ -84,7 +80,7 @@ Object.assign(QU_ScheduleApp, {
           if (!Number.isFinite(pid) || pid <= 0) return null;
           const day = pid > 50 ? Math.ceil((pid - 50) / 3)
             : pid > 30 ? 5 + Math.ceil((pid - 30) / 2)
-              : 5 + Math.ceil(pid / this._examPeriodsPerDay());
+              : 5 + Math.ceil(pid / 3);
           return { key: `p:${day}`, label: '', tier: 1, order: day };
         },
         _sameDayExamPeers(section, selected) {
@@ -177,7 +173,7 @@ Object.assign(QU_ScheduleApp, {
         },
         _examApproxNote(groups) {
           return groups.some(g => g.tier === 1)
-            ? `<p class="edw-foot"><i class="ph ph-info"></i> الأيام محسوبة من ترتيب الفترات (${this._examPeriodsPerDay()} فترات لكل يوم). بدّل نظام الفترات من الأعلى إذا كان مختلفاً.</p>`
+            ? `<p class="edw-foot"><i class="ph ph-info"></i> الأيام محسوبة من ترتيب الفترات (3 فترات لكل يوم) لأن تواريخ هذي الفترات غير مسجّلة.</p>`
             : '';
         },
         _examDataNoteHTML() {
