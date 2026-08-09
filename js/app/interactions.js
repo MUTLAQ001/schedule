@@ -376,8 +376,7 @@ ${noteBox}${altsBlock}
           if (panel) panel.classList.toggle('open', !!this._filterPanelOpen);
         },
         _examDataIsEmpty() {
-          const d = this.constants.EXAM_DATA || {};
-          return Object.keys(d['3'] || {}).length === 0 && Object.keys(d['2'] || {}).length === 0;
+          return Object.keys(this.constants.EXAM_DATA || {}).length === 0;
         },
         _showShortcutsModal() {
           const rows = [
