@@ -64,7 +64,8 @@ Object.assign(QU_ScheduleApp, {
           });
         },
         _visibleSectionsOf(group) {
-          const secs = this.state.userSettings.hideClosedCourses ? group.sections.filter(sec => !sec.status.includes('مغلقة')) : group.sections;
+          const open = this.state.userSettings.hideClosedCourses ? group.sections.filter(sec => !this._isClosedStatus(sec.status)) : group.sections;
+          const secs = open.length ? open : group.sections;
           return secs.slice().sort((a, b) => a.section.localeCompare(b.section, undefined, { numeric: true }));
         },
         _courseNavigate(dir) {
