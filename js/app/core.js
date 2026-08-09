@@ -15,7 +15,7 @@
           areAllExpanded: false,
           history: [],
           filters: { days: [], period: 'any', noConflict: false, favOnly: false },
-          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, mergeCoursesData: false, examScheduleMode: '3', highPerformance: false, timeAxisPosition: 'left', sidebarPosition: 'left', customLayout: null, quickAddMode: false, courseNotes: {}, favInstructors: [], creditGpa: null, creditTermType: 'regular', creditGraduating: false }
+          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, mergeCoursesData: false, highPerformance: false, timeAxisPosition: 'left', sidebarPosition: 'left', customLayout: null, quickAddMode: false, courseNotes: {}, favInstructors: [], creditGpa: null, creditTermType: 'regular', creditGraduating: false }
         },
         constants: {
           PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316', red: '#ef4444' },
@@ -59,8 +59,7 @@
               '60': '14/7/1448 (8:00 - 10:00)', '61': '14/7/1448 (10:30 - 12:30)', '62': '14/7/1448 (13:00 - 15:00)',
               '63': '15/7/1448 (8:00 - 10:00)', '64': '15/7/1448 (10:30 - 12:30)', '65': '15/7/1448 (13:00 - 15:00)'
             };
-            const ALL_PERIODS = { ...MAIN_PERIODS, ...EXTENDED_PERIODS, ...EARLY_PERIODS };
-            return { '3': ALL_PERIODS, '2': ALL_PERIODS };
+            return { ...MAIN_PERIODS, ...EXTENDED_PERIODS, ...EARLY_PERIODS };
           })()
         },
         dom: {},
