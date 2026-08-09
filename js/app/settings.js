@@ -14,6 +14,11 @@ Object.assign(QU_ScheduleApp, {
             this.state.userSettings.highPerformance = false;
           }
           if (!this.state.userSettings.customPalette || typeof this.state.userSettings.customPalette !== 'object') { this.state.userSettings.customPalette = {}; }
+          if (!this.state.userSettings.quickAddMigrated) {
+            this.state.userSettings.quickAddMode = true;
+            this.state.userSettings.quickAddMigrated = true;
+            try { this._saveSettings(); } catch (e) { }
+          }
           this._applySettings();
         },
         _saveSettings() { if (this.state.isDemoMode) return; this.state.userSettings.hiddenCourseCodes = Array.from(this.state.hiddenCourseCodes); localStorage.setItem(this.constants.STORAGE_KEYS.SETTINGS, JSON.stringify(this.state.userSettings)); },
