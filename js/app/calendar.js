@@ -111,7 +111,7 @@ Object.assign(QU_ScheduleApp, {
           const isConflicted = conflictDetails.length > 0;
           const conflictBanner = this._buildConflictBanner(conflictDetails);
           const examDayBanner = isSelected ? '' : this._buildExamDayNotice(section, tempSelectedDetails);
-          const courseSections = group.sections.filter(s => !this.state.userSettings.hideClosedCourses || !s.status.includes('مغلقة')).sort((a, b) => a.section.localeCompare(b.section, undefined, { numeric: true }));
+          const courseSections = this._visibleSectionsOf(group);
           const currentIndex = courseSections.findIndex(s => s.uniqueId === section.uniqueId);
           const visibleGroups = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code) && this._visibleSectionsOf(g).length > 0).sort((a, b) => a.code.localeCompare(b.code));
           const courseIdx = visibleGroups.findIndex(g => g.code === group.code);
