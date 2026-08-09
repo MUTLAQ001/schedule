@@ -1,4 +1,4 @@
-const CACHE = 'qu-schedule-v14';
+const CACHE = 'qu-schedule-v15';
 
 const CORE = [
   './',
