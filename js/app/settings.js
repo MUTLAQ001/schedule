@@ -13,7 +13,6 @@ Object.assign(QU_ScheduleApp, {
           if (!parsed || typeof parsed.highPerformance !== 'boolean') {
             this.state.userSettings.highPerformance = false;
           }
-          if (!this.state.userSettings.examScheduleMode) { this.state.userSettings.examScheduleMode = '3'; }
           if (!this.state.userSettings.customPalette || typeof this.state.userSettings.customPalette !== 'object') { this.state.userSettings.customPalette = {}; }
           this._applySettings();
         },
@@ -258,15 +257,6 @@ Object.assign(QU_ScheduleApp, {
           const perfToggle = this.dom.settingsModal.querySelector('#high-perf-toggle');
           if (perfToggle) { perfToggle.checked = this.state.userSettings.highPerformance; perfToggle.onchange = e => { this.state.userSettings.highPerformance = e.target.checked; this._saveSettings(); this._applySettings(); }; }
           if (typeof window.QU_syncStarfield === 'function') window.QU_syncStarfield();
-
-          if (this.dom.examScheduleToggleBtn) {
-            const textSpan = this.dom.examScheduleToggleBtn.querySelector('span');
-            if (textSpan) textSpan.textContent = this.state.userSettings.examScheduleMode === '3' ? '3 فترات' : 'فترتين';
-          }
-          if (this.dom.mobileMyExamsPeriodToggle) {
-            const mobileTextSpan = this.dom.mobileMyExamsPeriodToggle.querySelector('span');
-            if (mobileTextSpan) mobileTextSpan.textContent = this.state.userSettings.examScheduleMode === '3' ? '3 فترات' : 'فترتين';
-          }
         },
         _populateAccentColorPicker() {
           const picker = this.dom.settingsModal.querySelector('#accent-color-picker'); if (!picker) return;
