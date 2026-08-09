@@ -33,7 +33,7 @@ Object.assign(QU_ScheduleApp, {
           });
         },
         _populateDOMElements() {
-          const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-my-exams-period-toggle', 'mobile-dynamic-action-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'exam-schedule-toggle-btn', 'quick-visibility-wrapper', 'quick-visibility-toggle-btn', 'quick-visibility-content', 'quick-visibility-swap-btn', 'quick-visibility-bulk', 'quick-visibility-show-all-btn', 'quick-visibility-hide-all-btn', 'expand-collapse-btn', 'share-schedule-btn', 'export-exams-ics-btn', 'mobile-export-exams-ics-btn'];
+          const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-dynamic-action-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'quick-visibility-wrapper', 'quick-visibility-toggle-btn', 'quick-visibility-content', 'quick-visibility-swap-btn', 'quick-visibility-bulk', 'quick-visibility-show-all-btn', 'quick-visibility-hide-all-btn', 'expand-collapse-btn', 'share-schedule-btn', 'export-exams-ics-btn', 'mobile-export-exams-ics-btn'];
           ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
           this.dom.mobileDownloadImgBtn = null;
           if (isMobile) { this.dom.tabButtons = document.querySelectorAll('#mobile-courses-view .tab-btn'); this.dom.tabContents = document.querySelectorAll('#mobile-courses-view .tab-content'); this.dom.mobileNavButtons = document.querySelectorAll('.mobile-nav-btn'); this.dom.mobileViewContents = document.querySelectorAll('.mobile-view-content'); }
@@ -146,35 +146,6 @@ Object.assign(QU_ScheduleApp, {
                 this.state.searchTerm = '';
                 this._renderCoursesList();
               }
-            });
-          }
-
-          const updateExamMode = (mode) => {
-            this.state.userSettings.examScheduleMode = mode;
-            const textSpan = this.dom.examScheduleToggleBtn?.querySelector('span');
-            if (textSpan) textSpan.textContent = mode === '3' ? '3 فترات' : 'فترتين';
-
-            const mobileTextSpan = this.dom.mobileMyExamsPeriodToggle?.querySelector('span');
-            if (mobileTextSpan) mobileTextSpan.textContent = mode === '3' ? '3 فترات' : 'فترتين';
-
-            this._saveSettings();
-            const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
-            const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
-            this._renderFinalExams(selectedCourseDetails);
-          };
-
-          if (this.dom.examScheduleToggleBtn) {
-            this.dom.examScheduleToggleBtn.addEventListener('click', () => {
-              const currentMode = this.state.userSettings.examScheduleMode;
-              const newMode = currentMode === '3' ? '2' : '3';
-              updateExamMode(newMode);
-            });
-          }
-          if (this.dom.mobileMyExamsPeriodToggle) {
-            this.dom.mobileMyExamsPeriodToggle.addEventListener('click', () => {
-              const currentMode = this.state.userSettings.examScheduleMode;
-              const newMode = currentMode === '3' ? '2' : '3';
-              updateExamMode(newMode);
             });
           }
 
