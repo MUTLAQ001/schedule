@@ -45,14 +45,14 @@ Object.assign(QU_ScheduleApp, {
             for (let j = i + 1; j < selectedCourses.length; j++) {
               const cA = selectedCourses[i], cB = selectedCourses[j]; const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || [];
               if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) { msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`); msgB.push(`تعارض وقت محاضرة مع ${cA.name} (${cA.code})`); }
-              if (cA.code !== cB.code && cA.examPeriodId && cB.examPeriodId && cA.examPeriodId === cB.examPeriodId) { msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`); msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`); }
+              if (cA.code !== cB.code && cA.examPeriodId && cB.examPeriodId && this._examPeriodsOverlap(cA.examPeriodId, cB.examPeriodId)) { msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`); msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`); }
               if (msgA.length > 0) conflictMap.set(cA.uniqueId, msgA); if (msgB.length > 0) conflictMap.set(cB.uniqueId, msgB);
             }
           }
           return conflictMap;
         },
         _isSectionConflicted(section, selectedCourses) {
-          return selectedCourses.some(sel => { if (sel.uniqueId === section.uniqueId) return false; const lectureConflict = section.timeSlots.some(sA => sel.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start)); const examConflict = section.code !== sel.code && section.examPeriodId && sel.examPeriodId && section.examPeriodId === sel.examPeriodId; return lectureConflict || examConflict; });
+          return selectedCourses.some(sel => { if (sel.uniqueId === section.uniqueId) return false; const lectureConflict = section.timeSlots.some(sA => sel.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start)); const examConflict = section.code !== sel.code && section.examPeriodId && sel.examPeriodId && this._examPeriodsOverlap(section.examPeriodId, sel.examPeriodId); return lectureConflict || examConflict; });
         },
         _getConflictDetails(section, selectedCourses) {
           const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -65,8 +65,8 @@ Object.assign(QU_ScheduleApp, {
               const to = Math.min(this._toMin(sA.end), this._toMin(sB.end));
               out.push({ type: 'time', other: sel, day: dayNames[sA.day] || '', from, to, mins: to - from });
             }));
-            if (section.code !== sel.code && section.examPeriodId && sel.examPeriodId && section.examPeriodId === sel.examPeriodId) {
-              out.push({ type: 'exam', other: sel, period: section.examPeriodId });
+            if (section.code !== sel.code && section.examPeriodId && sel.examPeriodId && this._examPeriodsOverlap(section.examPeriodId, sel.examPeriodId)) {
+              out.push({ type: 'exam', other: sel, period: section.examPeriodId, otherPeriod: sel.examPeriodId, overlapMins: this._examOverlapMinutes(section.examPeriodId, sel.examPeriodId) });
             }
           });
           return out;
