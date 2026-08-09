@@ -23,7 +23,7 @@ Object.assign(QU_ScheduleApp, {
         _secOverlap(a, b) { return (a.timeSlots || []).some(x => (b.timeSlots || []).some(y => x.day === y.day && x.start < y.end && x.end > y.start)); },
         _secClash(a, b) {
           if (this._secOverlap(a, b)) return true;
-          if (a.code !== b.code && a.name !== b.name && a.examPeriodId && b.examPeriodId && a.examPeriodId === b.examPeriodId) return true;
+          if (a.code !== b.code && a.name !== b.name && a.examPeriodId && b.examPeriodId && this._examPeriodsOverlap(a.examPeriodId, b.examPeriodId)) return true;
           return false;
         },
         _expandLinked(secs, includeClosed = false) {
@@ -270,7 +270,7 @@ Object.assign(QU_ScheduleApp, {
                 let t = false, e = false;
                 oa.forEach(a => ob.forEach(b2 => {
                   if (this._secOverlap(a, b2)) t = true;
-                  if (a.code !== b2.code && a.name !== b2.name && a.examPeriodId && b2.examPeriodId && a.examPeriodId === b2.examPeriodId) { e = true; examPeriods.add(a.examPeriodId); }
+                  if (a.code !== b2.code && a.name !== b2.name && a.examPeriodId && b2.examPeriodId && this._examPeriodsOverlap(a.examPeriodId, b2.examPeriodId)) { e = true; examPeriods.add(a.examPeriodId); }
                 }));
                 if (!t && !e) return;
                 conf++;
