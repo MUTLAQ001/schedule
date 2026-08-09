@@ -115,7 +115,11 @@ Object.assign(QU_ScheduleApp, {
           if (!conflictDetails || !conflictDetails.length) return '';
           const rows = conflictDetails.map(c => {
             if (c.type === 'exam') {
-              return `<div class="cb-row"><span class="cb-badge exam"><i class="ph-fill ph-file-text"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(c.other.name)}<span class="cb-sec">شعبة ${this._escapeHTML(c.other.section)}</span></div><div class="cb-sub">نفس فترة الاختبار النهائي<i class="cb-dot"></i>الفترة ${this._escapeHTML(String(c.period))}</div></div></div>`;
+              const samePeriod = String(c.period) === String(c.otherPeriod);
+              const sub = samePeriod
+                ? `نفس فترة الاختبار النهائي<i class="cb-dot"></i>الفترة ${this._escapeHTML(String(c.period))}`
+                : `تداخل وقت الاختبار النهائي<i class="cb-dot"></i>الفترة ${this._escapeHTML(String(c.period))} مع ${this._escapeHTML(String(c.otherPeriod))}${c.overlapMins ? `<i class="cb-dot"></i><span class="cb-time">${this._formatDuration(c.overlapMins)}</span>` : ''}`;
+              return `<div class="cb-row"><span class="cb-badge exam"><i class="ph-fill ph-file-text"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(c.other.name)}<span class="cb-sec">شعبة ${this._escapeHTML(c.other.section)}</span></div><div class="cb-sub">${sub}</div></div></div>`;
             }
             return `<div class="cb-row"><span class="cb-badge time"><i class="ph-fill ph-clock"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(c.other.name)}<span class="cb-sec">شعبة ${this._escapeHTML(c.other.section)}</span></div><div class="cb-sub">${c.day}<i class="cb-dot"></i><span class="cb-time">${this._formatClock(c.from)} – ${this._formatClock(c.to)}</span><i class="cb-dot"></i>${this._formatDuration(c.mins)}</div></div></div>`;
           }).join('');
