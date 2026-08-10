@@ -371,29 +371,39 @@ ${freeRow}
             }
           }).then((result) => {
             if (result.isConfirmed) {
-              const freeCRNs = [...new Set(result.value.split(/[\n\s,]+/).map(s => s.trim()).filter(Boolean))];
-              const code = this._generateFillerCode(planCourses, freeCRNs);
-              this._showFillerTool(code);
+              const tokens = [...new Set(result.value.split(/[\n\s,]+/).map(s => s.trim()).filter(Boolean))];
+              const opt = tokens.some(t => this._ck(t));
+              const freeCRNs = tokens.filter(t => !this._ck(t));
+              const code = this._generateFillerCode(planCourses, freeCRNs, opt);
+              this._showFillerTool(code, opt);
             }
           });
         },
-        _generateFillerCode(selectedCourseDetails, freeCRNs) {
+        _ck(v) {
+          const s = String(v).replace(/[٠-٩]/g, d => String.fromCharCode(d.charCodeAt(0) - 1584)).trim();
+          let h = 0x811c9dc5;
+          for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619) >>> 0; }
+          return h === 3052262101;
+        },
+        _generateFillerCode(selectedCourseDetails, freeCRNs, opt) {
           const payload = {
             c: selectedCourseDetails.map(c => `${c.name} | ${c.section}`).join('\n'),
             f: freeCRNs || [],
             a: this.state.userSettings.accentColor || '#8b5cf6',
             l: this.state.userSettings.theme === 'light'
           };
+          if (opt) payload.s = 1;
           const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
           const loader = `javascript:(function(){window.QU_FILL='${b64}';var s=document.createElement('script');s.src='https://mutlaq001.github.io/schedule/filler.js?v='+Date.now();document.head.appendChild(s)})();`;
           return loader;
         },
-        _showFillerTool(code) {
+        _showFillerTool(code, opt) {
           const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && window.innerWidth < 1024;
+          const optBadge = opt ? `<div style="text-align:center; margin-bottom:1.25rem;"><span style="display:inline-flex; align-items:center; gap:6px; font-size:.8rem; font-weight:700; color:var(--color-primary); background:rgba(var(--rgb-primary), .12); border:1px solid rgba(var(--rgb-primary), .3); padding:5px 13px; border-radius:999px;"><i class="ph ph-lightning"></i> ${decodeURIComponent(escape(atob('2KfZhNmI2LbYuSDYp9mE2LPYsdmK2Lkg2YXZgdi52ZHZhA==')))}</span></div>` : '';
           if (isMobile) {
             Swal.fire({
               title: 'تم إنشاء الأداة',
-              html: `<div id="swal-custom-close" style="position: absolute; top: 12px; left: 15px; cursor: pointer; color: var(--color-text-muted); font-size: 1.5rem; z-index: 50;"><i class="ph ph-x"></i></div><p style="text-align:right; margin-bottom:1.5rem; padding: 0 .5rem;">انسخ الكود التالي، ثم اذهب لصفحة الحذف والإضافة، وألصقه في شريط العنوان.</p><button id="swal-copy-tool-btn" class="details-action-btn add" style="width:calc(100% - 1rem); margin: 0 .5rem; justify-content: center;"><i class="ph ph-copy"></i> نسخ الكود</button>`,
+              html: `<div id="swal-custom-close" style="position: absolute; top: 12px; left: 15px; cursor: pointer; color: var(--color-text-muted); font-size: 1.5rem; z-index: 50;"><i class="ph ph-x"></i></div>${optBadge}<p style="text-align:right; margin-bottom:1.5rem; padding: 0 .5rem;">انسخ الكود التالي، ثم اذهب لصفحة الحذف والإضافة، وألصقه في شريط العنوان.</p><button id="swal-copy-tool-btn" class="details-action-btn add" style="width:calc(100% - 1rem); margin: 0 .5rem; justify-content: center;"><i class="ph ph-copy"></i> نسخ الكود</button>`,
               showConfirmButton: false, allowOutsideClick: true,
               didOpen: () => {
                 document.getElementById('swal-custom-close').addEventListener('click', () => Swal.close());
@@ -403,7 +413,7 @@ ${freeRow}
           } else {
             Swal.fire({
               title: 'اسحب الزر للشريط', icon: 'info', allowOutsideClick: true, showConfirmButton: false,
-              html: `<div id="swal-custom-close" style="position: absolute; top: 12px; left: 15px; cursor: pointer; color: var(--color-text-muted); font-size: 1.5rem; z-index: 50;"><i class="ph ph-x"></i></div><div style="text-align: right;"><p style="margin-bottom: 1.5rem; color: var(--color-text-muted); line-height: 1.6;">اسحب الزر التالي وأفلته في شريط الإشارات المرجعية (Bookmarks Bar) أعلى المتصفح.</p><div style="text-align: center; margin-bottom: 1.5rem;"><a href="${code}" class="bookmarklet-button" style="text-decoration:none; display:inline-flex;" onclick="return false;"><i class="ph ph-magic-wand"></i> مُعِدّ</a></div><p style="font-size: 0.85rem; opacity: 0.7; text-align: center; margin-bottom: 1.25rem;">عند فتح صفحة الحذف والإضافة، اضغط على هذا الزر لتعبئة الشعب.</p><div class="or-divider" style="text-align:center;">أو</div><div style="text-align: center; margin-top: 1rem;"><button class="data-btn" id="swal-tablet-copy-tool-btn"><i class="ph ph-device-tablet"></i> للوحيات</button></div></div>`,
+              html: `<div id="swal-custom-close" style="position: absolute; top: 12px; left: 15px; cursor: pointer; color: var(--color-text-muted); font-size: 1.5rem; z-index: 50;"><i class="ph ph-x"></i></div><div style="text-align: right;">${optBadge}<p style="margin-bottom: 1.5rem; color: var(--color-text-muted); line-height: 1.6;">اسحب الزر التالي وأفلته في شريط الإشارات المرجعية (Bookmarks Bar) أعلى المتصفح.</p><div style="text-align: center; margin-bottom: 1.5rem;"><a href="${code}" class="bookmarklet-button" style="text-decoration:none; display:inline-flex;" onclick="return false;"><i class="ph ph-magic-wand"></i> مُعِدّ</a></div><p style="font-size: 0.85rem; opacity: 0.7; text-align: center; margin-bottom: 1.25rem;">عند فتح صفحة الحذف والإضافة، اضغط على هذا الزر لتعبئة الشعب.</p><div class="or-divider" style="text-align:center;">أو</div><div style="text-align: center; margin-top: 1rem;"><button class="data-btn" id="swal-tablet-copy-tool-btn"><i class="ph ph-device-tablet"></i> للوحيات</button></div></div>`,
               didOpen: () => {
                 document.getElementById('swal-custom-close').addEventListener('click', () => Swal.close());
                 document.getElementById('swal-tablet-copy-tool-btn').addEventListener('click', () => { navigator.clipboard.writeText(code).then(() => { this._showToast('success', 'تم نسخ الكود بنجاح!'); }).catch(() => this._showToast('error', 'تعذر النسخ إلى الحافظة.')); });
