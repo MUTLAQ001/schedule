@@ -74,9 +74,10 @@ function hasSec(row,sec){return Array.prototype.some.call(row.querySelectorAll('
 function sigOf(row){return Array.prototype.map.call(row.querySelectorAll('input'),function(i){return i.value}).join('')+''+row.innerHTML.length}
 async function waitApply(row,rSig,openSig){if(!MB)await sleep(TM.sec);let seen=false;await poll(function(){if(ALERTS.length)return true;if(conflictShown())return true;if(row&&sigOf(row)!==rSig)return true;const p=popEl();if(!p)return true;if(!popHidden(p))seen=true;else if(seen)return true;return p.innerHTML!==openSig},MB?TM.sec:3000,40)}
 function rowApplied(row){return Array.prototype.some.call(row.querySelectorAll('input'),function(i){return /^allSection\d/.test(i.id)&&String(i.value).trim()!==''})}
-async function tryRow(row,c){
-const chk=row.querySelector('input[type="CHECKBOX"]');const link=row.querySelector('a[onclick*="showToolTip"]');
-if(!chk||!link)return{note:'تعذر تحديد المقرر'};
+async function tryRow(cell,c){
+const t=targetsFor(cell);const row=t.row,chk=t.chk,link=t.link;
+if(!row||!chk||!link)return{note:'تعذر تحديد المقرر'};
+const secOk=function(){return t.secEl?String(t.secEl.value).trim()===String(c.section):hasSec(row,c.section)};
 const wasChecked=chk.checked;
 function undo(){if(!wasChecked&&chk.checked&&!rowApplied(row)){try{chk.click()}catch(e){}}}
 if(!chk.checked){chk.click();await sleep(TM.chk);if(!chk.checked)return{note:ALERTS[0]||'تعذر تحديد المقرر',hard:!!ALERTS.length}}
@@ -90,26 +91,36 @@ if(!found){await closeDialog('divsData');undo();return{note:'الشعبة غير
 if(ALERTS.length){closeDialogs();undo();return{note:ALERTS[0],hard:true}}
 if(conflictShown()){await closeDialog('divsConflictType');closeDialogs();undo();return{note:'تعارض مع مقرر آخر',hard:true}}
 }
-if(!hasSec(row,c.section)&&sigOf(row)===rSig){
-await poll(function(){return ALERTS.length||conflictShown()||hasSec(row,c.section)||sigOf(row)!==rSig},4000,60);
+if(!secOk()&&sigOf(row)===rSig){
+await poll(function(){return ALERTS.length||conflictShown()||secOk()||sigOf(row)!==rSig},4000,60);
 if(ALERTS.length){closeDialogs();undo();return{note:ALERTS[0],hard:true}}
 if(conflictShown()){await closeDialog('divsConflictType');closeDialogs();undo();return{note:'تعارض مع مقرر آخر',hard:true}}
-if(!hasSec(row,c.section)&&sigOf(row)===rSig){closeDialogs();undo();return{note:'لم يتأكد تطبيق الشعبة — راجعها يدوياً',hard:true}}
+if(!secOk()&&sigOf(row)===rSig){closeDialogs();undo();return{note:'لم يتأكد تطبيق الشعبة — راجعها يدوياً',hard:true}}
 }
 return{ok:true}}
 async function addCourse(c){
-const candAll=matchRows(c.name);
+const candAll=matchCells(c.name);
 if(!candAll.length)return{ok:false,note:'لم يتم العثور على المقرر في الصفحة'};
-const cand=candAll.filter(function(r){return !USED.has(r)});
+const cand=candAll.filter(function(cell){return !USED.has(actKey(cell))});
 if(!cand.length)return{ok:false,note:'شعبة أخرى لنفس المقرر أُضيفت قبله'};
 let note='';
-for(const row of cand){ALERTS=[];const r=await tryRow(row,c);if(r.ok){USED.add(row);return{ok:true}}if(r.note)note=r.note;if(r.hard)break}
+for(const cell of cand){ALERTS=[];const r=await tryRow(cell,c);if(r.ok){USED.add(actKey(cell));return{ok:true}}if(r.note)note=r.note;if(r.hard)break}
 return{ok:false,note:note||'تعذرت إضافته'}}
 async function startProcess(){const btn=el('quStartAdd');const box=el('quContainerBox');if(btn.disabled)return;btn.disabled=true;btn.innerHTML='<div class="qu-spinner"></div><span>جاري الإضافة...</span>';box.classList.add('qu-running');hookAlerts();USED.clear();try{const txt=QU_COURSE_LINES;const courses=parse(txt);const free=QU_FREE_CRNS;el('quProgress').style.display='block';buildList(courses);setCounts(0,0,courses.length,'جاري التجهيز...');await sleep(TM.boot);let added=0,failed=0;for(let i=0;i<courses.length;i++){const c=courses[i];setRow(i,'active');setCounts(added,failed,courses.length,'جاري إضافة: '+c.name);ALERTS=[];if(conflictShown())await closeDialog('divsConflictType');const res=await addCourse(c);if(!res.ok){failed++;setRow(i,'fail',res.note||'تعذرت إضافته');continue}await sleep(TM.tail);added++;setRow(i,'ok');setCounts(added,failed,courses.length)}finishCleanup();let freeNote='';if(free&&free.length>0){let freeFilled=0;for(let i=0;i<free.length;i++){const fEl=document.getElementById('addSection'+i)||document.getElementById('freeSection'+i);if(fEl){fEl.value=free[i];fEl.dispatchEvent(new Event('blur',{bubbles:true}));fEl.dispatchEvent(new Event('keyup',{bubbles:true}));freeFilled++;}}if(freeFilled>0)freeNote=`<div style="margin-bottom:12px;font-size:.85rem;color:${T.tx}">✦ تمت تعبئة `+freeFilled+' شعبة حرة.</div>'}el('quProgSpin').style.display='none';setCounts(added,failed,courses.length,'اكتملت العملية');const lastStep=`<div style="background:${T.srf2};border:1px dashed rgba(255,255,255,.2);padding:12px;border-radius:12px;color:#e0e0e0;line-height:1.6">👇 خطوتك الأخيرة:<br>انزل لأسفل الصفحة واضغط على زر <strong style="color:${T.l}">"إضافة"</strong> لحفظ جدولك.</div>`;let msg='';if(failed===0){msg=`<div style="text-align:center;padding:4px 0"><div style="font-size:2.4rem;margin-bottom:8px;animation:quPop .5s ease-out">🎉</div><div style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:4px">اكتملت العملية بنجاح!</div><div style="color:${T.ok};margin-bottom:14px">تم تحديد `+added+' مقرر جاهز للإضافة</div>'+freeNote+lastStep+'</div>'}else{msg=`<div style="text-align:center;padding:4px 0"><div style="font-size:2.4rem;margin-bottom:8px;animation:quPop .5s ease-out">⚠️</div><div style="font-size:1.1rem;font-weight:800;color:#fff;margin-bottom:4px">اكتملت العملية بملاحظات</div><div style="color:${T.er};margin-bottom:6px">تم تحديد `+added+' مقرر، وتعذر '+failed+'</div><div style="margin-bottom:14px">'+FAILS.map(function(f){return `<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:11px;padding:7px 12px;margin-bottom:6px;font-size:.8rem;text-align:right"><span style="color:${T.er2};font-weight:700">`+f.name+`</span><span style="color:${T.er};font-size:.7rem;flex:none">`+f.note+'</span></div>'}).join('')+'</div>'+freeNote+lastStep+'</div>'}status(msg,added>0?'success':'error');btn.innerHTML=(failed===0?IC.check:IC.x)+'<span>اكتمل التفعيل</span>';if(failed===0)btn.classList.add('qu-fin');box.classList.remove('qu-running')}finally{unhookAlerts()}}
 const USED=new Set();
 function norm(s){return String(s).replace(/ /g,' ').replace(/\s+/g,' ').trim()}
-function matchRows(name){const cells=document.querySelectorAll('td[id^="courseName"]');const n=norm(name);const ex=[],lo=[];
-for(const cell of cells){const r=cell.closest('tr');if(!r)continue;const t=norm(cell.textContent);if(t===n)ex.push(r);else if(t.length>2&&(t.includes(n)||n.includes(t)))lo.push(r)}
+function matchCells(name){const cells=document.querySelectorAll('td[id^="courseName"]');const n=norm(name);const ex=[],lo=[];
+for(const cell of cells){if(!cell.closest('tr'))continue;const t=norm(cell.textContent);if(t===n)ex.push(cell);else if(t.length>2&&(t.includes(n)||n.includes(t)))lo.push(cell)}
 return ex.concat(lo)}
+function cellParts(cell){const m=/^courseName(\d+)_(\d+)_(\d+)_(\d+)$/.exec(cell.id||'');return m?{cid:m[1],code:m[2],campus:m[3],act:m[4]}:null}
+function actKey(cell){const p=cellParts(cell);return p?('A'+p.cid+'_'+p.code+'_'+p.act):(cell.id||cell.textContent)}
+function targetsFor(cell){const row=cell.closest('tr');const p=cellParts(cell);let chk=null,link=null,secEl=null;
+if(p){chk=document.getElementById('C'+p.cid+'_'+p.code+'_'+p.campus);secEl=document.getElementById('allSection'+p.cid+'_'+p.code+'_'+p.act);
+const tail=("'"+p.cid+"','"+p.code+"','"+p.campus+"','"+p.act+"'");
+const links=row?row.querySelectorAll('a[onclick*="showToolTip"]'):[];
+for(const a of links){const oc=String(a.getAttribute('onclick')||'').replace(/\s+/g,'');if(oc.indexOf(tail)>=0){link=a;break}}}
+if(!chk&&row)chk=row.querySelector('input[type="CHECKBOX"]');
+if(!link&&row)link=row.querySelector('a[onclick*="showToolTip"]');
+return{row:row,chk:chk,link:link,secEl:secEl}}
 showUI();})();
 })();
