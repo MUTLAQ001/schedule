@@ -7018,6 +7018,30 @@ body.exporting-image .fc-event b {
   text-overflow: ellipsis;
 }
 
+.fc-event .evt-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4em;
+}
+
+.fc-event .evt-loc {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fc-event .evt-code {
+  flex: none;
+  opacity: 0.85;
+  font-variant-numeric: tabular-nums;
+}
+
+body.exporting-image .fc-event .evt-1h .evt-loc {
+  white-space: normal;
+}
+
 body.exporting-image .fc-event .evt-1h b {
   line-height: 1.5 !important;
   padding-bottom: 2px !important;
