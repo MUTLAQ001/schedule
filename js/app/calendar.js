@@ -52,38 +52,61 @@ Object.assign(QU_ScheduleApp, {
           const activeNavBtn = document.querySelector('.mobile-nav-btn.active'); if (!activeNavBtn) return;
           const currentView = activeNavBtn.dataset.view;
           const titleEl = this.dom.mobileHeaderTitle;
+          const subtitleEl = this.dom.mobileHeaderSubtitle;
           const actionBtn = this.dom.mobileDynamicActionBtn;
-          const searchContainer = this.dom.mobileSearchContainer;
+          const header = document.querySelector('.mobile-header');
 
-          searchContainer.style.display = 'none';
-          titleEl.style.display = 'block';
+          this._setMobileSearchOpen(false);
+          const setSubtitle = text => { if (subtitleEl) subtitleEl.textContent = text || ''; };
+
+          const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+          const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
+          const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+          const uniqueCodes = new Set(selectedCourseDetails.map(c => c.code));
+          const totalCredits = this._totalCreditsOf(selectedCourseDetails);
 
           if (currentView === 'mobile-calendar-view') {
-            titleEl.textContent = this.state.schedules[this.state.activeScheduleIndex]?.name || 'الجدول';
+            titleEl.textContent = activeSchedule?.name || 'الجدول';
+            setSubtitle(uniqueCodes.size ? `${uniqueCodes.size} ${this._coursesWord(uniqueCodes.size)} · ${this._hoursText(totalCredits)}` : 'لم تُضِف أي مقرر بعد');
             actionBtn.innerHTML = '<i class="ph ph-camera"></i>';
             actionBtn.style.display = 'flex';
+            actionBtn.setAttribute('aria-label', 'حفظ الجدول كصورة');
             actionBtn.onclick = () => this._handleDownloadImage(true);
           } else if (currentView === 'mobile-courses-view') {
             titleEl.textContent = 'المقررات';
+            const available = Object.keys(this.state.groupedCourses || {}).filter(code => !this.state.hiddenCourseCodes.has(code)).length;
+            setSubtitle(available ? this._availableCoursesText(available) : 'في انتظار البيانات');
             actionBtn.innerHTML = '<i class="ph ph-magnifying-glass"></i>';
             actionBtn.style.display = 'flex';
-            actionBtn.onclick = () => {
-              titleEl.style.display = 'none';
-              searchContainer.style.display = 'flex';
-              this.dom.mobileSearchInput.focus();
-            };
+            actionBtn.setAttribute('aria-label', 'بحث في المقررات');
+            actionBtn.onclick = () => this._setMobileSearchOpen(true);
           } else if (currentView === 'mobile-my-schedule-view') {
-            titleEl.textContent = this.state.schedules[this.state.activeScheduleIndex]?.name || 'جدولي';
+            titleEl.textContent = activeSchedule?.name || 'جدولي';
+            setSubtitle(uniqueCodes.size ? `${uniqueCodes.size} ${this._coursesWord(uniqueCodes.size)} · ${this._hoursText(totalCredits)}` : 'جدولك فارغ');
             actionBtn.innerHTML = '<i class="ph ph-copy"></i>';
             actionBtn.style.display = 'flex';
-            const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-            const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
-            const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+            actionBtn.setAttribute('aria-label', 'نسخ أرقام الشعب');
             actionBtn.onclick = () => this._handleCopyCRNs(selectedCourseDetails);
           } else if (currentView === 'mobile-my-exams-view') {
             titleEl.textContent = 'اختباراتي';
+            const examCount = selectedCourseDetails.filter(c => c.examPeriodId).reduce((set, c) => set.add(c.code), new Set()).size;
+            setSubtitle(examCount ? `${examCount} ${examCount === 1 ? 'اختبار' : examCount === 2 ? 'اختباران' : examCount <= 10 ? 'اختبارات' : 'اختباراً'}` : 'لا توجد اختبارات بعد');
             actionBtn.style.display = 'none';
           }
+
+          if (header) header.classList.toggle('has-action', actionBtn.style.display !== 'none');
+        },
+        _coursesWord(n) { return n === 1 ? 'مقرر' : n === 2 ? 'مقرران' : n <= 10 ? 'مقررات' : 'مقرراً'; },
+        _availableCoursesText(n) {
+          if (n === 1) return 'مقرر واحد متاح';
+          if (n === 2) return 'مقرران متاحان';
+          if (n <= 10) return `${n} مقررات متاحة`;
+          return `${n} مقرراً متاحاً`;
+        },
+        _setMobileSearchOpen(open) {
+          const header = document.querySelector('.mobile-header');
+          if (header) header.classList.toggle('searching', !!open);
+          if (open) { setTimeout(() => this.dom.mobileSearchInput?.focus(), 60); }
         },
         _typeLabel(t) { const s = String(t || '').trim(); if (!s) return ''; return /محاضرة|نظري/.test(s) ? s.replace('محاضرة', 'نظري') : s; },
         _escapeHTML(str) { return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); },
@@ -223,7 +246,7 @@ Object.assign(QU_ScheduleApp, {
 </div>${groupItemsHTML}</div>`;
           }).join('');
           Swal.fire({
-            title: 'حل جميع التعارضات', html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML || '<p>لا توجد مجموعات تعارض واضحة.</p>'}</div>`, icon: 'warning', confirmButtonText: 'حفظ التغييرات', showCancelButton: true, cancelButtonText: 'إلغاء', customClass: { popup: 'swal2-popup wide-swal' },
+            title: 'حل جميع التعارضات', html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML || '<p>لا توجد مجموعات تعارض واضحة.</p>'}</div>`, icon: 'warning', confirmButtonText: 'حفظ التغييرات', showCancelButton: true, cancelButtonText: 'إلغاء', customClass: { popup: 'swal2-popup wide-swal conflict-swal' },
             didOpen: (popup) => { popup.querySelectorAll('.conflict-details-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); const detailsEl = document.getElementById(btn.dataset.detailsId); if (detailsEl) detailsEl.classList.toggle('visible'); }); }); },
             preConfirm: () => {
               const sectionsToRemove = new Set();
