@@ -1,4 +1,4 @@
-const CACHE = 'qu-schedule-v15';
+const CACHE = 'qu-schedule-v16';
 
 const CORE = [
   './',
@@ -8,6 +8,7 @@ const CORE = [
   './extractor.js',
   './filler.js',
   './css/styles.css',
+  './css/mobile.css',
   './css/tutorial.css',
   './js/tutorial.js',
   './js/tutorial-starfield.js',
