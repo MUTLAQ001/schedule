@@ -153,7 +153,8 @@ Object.assign(QU_ScheduleApp, {
           const instructorRow = `<div class="details-row"><span class="details-row-icon"><i class="ph ph-user"></i></span><div class="details-row-text"><span>المحاضر</span><strong>${this._escapeHTML(section.instructor || 'غير محدد')}</strong></div><button class="qv-btn qv-fav-btn ${isFav ? 'on' : ''}" id="sheet-fav-btn" style="flex:0 0 auto;padding:0.35rem 0.6rem;font-size:0.72rem;" aria-label="تفضيل المحاضر"><i class="${isFav ? 'ph-fill' : 'ph'} ph-star"></i></button></div>`;
           const noteText = (this.state.userSettings.courseNotes || {})[section.code] || '';
           const noteChip = `<button class="details-note-chip ${noteText ? 'has-note' : ''}" id="sheet-note-btn" aria-label="${noteText ? 'عرض وتعديل ملاحظتي على المقرر' : 'إضافة ملاحظة على المقرر'}"><i class="${noteText ? 'ph-fill ph-note' : 'ph ph-note-pencil'}"></i> ${noteText ? 'ملاحظتي' : 'ملاحظة'}</button>`;
-          panel.innerHTML = `<div class="details-grabber"></div><div class="details-body"><div class="details-header"><div class="details-title-wrap"><span class="color-dot" style="background-color: ${group.color};"></span><div class="details-title-text"><h4>${this._escapeHTML(section.name)} (${this._escapeHTML(section.code)})</h4><span class="details-eyebrow">شعبة ${this._escapeHTML(section.section)}</span></div></div><button class="details-close-btn" aria-label="إغلاق"><i class="ph ph-x"></i></button></div>${courseSwitcher}${conflictBanner}${examDayBanner}<div class="details-status-row"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status)}</span>${typeChip}${noteChip}</div><div class="details-list">${instructorRow}${detailRow('ph-clock', 'المواعيد', timeStr)}${detailRow('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${detailRow('ph-file-text', 'الاختبار النهائي', this._escapeHTML(section.examPeriodId || 'لا يوجد'))}</div><div class="details-footer"><div class="details-stepper"><button class="details-nav-btn" id="details-prev-btn" ${currentIndex <= 0 ? 'disabled' : ''} aria-label="الشعبة السابقة"><i class="ph ph-caret-right"></i></button><span class="details-counter">${currentIndex + 1} من ${courseSections.length}</span><button class="details-nav-btn" id="details-next-btn" ${currentIndex >= courseSections.length - 1 ? 'disabled' : ''} aria-label="الشعبة التالية"><i class="ph ph-caret-left"></i></button></div><button class="details-action-btn ${actionBtnClass}" id="details-action-btn"><i class="${actionBtnIcon}"></i> ${actionBtnText}</button></div></div>`;
+          const previewChip = `<button class="details-note-chip sheet-preview-chip" id="sheet-preview-btn" aria-label="معاينة الجدول مع هذه الشعبة"><i class="ph ph-squares-four"></i> معاينة</button>`;
+          panel.innerHTML = `<div class="details-grabber"></div><div class="details-body"><div class="details-header"><div class="details-title-wrap"><span class="color-dot" style="background-color: ${group.color};"></span><div class="details-title-text"><h4>${this._escapeHTML(section.name)} (${this._escapeHTML(section.code)})</h4><span class="details-eyebrow">شعبة ${this._escapeHTML(section.section)}</span></div></div><button class="details-close-btn" aria-label="إغلاق"><i class="ph ph-x"></i></button></div>${courseSwitcher}${conflictBanner}${examDayBanner}<div class="details-status-row"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status)}</span>${typeChip}${noteChip}${previewChip}</div><div class="details-list">${instructorRow}${detailRow('ph-clock', 'المواعيد', timeStr)}${detailRow('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${detailRow('ph-file-text', 'الاختبار النهائي', this._escapeHTML(section.examPeriodId || 'لا يوجد'))}</div><div class="details-footer"><div class="details-stepper"><button class="details-nav-btn" id="details-prev-btn" ${currentIndex <= 0 ? 'disabled' : ''} aria-label="الشعبة السابقة"><i class="ph ph-caret-right"></i></button><span class="details-counter">${currentIndex + 1} من ${courseSections.length}</span><button class="details-nav-btn" id="details-next-btn" ${currentIndex >= courseSections.length - 1 ? 'disabled' : ''} aria-label="الشعبة التالية"><i class="ph ph-caret-left"></i></button></div><button class="details-action-btn ${actionBtnClass}" id="details-action-btn"><i class="${actionBtnIcon}"></i> ${actionBtnText}</button></div></div>`;
           panel.querySelector('.details-close-btn').onclick = () => this._hideMobileSectionDetails();
           panel.querySelector('#details-action-btn').onclick = () => {
             if (activeSchedule.sections.has(section.uniqueId)) {
@@ -167,10 +168,43 @@ Object.assign(QU_ScheduleApp, {
           const nextBtn = panel.querySelector('#details-next-btn'); if (nextBtn) { nextBtn.onclick = () => { if (currentIndex < courseSections.length - 1) this._showMobileSectionDetails(courseSections[currentIndex + 1], group, true) }; }
           const favBtn = panel.querySelector('#sheet-fav-btn'); if (favBtn) { favBtn.onclick = () => { this._toggleFavInstructor(section.instructor); this._showMobileSectionDetails(section, group, false); }; }
           const noteBtn = panel.querySelector('#sheet-note-btn'); if (noteBtn) { noteBtn.onclick = () => this._editCourseNote(section.code, () => this._showMobileSectionDetails(section, group, false)); }
+          const previewBtn = panel.querySelector('#sheet-preview-btn'); if (previewBtn) { previewBtn.onclick = () => this._showSectionSchedulePreview(section); }
           const cPrevBtn = panel.querySelector('#course-prev-btn'); if (cPrevBtn) { cPrevBtn.onclick = () => this._courseNavigate(-1); }
           const cNextBtn = panel.querySelector('#course-next-btn'); if (cNextBtn) { cNextBtn.onclick = () => this._courseNavigate(1); }
           const bodyEl = panel.querySelector('.details-body'); if (bodyEl && shouldUpdatePanel) bodyEl.scrollTop = 0;
           this.dom.mobileSectionDetailsOverlay.classList.add('open');
+        },
+        _sectionPreviewList(section) {
+          const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+          const selected = activeSchedule
+            ? Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean)
+            : [];
+          if (selected.some(s => s.uniqueId === section.uniqueId)) return { list: selected, replaced: false, already: true };
+          const type = this._canonType(section.type);
+          const kept = selected.filter(s => !(s.code === section.code && this._canonType(s.type) === type));
+          return { list: kept.concat([section]), replaced: kept.length !== selected.length, already: false };
+        },
+        _showSectionSchedulePreview(section) {
+          const { list, replaced, already } = this._sectionPreviewList(section);
+          const conflictMap = this._calculateConflicts(list);
+          const clash = conflictMap.has(section.uniqueId);
+          const typeStr = this._typeLabel(section.type) || '';
+          const note = already
+            ? 'هذه الشعبة مضافة في جدولك حالياً.'
+            : replaced
+              ? `المعاينة تستبدل ${this._escapeHTML(typeStr)} ${this._escapeHTML(section.code)} المضاف في جدولك بهذه الشعبة.`
+              : 'المعاينة تُظهر جدولك بعد إضافة هذه الشعبة.';
+          const banner = clash
+            ? `<div class="sp-note warn"><i class="ph-fill ph-warning"></i> هذه الشعبة تتعارض مع جدولك.</div>`
+            : `<div class="sp-note"><i class="ph ph-info"></i> ${note}</div>`;
+          Swal.fire({
+            title: `${this._escapeHTML(section.name)} — شعبة ${this._escapeHTML(section.section)}`,
+            html: `<div class="gen-summary custom-scrollbar">${banner}${this._previewGridHTML(list)}</div>`,
+            showConfirmButton: false,
+            showCloseButton: true,
+            width: 'auto',
+            customClass: { popup: 'swal2-popup gen-preview-swal sheet-preview-swal' }
+          });
         },
         _hideMobileSectionDetails() { this.dom.mobileSectionDetailsOverlay.classList.remove('open'); },
         _initSheetSwipe() {
