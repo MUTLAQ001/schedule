@@ -2436,6 +2436,45 @@ input:checked+.slider:before {
   text-align: right;
 }
 
+.swal2-container {
+  overflow-y: auto !important;
+}
+
+.swal2-popup.conflict-swal {
+  display: flex !important;
+  flex-direction: column;
+  max-height: calc(100dvh - 20px);
+  margin: 10px auto;
+}
+
+.swal2-popup.conflict-swal .swal2-icon {
+  flex-shrink: 0;
+  font-size: 0.62rem;
+  margin: 1.2em auto 0.4em;
+}
+
+.swal2-popup.conflict-swal .swal2-title {
+  flex-shrink: 0;
+}
+
+.swal2-popup.conflict-swal .swal2-html-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.swal2-popup.conflict-swal #conflict-modal-content {
+  max-height: none;
+  overflow: visible;
+}
+
+.swal2-popup.conflict-swal .swal2-actions {
+  flex-shrink: 0;
+  margin-top: 0.75rem;
+}
+
 .conflict-group-container {
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -5402,7 +5441,6 @@ html.light-root {
   background: var(--axis-corner-bg);
 }
 
-
 .fc .fc-timegrid-slot-label-cushion {
   font-size: 0.7rem;
   font-weight: 700;
@@ -7235,7 +7273,6 @@ body.exporting-image #calendar .fc .fc-timegrid-col.fc-day:hover {
   .tutorial-cta::before { display: none; }
 }
 
-
 .qs-filter-host {
   margin-bottom: 0.75rem;
 }
@@ -7822,7 +7859,6 @@ body.high-performance .section-btn .sec-fav {
 .course-item-header {
   cursor: pointer;
 }
-
 
 .img-save-popup {
   max-width: 520px;
