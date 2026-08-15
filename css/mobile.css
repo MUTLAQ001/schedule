@@ -584,6 +584,7 @@
     flex: 1;
     min-height: 0;
     height: auto;
+    width: auto;
     margin: 0 var(--m-gutter);
     border-radius: var(--m-r-lg);
     border: 1px solid var(--m-line);
@@ -599,6 +600,7 @@
   }
 
   #mobile-calendar-view > .stale-data-banner {
+    width: auto;
     margin: 0 var(--m-gutter) 8px;
     border-radius: var(--m-r-sm);
   }
