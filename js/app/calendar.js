@@ -247,38 +247,27 @@ Object.assign(QU_ScheduleApp, {
           }
         },
         _getPluralizedSectionString(count) { if (count === 1) return "شعبة واحدة"; if (count === 2) return "شعبتين"; if (count >= 3 && count <= 10) return `${count} شعب`; return `${count} شعبة`; },
-        _conflictRelChipsHTML(rels) {
+        _conflictWithHTML(rels) {
           if (!rels.length) return '';
-          const seen = new Map();
-          rels.forEach(r => seen.set(r.other.name, (seen.get(r.other.name) || 0) + 1));
-          const chips = rels.map(rel => {
-            const kind = rel.time.length && rel.exam ? 'both' : rel.exam ? 'exam' : 'time';
-            const icons = `${rel.time.length ? '<i class="ph-fill ph-clock"></i>' : ''}${rel.exam ? '<i class="ph-fill ph-file-text"></i>' : ''}`;
-            const why = kind === 'both' ? 'تعارض وقت واختبار' : kind === 'exam' ? 'تعارض اختبار نهائي' : 'تعارض وقت محاضرة';
-            const tag = seen.get(rel.other.name) > 1 ? `<span class="ci-rel-sec">${this._escapeHTML(this._typeLabel(rel.other.type) || 'شعبة')} ${this._escapeHTML(rel.other.section)}</span>` : '';
-            return `<span class="ci-rel-chip ${kind}" title="${this._escapeHTML(`${why} مع ${rel.other.name} — شعبة ${rel.other.section}`)}">${icons}<span class="ci-rel-name">${this._escapeHTML(rel.other.name)}</span>${tag}</span>`;
+          const rows = rels.map(rel => {
+            const typeStr = this._typeLabel(rel.other.type);
+            const secTxt = `${typeStr ? typeStr + ' · ' : ''}شعبة ${rel.other.section}`;
+            const tags = `${rel.time.length ? '<span class="cx-tag time"><i class="ph-fill ph-clock"></i>وقت</span>' : ''}${rel.exam ? '<span class="cx-tag exam"><i class="ph-fill ph-file-text"></i>اختبار</span>' : ''}`;
+            const why = rel.time.map(t => `<div class="cx-why-line"><i class="ph-fill ph-clock cx-i-time"></i>${this._escapeHTML(t.day)}<i class="cx-dot"></i>${this._formatClock(t.from)} – ${this._formatClock(t.to)}<i class="cx-dot"></i>${this._formatDuration(t.mins)}</div>`);
+            if (rel.exam) {
+              const samePeriod = String(rel.exam.period) === String(rel.exam.otherPeriod);
+              const txt = samePeriod
+                ? `نفس فترة الاختبار النهائي<i class="cx-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))}`
+                : `تداخل وقت الاختبار النهائي<i class="cx-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))} مع ${this._escapeHTML(String(rel.exam.otherPeriod))}${rel.exam.overlapMins ? `<i class="cx-dot"></i>${this._formatDuration(rel.exam.overlapMins)}` : ''}`;
+              why.push(`<div class="cx-why-line"><i class="ph-fill ph-file-text cx-i-exam"></i>${txt}</div>`);
+            }
+            return `<div class="cx-row"><div class="cx-row-top"><span class="cx-row-name">${this._escapeHTML(rel.other.name)}</span><span class="cx-row-sec">${this._escapeHTML(secTxt)}</span><span class="cx-row-tags">${tags}</span></div><div class="cx-why">${why.join('')}</div></div>`;
           }).join('');
           const n = rels.length;
           const count = n === 1 ? 'يتعارض مع مقرر واحد' : n === 2 ? 'يتعارض مع مقررين' : `يتعارض مع ${n} مقررات`;
           const hasTime = rels.some(r => r.time.length), hasExam = rels.some(r => r.exam);
           const kind = hasTime && hasExam ? ' بالاختبار والوقت' : hasExam ? ' بالاختبار' : ' بالوقت';
-          return `<div class="ci-rels"><span class="ci-rels-label">${count}${kind}</span>${chips}</div>`;
-        },
-        _conflictRelRowsHTML(rels) {
-          if (!rels.length) return '';
-          const rows = rels.map(rel => {
-            const lines = rel.time.map(t => `<div class="cr-line"><span class="cr-kind time"><i class="ph-fill ph-clock"></i>وقت</span><span class="cr-text">${this._escapeHTML(t.day)}<i class="cr-dot"></i>${this._formatClock(t.from)} – ${this._formatClock(t.to)}<i class="cr-dot"></i>${this._formatDuration(t.mins)}</span></div>`);
-            if (rel.exam) {
-              const samePeriod = String(rel.exam.period) === String(rel.exam.otherPeriod);
-              const txt = samePeriod
-                ? `نفس فترة الاختبار النهائي<i class="cr-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))}`
-                : `تداخل وقت الاختبار النهائي<i class="cr-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))} مع ${this._escapeHTML(String(rel.exam.otherPeriod))}${rel.exam.overlapMins ? `<i class="cr-dot"></i>${this._formatDuration(rel.exam.overlapMins)}` : ''}`;
-              lines.push(`<div class="cr-line"><span class="cr-kind exam"><i class="ph-fill ph-file-text"></i>اختبار</span><span class="cr-text">${txt}</span></div>`);
-            }
-            const typeStr = this._typeLabel(rel.other.type);
-            return `<div class="cr-row"><div class="cr-title">${this._escapeHTML(rel.other.name)}${typeStr ? `<span class="cr-sec">${this._escapeHTML(typeStr)}</span>` : ''}<span class="cr-sec">شعبة ${this._escapeHTML(rel.other.section)}</span></div>${lines.join('')}</div>`;
-          }).join('');
-          return `<div class="cr-head">أسباب التعارض</div><div class="cr-list">${rows}</div>`;
+          return `<div class="cx-with"><div class="cx-with-head">${count}${kind}</div>${rows}</div>`;
         },
         _conflictEdges(group) {
           const edges = [];
@@ -324,15 +313,15 @@ Object.assign(QU_ScheduleApp, {
           groups.forEach((group, gi) => {
             const checked = new Set(Array.from(popup.querySelectorAll(`.conflict-remove-check[data-group="${gi}"]:checked`)).map(i => i.value));
             total += checked.size;
-            const status = popup.querySelector(`.cg-status[data-group="${gi}"]`);
+            const status = popup.querySelector(`.cx-status[data-group="${gi}"]`);
             if (!status) return;
-            if (!checked.size) { status.className = 'cg-status warn'; status.innerHTML = '<i class="ph-fill ph-warning"></i><span>لم تحدد أي شعبة — سيبقى التعارض كما هو</span>'; return; }
+            if (!checked.size) { status.className = 'cx-status warn'; status.innerHTML = '<i class="ph-fill ph-warning-circle"></i><span>لم تحدد أي شعبة — سيبقى التعارض كما هو</span>'; return; }
             const remaining = group.filter(s => !checked.has(s.uniqueId));
             const left = this._calculateConflicts(remaining);
-            if (!left.size) { status.className = 'cg-status ok'; status.innerHTML = `<i class="ph-fill ph-check-circle"></i><span>${checked.size === 1 ? 'بحذف شعبة واحدة فقط' : `بحذف ${this._getPluralizedSectionString(checked.size)}`} ينتهي تعارض هذه المجموعة</span>`; return; }
+            if (!left.size) { status.className = 'cx-status ok'; status.innerHTML = `<i class="ph-fill ph-check-circle"></i><span>${checked.size === 1 ? 'بحذف شعبة واحدة فقط' : `بحذف ${this._getPluralizedSectionString(checked.size)}`} ينتهي تعارض هذه المجموعة</span>`; return; }
             const names = Array.from(new Set(Array.from(left.keys()).map(id => (remaining.find(r => r.uniqueId === id) || {}).name).filter(Boolean)));
-            status.className = 'cg-status warn';
-            status.innerHTML = `<i class="ph-fill ph-warning"></i><span>سيبقى تعارض بين ${this._escapeHTML(names.join(' و '))}</span>`;
+            status.className = 'cx-status warn';
+            status.innerHTML = `<i class="ph-fill ph-warning-circle"></i><span>سيبقى تعارض بين ${this._escapeHTML(names.join(' و '))}</span>`;
           });
           const btn = Swal.getConfirmButton();
           if (btn) btn.textContent = total ? `حذف ${this._getPluralizedSectionString(total)}` : 'بدون تغيير';
@@ -355,29 +344,35 @@ Object.assign(QU_ScheduleApp, {
             const relsById = new Map(group.map(s => [s.uniqueId, this._conflictRelations(s, group)]));
             const isTime = group.some(s => relsById.get(s.uniqueId).some(r => r.time.length));
             const isExam = group.some(s => relsById.get(s.uniqueId).some(r => r.exam));
-            const kindsHTML = `<span class="cg-kinds">${isTime ? '<span class="cg-kind time"><i class="ph-fill ph-clock"></i>وقت</span>' : ''}${isExam ? '<span class="cg-kind exam"><i class="ph-fill ph-file-text"></i>اختبار</span>' : ''}</span>`;
+            const kindsHTML = `<span class="cx-kinds">${isTime ? '<span class="cx-tag time"><i class="ph-fill ph-clock"></i>وقت</span>' : ''}${isExam ? '<span class="cx-tag exam"><i class="ph-fill ph-file-text"></i>اختبار</span>' : ''}</span>`;
             const soloFix = new Set(group.filter(s => this._calculateConflicts(group.filter(o => o.uniqueId !== s.uniqueId)).size === 0).map(s => s.uniqueId));
-            const suggested = new Set(this._minRemovalSet(group).map(s => s.uniqueId));
+            const minSet = this._minRemovalSet(group);
+            const suggested = new Set(minSet.map(s => s.uniqueId));
+            const single = minSet.length === 1;
+            const allSolo = soloFix.size === group.length;
             const ordered = group.slice().sort((a, b) => (soloFix.has(b.uniqueId) ? 1 : 0) - (soloFix.has(a.uniqueId) ? 1 : 0) || relsById.get(b.uniqueId).length - relsById.get(a.uniqueId).length || a.code.localeCompare(b.code));
-            const groupItemsHTML = ordered.map((section, itemIndex) => {
-              const detailsId = `details-${groupIndex}-${itemIndex}`;
+            const groupItemsHTML = ordered.map(section => {
               const rels = relsById.get(section.uniqueId) || [];
+              const typeStr = this._typeLabel(section.type);
+              const metaTxt = `${section.code}${typeStr ? ' · ' + typeStr : ''} · شعبة ${section.section}`;
               const examRow = section.examPeriodId ? `<div><strong>الاختبار النهائي:</strong> ${this._examSummaryText(section.examPeriodId)}</div>` : '';
-              const soloHint = soloFix.has(section.uniqueId) ? '<div class="ci-solo"><i class="ph-fill ph-lightbulb"></i>حذف هذه الشعبة وحدها يكفي لحل المجموعة</div>' : '';
-              return `<div class="conflict-item"><div class="conflict-item-flex"><label class="conflict-item-main-label"><input type="checkbox" class="conflict-remove-check" data-group="${groupIndex}" value="${this._escapeHTML(section.uniqueId)}" ${suggested.has(section.uniqueId) ? 'checked' : ''}><div class="custom-check"><i class="ph-bold ph-trash"></i></div><div class="conflict-item-info"><h4>${this._escapeHTML(section.name)}</h4><span>${this._escapeHTML(section.code)}${this._typeLabel(section.type) ? ` - ${this._escapeHTML(this._typeLabel(section.type))}` : ''} - شعبة ${this._escapeHTML(section.section)}</span>${this._conflictRelChipsHTML(rels)}${soloHint}</div></label><button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button></div><div class="conflict-extra-details" id="${detailsId}">${this._conflictRelRowsHTML(rels)}<div class="cr-own">${examRow}<div><strong>المواعيد:</strong> ${this._escapeHTML(String(section.time || '').replace(/<br>/g, ' / ') || 'غير محدد')}</div></div></div></div>`;
+              const soloHint = (!allSolo && soloFix.has(section.uniqueId)) ? '<div class="cx-solo"><i class="ph-fill ph-lightbulb"></i>حذف هذه الشعبة وحدها يكفي لحل المجموعة</div>' : '';
+              return `<div class="cx-card${single ? ' single' : ''}"><label class="cx-pick"><input type="${single ? 'radio' : 'checkbox'}"${single ? ` name="cx-group-${groupIndex}"` : ''} class="conflict-remove-check" data-group="${groupIndex}" value="${this._escapeHTML(section.uniqueId)}" ${suggested.has(section.uniqueId) ? 'checked' : ''}><span class="cx-box"><svg class="cx-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7"></path></svg></span><span class="cx-info"><span class="cx-title">${this._escapeHTML(section.name)}</span><span class="cx-meta">${this._escapeHTML(metaTxt)}</span></span><span class="cx-flag">سيُحذف</span></label>${this._conflictWithHTML(rels)}${soloHint}<div class="cx-own">${examRow}<div><strong>المواعيد:</strong> ${this._escapeHTML(String(section.time || '').replace(/<br>/g, ' / ') || 'غير محدد')}</div></div><button type="button" class="cx-more"><span class="cx-more-show">عرض تفاصيل التعارض</span><span class="cx-more-hide">إخفاء التفاصيل</span><i class="ph-fill ph-caret-down"></i></button></div>`;
             }).join('');
-            return `<div class="conflict-group-container">
-<div class="conflict-group-title">
-<span>مجموعة التعارض ${groupIndex + 1}</span>
-${kindsHTML}
-</div>${groupItemsHTML}<div class="cg-status" data-group="${groupIndex}"></div></div>`;
+            const noteHTML = single ? `<p class="cx-note">${allSolo ? 'يكفي حذف شعبة واحدة — اختر أي واحدة منها' : 'يكفي حذف شعبة واحدة — اختر واحدة'}</p>` : '';
+            return `<section class="cx-group"><div class="cx-group-head"><span class="cx-group-name">مجموعة التعارض ${groupIndex + 1}</span>${kindsHTML}</div>${noteHTML}<div class="cx-cards">${groupItemsHTML}</div><div class="cx-status" data-group="${groupIndex}"></div></section>`;
           }).join('');
-          const hintHTML = '<div class="conflict-modal-hint"><i class="ph-fill ph-info"></i><span>حدد الشعب التي تريد <strong>حذفها</strong>. الاختيار المقترح هو أقل عدد يحل التعارض، وتقدر تغيّره.</span></div>';
+          const hintHTML = '<p class="cx-hint">حدد الشعب التي تريد <strong>حذفها</strong> — الاختيار المقترح هو أقل عدد يحل التعارض، وتقدر تغيّره.</p>';
           Swal.fire({
             title: 'حل جميع التعارضات', html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML ? hintHTML + modalHTML : '<p>لا توجد مجموعات تعارض واضحة.</p>'}</div>`, icon: 'warning', confirmButtonText: 'حذف المحدد', showCancelButton: true, cancelButtonText: 'إلغاء', customClass: { popup: 'swal2-popup wide-swal conflict-swal' },
             didOpen: (popup) => {
-              popup.querySelectorAll('.conflict-details-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); const detailsEl = document.getElementById(btn.dataset.detailsId); if (detailsEl) detailsEl.classList.toggle('visible'); }); });
+              popup.querySelectorAll('.cx-more').forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); btn.closest('.cx-card').classList.toggle('is-open'); }); });
               popup.querySelectorAll('.conflict-remove-check').forEach(inp => inp.addEventListener('change', () => this._updateConflictModalState(popup, conflictGroups)));
+              popup.querySelectorAll('.cx-card.single .cx-pick').forEach(lab => {
+                const inp = lab.querySelector('input');
+                lab.addEventListener('pointerdown', () => { lab.dataset.pre = inp.checked ? '1' : '0'; });
+                lab.addEventListener('click', (e) => { if (lab.dataset.pre === '1') { e.preventDefault(); inp.checked = false; this._updateConflictModalState(popup, conflictGroups); } lab.dataset.pre = '0'; });
+              });
               this._updateConflictModalState(popup, conflictGroups);
             },
             preConfirm: () => Array.from(Swal.getPopup().querySelectorAll('.conflict-remove-check:checked')).map(i => i.value)
