@@ -63,13 +63,24 @@ Object.assign(QU_ScheduleApp, {
               if (sA.day !== sB.day || sA.start >= sB.end || sA.end <= sB.start) return;
               const from = Math.max(this._toMin(sA.start), this._toMin(sB.start));
               const to = Math.min(this._toMin(sA.end), this._toMin(sB.end));
-              out.push({ type: 'time', other: sel, day: dayNames[sA.day] || '', from, to, mins: to - from });
+              out.push({ type: 'time', other: sel, day: dayNames[sA.day] || '', dayIndex: sA.day, from, to, mins: to - from });
             }));
             if (section.code !== sel.code && section.examPeriodId && sel.examPeriodId && this._examPeriodsOverlap(section.examPeriodId, sel.examPeriodId)) {
               out.push({ type: 'exam', other: sel, period: section.examPeriodId, otherPeriod: sel.examPeriodId, overlapMins: this._examOverlapMinutes(section.examPeriodId, sel.examPeriodId) });
             }
           });
           return out;
+        },
+        _conflictRelations(section, others) {
+          const map = new Map();
+          this._getConflictDetails(section, others || []).forEach(d => {
+            let rel = map.get(d.other.uniqueId);
+            if (!rel) { rel = { other: d.other, time: [], exam: null }; map.set(d.other.uniqueId, rel); }
+            if (d.type === 'exam') rel.exam = d; else rel.time.push(d);
+          });
+          const rels = Array.from(map.values());
+          rels.forEach(rel => rel.time.sort((a, b) => (a.dayIndex - b.dayIndex) || (a.from - b.from)));
+          return rels.sort((a, b) => ((b.time.length && b.exam ? 1 : 0) - (a.time.length && a.exam ? 1 : 0)) || String(a.other.name).localeCompare(String(b.other.name), 'ar'));
         },
         _createLectureEventsForSection(section, isPreview, color) {
           const sourceId = isPreview ? 'preview-source' : undefined;
