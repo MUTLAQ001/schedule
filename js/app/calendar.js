@@ -250,18 +250,19 @@ Object.assign(QU_ScheduleApp, {
         _conflictWithHTML(rels) {
           if (!rels.length) return '';
           const rows = rels.map(rel => {
-            const typeStr = this._typeLabel(rel.other.type);
-            const secTxt = `${typeStr ? typeStr + ' · ' : ''}شعبة ${rel.other.section}`;
+            const secLabel = s => `${this._typeLabel(s.type) ? this._typeLabel(s.type) + ' · ' : ''}شعبة ${s.section}`;
+            const secChips = rel.sections.map(s => `<span class="cx-row-sec">${this._escapeHTML(secLabel(s))}</span>`).join('');
             const tags = `${rel.time.length ? '<span class="cx-tag time"><i class="ph-fill ph-clock"></i>وقت</span>' : ''}${rel.exam ? '<span class="cx-tag exam"><i class="ph-fill ph-file-text"></i>اختبار</span>' : ''}`;
-            const why = rel.time.map(t => `<div class="cx-why-line"><i class="ph-fill ph-clock cx-i-time"></i>${this._escapeHTML(t.day)}<i class="cx-dot"></i>${this._formatClock(t.from)} – ${this._formatClock(t.to)}<i class="cx-dot"></i>${this._formatDuration(t.mins)}</div>`);
+            const multi = rel.sections.length > 1;
+            const why = rel.time.map(t => `<div class="cx-why-line"><i class="ph-fill ph-clock cx-i-time"></i>${multi ? `${this._escapeHTML(secLabel(t.other))}<i class="cx-dot"></i>` : ''}${this._escapeHTML(t.day)}<i class="cx-dot"></i>${this._formatClock(t.from)} – ${this._formatClock(t.to)}<i class="cx-dot"></i>${this._formatDuration(t.mins)}</div>`);
             if (rel.exam) {
               const samePeriod = String(rel.exam.period) === String(rel.exam.otherPeriod);
               const txt = samePeriod
                 ? `نفس فترة الاختبار النهائي<i class="cx-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))}`
                 : `تداخل وقت الاختبار النهائي<i class="cx-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))} مع ${this._escapeHTML(String(rel.exam.otherPeriod))}${rel.exam.overlapMins ? `<i class="cx-dot"></i>${this._formatDuration(rel.exam.overlapMins)}` : ''}`;
-              why.push(`<div class="cx-why-line"><i class="ph-fill ph-file-text cx-i-exam"></i>${txt}</div>`);
+              why.push(`<div class="cx-why-line"><i class="ph-fill ph-file-text cx-i-exam"></i>${txt}${multi ? `<i class="cx-dot"></i>اختبار واحد لكل شعب المقرر` : ''}</div>`);
             }
-            return `<div class="cx-row"><div class="cx-row-top"><span class="cx-row-name">${this._escapeHTML(rel.other.name)}</span><span class="cx-row-sec">${this._escapeHTML(secTxt)}</span><span class="cx-row-tags">${tags}</span></div><div class="cx-why">${why.join('')}</div></div>`;
+            return `<div class="cx-row"><div class="cx-row-top"><span class="cx-row-name">${this._escapeHTML(rel.other.name)}</span>${secChips}<span class="cx-row-tags">${tags}</span></div><div class="cx-why">${why.join('')}</div></div>`;
           }).join('');
           const n = rels.length;
           const count = n === 1 ? 'يتعارض مع مقرر واحد' : n === 2 ? 'يتعارض مع مقررين' : `يتعارض مع ${n} مقررات`;
