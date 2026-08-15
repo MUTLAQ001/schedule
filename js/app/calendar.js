@@ -247,6 +247,33 @@ Object.assign(QU_ScheduleApp, {
           }
         },
         _getPluralizedSectionString(count) { if (count === 1) return "شعبة واحدة"; if (count === 2) return "شعبتين"; if (count >= 3 && count <= 10) return `${count} شعب`; return `${count} شعبة`; },
+        _conflictRelChipsHTML(rels) {
+          if (!rels.length) return '';
+          const chips = rels.map(rel => {
+            const kind = rel.time.length && rel.exam ? 'both' : rel.exam ? 'exam' : 'time';
+            const icons = `${rel.time.length ? '<i class="ph-fill ph-clock"></i>' : ''}${rel.exam ? '<i class="ph-fill ph-file-text"></i>' : ''}`;
+            const why = kind === 'both' ? 'تعارض وقت واختبار' : kind === 'exam' ? 'تعارض اختبار نهائي' : 'تعارض وقت محاضرة';
+            return `<span class="ci-rel-chip ${kind}" title="${this._escapeHTML(`${why} مع ${rel.other.name} — شعبة ${rel.other.section}`)}">${icons}<span class="ci-rel-name">${this._escapeHTML(rel.other.name)}</span></span>`;
+          }).join('');
+          const n = rels.length;
+          const label = n === 1 ? 'يتعارض مع' : n === 2 ? 'يتعارض مع مقررين' : `يتعارض مع ${n} مقررات`;
+          return `<div class="ci-rels"><span class="ci-rels-label">${label}</span>${chips}</div>`;
+        },
+        _conflictRelRowsHTML(rels) {
+          if (!rels.length) return '';
+          const rows = rels.map(rel => {
+            const lines = rel.time.map(t => `<div class="cr-line"><span class="cr-kind time"><i class="ph-fill ph-clock"></i>وقت</span><span class="cr-text">${this._escapeHTML(t.day)}<i class="cr-dot"></i>${this._formatClock(t.from)} – ${this._formatClock(t.to)}<i class="cr-dot"></i>${this._formatDuration(t.mins)}</span></div>`);
+            if (rel.exam) {
+              const samePeriod = String(rel.exam.period) === String(rel.exam.otherPeriod);
+              const txt = samePeriod
+                ? `نفس فترة الاختبار النهائي<i class="cr-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))}`
+                : `تداخل وقت الاختبار النهائي<i class="cr-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))} مع ${this._escapeHTML(String(rel.exam.otherPeriod))}${rel.exam.overlapMins ? `<i class="cr-dot"></i>${this._formatDuration(rel.exam.overlapMins)}` : ''}`;
+              lines.push(`<div class="cr-line"><span class="cr-kind exam"><i class="ph-fill ph-file-text"></i>اختبار</span><span class="cr-text">${txt}</span></div>`);
+            }
+            return `<div class="cr-row"><div class="cr-title">${this._escapeHTML(rel.other.name)}<span class="cr-sec">شعبة ${this._escapeHTML(rel.other.section)}</span></div>${lines.join('')}</div>`;
+          }).join('');
+          return `<div class="cr-head">أسباب التعارض</div><div class="cr-list">${rows}</div>`;
+        },
         _handleViewAllConflicts(conflictMap) {
           const allConflictingIds = new Set(conflictMap.keys());
           const conflictingSections = Array.from(allConflictingIds).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
@@ -262,22 +289,20 @@ Object.assign(QU_ScheduleApp, {
             }
           });
           const modalHTML = conflictGroups.map((group, groupIndex) => {
-            let isExam = false, isTime = false;
-            group.forEach(s => {
-              const msgs = conflictMap.get(s.uniqueId) || [];
-              if (msgs.some(m => m.includes('وقت'))) isTime = true;
-              if (msgs.some(m => m.includes('اختبار'))) isExam = true;
-            });
-            const typeStr = (isTime && isExam) ? '(وقت واختبار)' : (isExam ? '(اختبار)' : '(وقت)');
+            const relsById = new Map(group.map(s => [s.uniqueId, this._conflictRelations(s, group)]));
+            const isTime = group.some(s => relsById.get(s.uniqueId).some(r => r.time.length));
+            const isExam = group.some(s => relsById.get(s.uniqueId).some(r => r.exam));
+            const kindsHTML = `<span class="cg-kinds">${isTime ? '<span class="cg-kind time"><i class="ph-fill ph-clock"></i>وقت</span>' : ''}${isExam ? '<span class="cg-kind exam"><i class="ph-fill ph-file-text"></i>اختبار</span>' : ''}</span>`;
             const groupItemsHTML = group.sort((a, b) => a.code.localeCompare(b.code)).map((section, itemIndex) => {
               const detailsId = `details-${groupIndex}-${itemIndex}`;
-              const examRow = isExam ? `<div><strong>الاختبار النهائي:</strong> ${this._examSummaryText(section.examPeriodId)}</div>` : '';
-              return `<div class="conflict-item"><div class="conflict-item-flex"><label class="conflict-item-main-label"><input type="radio" name="conflict-group-${groupIndex}" value="${this._escapeHTML(section.uniqueId)}" ${itemIndex === 0 ? 'checked' : ''}><div class="custom-radio"></div><div class="conflict-item-info"><h4>${this._escapeHTML(section.name)}</h4><span>${this._escapeHTML(section.code)} - شعبة ${this._escapeHTML(section.section)}</span></div></label><button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button></div><div class="conflict-extra-details" id="${detailsId}">${examRow}<div><strong>المواعيد:</strong> ${this._escapeHTML(section.time.replace(/<br>/g, ' / ') || 'غير محدد')}</div></div></div>`;
+              const rels = relsById.get(section.uniqueId) || [];
+              const examRow = section.examPeriodId ? `<div><strong>الاختبار النهائي:</strong> ${this._examSummaryText(section.examPeriodId)}</div>` : '';
+              return `<div class="conflict-item"><div class="conflict-item-flex"><label class="conflict-item-main-label"><input type="radio" name="conflict-group-${groupIndex}" value="${this._escapeHTML(section.uniqueId)}" ${itemIndex === 0 ? 'checked' : ''}><div class="custom-radio"></div><div class="conflict-item-info"><h4>${this._escapeHTML(section.name)}</h4><span>${this._escapeHTML(section.code)} - شعبة ${this._escapeHTML(section.section)}</span>${this._conflictRelChipsHTML(rels)}</div></label><button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button></div><div class="conflict-extra-details" id="${detailsId}">${this._conflictRelRowsHTML(rels)}<div class="cr-own">${examRow}<div><strong>المواعيد:</strong> ${this._escapeHTML(String(section.time || '').replace(/<br>/g, ' / ') || 'غير محدد')}</div></div></div></div>`;
             }).join('');
             return `<div class="conflict-group-container">
 <div class="conflict-group-title">
 <span>مجموعة التعارض ${groupIndex + 1}</span>
-<span style="font-size:0.85em; opacity:0.8; font-weight:normal">${typeStr}</span>
+${kindsHTML}
 </div>${groupItemsHTML}</div>`;
           }).join('');
           Swal.fire({
