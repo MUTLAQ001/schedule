@@ -153,25 +153,27 @@
     align-items: center;
     gap: 8px;
     z-index: 60;
-    background: transparent;
+    background: var(--m-chrome);
     border-bottom: 1px solid transparent;
     box-shadow: none;
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-    transition: background var(--m-base) ease, border-color var(--m-base) ease,
-      box-shadow var(--m-base) ease,
-      -webkit-backdrop-filter var(--m-base) ease, backdrop-filter var(--m-base) ease;
+    -webkit-backdrop-filter: var(--m-blur);
+    backdrop-filter: var(--m-blur);
+    transition: border-color var(--m-base) ease, box-shadow var(--m-base) ease;
+  }
+
+  .light .mobile-header {
+    background: var(--m-chrome);
+    border-bottom: 1px solid transparent;
+    box-shadow: none;
   }
 
   .mobile-header.is-scrolled {
-    background: var(--m-chrome);
     border-bottom-color: var(--m-line);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03), var(--m-shadow-1);
-    -webkit-backdrop-filter: var(--m-blur);
-    backdrop-filter: var(--m-blur);
   }
 
   .light .mobile-header.is-scrolled {
+    border-bottom-color: var(--m-line);
     box-shadow: 0 1px 0 rgba(255, 255, 255, 0.6), var(--m-shadow-1);
   }
 
@@ -359,6 +361,8 @@
   }
 
   .light .mobile-nav {
+    background: var(--m-dock);
+    border-top: 1px solid var(--m-line-2);
     box-shadow:
       var(--m-shadow-3),
       inset 0 1px 0 rgba(255, 255, 255, 0.9);
@@ -984,26 +988,6 @@
     color: var(--color-text-muted);
   }
 
-  .ms-same-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    margin-inline-start: 6px;
-    padding: 2px 8px;
-    border-radius: var(--radius-full);
-    font-size: 0.66rem;
-    font-weight: 700;
-    line-height: 1.7;
-    color: var(--color-success);
-    background: rgba(var(--rgb-success), 0.12);
-    border: 1px solid rgba(var(--rgb-success), 0.3);
-    white-space: nowrap;
-  }
-
-  .ms-same-chip i {
-    font-size: 0.9em;
-  }
-
   .mobile-schedule-item .conflict-chip,
   .mobile-schedule-item .closed-badge {
     padding: 2px 8px;
@@ -1216,7 +1200,7 @@
     min-height: 40px;
   }
 
-  body.high-performance .mobile-header.is-scrolled,
+  body.high-performance .mobile-header,
   body.high-performance .mobile-nav,
   body.high-performance .mobile-schedule-footer,
   body.high-performance .details-panel {
