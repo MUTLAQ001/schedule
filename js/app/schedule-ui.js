@@ -509,8 +509,7 @@ ${freeRow}
             const sameTeacher = multi && new Set(g.items.map(c => (c.instructor || '').trim())).size === 1;
 
             const field = (icon, label, val, extra) => `<span class="ms-field"><i class="ph ${icon}"></i><span class="ms-field-txt"><strong>${label}:</strong> ${val}${extra || ''}</span></span>`;
-            const sameChip = '<span class="ms-same-chip"><i class="ph ph-check"></i> كل الأجزاء هنا</span>';
-            const pairRow = (c, withChip) => `<div class="ms-pair">${field('ph-user', 'المحاضر', this._escapeHTML(c.instructor || 'غير محدد'))}${field('ph-map-pin', 'المكان', this._escapeHTML(c.location || 'غير محدد'), withChip ? sameChip : '')}</div>`;
+            const pairRow = (c) => `<div class="ms-pair">${field('ph-user', 'المحاضر', this._escapeHTML(c.instructor || 'غير محدد'))}${field('ph-map-pin', 'المكان', this._escapeHTML(c.location || 'غير محدد'))}</div>`;
             const bothShared = sameTeacher && samePlace;
 
             const partsHTML = g.items.map((c, pi) => {
@@ -520,7 +519,7 @@ ${freeRow}
               const rows = [
                 `<div class="mobile-detail-row"><i class="ph ph-clock"></i> <strong>المواعيد:</strong> ${this._escapeHTML(c.time.replace(/<br>/g, ' / ') || 'غير محدد')}</div>`
               ];
-              if (!bothShared) rows.push(pairRow(c, samePlace && pi === 0));
+              if (!bothShared) rows.push(pairRow(c));
               return `<div class="ms-part${conflicted ? ' is-conflicted' : ''}">
 <div class="ms-part-head"><span class="ms-part-type"><i class="ph ${this._typeIconFor(typeStr)}"></i>${this._escapeHTML(typeStr)}</span><span class="ms-part-sec">شعبة ${this._escapeHTML(c.section)}</span>${isClosed ? '<span class="closed-badge"><i class="ph-fill ph-lock-simple"></i>مغلقة</span>' : ''}${conflicted ? '<span class="conflict-chip"><i class="ph-fill ph-warning"></i>تعارض</span>' : ''}</div>
 <div class="mobile-schedule-details">${rows.join('')}</div>
@@ -528,7 +527,7 @@ ${freeRow}
             }).join('');
 
             const sharedHTML = [];
-            if (bothShared) sharedHTML.push(pairRow(g.items[0], true));
+            if (bothShared) sharedHTML.push(pairRow(g.items[0]));
 
             return `<div class="mobile-schedule-item${multi ? ' has-parts' : ''}${groupConflicted ? ' has-conflict' : ''}" style="animation-delay:${i * 30}ms;--item-color:${color};">
 <div class="mobile-schedule-header">
