@@ -74,12 +74,17 @@ Object.assign(QU_ScheduleApp, {
         _conflictRelations(section, others) {
           const map = new Map();
           this._getConflictDetails(section, others || []).forEach(d => {
-            let rel = map.get(d.other.uniqueId);
-            if (!rel) { rel = { other: d.other, time: [], exam: null }; map.set(d.other.uniqueId, rel); }
-            if (d.type === 'exam') rel.exam = d; else rel.time.push(d);
+            const key = d.other.code || d.other.uniqueId;
+            let rel = map.get(key);
+            if (!rel) { rel = { other: d.other, sections: [], time: [], exam: null }; map.set(key, rel); }
+            if (!rel.sections.some(s => s.uniqueId === d.other.uniqueId)) rel.sections.push(d.other);
+            if (d.type === 'exam') { if (!rel.exam) rel.exam = d; } else rel.time.push(d);
           });
           const rels = Array.from(map.values());
-          rels.forEach(rel => rel.time.sort((a, b) => (a.dayIndex - b.dayIndex) || (a.from - b.from)));
+          rels.forEach(rel => {
+            rel.time.sort((a, b) => (a.dayIndex - b.dayIndex) || (a.from - b.from));
+            rel.sections.sort((a, b) => this._typeRank(this._canonType(a.type)) - this._typeRank(this._canonType(b.type)) || String(a.section).localeCompare(String(b.section)));
+          });
           return rels.sort((a, b) => ((b.time.length && b.exam ? 1 : 0) - (a.time.length && a.exam ? 1 : 0)) || String(a.other.name).localeCompare(String(b.other.name), 'ar'));
         },
         _createLectureEventsForSection(section, isPreview, color) {
