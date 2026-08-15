@@ -311,6 +311,7 @@ ${statusIndicatorHTML}${favHTML}<div class="section-btn-number">${this._escapeHT
           }
           if (mobileContainer) {
             mobileContainer.classList.toggle('empty', selectedCourses.length === 0);
+            if (this._setMobileNavBadge) this._setMobileNavBadge('mobile-my-schedule-view', conflictMap.size > 0 ? 'warn' : null);
             if (selectedCourses.length === 0) { mobileContainer.innerHTML = emptyScheduleHTML; this._bindEmptyStateActions(mobileContainer); }
             else {
               mobileContainer.innerHTML = this._createMobileScheduleHTML(selectedCourses, conflictMap);
@@ -463,12 +464,79 @@ ${freeRow}
           const weeklyHours = Math.round((weeklyMin / 60) * 10) / 10;
           return `<div class="schedule-stats"><span class="stat-chip"><i class="ph ph-books"></i>${coursesCount} ${coursesCount === 1 ? 'مقرر' : coursesCount === 2 ? 'مقرران' : coursesCount <= 10 ? 'مقررات' : 'مقرراً'}</span><span class="stat-chip"><i class="ph ph-calendar-blank"></i>${daySet.size} ${daySet.size === 1 ? 'يوم دوام' : daySet.size === 2 ? 'يوما دوام' : 'أيام دوام'}</span><span class="stat-chip"><i class="ph ph-timer"></i>${weeklyHours} ساعة حضور أسبوعياً</span></div>`;
         },
+        _groupScheduleParts(selectedCourses) {
+          const rank = t => {
+            t = t || '';
+            if (t.includes('نظري') || t.includes('محاضرة')) return 0;
+            if (t.includes('عملي') || t.includes('معمل') || t.includes('مختبر')) return 1;
+            if (t.includes('تمارين')) return 2;
+            if (t.includes('تدريب')) return 3;
+            return 4;
+          };
+          const sorted = selectedCourses.slice().sort((a, b) =>
+            a.code.localeCompare(b.code) || a.name.localeCompare(b.name) ||
+            rank(a.type) - rank(b.type) ||
+            String(a.section).localeCompare(String(b.section), undefined, { numeric: true }));
+          const groups = [];
+          sorted.forEach(c => {
+            const last = groups[groups.length - 1];
+            if (last && last.code === c.code && last.name === c.name) last.items.push(c);
+            else groups.push({ code: c.code, name: c.name, items: [c] });
+          });
+          return groups;
+        },
+        _typeIconFor(typeStr) {
+          const s = String(typeStr || '');
+          if (/عمل|معمل|مختبر/.test(s)) return 'ph-flask';
+          if (/تدريب/.test(s)) return 'ph-briefcase';
+          if (/تمارين/.test(s)) return 'ph-pencil-simple';
+          return 'ph-chalkboard-simple';
+        },
         _createMobileScheduleHTML(selectedCourses, conflictMap) {
           let totalCredits = 0; const uniqueCourseCodes = new Set();
           selectedCourses.forEach(c => { if (!uniqueCourseCodes.has(c.code)) { totalCredits += parseInt(c.hours, 10) || 0; uniqueCourseCodes.add(c.code); } });
-          const itemsHTML = selectedCourses.sort((a, b) => a.code.localeCompare(b.code)).map((course, i) => {
-            const isConflicted = conflictMap.has(course.uniqueId);
-            return `<div class="mobile-schedule-item" style="animation-delay:${i * 30}ms;"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${this._escapeHTML(course.name)}</h3><span>${this._escapeHTML(course.code)} - شعبة ${this._escapeHTML(course.section)}</span></div>${isConflicted ? `<i class="ph-fill ph-warning mobile-conflict-icon"></i>` : ''}</div><div class="mobile-schedule-details"><div class="mobile-detail-row"><i class="ph ph-clock"></i> <strong>المواعيد:</strong> ${this._escapeHTML(course.time.replace(/<br>/g, ' / ') || 'غير محدد')}</div><div class="mobile-detail-row"><i class="ph ph-user"></i> <strong>المحاضر:</strong> ${this._escapeHTML(course.instructor || 'غير محدد')}</div></div></div>`;
+          const groups = this._groupScheduleParts(selectedCourses);
+          const itemsHTML = groups.map((g, i) => {
+            const groupConflicted = g.items.some(c => conflictMap.has(c.uniqueId));
+            const color = (this.state.groupedCourses[g.code] || {}).color || 'var(--color-primary)';
+            const hours = parseInt(g.items[0].hours, 10) || 0;
+            const multi = g.items.length > 1;
+            const hoursText = hours === 1 ? 'ساعة' : hours === 2 ? 'ساعتان' : hours <= 10 ? `${hours} ساعات` : `${hours} ساعة`;
+            const partsText = g.items.length === 2 ? 'جزءان' : g.items.length <= 10 ? `${g.items.length} أجزاء` : `${g.items.length} جزءاً`;
+
+            const places = g.items.map(c => (c.location || '').trim()).filter(Boolean);
+            const samePlace = multi && places.length === g.items.length && new Set(places).size === 1;
+            const sameTeacher = multi && new Set(g.items.map(c => (c.instructor || '').trim())).size === 1;
+
+            const field = (icon, label, val, extra) => `<span class="ms-field"><i class="ph ${icon}"></i><span class="ms-field-txt"><strong>${label}:</strong> ${val}${extra || ''}</span></span>`;
+            const sameChip = '<span class="ms-same-chip"><i class="ph ph-check"></i> كل الأجزاء هنا</span>';
+            const pairRow = (c, withChip) => `<div class="ms-pair">${field('ph-user', 'المحاضر', this._escapeHTML(c.instructor || 'غير محدد'))}${field('ph-map-pin', 'المكان', this._escapeHTML(c.location || 'غير محدد'), withChip ? sameChip : '')}</div>`;
+            const bothShared = sameTeacher && samePlace;
+
+            const partsHTML = g.items.map((c, pi) => {
+              const typeStr = this._typeLabel(c.type) || 'نظري';
+              const conflicted = conflictMap.has(c.uniqueId);
+              const isClosed = !!(c.status && c.status.includes('مغلقة'));
+              const rows = [
+                `<div class="mobile-detail-row"><i class="ph ph-clock"></i> <strong>المواعيد:</strong> ${this._escapeHTML(c.time.replace(/<br>/g, ' / ') || 'غير محدد')}</div>`
+              ];
+              if (!bothShared) rows.push(pairRow(c, samePlace && pi === 0));
+              return `<div class="ms-part${conflicted ? ' is-conflicted' : ''}">
+<div class="ms-part-head"><span class="ms-part-type"><i class="ph ${this._typeIconFor(typeStr)}"></i>${this._escapeHTML(typeStr)}</span><span class="ms-part-sec">شعبة ${this._escapeHTML(c.section)}</span>${isClosed ? '<span class="closed-badge"><i class="ph-fill ph-lock-simple"></i>مغلقة</span>' : ''}${conflicted ? '<span class="conflict-chip"><i class="ph-fill ph-warning"></i>تعارض</span>' : ''}</div>
+<div class="mobile-schedule-details">${rows.join('')}</div>
+</div>`;
+            }).join('');
+
+            const sharedHTML = [];
+            if (bothShared) sharedHTML.push(pairRow(g.items[0], true));
+
+            return `<div class="mobile-schedule-item${multi ? ' has-parts' : ''}${groupConflicted ? ' has-conflict' : ''}" style="animation-delay:${i * 30}ms;--item-color:${color};">
+<div class="mobile-schedule-header">
+<div class="mobile-schedule-title"><h3><span class="ms-dot"></span>${this._escapeHTML(g.name)}</h3><span>${this._escapeHTML(g.code)}${hours ? ' · ' + hoursText : ''}${multi ? ' · ' + partsText : ''}</span></div>
+</div>
+${sharedHTML.length ? `<div class="mobile-schedule-details ms-shared">${sharedHTML.join('')}</div>` : ''}
+<div class="ms-parts">${partsHTML}</div>
+</div>`;
           }).join('');
 
           const hasConflict = conflictMap.size > 0;
