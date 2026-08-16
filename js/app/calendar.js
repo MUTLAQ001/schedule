@@ -1,8 +1,25 @@
 Object.assign(QU_ScheduleApp, {
+        _calendarFillsHeight() {
+          if (!isMobile) return true;
+          return window.innerWidth >= 768 && window.innerHeight >= 600;
+        },
+        _syncCalendarSizing() {
+          const cal = this.state.calendar;
+          if (!cal) return;
+          const fills = this._calendarFillsHeight();
+          if (this._calFills === fills) return;
+          this._calFills = fills;
+          document.body.classList.toggle('cal-fills-height', fills);
+          cal.setOption('expandRows', fills);
+          cal.setOption('height', fills ? '100%' : 'auto');
+          requestAnimationFrame(() => { try { cal.updateSize(); } catch (e) { } });
+        },
         _initializeCalendar() {
           if (this.state.calendar) this.state.calendar.destroy();
+          this._calFills = this._calendarFillsHeight();
+          document.body.classList.toggle('cal-fills-height', this._calFills);
           const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
-          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const durMin = (arg.event.start && arg.event.end) ? Math.round((arg.event.end - arg.event.start) / 60000) : 999; const isShort = durMin <= 60; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: ' + (isShort ? '0.66rem' : '0.8rem') + '; line-height: ' + (isShort ? '1.2' : '1.4') + ';'; if (isShort) wrapper.classList.add('evt-1h'); wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small class="evt-foot" style="margin-top: auto;"><span class="evt-loc"><i class="ph ph-map-pin"></i> ${props.location}</span><span class="evt-code">${props.code}</span></small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); }, eventClick: (info) => { const p = info.event.extendedProps || {}; const sec = this.state.allCoursesData.find(c => c.uniqueId === p.uniqueId); if (!sec) return; const grp = this.state.groupedCourses[sec.code]; if (!grp) return; if (isMobile) { this._showMobileSectionDetails(sec, grp); } else { this._showSectionQuickView(sec, grp); } } };
+          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: this._calFills ? '100%' : 'auto', expandRows: this._calFills, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const durMin = (arg.event.start && arg.event.end) ? Math.round((arg.event.end - arg.event.start) / 60000) : 999; const isShort = durMin <= 60; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: ' + (isShort ? '0.66rem' : '0.8rem') + '; line-height: ' + (isShort ? '1.2' : '1.4') + ';'; if (isShort) wrapper.classList.add('evt-1h'); wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small class="evt-foot" style="margin-top: auto;"><span class="evt-loc"><i class="ph ph-map-pin"></i> ${props.location}</span><span class="evt-code">${props.code}</span></small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) { this._syncCalendarSizing(); this.state.calendar.updateSize(); } }, eventClick: (info) => { const p = info.event.extendedProps || {}; const sec = this.state.allCoursesData.find(c => c.uniqueId === p.uniqueId); if (!sec) return; const grp = this.state.groupedCourses[sec.code]; if (!grp) return; if (isMobile) { this._showMobileSectionDetails(sec, grp); } else { this._showSectionQuickView(sec, grp); } } };
           this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
           this.state.calendar.render();
           this._setupCalendarSizeGuard(calendarEl);
