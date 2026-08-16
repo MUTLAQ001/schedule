@@ -1376,6 +1376,48 @@
     padding-bottom: 96px !important;
   }
 
+  #mobile-my-schedule-list .mobile-schedule-item {
+    padding: var(--m-pad) var(--m-pad-lg);
+    gap: 14px;
+    border-color: rgba(var(--item-color-rgb, var(--rgb-primary)), 0.2);
+  }
+
+  #mobile-my-schedule-list .mobile-schedule-header {
+    padding-bottom: 13px;
+    border-bottom-color: rgba(var(--item-color-rgb, var(--rgb-primary)), 0.22);
+  }
+
+  #mobile-my-schedule-list .mobile-schedule-title h3 {
+    gap: 9px;
+    font-size: 1.1rem;
+  }
+
+  #mobile-my-schedule-list .ms-dot {
+    width: 9px;
+    height: 9px;
+    box-shadow: 0 0 0 3px rgba(var(--item-color-rgb, var(--rgb-primary)), 0.16);
+  }
+
+  #mobile-my-schedule-list .mobile-schedule-item.has-parts .ms-part {
+    padding: 12px 14px;
+    background: var(--m-surface-2);
+    border-color: var(--m-line);
+  }
+
+  #mobile-my-schedule-list .mobile-schedule-item .ms-part.is-conflicted {
+    padding: 12px 14px;
+    background: rgba(var(--rgb-warning), 0.075);
+    border-color: rgba(var(--rgb-warning), 0.26);
+  }
+
+  #mobile-my-schedule-list .ms-pair {
+    gap: 8px 18px;
+  }
+
+  #mobile-my-schedule-list .ms-field > i {
+    color: var(--item-color, var(--color-primary));
+  }
+
   .mobile-schedule-footer .summary-value {
     font-size: 1.35rem;
   }
