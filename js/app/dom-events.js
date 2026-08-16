@@ -137,6 +137,7 @@ Object.assign(QU_ScheduleApp, {
           this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
           this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
           this.dom.downloadImgBtn?.addEventListener('click', () => this._handleDownloadImage(false));
+          this._initSectionJump();
 
           this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
           document.querySelectorAll('.tab-btn').forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
@@ -221,6 +222,34 @@ Object.assign(QU_ScheduleApp, {
               }
             });
           }
+        },
+        _initSectionJump() {
+          const btn = document.getElementById('jump-to-myschedule');
+          const main = document.querySelector('.page-wrapper > .main-content');
+          if (!btn || !main) return;
+          const icon = btn.querySelector('.section-jump-icon');
+          const text = btn.querySelector('.section-jump-text');
+          const caret = btn.querySelector('.section-jump-caret');
+          const sync = () => {
+            const target = this.dom.myScheduleContainer;
+            if (!target) return;
+            const mainTop = main.getBoundingClientRect().top;
+            const isUp = main.scrollTop > 40 && target.getBoundingClientRect().top - mainTop <= main.clientHeight * 0.5;
+            btn.classList.toggle('is-up', isUp);
+            icon.className = `ph ${isUp ? 'ph-calendar-blank' : 'ph-list-checks'} section-jump-icon`;
+            caret.className = `ph ${isUp ? 'ph-caret-up' : 'ph-caret-down'} section-jump-caret`;
+            text.textContent = isUp ? 'الجدول' : 'جدولـي';
+            btn.title = isUp ? 'الرجوع إلى الجدول' : 'الانتقال إلى جدولي';
+          };
+          btn.addEventListener('click', () => {
+            if (btn.classList.contains('is-up')) { main.scrollTo({ top: 0, behavior: 'smooth' }); return; }
+            const target = this.dom.myScheduleContainer;
+            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          });
+          main.addEventListener('scroll', sync, { passive: true });
+          window.addEventListener('resize', sync);
+          if (typeof ResizeObserver !== 'undefined') { new ResizeObserver(sync).observe(main); }
+          sync();
         },
         _ensureTextSegmenter() {
           if (typeof Intl === 'undefined' || Intl.Segmenter) return;
