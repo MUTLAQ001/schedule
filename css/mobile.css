@@ -1355,15 +1355,15 @@
   }
 
   #mobile-courses-list {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: var(--m-gap) !important;
-    align-content: start;
+    display: block !important;
   }
 
   #mobile-courses-list > .course-item {
-    margin-bottom: 0;
-    align-self: start;
+    margin-bottom: var(--m-gap) !important;
+  }
+
+  #mobile-courses-list > .course-item:last-child {
+    margin-bottom: 0 !important;
   }
 
   #mobile-courses-list .course-info h3 {
@@ -1378,20 +1378,18 @@
   }
 
   #mobile-my-exams-list {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
     gap: var(--m-gap);
-    align-content: start;
-  }
-
-  #mobile-my-exams-list > .exam-daywarn {
-    grid-column: 1 / -1;
   }
 
   #mobile-my-schedule-list {
+    display: flex !important;
+    flex-direction: column;
     padding-bottom: 96px !important;
     gap: var(--m-gap) !important;
-    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  #mobile-my-schedule-list > .mobile-schedule-item {
+    flex: 0 0 auto;
   }
 
   #mobile-my-schedule-list .mobile-schedule-item {
