@@ -565,7 +565,7 @@
 
   .page-wrapper .my-schedule-table .course-cell[rowspan]:not([rowspan="1"]),
   .page-wrapper .my-schedule-table .hours-cell[rowspan]:not([rowspan="1"]) {
-    background: rgba(var(--item-color-rgb, var(--rgb-primary)), 0.055);
+    background: transparent;
   }
 
   .page-wrapper .my-schedule-table .course-parts-chip {
@@ -627,7 +627,7 @@
   }
 
   .page-wrapper .my-schedule-table tbody tr:hover td {
-    background: rgba(var(--item-color-rgb, var(--rgb-primary)), 0.06);
+    background: rgba(var(--rgb-primary), 0.04);
   }
 
   .page-wrapper .my-schedule-table .schedule-row.group-mid > td:not(.course-cell):not(.hours-cell) {
