@@ -591,7 +591,7 @@
   #mobile-calendar-view .card {
     padding: 0;
     overflow: hidden;
-    flex: 1;
+    flex: 0 0 auto;
     min-height: 0;
     height: auto;
     width: auto;
@@ -599,6 +599,10 @@
     border-radius: var(--m-r-lg);
     border: 1px solid var(--m-line);
     box-shadow: var(--m-shadow-2);
+  }
+
+  body.cal-fills-height #mobile-calendar-view .card {
+    flex: 1 1 0%;
   }
 
   .light #mobile-calendar-view .card {
@@ -1352,8 +1356,8 @@
 
   #mobile-courses-list {
     display: grid !important;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--m-gap);
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: var(--m-gap) !important;
     align-content: start;
   }
 
@@ -1362,18 +1366,32 @@
     align-self: start;
   }
 
+  #mobile-courses-list .course-info h3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
   #mobile-courses-list > .no-data {
     grid-column: 1 / -1;
   }
 
   #mobile-my-exams-list {
-    max-width: 720px;
-    margin-inline: auto;
-    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--m-gap);
+    align-content: start;
+  }
+
+  #mobile-my-exams-list > .exam-daywarn {
+    grid-column: 1 / -1;
   }
 
   #mobile-my-schedule-list {
     padding-bottom: 96px !important;
+    gap: var(--m-gap) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
   }
 
   #mobile-my-schedule-list .mobile-schedule-item {
