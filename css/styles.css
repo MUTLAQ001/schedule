@@ -4543,7 +4543,7 @@ input:checked+.slider:before {
 
   #mobile-my-schedule-list {
     display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)) !important;
     align-items: start !important;
   }
 
