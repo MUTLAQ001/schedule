@@ -387,7 +387,7 @@ Object.assign(QU_ScheduleApp, {
 
           const mobileWrapper = document.querySelector('.mobile-wrapper');
           if (isMobileContext && mobileWrapper) {
-            applyExpand(targetEl, { overflow: 'visible', flex: 'none', margin: '0', borderRadius: '0', boxShadow: 'none' });
+            applyExpand(targetEl, { overflow: 'hidden', flex: 'none', margin: '0', borderRadius: 'var(--radius)', boxShadow: 'none' });
             applyExpand(document.body, { width: '1100px', minWidth: '1100px', overflow: 'visible' });
             applyExpand(mobileWrapper, { overflow: 'visible', width: '1100px', height: 'auto', position: 'static' });
             const mobileView = document.getElementById('mobile-calendar-view');
