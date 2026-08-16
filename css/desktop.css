@@ -39,6 +39,41 @@
   opacity: 0.8;
 }
 
+.course-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--item-color, var(--color-primary));
+  box-shadow: 0 0 0 3px rgba(var(--item-color-rgb, var(--rgb-primary)), 0.16);
+}
+
+.cell-line {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  min-width: 0;
+  text-align: start;
+}
+
+.cell-line > i {
+  flex: 0 0 auto;
+  margin-top: 0.15rem;
+  font-size: 0.95rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.cell-line-txt {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.section-jump {
+  display: none;
+}
+
 .exam-pill {
   display: inline-flex;
   align-items: center;
@@ -255,6 +290,84 @@
     padding: 0.85rem;
   }
 
+  .page-wrapper > .main-content > .layout-block[data-block="calendar"] {
+    order: 1;
+  }
+
+  .page-wrapper > .main-content > .layout-block[data-block="myschedule"] {
+    order: 3;
+  }
+
+  .page-wrapper .section-jump {
+    order: 2;
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    width: 100%;
+    padding: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    transition: color var(--transition);
+  }
+
+  .page-wrapper .section-jump-rule {
+    flex: 1;
+    height: 1px;
+    background: var(--color-border);
+    transition: background var(--transition);
+  }
+
+  .page-wrapper .section-jump-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 36px;
+    padding: 0 1.05rem;
+    border-radius: var(--radius-full);
+    background: var(--m-surface);
+    border: 1px solid var(--m-line);
+    font-family: var(--font-title);
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+    transition: background var(--transition), border-color var(--transition), color var(--transition);
+  }
+
+  .page-wrapper .section-jump-icon {
+    font-size: 1.05rem;
+    color: var(--color-primary);
+  }
+
+  .page-wrapper .section-jump-caret {
+    font-size: 0.95rem;
+    opacity: 0.75;
+    transition: transform 0.18s ease;
+  }
+
+  .page-wrapper .section-jump:hover {
+    color: var(--color-primary);
+  }
+
+  .page-wrapper .section-jump:hover .section-jump-rule {
+    background: var(--m-accent-line);
+  }
+
+  .page-wrapper .section-jump:hover .section-jump-label {
+    background: var(--m-accent-soft);
+    border-color: var(--m-accent-line);
+  }
+
+  .page-wrapper .section-jump:hover .section-jump-caret {
+    transform: translateY(2px);
+  }
+
+  .page-wrapper .section-jump.is-up:hover .section-jump-caret {
+    transform: translateY(-2px);
+  }
+
   .page-wrapper .my-schedule-container > .empty-state {
     background: var(--color-card);
     border: 1px solid var(--color-border);
@@ -279,8 +392,23 @@
     min-width: 0;
   }
 
+  .page-wrapper .card-header-actions .section-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+    font-size: 1.15rem;
+    color: var(--color-primary);
+    background: var(--m-accent-soft);
+    border: 1px solid var(--m-accent-line);
+  }
+
   .page-wrapper .card-header-actions h3 {
-    font-size: 1.05rem;
+    font-size: 1.12rem;
+    font-weight: 700;
     white-space: nowrap;
   }
 
@@ -423,12 +551,27 @@
   }
 
   .page-wrapper .my-schedule-table .course-cell .course-code {
+    display: flex;
+    align-items: center;
+    gap: 0.42rem;
     font-size: 0.69rem;
+    color: var(--item-color, var(--color-primary));
   }
 
   .page-wrapper .my-schedule-table .course-cell .course-name {
     font-size: 0.88rem;
     line-height: 1.45;
+  }
+
+  .page-wrapper .my-schedule-table .course-cell[rowspan]:not([rowspan="1"]),
+  .page-wrapper .my-schedule-table .hours-cell[rowspan]:not([rowspan="1"]) {
+    background: rgba(var(--item-color-rgb, var(--rgb-primary)), 0.055);
+  }
+
+  .page-wrapper .my-schedule-table .course-parts-chip {
+    color: var(--item-color, var(--color-primary));
+    background: rgba(var(--item-color-rgb, var(--rgb-primary)), 0.12);
+    border-color: rgba(var(--item-color-rgb, var(--rgb-primary)), 0.28);
   }
 
   .page-wrapper .my-schedule-table .sec-cell .section-number {
@@ -441,8 +584,36 @@
     font-size: 0.92rem;
   }
 
+  .page-wrapper .my-schedule-table .sec-cell .sec-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3.1rem;
+    padding: 0.16rem 0.55rem;
+    border-radius: 10px;
+    background: var(--m-surface-2);
+    border: 1px solid var(--m-line);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+  }
+
   .page-wrapper .my-schedule-table .sec-cell .type-label {
-    font-size: 0.72rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    margin-top: 0.4rem;
+    padding: 0.14rem 0.52rem;
+    border-radius: var(--radius-full);
+    font-size: 0.69rem;
+    font-weight: 700;
+    line-height: 1.6;
+    color: var(--color-primary);
+    background: var(--m-accent-soft);
+    border: 1px solid var(--m-accent-line);
+  }
+
+  .page-wrapper .my-schedule-table .sec-cell .type-label i {
+    font-size: 0.9em;
   }
 
   .page-wrapper .my-schedule-table .instr-cell,
@@ -453,6 +624,19 @@
 
   .page-wrapper .my-schedule-table .hours-value {
     font-size: 1.05rem;
+  }
+
+  .page-wrapper .my-schedule-table tbody tr:hover td {
+    background: rgba(var(--item-color-rgb, var(--rgb-primary)), 0.06);
+  }
+
+  .page-wrapper .my-schedule-table .schedule-row.group-mid > td:not(.course-cell):not(.hours-cell) {
+    border-bottom-color: rgba(var(--item-color-rgb, var(--rgb-primary)), 0.22);
+  }
+
+  .page-wrapper .my-schedule-table .schedule-row.has-conflict > td:not(.course-cell),
+  .page-wrapper .my-schedule-table .schedule-row.has-conflict:hover > td:not(.course-cell) {
+    background: rgba(var(--rgb-danger), 0.07);
   }
 }
 
