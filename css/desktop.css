@@ -255,7 +255,7 @@
   }
 
   body:not(.custom-layout) .page-wrapper .calendar-wrapper {
-    min-height: clamp(360px, calc(100dvh - 15.5rem), 780px);
+    min-height: clamp(360px, calc(100dvh - 14.5rem), 780px);
   }
 
   .page-wrapper > .sidebar .sidebar-header {
