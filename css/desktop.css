@@ -640,6 +640,95 @@
   }
 }
 
+@media (min-width: 1600px) {
+  :root {
+    --d-gutter: clamp(1.75rem, 1.8vw, 3rem);
+    --d-gap: clamp(1.1rem, 1vw, 1.6rem);
+    --d-rail: clamp(400px, 20vw, 520px);
+    --d-pad: clamp(1.35rem, 1.1vw, 2rem);
+  }
+
+  .page-wrapper .my-schedule-table {
+    font-size: 0.92rem;
+  }
+
+  .page-wrapper .my-schedule-table .col-course {
+    width: 24%;
+  }
+
+  .page-wrapper .my-schedule-table .col-sec {
+    width: 9%;
+  }
+
+  .page-wrapper .my-schedule-table .col-instr {
+    width: 16%;
+  }
+
+  .page-wrapper .my-schedule-table .col-time {
+    width: 25%;
+  }
+
+  .page-wrapper .my-schedule-table .col-exam {
+    width: 6%;
+  }
+
+  .page-wrapper .my-schedule-table .col-loc {
+    width: 16%;
+  }
+
+  .page-wrapper .my-schedule-table .col-hours {
+    width: 4%;
+  }
+
+  .page-wrapper .my-schedule-table thead th {
+    padding: 0.8rem 1rem;
+    font-size: 0.76rem;
+  }
+
+  .page-wrapper .my-schedule-table tbody td {
+    padding: 0.95rem 1rem;
+  }
+
+  .page-wrapper .my-schedule-table .course-cell .course-code {
+    font-size: 0.74rem;
+  }
+
+  .page-wrapper .my-schedule-table .course-cell .course-name {
+    font-size: 0.95rem;
+  }
+
+  .page-wrapper .my-schedule-table .sec-cell .section-number {
+    font-size: 1rem;
+  }
+
+  .page-wrapper .my-schedule-table .sec-cell .type-label {
+    font-size: 0.74rem;
+  }
+
+  .page-wrapper .my-schedule-table .instr-cell,
+  .page-wrapper .my-schedule-table .loc-cell {
+    font-size: 0.88rem;
+  }
+
+  .page-wrapper .my-schedule-table .tl-day {
+    min-width: 3.8rem;
+    font-size: 0.79rem;
+  }
+
+  .page-wrapper .my-schedule-table .tl-range {
+    font-size: 0.86rem;
+  }
+
+  .page-wrapper .my-schedule-table .hours-value {
+    font-size: 1.15rem;
+  }
+
+  .page-wrapper .section-jump-label {
+    height: 38px;
+    font-size: 0.9rem;
+  }
+}
+
 @media (min-width: 1024px) and (max-width: 1319px) {
   .page-wrapper .header-actions button {
     width: 38px;
