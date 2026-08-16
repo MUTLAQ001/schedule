@@ -62,6 +62,117 @@ Object.assign(QU_ScheduleApp, {
           }
           requestAnimationFrame(() => { try { this.state.calendar?.updateSize(); } catch (e) { } });
         },
+        _railBounds() {
+          const vw = window.innerWidth || 1280;
+          return { min: 280, max: Math.max(280, Math.round(Math.min(620, vw * 0.45))) };
+        },
+        _currentRailPx() {
+          const el = document.querySelector('.page-wrapper > .sidebar');
+          const w = el ? Math.round(el.getBoundingClientRect().width) : 0;
+          return w || this._railBounds().min;
+        },
+        _applySidebarWidth() {
+          const root = document.documentElement;
+          const px = parseInt(this.state.userSettings.sidebarWidth, 10);
+          if (!px) { root.style.removeProperty('--qs-rail'); return; }
+          const b = this._railBounds();
+          root.style.setProperty('--qs-rail', Math.min(b.max, Math.max(b.min, px)) + 'px');
+        },
+        _setSidebarWidth(px, opts) {
+          const b = this._railBounds();
+          this.state.userSettings.sidebarWidth = px == null ? null : Math.min(b.max, Math.max(b.min, Math.round(px)));
+          this._applySidebarWidth();
+          if (!opts || !opts.silent) this._saveSettings();
+          this._syncSidebarWidthControl();
+          requestAnimationFrame(() => { try { this.state.calendar?.updateSize(); } catch (e) { } });
+        },
+        _railPresets() {
+          const b = this._railBounds();
+          const fit = px => Math.min(b.max, Math.max(b.min, px));
+          return [
+            { key: 'narrow', label: 'ضيّق', px: fit(300) },
+            { key: 'auto', label: 'متوسط', px: null },
+            { key: 'wide', label: 'واسع', px: fit(470) }
+          ];
+        },
+        _railActiveKey() {
+          const saved = parseInt(this.state.userSettings.sidebarWidth, 10);
+          if (!saved) return 'auto';
+          return this._railPresets()
+            .filter(p => p.px != null)
+            .reduce((best, p) => Math.abs(p.px - saved) < Math.abs(best.px - saved) ? p : best).key;
+        },
+        _syncSidebarWidthControl() {
+          const toggle = this.dom.settingsModal && this.dom.settingsModal.querySelector('#sidebar-width-toggle');
+          if (!toggle) return;
+          const active = this._railActiveKey();
+          toggle.innerHTML = this._railPresets()
+            .map(p => `<button class="mode-btn ${p.key === active ? 'active' : ''}" data-rail="${p.key}">${p.label}</button>`)
+            .join('');
+          toggle.onclick = e => {
+            const btn = e.target.closest('.mode-btn');
+            if (!btn) return;
+            const preset = this._railPresets().find(p => p.key === btn.dataset.rail);
+            if (preset) this._setSidebarWidth(preset.px);
+          };
+        },
+        _initSidebarResizer() {
+          const sidebar = document.querySelector('.page-wrapper > .sidebar');
+          if (!sidebar || sidebar.querySelector('.rail-resizer')) return;
+          const handle = document.createElement('div');
+          handle.className = 'rail-resizer';
+          handle.setAttribute('role', 'separator');
+          handle.setAttribute('aria-orientation', 'vertical');
+          handle.setAttribute('aria-label', 'تغيير عرض قائمة المقررات');
+          handle.setAttribute('title', 'اسحب لتغيير عرض القائمة · نقرتان للإرجاع');
+          handle.tabIndex = 0;
+          handle.innerHTML = '<span class="rail-resizer-grip"></span>';
+          sidebar.appendChild(handle);
+          const flip = () => document.body.classList.contains('sidebar-right') ? -1 : 1;
+          let dragging = false, startX = 0, startW = 0, pending = 0, raf = 0;
+          const paint = () => {
+            raf = 0;
+            const b = this._railBounds();
+            document.documentElement.style.setProperty('--qs-rail', Math.min(b.max, Math.max(b.min, pending)) + 'px');
+            try { this.state.calendar?.updateSize(); } catch (e) { }
+          };
+          const onMove = e => {
+            if (!dragging) return;
+            pending = startW + (e.clientX - startX) * flip();
+            if (!raf) raf = requestAnimationFrame(paint);
+          };
+          const onUp = () => {
+            if (!dragging) return;
+            dragging = false;
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+            window.removeEventListener('pointercancel', onUp);
+            document.body.classList.remove('rail-resizing');
+            if (raf) { cancelAnimationFrame(raf); raf = 0; }
+            this._setSidebarWidth(pending);
+          };
+          handle.addEventListener('pointerdown', e => {
+            if (isMobile || document.body.classList.contains('custom-layout')) return;
+            e.preventDefault();
+            dragging = true;
+            startX = e.clientX;
+            startW = sidebar.getBoundingClientRect().width;
+            pending = startW;
+            try { handle.setPointerCapture(e.pointerId); } catch (err) { }
+            document.body.classList.add('rail-resizing');
+            window.addEventListener('pointermove', onMove);
+            window.addEventListener('pointerup', onUp);
+            window.addEventListener('pointercancel', onUp);
+          });
+          handle.addEventListener('dblclick', () => { this._setSidebarWidth(null); this._showToast('info', 'رجّعنا عرض القائمة للافتراضي.'); });
+          handle.addEventListener('keydown', e => {
+            const step = e.shiftKey ? 48 : 16;
+            if (e.key === 'ArrowLeft') { e.preventDefault(); this._setSidebarWidth(this._currentRailPx() - step * flip()); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); this._setSidebarWidth(this._currentRailPx() + step * flip()); }
+            else if (e.key === 'Home') { e.preventDefault(); this._setSidebarWidth(null); }
+          });
+          window.addEventListener('resize', () => this._applySidebarWidth());
+        },
         _renderLayoutEditor(host) {
           const blocks = this.constants.LAYOUT_BLOCKS;
           const cols = this.constants.LAYOUT_COLUMNS;
