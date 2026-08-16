@@ -815,8 +815,9 @@
   }
 
   .mobile-exams-header-controls {
-    max-width: 720px;
+    max-width: 940px;
     margin-inline: auto;
+    width: 100%;
   }
 }
 
