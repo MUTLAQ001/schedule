@@ -546,7 +546,9 @@ body.sidebar-right .page-wrapper > .sidebar {
 
 body.mobile-view #sidebar-position-item,
 body.mobile-view #layout-editor-item,
-body.custom-layout #sidebar-position-item {
+body.mobile-view #sidebar-width-item,
+body.custom-layout #sidebar-position-item,
+body.custom-layout #sidebar-width-item {
   display: none;
 }
 
@@ -4886,38 +4888,7 @@ input:checked+.slider:before {
   }
 }
 
-@media (min-width: 1024px) and (max-width: 1366px) {
-  .sidebar {
-    width: 300px !important;
-  }
-
-  .main-header h1 {
-    font-size: 2rem;
-  }
-
-  .main-content {
-    padding: 1rem !important;
-    gap: 1rem !important;
-  }
-
-  .main-header {
-    margin: -1rem -1rem 0 !important;
-    padding: 1rem 1rem 1rem !important;
-  }
-
-  .calendar-wrapper.card {
-    padding: 0.75rem !important;
-  }
-}
-
 @media (max-width: 1200px) {
-  .header-actions {
-    flex-wrap: wrap;
-  }
-  .header-actions button {
-    padding: 0.5rem 0.8rem !important;
-    font-size: 0.8rem !important;
-  }
   .fc-event {
     padding: 2px 4px !important;
     border-radius: 6px !important;
@@ -4979,6 +4950,8 @@ body.high-performance .my-schedule-table .schedule-row {
   .schedule-tabs-container,
   .moad-btn,
   .copy-crn-btn,
+  .free-courses-btn,
+  .card-header-tools,
   .total-credits-pill,
   .view-conflicts-btn,
   .mobile-schedule-footer,
