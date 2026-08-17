@@ -191,32 +191,61 @@ Object.assign(QU_ScheduleApp, {
           const bodyEl = panel.querySelector('.details-body'); if (bodyEl && shouldUpdatePanel) bodyEl.scrollTop = 0;
           this.dom.mobileSectionDetailsOverlay.classList.add('open');
         },
+        _qaPreviewCompanions(section, selectedIds) {
+          if (!this.state.userSettings.quickAddMode) return [];
+          const ordered = this.state.groupedCourses[section.code]?.sections || [];
+          const idx = ordered.findIndex(s => s.uniqueId === section.uniqueId);
+          if (idx === -1 || !ordered.some(s => this._qaCompanion(s)) || !ordered.some(s => !this._qaCompanion(s))) return [];
+          const skip = s => selectedIds.has(s.uniqueId) || (this.state.userSettings.hideClosedCourses && String(s.status || '').includes('مغلقة'));
+          if (this._qaCompanion(section)) {
+            let p = idx - 1;
+            while (p >= 0 && this._qaCompanion(ordered[p])) p--;
+            if (p < 0 || skip(ordered[p])) return [];
+            return [ordered[p]];
+          }
+          const companions = [];
+          for (let i = idx + 1; i < ordered.length; i++) { if (!this._qaCompanion(ordered[i])) break; companions.push(ordered[i]); }
+          const typeGroups = new Map();
+          companions.filter(c => !skip(c)).forEach(c => { const k = this._typeLabel(c.type) || 'مرافقة'; if (!typeGroups.has(k)) typeGroups.set(k, []); typeGroups.get(k).push(c); });
+          const picked = [];
+          typeGroups.forEach(arr => { if (arr.length === 1) picked.push(arr[0]); });
+          return picked;
+        },
         _sectionPreviewList(section) {
           const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
           const selected = activeSchedule
             ? Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean)
             : [];
-          if (selected.some(s => s.uniqueId === section.uniqueId)) return { list: selected, replaced: false, already: true };
-          const type = this._canonType(section.type);
-          const kept = selected.filter(s => !(s.code === section.code && this._canonType(s.type) === type));
-          return { list: kept.concat([section]), replaced: kept.length !== selected.length, already: false };
+          if (selected.some(s => s.uniqueId === section.uniqueId)) return { list: selected, replaced: false, already: true, extras: [], dropped: [] };
+          const extras = this._qaPreviewCompanions(section, new Set(selected.map(s => s.uniqueId)));
+          const added = [section].concat(extras);
+          const keys = new Set(added.map(s => s.code + '|' + this._canonType(s.type)));
+          const kept = selected.filter(s => !keys.has(s.code + '|' + this._canonType(s.type)));
+          const dropped = selected.filter(s => keys.has(s.code + '|' + this._canonType(s.type)));
+          return { list: kept.concat(added), replaced: dropped.length > 0, already: false, extras, dropped };
         },
         _showSectionSchedulePreview(section) {
-          const { list, replaced, already } = this._sectionPreviewList(section);
+          const { list, replaced, already, extras, dropped } = this._sectionPreviewList(section);
           const conflictMap = this._calculateConflicts(list);
-          const clash = conflictMap.has(section.uniqueId);
-          const typeStr = this._typeLabel(section.type) || '';
+          const added = [section].concat(extras);
+          const secLabel = s => `شعبة ${this._escapeHTML(String(s.section))}${this._typeLabel(s.type) ? ` (${this._escapeHTML(this._typeLabel(s.type))})` : ''}`;
+          const clashing = added.filter(s => conflictMap.has(s.uniqueId));
+          const clashTxt = clashing.some(s => s.uniqueId === section.uniqueId)
+            ? (clashing.length > 1 ? 'هذه الشعبة والمرافقة لها تتعارضان مع جدولك.' : 'هذه الشعبة تتعارض مع جدولك.')
+            : `الشعبة المرافقة ${clashing.map(secLabel).join(' و')} تتعارض مع جدولك.`;
+          const droppedTxt = dropped.map(s => `${this._typeLabel(s.type) || ''} ${s.code}`.trim()).join(' و');
           const note = already
             ? 'هذه الشعبة مضافة في جدولك حالياً.'
             : replaced
-              ? `المعاينة تستبدل ${this._escapeHTML(typeStr)} ${this._escapeHTML(section.code)} المضاف في جدولك بهذه الشعبة.`
+              ? `المعاينة تستبدل ${this._escapeHTML(droppedTxt)} المضاف في جدولك ${dropped.length > 1 ? 'بهذه الشعب.' : 'بهذه الشعبة.'}`
               : 'المعاينة تُظهر جدولك بعد إضافة هذه الشعبة.';
-          const banner = clash
-            ? `<div class="sp-note warn"><i class="ph-fill ph-warning"></i> هذه الشعبة تتعارض مع جدولك.</div>`
+          const banner = clashing.length
+            ? `<div class="sp-note warn"><i class="ph-fill ph-warning"></i> ${clashTxt}</div>`
             : `<div class="sp-note"><i class="ph ph-info"></i> ${note}</div>`;
+          const qaBanner = extras.length ? `<div class="sp-note"><i class="ph ph-lightning"></i> الإضافة السريعة تضيف معها ${extras.map(secLabel).join(' و')}، والمعاينة تُظهر الجدول بعد الإضافة.</div>` : '';
           Swal.fire({
             title: `${this._escapeHTML(section.name)} — شعبة ${this._escapeHTML(section.section)}`,
-            html: `<div class="gen-summary custom-scrollbar">${banner}${this._previewGridHTML(list)}</div>`,
+            html: `<div class="gen-summary custom-scrollbar">${banner}${qaBanner}${this._previewGridHTML(list)}</div>`,
             showConfirmButton: false,
             showCloseButton: true,
             width: 'auto',
