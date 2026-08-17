@@ -453,7 +453,7 @@ ${freeRow}
                 ? (idx === 0 ? `<td class="hours-cell" rowspan="${g.items.length}"><div class="hours-value">${hoursVals[0]}</div></td>` : '')
                 : `<td class="hours-cell"><div class="hours-value">${parseInt(course.hours, 10) || 0}</div></td>`;
               const conflictChip = isConflicted ? '<span class="conflict-chip"><i class="ph-fill ph-warning"></i>تعارض</span>' : '';
-              const examCellHTML = course.examPeriodId ? `<span class="exam-pill">${this._escapeHTML(course.examPeriodId)}</span>` : '<span class="cell-muted">لا يوجد</span>';
+              const examCellHTML = course.examPeriodId ? `<span class="exam-pill" title="${this._escapeHTML(this._examSummaryText(course.examPeriodId))}">${this._escapeHTML(course.examPeriodId)}</span>` : '<span class="cell-muted">لا يوجد</span>';
               return `<tr class="${rowClasses}" style="${rowStyle}">${courseCell}<td class="sec-cell"><div class="section-number"><span class="sec-num">${this._escapeHTML(course.section)}</span>${closedBadge}${conflictChip}</div><div class="type-label"><i class="ph ${this._typeIconFor(course.type)}"></i>${this._escapeHTML(this._typeLabel(course.type))}</div></td><td class="instr-cell"><span class="cell-line"><i class="ph ph-user"></i><span class="cell-line-txt">${this._cellText(course.instructor)}</span></span></td><td class="time-cell">${this._timeCellHTML(course.time)}</td><td class="exam-cell">${examCellHTML}</td><td class="loc-cell"><span class="cell-line"><i class="ph ph-map-pin"></i><span class="cell-line-txt">${this._cellText(course.location)}</span></span></td>${hoursCell}</tr>`;
             }).join('');
           }).join('');
