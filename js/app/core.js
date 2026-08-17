@@ -33,9 +33,9 @@
             extended: ['9:00 - 12:00', '13:00 - 16:00']
           },
           EXAM_BLOCKS: [
-            { start: 1, weeks: 2, weekOffset: 0, times: 'main', label: '' },
-            { start: 31, weeks: 2, weekOffset: 0, times: 'extended', label: 'ممتدة' },
-            { start: 51, weeks: 1, weekOffset: -1, times: 'main', label: '' }
+            { start: 1, weeks: 2, weekOffset: 0, times: 'main' },
+            { start: 31, weeks: 2, weekOffset: 0, times: 'extended' },
+            { start: 51, weeks: 1, weekOffset: -1, times: 'main' }
           ],
           EXAM_WEEK_LABELS: { '-1': 'قبل الاختبارات', '0': 'الأسبوع الأول', '1': 'الأسبوع الثاني' },
           EXAM_DAYS: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
