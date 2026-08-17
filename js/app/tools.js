@@ -116,6 +116,8 @@ Object.assign(QU_ScheduleApp, {
             { icon: 'ph-download-simple', title: 'التصدير والحفظ', items: [
               { i: 'ph-calendar-check', t: 'تصدير للتقويم (.ics)', d: 'افتح جدولك في تقويم Google أو Apple مع تنبيهات قبل المحاضرة.' },
               { i: 'ph-image', t: 'حفظ كصورة', d: 'صدّر جدولك كصورة عالية الجودة جاهزة للمشاركة أو خلفية للشاشة.' },
+              { svg: this._notionLogoSVG(), t: 'تصدير إلى Notion', d: 'ملف CSV يفتح في Notion كقاعدة بيانات، كل صف فيها محاضرة بيومها ووقتها وقاعتها.' },
+              { svg: this._obsidianLogoSVG(), t: 'تصدير إلى Obsidian', d: 'ملاحظة Markdown فيها جدولك الأسبوعي وتفاصيل مقرراتك واختباراتك، مع روابط لكل مقرر.' },
               { i: 'ph-cloud-arrow-down', t: 'نسخ احتياطي', d: 'تصدير واستيراد جدولك كملف JSON أو باللصق المباشر.' },
               { i: 'ph-floppy-disk', t: 'حفظ تلقائي', d: 'كل تغييراتك تُحفظ في جهازك فوراً وتبقى بعد إغلاق الصفحة.' }
             ]},
@@ -140,7 +142,7 @@ Object.assign(QU_ScheduleApp, {
               { i: 'ph-devices', t: 'يعمل على كل الأجهزة', d: 'تصميم متجاوب للجوال والتابلت والكمبيوتر، مع دعم التنقل بلوحة المفاتيح وقارئات الشاشة.' }
             ]}
           ];
-          const html = `<div id="features-modal-content" class="custom-scrollbar">${groups.map(g => `<div class="features-group"><div class="features-group-header"><span class="fg-icon"><i class="ph ${g.icon}"></i></span><h4>${g.title}</h4></div><div class="features-items">${g.items.map(f => `<div class="feature-item"><i class="ph ${f.i}"></i><div><div class="f-title">${f.t}</div><div class="f-desc">${f.d}</div></div></div>`).join('')}</div></div>`).join('')}</div>`;
+          const html = `<div id="features-modal-content" class="custom-scrollbar">${groups.map(g => `<div class="features-group"><div class="features-group-header"><span class="fg-icon"><i class="ph ${g.icon}"></i></span><h4>${g.title}</h4></div><div class="features-items">${g.items.map(f => `<div class="feature-item">${f.svg || `<i class="ph ${f.i}"></i>`}<div><div class="f-title">${f.t}</div><div class="f-desc">${f.d}</div></div></div>`).join('')}</div></div>`).join('')}</div>`;
           Swal.fire({ title: 'مميزات QU Schedule', html, confirmButtonText: 'رائع!', customClass: { popup: 'swal2-popup wide-swal' } });
         },
         _totalCreditsOf(selectedCourses) {
