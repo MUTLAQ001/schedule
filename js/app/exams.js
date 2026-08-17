@@ -20,6 +20,82 @@ Object.assign(QU_ScheduleApp, {
             return null;
           } catch (e) { return null; }
         },
+        _buildExamPeriods() {
+          const c = this.constants;
+          const a = c.EXAM_ANCHOR;
+          let g0 = this._hijriToGregorian(a.hy, a.hm, a.hd);
+          if (!g0) return {};
+          if (g0.getUTCDay() !== 0) {
+            console.warn(`QU Schedule: بداية الاختبارات ${a.hd}/${a.hm}/${a.hy} ليست يوم أحد — تم ضبطها إلى الأحد السابق.`);
+            g0 = new Date(g0.getTime() - g0.getUTCDay() * 86400000);
+          }
+          const fmt = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura-nu-latn', { day: 'numeric', month: 'numeric', year: 'numeric', timeZone: 'UTC' });
+          const hijri = (dt) => {
+            const o = {};
+            fmt.formatToParts(dt).forEach(p => { if (p.type === 'day' || p.type === 'month' || p.type === 'year') o[p.type] = parseInt(p.value, 10); });
+            return `${o.day}/${o.month}/${o.year}`;
+          };
+          const out = {};
+          c.EXAM_BLOCKS.forEach(block => {
+            const times = c.EXAM_TIMES[block.times];
+            const total = block.weeks * 5 * times.length;
+            for (let i = 0; i < total; i++) {
+              const dayIndex = Math.floor(i / times.length);
+              const shift = (block.weekOffset + Math.floor(dayIndex / 5)) * 7 + (dayIndex % 5);
+              out[String(block.start + i)] = `${hijri(new Date(g0.getTime() + shift * 86400000))} (${times[i % times.length]})`;
+            }
+          });
+          return out;
+        },
+        _examSlotOf(periodId) {
+          const id = parseInt(periodId, 10);
+          if (!id) return null;
+          if (!this._examSlotCache) this._examSlotCache = {};
+          if (this._examSlotCache[id] !== undefined) return this._examSlotCache[id];
+          const c = this.constants;
+          let slot = null;
+          for (const block of c.EXAM_BLOCKS) {
+            const times = c.EXAM_TIMES[block.times];
+            const i = id - block.start;
+            if (i < 0 || i >= block.weeks * 5 * times.length) continue;
+            const dayCount = Math.floor(i / times.length);
+            const week = block.weekOffset + Math.floor(dayCount / 5);
+            const dayIndex = dayCount % 5;
+            slot = { label: block.label, week, weekLabel: c.EXAM_WEEK_LABELS[week] || `الأسبوع ${week + 1}`, dayIndex, dayName: c.EXAM_DAYS[dayIndex], time: times[i % times.length] };
+            break;
+          }
+          this._examSlotCache[id] = slot;
+          return slot;
+        },
+        _examSlotText(periodId) {
+          const slot = this._examSlotOf(periodId);
+          if (!slot) return `فترة ${periodId}`;
+          return `${slot.weekLabel} · ${slot.dayName} · ${slot.time}${slot.label ? ` · ${slot.label}` : ''}`;
+        },
+        _examWhenHTML(periodId, info) {
+          const slot = this._examSlotOf(periodId);
+          const week = slot ? slot.weekLabel : `فترة ${this._escapeHTML(String(periodId))}`;
+          const rows = [`<span class="ew-week">${week}</span>`];
+          if (slot) rows.push(`<span class="ew-slot">${slot.dayName} · ${slot.time}${slot.label ? ` · ${slot.label}` : ''}</span>`);
+          if (this.state.showExamDates && info && info.raw) {
+            const hijri = info.raw.split('(')[0].trim();
+            rows.push(`<span class="ew-date">${hijri} هـ${info.gregorianText ? ` · ${info.gregorianText} م` : ''}</span>`);
+          }
+          return `<span class="exam-when">${rows.join('')}</span>`;
+        },
+        _examSeasonEnd() {
+          let last = null;
+          Object.keys(this.constants.EXAM_DATA).forEach(id => {
+            const info = this._getExamDateInfo(id);
+            if (info && info.end && (!last || info.end > last)) last = info.end;
+          });
+          return last;
+        },
+        _examDatesUsable() {
+          if (this._examDataIsEmpty()) return false;
+          const end = this._examSeasonEnd();
+          return !!end && Date.now() <= end.getTime();
+        },
         _getExamDateInfo(periodId) {
           if (!periodId) return null;
           if (!this._examDateCache) this._examDateCache = {};
@@ -47,14 +123,13 @@ Object.assign(QU_ScheduleApp, {
         },
         _examSummaryText(periodId) {
           if (!periodId) return 'لا يوجد';
+          const parts = [this._examSlotText(periodId)];
           const info = this._getExamDateInfo(periodId);
-          if (!info) return `فترة ${periodId}`;
-          const hijri = (info.raw || '').split('(')[0].trim();
-          const time = (info.raw || '').match(/\(([^)]+)\)/);
-          const parts = [`فترة ${periodId}`];
-          if (hijri) parts.push(`${hijri} هـ`);
-          if (info.gregorianText) parts.push(`${info.gregorianText} م`);
-          if (time) parts.push(time[1].trim());
+          if (info) {
+            const hijri = (info.raw || '').split('(')[0].trim();
+            if (hijri) parts.push(`${hijri} هـ`);
+            if (info.gregorianText) parts.push(`${info.gregorianText} م`);
+          }
           return parts.join(' · ');
         },
         _countdownText(daysLeft) {
@@ -274,9 +349,13 @@ Object.assign(QU_ScheduleApp, {
         },
         _renderFinalExams(selectedCourses) {
           const uniqueExams = [...new Map(selectedCourses.filter(e => e.examPeriodId).map(e => [e.examPeriodId, e])).values()];
-          const toggleBtnDesktop = this.dom.desktopDateToggle;
-          const toggleBtnMobile = this.dom.mobileMyExamsDateToggle;
-          [toggleBtnDesktop, toggleBtnMobile].forEach(btn => { if (btn) btn.classList.toggle('active', this.state.showExamDates); });
+          const datesUsable = this._examDatesUsable();
+          if (!datesUsable) this.state.showExamDates = false;
+          [this.dom.desktopDateToggle, this.dom.mobileMyExamsDateToggle].forEach(btn => {
+            if (!btn) return;
+            btn.style.display = datesUsable ? '' : 'none';
+            btn.classList.toggle('active', this.state.showExamDates);
+          });
 
           let footerHtml = '';
           if (this.state.showExamDates && uniqueExams.length > 0) {
@@ -294,16 +373,11 @@ Object.assign(QU_ScheduleApp, {
             const exam = x.exam, info = x.info;
             const cd = info ? this._countdownText(info.daysLeft) : null;
             const pill = cd ? `<span class="exam-countdown ${cd.cls}"><i class="ph ${cd.icon}"></i> ${cd.text}</span>` : '';
-            let examText = `فترة الاختبار: ${exam.examPeriodId}`;
-            if (this.state.showExamDates) {
-              if (info && info.raw) examText = info.gregorianText ? `${info.raw} — ${info.gregorianText}` : info.raw;
-              else examText = `فترة: ${exam.examPeriodId} (غير مدرجة)`;
-            }
+            const whenHTML = this._examWhenHTML(exam.examPeriodId, info);
             if (mobileMode) {
-              return `<div class="mobile-schedule-item mobile-exam-item"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${this._escapeHTML(exam.name)} (${this._escapeHTML(exam.code)})</h3><span class="mobile-exam-date">${examText}</span></div>${pill}</div></div>`;
+              return `<div class="mobile-schedule-item mobile-exam-item"><div class="mobile-schedule-header"><div class="mobile-schedule-title"><h3>${this._escapeHTML(exam.name)} (${this._escapeHTML(exam.code)})</h3>${whenHTML}</div>${pill}</div></div>`;
             }
-            const styled = this.state.showExamDates && info && info.raw ? `<span style="color:var(--color-primary); font-weight:700">${examText}</span>` : `<span style="${info && info.raw ? '' : 'opacity:0.6'}">${examText}</span>`;
-            return `<div class="course-item"><div class="course-item-header" style="cursor:default;"><div class="course-info"><h3>${this._escapeHTML(exam.name)} (${this._escapeHTML(exam.code)})</h3><p><strong>${styled}</strong></p></div>${pill}</div></div>`;
+            return `<div class="course-item"><div class="course-item-header" style="cursor:default;"><div class="course-info"><h3>${this._escapeHTML(exam.name)} (${this._escapeHTML(exam.code)})</h3>${whenHTML}</div>${pill}</div></div>`;
           };
 
           if (this.dom.desktopExamsList) {
