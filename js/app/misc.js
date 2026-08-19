@@ -239,8 +239,20 @@ Object.assign(QU_ScheduleApp, {
             { "code": "FIN 220", "name": "مبادئ التمويل", "hours": "3", "section": "215", "type": "محاضرة", "status": "مغلقة", "instructor": "عبدالرحمن عمر", "time": "الأحد: 01:00 م - 02:15 م<br>الثلاثاء: 01:00 م - 02:15 م", "location": "مبنى B - قاعة 303", "examPeriodId": "7" },
             { "code": "ISLM 101", "name": "الثقافة الإسلامية", "hours": "2", "section": "220", "type": "إلكتروني", "status": "مفتوحة", "instructor": "غير محدد", "time": "غير محدد", "location": "عن بُعد", "examPeriodId": null }
           ];
-          this.state.schedules = []; this.state.customColors = {};
-          this._addSchedule("الجدول التجريبي", true); this._processAndDisplayData(demoCourses); this.updateFullUI(); this._showToast('info', 'مرحباً بك في وضع المعاينة!');
+          if (this._preDemoHideClosed === undefined) this._preDemoHideClosed = this.state.userSettings.hideClosedCourses;
+          this.state.userSettings.hideClosedCourses = false;
+          this.state.schedules = []; this.state.customColors = {}; this.state.activeScheduleIndex = 0;
+          this._addSchedule("الجدول التجريبي", true); this._processAndDisplayData(demoCourses);
+          const demoSchedule = this.state.schedules[0];
+          [['CS 101', '201'], ['CS 101', '202'], ['ACCT 221', '200'], ['ENG 110', '210'], ['FIN 220', '215']].forEach(([code, sec]) => {
+            const match = this.state.allCoursesData.find(c => c.code === code && c.section === sec);
+            if (match) demoSchedule.sections.add(match.uniqueId);
+          });
+          this.updateFullUI(); this._showToast('info', 'مرحباً بك في وضع المعاينة!');
+        },
+        _exitDemoMode() {
+          this.state.isDemoMode = false;
+          if (this._preDemoHideClosed !== undefined) { this.state.userSettings.hideClosedCourses = this._preDemoHideClosed; this._preDemoHideClosed = undefined; }
         },
         _toggleDemoBadge() {
           if (isMobile) { this._renderScheduleTabs(); } else {
