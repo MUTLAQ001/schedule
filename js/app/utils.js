@@ -63,9 +63,51 @@ Object.assign(QU_ScheduleApp, {
             }
           });
         },
+        _isSectionClosed(section) { return !!(section && String(section.status || '').includes('مغلقة')); },
+        _watchTextFor(section) { return `${String(section.code || '').trim()} | ${String(section.instructor || 'غير محدد').trim()}`; },
+        _copyText(text) {
+          const str = String(text == null ? '' : text);
+          try { if (navigator.clipboard && window.isSecureContext) return navigator.clipboard.writeText(str); } catch (e) { }
+          return new Promise((resolve, reject) => {
+            try {
+              const ta = document.createElement('textarea');
+              ta.value = str; ta.setAttribute('readonly', '');
+              ta.style.cssText = 'position:fixed;top:-1000px;opacity:0;';
+              document.body.appendChild(ta);
+              ta.select(); ta.setSelectionRange(0, str.length);
+              const ok = document.execCommand('copy');
+              document.body.removeChild(ta);
+              ok ? resolve() : reject(new Error('copy failed'));
+            } catch (e) { reject(e); }
+          });
+        },
+        _watchLinkAttrs(section, cls, extra) {
+          return `<a class="${cls}" href="${this.constants.WATCH_BOT_URL}" target="_blank" rel="noopener noreferrer" data-watch-id="${this._escapeHTML(section.uniqueId)}"${extra || ''}>`;
+        },
+        _closedWatchHTML(section) {
+          return `<span class="closed-watch"><span class="cw-status"><i class="ph-fill ph-lock-simple"></i>مغلقة</span>${this._watchLinkAttrs(section, 'cw-action', ' title="مراقبة الشعبة عبر البوت"')}<i class="ph-fill ph-bell-ringing"></i>راقبها</a></span>`;
+        },
+        _watchCardHTML(section) {
+          return `<div class="watch-card"><div class="watch-card-icon"><i class="ph-fill ph-bell-ringing"></i></div><div class="watch-card-text"><strong>الشعبة مغلقة</strong><span>فعّل المراقبة وبيوصلك تنبيه أول ما يفتح فيها مقعد.</span></div>${this._watchLinkAttrs(section, 'watch-card-btn')}<i class="ph ph-telegram-logo"></i> مراقبة الشعبة</a></div>`;
+        },
+        _showWatchSnackbar(section) {
+          let bar = document.getElementById('watch-snackbar');
+          if (!bar) { bar = document.createElement('div'); bar.id = 'watch-snackbar'; bar.className = 'undo-snackbar watch-snackbar'; document.body.appendChild(bar); }
+          clearTimeout(this._watchBarTimer);
+          bar.innerHTML = `<span class="undo-msg"><i class="ph-fill ph-lock-simple"></i> شعبة ${this._escapeHTML(section.section)} مغلقة</span>${this._watchLinkAttrs(section, 'undo-btn')}<i class="ph-fill ph-bell-ringing"></i> راقبها</a>`;
+          requestAnimationFrame(() => bar.classList.add('show'));
+          this._watchBarTimer = setTimeout(() => bar.classList.remove('show'), 7000);
+        },
+        _watchSectionOnBot(section) {
+          if (!section) return;
+          const text = this._watchTextFor(section);
+          this._vibrate(12);
+          this._copyText(text)
+            .then(() => this._showToast('success', `تم نسخ "${text}" — الصقه في البوت`))
+            .catch(() => this._showToast('info', `انسخ يدوياً: ${text}`));
+        },
         _visibleSectionsOf(group) {
-          const open = this.state.userSettings.hideClosedCourses ? group.sections.filter(sec => !this._isClosedStatus(sec.status)) : group.sections;
-          const secs = open.length ? open : group.sections;
+          const secs = this.state.userSettings.hideClosedCourses ? group.sections.filter(sec => !sec.status.includes('مغلقة')) : group.sections;
           return secs.slice().sort((a, b) => a.section.localeCompare(b.section, undefined, { numeric: true }));
         },
         _courseNavigate(dir) {
@@ -120,16 +162,6 @@ Object.assign(QU_ScheduleApp, {
           if (t === 'عملي') return 'lab';
           if (t === 'تمارين') return 'ex';
           return 'other';
-        },
-        _qaHours(s) { const t = String(s.hours == null ? '' : s.hours).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)); const n = parseInt(t, 10); return isNaN(n) ? 0 : n; },
-        _qaCompanion(s) { const t = String(s.type || ''); if (/نظري|نظرى|محاضرة/.test(t)) return false; return /عملي|عمليه|عملية|معمل|مختبر|تطبيق|تدريب|تمارين|تمرين|مناقشة|سكشن/.test(t) || this._qaHours(s) === 0; },
-        _qaAnchorOf(sec) {
-          const ordered = this.state.groupedCourses[sec.code]?.sections || [];
-          const i = ordered.findIndex(x => x.uniqueId === sec.uniqueId);
-          if (i === -1) return null;
-          let p = i - 1;
-          while (p >= 0 && this._qaCompanion(ordered[p])) p--;
-          return p >= 0 ? ordered[p] : null;
         },
         _bundleKeyOf(sec) { return this.state.linkedCourseGroups[sec.name] ? 'n:' + sec.name : 'c:' + sec.code; },
         _instKeyOf(sec) { return this._bundleKeyOf(sec) + '|' + this._canonType(sec.type); },
