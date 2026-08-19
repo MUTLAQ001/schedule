@@ -98,6 +98,7 @@ Object.assign(QU_ScheduleApp, {
               }
             }
           }
+          if (this._isClosedStatus(section.status) && !(this.dom.mobileSectionDetailsOverlay && this.dom.mobileSectionDetailsOverlay.classList.contains('open'))) this._showWatchSnackbar(section);
           return true;
         },
         _removeSectionAndUnlink(sectionId, schedule) {
@@ -257,7 +258,7 @@ Object.assign(QU_ScheduleApp, {
             title: `${this._escapeHTML(section.name)} (${this._escapeHTML(section.code)})`,
             html: `${conflictBanner}${examDayBanner}<div class="details-status-row" style="justify-content:center;"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status || '')}</span><span class="details-type-chip"><i class="ph ${typeIcon}"></i> ${this._escapeHTML(typeStr || '')}</span><span class="details-type-chip"><i class="ph ph-hash"></i> شعبة ${this._escapeHTML(section.section)}</span></div>
 <div class="details-list" style="margin-top:0.8rem;">${row('ph-user', 'المحاضر', this._escapeHTML(section.instructor || 'غير محدد'))}${row('ph-clock', 'المواعيد', this._escapeHTML(timeStr))}${row('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${row('ph-file-text', 'الاختبار النهائي', this._escapeHTML(section.examPeriodId ? this._examSlotText(section.examPeriodId) : 'لا يوجد'))}</div>
-${noteBox}${altsBlock}
+${this._watchCardHTML(section)}${noteBox}${altsBlock}
 <div class="qv-actions"><button class="qv-btn" data-qv="crn"><i class="ph ph-copy"></i> نسخ رقم الشعبة</button><button class="qv-btn qv-fav-btn ${isFav ? 'on' : ''}" data-qv="fav"><i class="${isFav ? 'ph-fill' : 'ph'} ph-star"></i> ${isFav ? 'محاضر مفضل' : 'أضف للمفضلين'}</button><button class="qv-btn ${isSelected ? 'danger' : 'primary'}" data-qv="toggle"><i class="ph ${isSelected ? 'ph-trash' : 'ph-plus'}"></i> ${isSelected ? 'إزالة من الجدول' : 'إضافة للجدول'}</button></div>`,
             showConfirmButton: false,
             showCloseButton: true,
