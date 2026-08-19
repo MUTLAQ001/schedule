@@ -15,8 +15,6 @@ Object.assign(QU_ScheduleApp, {
                 }
               } else if (action === 'auto') {
                 this._handleAutoGenerate();
-              } else if (action === 'free') {
-                this._showFreeCoursesModal();
               } else if (action === 'tour') {
                 this._startTour();
               }
@@ -33,7 +31,7 @@ Object.assign(QU_ScheduleApp, {
           });
         },
         _populateDOMElements() {
-          const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-header-subtitle', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-dynamic-action-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'quick-visibility-wrapper', 'quick-visibility-toggle-btn', 'quick-visibility-content', 'quick-visibility-swap-btn', 'quick-visibility-bulk', 'quick-visibility-show-all-btn', 'quick-visibility-hide-all-btn', 'expand-collapse-btn', 'share-schedule-btn', 'export-exams-ics-btn', 'mobile-export-exams-ics-btn'];
+          const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-my-exams-period-toggle', 'mobile-dynamic-action-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'exam-schedule-toggle-btn', 'quick-visibility-wrapper', 'quick-visibility-toggle-btn', 'quick-visibility-content', 'quick-visibility-swap-btn', 'expand-collapse-btn', 'share-schedule-btn', 'export-exams-ics-btn', 'mobile-export-exams-ics-btn'];
           ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
           this.dom.mobileDownloadImgBtn = null;
           if (isMobile) { this.dom.tabButtons = document.querySelectorAll('#mobile-courses-view .tab-btn'); this.dom.tabContents = document.querySelectorAll('#mobile-courses-view .tab-content'); this.dom.mobileNavButtons = document.querySelectorAll('.mobile-nav-btn'); this.dom.mobileViewContents = document.querySelectorAll('.mobile-view-content'); }
@@ -45,14 +43,14 @@ Object.assign(QU_ScheduleApp, {
             for (let j = i + 1; j < selectedCourses.length; j++) {
               const cA = selectedCourses[i], cB = selectedCourses[j]; const msgA = conflictMap.get(cA.uniqueId) || [], msgB = conflictMap.get(cB.uniqueId) || [];
               if (cA.timeSlots.some(sA => cB.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start))) { msgA.push(`تعارض وقت محاضرة مع ${cB.name} (${cB.code})`); msgB.push(`تعارض وقت محاضرة مع ${cA.name} (${cA.code})`); }
-              if (cA.code !== cB.code && cA.examPeriodId && cB.examPeriodId && this._examPeriodsOverlap(cA.examPeriodId, cB.examPeriodId)) { msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`); msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`); }
+              if (cA.code !== cB.code && cA.examPeriodId && cB.examPeriodId && cA.examPeriodId === cB.examPeriodId) { msgA.push(`تعارض اختبار نهائي مع ${cB.name} (${cB.code})`); msgB.push(`تعارض اختبار نهائي مع ${cA.name} (${cA.code})`); }
               if (msgA.length > 0) conflictMap.set(cA.uniqueId, msgA); if (msgB.length > 0) conflictMap.set(cB.uniqueId, msgB);
             }
           }
           return conflictMap;
         },
         _isSectionConflicted(section, selectedCourses) {
-          return selectedCourses.some(sel => { if (sel.uniqueId === section.uniqueId) return false; const lectureConflict = section.timeSlots.some(sA => sel.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start)); const examConflict = section.code !== sel.code && section.examPeriodId && sel.examPeriodId && this._examPeriodsOverlap(section.examPeriodId, sel.examPeriodId); return lectureConflict || examConflict; });
+          return selectedCourses.some(sel => { if (sel.uniqueId === section.uniqueId) return false; const lectureConflict = section.timeSlots.some(sA => sel.timeSlots.some(sB => sA.day === sB.day && sA.start < sB.end && sA.end > sB.start)); const examConflict = section.code !== sel.code && section.examPeriodId && sel.examPeriodId && section.examPeriodId === sel.examPeriodId; return lectureConflict || examConflict; });
         },
         _getConflictDetails(section, selectedCourses) {
           const dayNames = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -63,29 +61,13 @@ Object.assign(QU_ScheduleApp, {
               if (sA.day !== sB.day || sA.start >= sB.end || sA.end <= sB.start) return;
               const from = Math.max(this._toMin(sA.start), this._toMin(sB.start));
               const to = Math.min(this._toMin(sA.end), this._toMin(sB.end));
-              out.push({ type: 'time', other: sel, day: dayNames[sA.day] || '', dayIndex: sA.day, from, to, mins: to - from });
+              out.push({ type: 'time', other: sel, day: dayNames[sA.day] || '', from, to, mins: to - from });
             }));
-            if (section.code !== sel.code && section.examPeriodId && sel.examPeriodId && this._examPeriodsOverlap(section.examPeriodId, sel.examPeriodId)) {
-              out.push({ type: 'exam', other: sel, period: section.examPeriodId, otherPeriod: sel.examPeriodId, overlapMins: this._examOverlapMinutes(section.examPeriodId, sel.examPeriodId) });
+            if (section.code !== sel.code && section.examPeriodId && sel.examPeriodId && section.examPeriodId === sel.examPeriodId) {
+              out.push({ type: 'exam', other: sel, period: section.examPeriodId });
             }
           });
           return out;
-        },
-        _conflictRelations(section, others) {
-          const map = new Map();
-          this._getConflictDetails(section, others || []).forEach(d => {
-            const key = d.other.code || d.other.uniqueId;
-            let rel = map.get(key);
-            if (!rel) { rel = { other: d.other, sections: [], time: [], exam: null }; map.set(key, rel); }
-            if (!rel.sections.some(s => s.uniqueId === d.other.uniqueId)) rel.sections.push(d.other);
-            if (d.type === 'exam') { if (!rel.exam) rel.exam = d; } else rel.time.push(d);
-          });
-          const rels = Array.from(map.values());
-          rels.forEach(rel => {
-            rel.time.sort((a, b) => (a.dayIndex - b.dayIndex) || (a.from - b.from));
-            rel.sections.sort((a, b) => this._typeRank(this._canonType(a.type)) - this._typeRank(this._canonType(b.type)) || String(a.section).localeCompare(String(b.section)));
-          });
-          return rels.sort((a, b) => ((b.time.length && b.exam ? 1 : 0) - (a.time.length && a.exam ? 1 : 0)) || String(a.other.name).localeCompare(String(b.other.name), 'ar'));
         },
         _createLectureEventsForSection(section, isPreview, color) {
           const sourceId = isPreview ? 'preview-source' : undefined;
@@ -101,6 +83,13 @@ Object.assign(QU_ScheduleApp, {
         },
         _convertTo24Hour(time, period) { let [h, m] = time.split(':'); h = parseInt(h, 10); if (period.includes('م') && h !== 12) h += 12; if (period.includes('ص') && h === 12) h = 0; return `${String(h).padStart(2, '0')}:${m}:00`; },
         _setupEventListeners() {
+          document.addEventListener('click', (e) => {
+            const watchBtn = e.target.closest('[data-watch-id]');
+            if (!watchBtn) return;
+            e.stopPropagation();
+            const section = this.state.allCoursesData.find(c => c.uniqueId === watchBtn.dataset.watchId);
+            if (section) this._watchSectionOnBot(section);
+          }, true);
           this.dom.shareScheduleBtn?.addEventListener('click', () => this._handleShare());
           this.dom.exportExamsIcsBtn?.addEventListener('click', () => this._handleExportExamsICS());
           this.dom.mobileExportExamsIcsBtn?.addEventListener('click', () => this._handleExportExamsICS());
@@ -137,7 +126,6 @@ Object.assign(QU_ScheduleApp, {
           this.dom.settingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
           this.dom.mobileSettingsBtn?.addEventListener('click', () => this._toggleSettingsModal(true));
           this.dom.downloadImgBtn?.addEventListener('click', () => this._handleDownloadImage(false));
-          this._initSectionJump();
 
           this.dom.modalOverlay.addEventListener('click', () => this._toggleSettingsModal(false));
           document.querySelectorAll('.tab-btn').forEach(button => button.addEventListener('click', () => this._handleTabClick(button)));
@@ -149,7 +137,7 @@ Object.assign(QU_ScheduleApp, {
           this._initLongPressQuickAdd();
 
           [this.dom.desktopSearchInput, this.dom.mobileSearchInput].forEach(input => { if (input) { input.addEventListener('input', (e) => { this.state.searchTerm = e.target.value; this._renderCoursesList(); }); } });
-          if (this.dom.mobileCloseSearch) { this.dom.mobileCloseSearch.addEventListener('click', () => { this._setMobileSearchOpen(false); this.dom.mobileSearchInput.value = ''; this.state.searchTerm = ''; this._renderCoursesList(); this._updateMobileHeader(); }); }
+          if (this.dom.mobileCloseSearch) { this.dom.mobileCloseSearch.addEventListener('click', () => { this.dom.mobileSearchContainer.style.display = 'none'; this.dom.mobileHeaderTitle.style.display = 'block'; this.dom.mobileSearchInput.value = ''; this.state.searchTerm = ''; this._renderCoursesList(); }); }
 
           if (this.dom.desktopSearchToggle) {
             this.dom.desktopSearchToggle.addEventListener('click', () => {
@@ -163,6 +151,35 @@ Object.assign(QU_ScheduleApp, {
                 this.state.searchTerm = '';
                 this._renderCoursesList();
               }
+            });
+          }
+
+          const updateExamMode = (mode) => {
+            this.state.userSettings.examScheduleMode = mode;
+            const textSpan = this.dom.examScheduleToggleBtn?.querySelector('span');
+            if (textSpan) textSpan.textContent = mode === '3' ? '3 فترات' : 'فترتين';
+
+            const mobileTextSpan = this.dom.mobileMyExamsPeriodToggle?.querySelector('span');
+            if (mobileTextSpan) mobileTextSpan.textContent = mode === '3' ? '3 فترات' : 'فترتين';
+
+            this._saveSettings();
+            const selectedSections = this.state.schedules[this.state.activeScheduleIndex]?.sections || new Set();
+            const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+            this._renderFinalExams(selectedCourseDetails);
+          };
+
+          if (this.dom.examScheduleToggleBtn) {
+            this.dom.examScheduleToggleBtn.addEventListener('click', () => {
+              const currentMode = this.state.userSettings.examScheduleMode;
+              const newMode = currentMode === '3' ? '2' : '3';
+              updateExamMode(newMode);
+            });
+          }
+          if (this.dom.mobileMyExamsPeriodToggle) {
+            this.dom.mobileMyExamsPeriodToggle.addEventListener('click', () => {
+              const currentMode = this.state.userSettings.examScheduleMode;
+              const newMode = currentMode === '3' ? '2' : '3';
+              updateExamMode(newMode);
             });
           }
 
@@ -180,13 +197,9 @@ Object.assign(QU_ScheduleApp, {
           if (this.dom.quickVisibilityToggleBtn) {
             this.dom.quickVisibilityToggleBtn.addEventListener('click', () => {
               const content = this.dom.quickVisibilityContent;
-              const open = content.style.display === 'none';
-              content.style.display = open ? 'grid' : 'none';
-              if (this.dom.quickVisibilityBulk) this.dom.quickVisibilityBulk.style.display = open ? 'flex' : 'none';
+              content.style.display = content.style.display === 'none' ? 'grid' : 'none';
             });
           }
-          this.dom.quickVisibilityShowAllBtn?.addEventListener('click', () => this._setAllCoursesVisible(true));
-          this.dom.quickVisibilityHideAllBtn?.addEventListener('click', () => this._setAllCoursesVisible(false));
           if (this.dom.quickVisibilitySwapBtn) {
             this.dom.quickVisibilitySwapBtn.addEventListener('click', () => {
               this.state.isVisibilityNamesMode = !this.state.isVisibilityNamesMode;
@@ -222,34 +235,6 @@ Object.assign(QU_ScheduleApp, {
               }
             });
           }
-        },
-        _initSectionJump() {
-          const btn = document.getElementById('jump-to-myschedule');
-          const main = document.querySelector('.page-wrapper > .main-content');
-          if (!btn || !main) return;
-          const icon = btn.querySelector('.section-jump-icon');
-          const text = btn.querySelector('.section-jump-text');
-          const caret = btn.querySelector('.section-jump-caret');
-          const sync = () => {
-            const target = this.dom.myScheduleContainer;
-            if (!target) return;
-            const mainTop = main.getBoundingClientRect().top;
-            const isUp = main.scrollTop > 40 && target.getBoundingClientRect().top - mainTop <= main.clientHeight * 0.5;
-            btn.classList.toggle('is-up', isUp);
-            icon.className = `ph ${isUp ? 'ph-calendar-blank' : 'ph-list-checks'} section-jump-icon`;
-            caret.className = `ph ${isUp ? 'ph-caret-up' : 'ph-caret-down'} section-jump-caret`;
-            text.textContent = isUp ? 'الجدول' : 'جدولـي';
-            btn.title = isUp ? 'الرجوع إلى الجدول' : 'الانتقال إلى جدولي';
-          };
-          btn.addEventListener('click', () => {
-            if (btn.classList.contains('is-up')) { main.scrollTo({ top: 0, behavior: 'smooth' }); return; }
-            const target = this.dom.myScheduleContainer;
-            if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          });
-          main.addEventListener('scroll', sync, { passive: true });
-          window.addEventListener('resize', sync);
-          if (typeof ResizeObserver !== 'undefined') { new ResizeObserver(sync).observe(main); }
-          sync();
         },
         _ensureTextSegmenter() {
           if (typeof Intl === 'undefined' || Intl.Segmenter) return;
@@ -387,13 +372,11 @@ Object.assign(QU_ScheduleApp, {
 
           const mobileWrapper = document.querySelector('.mobile-wrapper');
           if (isMobileContext && mobileWrapper) {
-            applyExpand(targetEl, { overflow: 'hidden', flex: 'none', margin: '0', borderRadius: 'var(--radius)', boxShadow: 'none' });
-            applyExpand(document.body, { width: '1100px', minWidth: '1100px', overflow: 'visible' });
-            applyExpand(mobileWrapper, { overflow: 'visible', width: '1100px', height: 'auto', position: 'static' });
+            applyExpand(mobileWrapper, { overflow: 'visible', width: 'auto', height: 'auto', position: 'static' });
             const mobileView = document.getElementById('mobile-calendar-view');
-            if (mobileView) applyExpand(mobileView, { overflow: 'visible', height: 'auto', width: '1100px', position: 'static', top: 'auto', bottom: 'auto', paddingBottom: '0px' });
+            if (mobileView) applyExpand(mobileView, { overflow: 'visible', height: 'auto' });
             const mainContent = mobileView ? mobileView.querySelector('.main-content') : null;
-            if (mainContent) applyExpand(mainContent, { overflow: 'visible', height: 'auto', width: '1100px' });
+            if (mainContent) applyExpand(mainContent, { overflow: 'visible', height: 'auto' });
           }
 
           if (this.state.calendar) { this.state.calendar.setOption('height', 'auto'); this.state.calendar.updateSize(); }
