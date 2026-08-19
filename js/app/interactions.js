@@ -32,18 +32,7 @@ Object.assign(QU_ScheduleApp, {
           if (!section) return false;
           const tempSelectedDetails = Array.from(schedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
           if (this._isSectionConflicted(section, tempSelectedDetails)) { if (isMobile) { this._showToast('warning', 'تنبيه: الشعبة المضافة متعارضة.'); } }
-          else {
-            const peers = this._sameDayExamPeers(section, tempSelectedDetails);
-            if (peers.length) {
-              const day = this._examDayOf(section.examPeriodId, undefined, section.code);
-              const withText = peers.length === 1 ? `اختبار ${peers[0].name}`
-                : peers.length === 2 ? 'اختبارين آخرين'
-                  : `${peers.length} اختبارات أخرى`;
-              this._showToast('warning', `تنبيه: اختبار ${section.name} بنفس يوم ${withText} (${day.label}).`);
-            }
-          }
           schedule.sections.add(sectionId);
-          if (this._isSectionClosed(section)) this._showWatchSnackbar(section);
           const linkedGroup = this.state.linkedCourseGroups[section.name];
           if (linkedGroup) {
             const otherCourseCodes = linkedGroup.filter(code => code !== section.code);
@@ -57,8 +46,7 @@ Object.assign(QU_ScheduleApp, {
               this._showToast('success', `تمت إضافة شعبة مرتبطة: ${correspondingSection.code}-${correspondingSection.section}`);
             }
           }
-          const _qaHours = s => { const t = String(s.hours == null ? '' : s.hours).replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)); const n = parseInt(t, 10); return isNaN(n) ? 0 : n; };
-          const _qaCompanion = s => { const t = String(s.type || ''); if (/نظري|نظرى|محاضرة/.test(t)) return false; return /عملي|عمليه|عملية|معمل|مختبر|تطبيق|تدريب|تمارين|تمرين|مناقشة|سكشن/.test(t) || _qaHours(s) === 0; };
+          const _qaCompanion = s => this._qaCompanion(s);
           if (this.state.userSettings.quickAddMode) {
             const ownGroup = this.state.groupedCourses[section.code];
             const ordered = ownGroup ? ownGroup.sections : [];
@@ -127,7 +115,11 @@ Object.assign(QU_ScheduleApp, {
           if (!conflictDetails || !conflictDetails.length) return '';
           const rows = conflictDetails.map(c => {
             if (c.type === 'exam') {
-              return `<div class="cb-row"><span class="cb-badge exam"><i class="ph-fill ph-file-text"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(c.other.name)}<span class="cb-sec">شعبة ${this._escapeHTML(c.other.section)}</span></div><div class="cb-sub">نفس فترة الاختبار النهائي<i class="cb-dot"></i>الفترة ${this._escapeHTML(String(c.period))}</div></div></div>`;
+              const samePeriod = String(c.period) === String(c.otherPeriod);
+              const sub = samePeriod
+                ? `نفس فترة الاختبار النهائي<i class="cb-dot"></i>الفترة ${this._escapeHTML(String(c.period))}`
+                : `تداخل وقت الاختبار النهائي<i class="cb-dot"></i>الفترة ${this._escapeHTML(String(c.period))} مع ${this._escapeHTML(String(c.otherPeriod))}${c.overlapMins ? `<i class="cb-dot"></i><span class="cb-time">${this._formatDuration(c.overlapMins)}</span>` : ''}`;
+              return `<div class="cb-row"><span class="cb-badge exam"><i class="ph-fill ph-file-text"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(c.other.name)}<span class="cb-sec">شعبة ${this._escapeHTML(c.other.section)}</span></div><div class="cb-sub">${sub}</div></div></div>`;
             }
             return `<div class="cb-row"><span class="cb-badge time"><i class="ph-fill ph-clock"></i></span><div class="cb-main"><div class="cb-title">${this._escapeHTML(c.other.name)}<span class="cb-sec">شعبة ${this._escapeHTML(c.other.section)}</span></div><div class="cb-sub">${c.day}<i class="cb-dot"></i><span class="cb-time">${this._formatClock(c.from)} – ${this._formatClock(c.to)}</span><i class="cb-dot"></i>${this._formatDuration(c.mins)}</div></div></div>`;
           }).join('');
@@ -253,19 +245,19 @@ Object.assign(QU_ScheduleApp, {
           const note = (this.state.userSettings.courseNotes || {})[section.code] || '';
           const row = (icon, label, value) => `<div class="details-row"><span class="details-row-icon"><i class="ph ${icon}"></i></span><div class="details-row-text"><span>${label}</span><strong>${value}</strong></div></div>`;
           const conflictBanner = isSelected ? '' : this._buildConflictBanner(this._getConflictDetails(section, selectedDetails));
+          const examDayBanner = isSelected ? '' : this._buildExamDayNotice(section, selectedDetails);
           const alts = this._visibleSectionsOf(group).filter(sec => sec.uniqueId !== section.uniqueId);
           const altsHTML = alts.map(sec => {
             const conflicted = this._isSectionConflicted(sec, selectedDetails.filter(d => d.uniqueId !== section.uniqueId));
             return `<button class="qv-alt ${conflicted ? 'is-conflict' : ''}" data-swap="${sec.uniqueId}" title="${this._escapeHTML((sec.instructor || '') + ' — ' + String(sec.time || '').replace(/<br>/g, ' / '))}"><span class="qv-alt-num">${this._escapeHTML(sec.section)}</span><span class="qv-alt-sub">${this._escapeHTML(this._typeLabel(sec.type) || '')}</span>${conflicted ? '<span class="qv-alt-sub" style="color:var(--color-danger)">تعارض</span>' : ''}</button>`;
           }).join('');
           const altsBlock = alts.length ? `<div class="qv-section-title"><i class="ph ph-swap"></i> ${isSelected ? 'تبديل إلى شعبة أخرى' : 'شعب أخرى لنفس المقرر'}</div><div class="qv-alts">${altsHTML}</div>` : '';
-          const watchCard = this._isSectionClosed(section) ? this._watchCardHTML(section) : '';
           const noteBox = `<div class="qv-note-box"><div class="qv-note-head"><span><i class="ph-fill ph-note"></i> ملاحظتي على المقرر</span><button class="qv-note-edit" data-qv="note"><i class="ph ph-pencil-simple"></i>${note ? 'تعديل' : 'إضافة'}</button></div><div class="qv-note-text">${note ? this._escapeHTML(note) : 'لا توجد ملاحظة بعد.'}</div></div>`;
           Swal.fire({
             title: `${this._escapeHTML(section.name)} (${this._escapeHTML(section.code)})`,
-            html: `${conflictBanner}<div class="details-status-row" style="justify-content:center;"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status || '')}</span><span class="details-type-chip"><i class="ph ${typeIcon}"></i> ${this._escapeHTML(typeStr || '')}</span><span class="details-type-chip"><i class="ph ph-hash"></i> شعبة ${this._escapeHTML(section.section)}</span></div>
-<div class="details-list" style="margin-top:0.8rem;">${row('ph-user', 'المحاضر', this._escapeHTML(section.instructor || 'غير محدد'))}${row('ph-clock', 'المواعيد', this._escapeHTML(timeStr))}${row('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${row('ph-file-text', 'فترة الاختبار', this._escapeHTML(section.examPeriodId || 'لا يوجد'))}</div>
-${watchCard}${noteBox}${altsBlock}
+            html: `${conflictBanner}${examDayBanner}<div class="details-status-row" style="justify-content:center;"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status || '')}</span><span class="details-type-chip"><i class="ph ${typeIcon}"></i> ${this._escapeHTML(typeStr || '')}</span><span class="details-type-chip"><i class="ph ph-hash"></i> شعبة ${this._escapeHTML(section.section)}</span></div>
+<div class="details-list" style="margin-top:0.8rem;">${row('ph-user', 'المحاضر', this._escapeHTML(section.instructor || 'غير محدد'))}${row('ph-clock', 'المواعيد', this._escapeHTML(timeStr))}${row('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${row('ph-file-text', 'الاختبار النهائي', this._escapeHTML(section.examPeriodId ? this._examSlotText(section.examPeriodId) : 'لا يوجد'))}</div>
+${noteBox}${altsBlock}
 <div class="qv-actions"><button class="qv-btn" data-qv="crn"><i class="ph ph-copy"></i> نسخ رقم الشعبة</button><button class="qv-btn qv-fav-btn ${isFav ? 'on' : ''}" data-qv="fav"><i class="${isFav ? 'ph-fill' : 'ph'} ph-star"></i> ${isFav ? 'محاضر مفضل' : 'أضف للمفضلين'}</button><button class="qv-btn ${isSelected ? 'danger' : 'primary'}" data-qv="toggle"><i class="ph ${isSelected ? 'ph-trash' : 'ph-plus'}"></i> ${isSelected ? 'إزالة من الجدول' : 'إضافة للجدول'}</button></div>`,
             showConfirmButton: false,
             showCloseButton: true,
@@ -388,8 +380,7 @@ ${watchCard}${noteBox}${altsBlock}
           if (panel) panel.classList.toggle('open', !!this._filterPanelOpen);
         },
         _examDataIsEmpty() {
-          const d = this.constants.EXAM_DATA || {};
-          return Object.keys(d['3'] || {}).length === 0 && Object.keys(d['2'] || {}).length === 0;
+          return Object.keys(this.constants.EXAM_DATA || {}).length === 0;
         },
         _showShortcutsModal() {
           const rows = [
