@@ -26,6 +26,7 @@
           LAYOUT_MIN_WIDTH: 2,
           DEFAULT_LAYOUT: [{ id: 'calendar', w: 4, h: 1 }, { id: 'courses', w: 2, h: 1 }, { id: 'myschedule', w: 6, h: 1 }],
           STORAGE_KEYS: { SETTINGS: 'quScheduleSettings_v20', COURSES: 'quScheduleCourses_v20', SCHEDULES: 'quScheduleSchedules_v20', COLORS: 'quScheduleColors_v20' },
+          WATCH_BOT_URL: 'https://t.me/QU_ScheduleRbot',
           EXAM_DATA_APPROX: false,
           EXAM_ANCHOR: { hy: 1448, hm: 7, hd: 18 },
           EXAM_TIMES: {
@@ -60,6 +61,7 @@
           this._renderFilterUI();
           this._initListKeyboardNav();
           this._initSidebarResizer();
+          this._initWatchDelegation();
           this._maybeStartTour();
         },
 
