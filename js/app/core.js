@@ -15,74 +15,36 @@
           areAllExpanded: false,
           history: [],
           filters: { days: [], period: 'any', noConflict: false, favOnly: false },
-          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, examScheduleMode: '3', examModeOverrides: {}, highPerformance: false, timeAxisPosition: 'left', quickAddMode: false, courseNotes: {}, favInstructors: [] }
+          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: true, mergeCoursesData: false, highPerformance: false, timeAxisPosition: 'right', timeAxisMigrated: false, sidebarPosition: 'left', sidebarWidth: null, customLayout: null, quickAddMode: true, quickAddMigrated: false, courseNotes: {}, favInstructors: [], creditGpa: null, creditTermType: 'regular', creditGraduating: false }
         },
         constants: {
           PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316', red: '#ef4444' },
           COLOR_PALETTE: ['#7c5cf0', '#3b74d9', '#d94f70', '#2f9e6e', '#d97706', '#0d9488', '#a44fc9', '#5872a3', '#e0576b', '#4f8fdb', '#c2703d', '#3fa796', '#9b6bd6', '#5a9c3f'],
           DAY_MAPPING: { 'الأحد': 0, 'الاثنين': 1, 'الثلاثاء': 2, 'الأربعاء': 3, 'الخميس': 4, 'الجمعة': 5, 'السبت': 6 },
+          LAYOUT_BLOCKS: { courses: { label: 'المقررات', icon: 'ph-stack' }, calendar: { label: 'الجدول', icon: 'ph-calendar-blank' }, myschedule: { label: 'جدولي', icon: 'ph-list-checks' } },
+          LAYOUT_COLUMNS: 6,
+          LAYOUT_MIN_WIDTH: 2,
+          DEFAULT_LAYOUT: [{ id: 'calendar', w: 4, h: 1 }, { id: 'courses', w: 2, h: 1 }, { id: 'myschedule', w: 6, h: 1 }],
           STORAGE_KEYS: { SETTINGS: 'quScheduleSettings_v20', COURSES: 'quScheduleCourses_v20', SCHEDULES: 'quScheduleSchedules_v20', COLORS: 'quScheduleColors_v20' },
-          WATCH_BOT_URL: 'https://t.me/QU_ScheduleRbot',
-          EXAM_DATA: {
-            '3': {
-              1: '26/06/1448 (08:00 - 10:00)', 2: '26/06/1448 (10:30 - 12:30)', 3: '26/06/1448 (13:00 - 15:00)',
-              4: '27/06/1448 (08:00 - 10:00)', 5: '27/06/1448 (10:30 - 12:30)', 6: '27/06/1448 (13:00 - 15:00)',
-              7: '28/06/1448 (08:00 - 10:00)', 8: '28/06/1448 (10:30 - 12:30)', 9: '28/06/1448 (13:00 - 15:00)',
-              10: '29/06/1448 (08:00 - 10:00)', 11: '29/06/1448 (10:30 - 12:30)', 12: '29/06/1448 (13:00 - 15:00)',
-              13: '01/07/1448 (08:00 - 10:00)', 14: '01/07/1448 (10:30 - 12:30)', 15: '01/07/1448 (13:00 - 15:00)',
-              16: '04/07/1448 (08:00 - 10:00)', 17: '04/07/1448 (10:30 - 12:30)', 18: '04/07/1448 (13:00 - 15:00)',
-              19: '05/07/1448 (08:00 - 10:00)', 20: '05/07/1448 (10:30 - 12:30)', 21: '05/07/1448 (13:00 - 15:00)',
-              22: '06/07/1448 (08:00 - 10:00)', 23: '06/07/1448 (10:30 - 12:30)', 24: '06/07/1448 (13:00 - 15:00)',
-              25: '07/07/1448 (08:00 - 10:00)', 26: '07/07/1448 (10:30 - 12:30)', 27: '07/07/1448 (13:00 - 15:00)',
-              28: '08/07/1448 (08:00 - 10:00)', 29: '08/07/1448 (10:30 - 12:30)', 30: '08/07/1448 (13:00 - 15:00)',
-              31: '11/07/1448 (08:00 - 10:00)', 32: '11/07/1448 (10:30 - 12:30)', 33: '11/07/1448 (13:00 - 15:00)',
-              34: '12/07/1448 (08:00 - 10:00)', 35: '12/07/1448 (10:30 - 12:30)', 36: '12/07/1448 (13:00 - 15:00)',
-              37: '13/07/1448 (08:00 - 10:00)', 38: '13/07/1448 (10:30 - 12:30)', 39: '13/07/1448 (13:00 - 15:00)',
-              40: '14/07/1448 (08:00 - 10:00)', 41: '14/07/1448 (10:30 - 12:30)', 42: '14/07/1448 (13:00 - 15:00)',
-              43: '15/07/1448 (08:00 - 10:00)', 44: '15/07/1448 (10:30 - 12:30)', 45: '15/07/1448 (13:00 - 15:00)',
-              46: '18/07/1448 (08:00 - 10:00)', 47: '18/07/1448 (10:30 - 12:30)', 48: '18/07/1448 (13:00 - 15:00)',
-              49: '19/07/1448 (08:00 - 10:00)', 50: '19/07/1448 (10:30 - 12:30)', 51: '19/07/1448 (13:00 - 15:00)',
-              52: '20/07/1448 (08:00 - 10:00)', 53: '20/07/1448 (10:30 - 12:30)', 54: '20/07/1448 (13:00 - 15:00)',
-              55: '21/07/1448 (08:00 - 10:00)', 56: '21/07/1448 (10:30 - 12:30)', 57: '21/07/1448 (13:00 - 15:00)',
-              58: '22/07/1448 (08:00 - 10:00)', 59: '22/07/1448 (10:30 - 12:30)', 60: '22/07/1448 (13:00 - 15:00)',
-              61: '25/07/1448 (08:00 - 10:00)', 62: '25/07/1448 (10:30 - 12:30)', 63: '25/07/1448 (13:00 - 15:00)',
-              64: '26/07/1448 (08:00 - 10:00)', 65: '26/07/1448 (10:30 - 12:30)', 66: '26/07/1448 (13:00 - 15:00)',
-              67: '27/07/1448 (08:00 - 10:00)', 68: '27/07/1448 (10:30 - 12:30)', 69: '27/07/1448 (13:00 - 15:00)',
-              70: '28/07/1448 (08:00 - 10:00)', 71: '28/07/1448 (10:30 - 12:30)', 72: '28/07/1448 (13:00 - 15:00)',
-              73: '29/07/1448 (08:00 - 10:00)', 74: '29/07/1448 (10:30 - 12:30)', 75: '29/07/1448 (13:00 - 15:00)'
-            },
-            '2': {
-              1: '26/06/1448 (09:00 - 12:00)', 2: '26/06/1448 (13:00 - 16:00)',
-              3: '27/06/1448 (09:00 - 12:00)', 4: '27/06/1448 (13:00 - 16:00)',
-              5: '28/06/1448 (09:00 - 12:00)', 6: '28/06/1448 (13:00 - 16:00)',
-              7: '29/06/1448 (09:00 - 12:00)', 8: '29/06/1448 (13:00 - 16:00)',
-              9: '01/07/1448 (09:00 - 12:00)', 10: '01/07/1448 (13:00 - 16:00)',
-              11: '04/07/1448 (09:00 - 12:00)', 12: '04/07/1448 (13:00 - 16:00)',
-              13: '05/07/1448 (09:00 - 12:00)', 14: '05/07/1448 (13:00 - 16:00)',
-              15: '06/07/1448 (09:00 - 12:00)', 16: '06/07/1448 (13:00 - 16:00)',
-              17: '07/07/1448 (09:00 - 12:00)', 18: '07/07/1448 (13:00 - 16:00)',
-              19: '08/07/1448 (09:00 - 12:00)', 20: '08/07/1448 (13:00 - 16:00)',
-              21: '11/07/1448 (09:00 - 12:00)', 22: '11/07/1448 (13:00 - 16:00)',
-              23: '12/07/1448 (09:00 - 12:00)', 24: '12/07/1448 (13:00 - 16:00)',
-              25: '13/07/1448 (09:00 - 12:00)', 26: '13/07/1448 (13:00 - 16:00)',
-              27: '14/07/1448 (09:00 - 12:00)', 28: '14/07/1448 (13:00 - 16:00)',
-              29: '15/07/1448 (09:00 - 12:00)', 30: '15/07/1448 (13:00 - 16:00)',
-              31: '18/07/1448 (09:00 - 12:00)', 32: '18/07/1448 (13:00 - 16:00)',
-              33: '19/07/1448 (09:00 - 12:00)', 34: '19/07/1448 (13:00 - 16:00)',
-              35: '20/07/1448 (09:00 - 12:00)', 36: '20/07/1448 (13:00 - 16:00)',
-              37: '21/07/1448 (09:00 - 12:00)', 38: '21/07/1448 (13:00 - 16:00)',
-              39: '22/07/1448 (09:00 - 12:00)', 40: '22/07/1448 (13:00 - 16:00)',
-              41: '25/07/1448 (09:00 - 12:00)', 42: '25/07/1448 (13:00 - 16:00)',
-              43: '26/07/1448 (09:00 - 12:00)', 44: '26/07/1448 (13:00 - 16:00)',
-              45: '27/07/1448 (09:00 - 12:00)', 46: '27/07/1448 (13:00 - 16:00)',
-              47: '28/07/1448 (09:00 - 12:00)', 48: '28/07/1448 (13:00 - 16:00)',
-              49: '29/07/1448 (09:00 - 12:00)', 50: '29/07/1448 (13:00 - 16:00)'
-            }
-          }
+          EXAM_DATA_APPROX: false,
+          EXAM_ANCHOR: { hy: 1448, hm: 7, hd: 18 },
+          EXAM_TIMES: {
+            main: ['8:00 - 10:00', '10:30 - 12:30', '13:00 - 15:00'],
+            extended: ['9:00 - 12:00', '13:00 - 16:00']
+          },
+          EXAM_BLOCKS: [
+            { start: 1, weeks: 2, weekOffset: 0, times: 'main' },
+            { start: 31, weeks: 2, weekOffset: 0, times: 'extended' },
+            { start: 51, weeks: 1, weekOffset: -1, times: 'main' }
+          ],
+          EXAM_WEEK_LABELS: { '-1': 'قبل الاختبارات', '0': 'الأسبوع الأول', '1': 'الأسبوع الثاني' },
+          EXAM_DAYS: ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'],
+          EXAM_DATA: {}
         },
         dom: {},
 
         init() {
+          this.constants.EXAM_DATA = this._buildExamPeriods();
           this._prefetchHtml2Canvas();
           this._populateDOMElements();
           this._setupEventListeners();
@@ -97,6 +59,7 @@
           this._initPWA();
           this._renderFilterUI();
           this._initListKeyboardNav();
+          this._initSidebarResizer();
           this._maybeStartTour();
         },
 
@@ -119,10 +82,7 @@
               hours: str(c.hours, 10) || '0',
               type: str(c.type, 60) || 'نظري',
               status: str(c.status, 60) || 'غير معروف',
-              campus: str(c.campus, 120) || 'غير معروف',
-              gender: str(c.gender, 40),
-              college: str(c.college, 120),
-              department: str(c.department, 120)
+              campus: str(c.campus, 120) || 'غير معروف'
             }))
             .filter(c => c.code && c.name && c.section);
           if (out.length === 0) throw new Error('No usable courses in payload.');
@@ -133,7 +93,7 @@
           if (storedCourses) {
             try {
               const courses = this._sanitizeCourses(JSON.parse(storedCourses));
-              this._exitDemoMode();
+              this.state.isDemoMode = false;
               this._processAndDisplayData(courses);
               this._loadSchedules();
               this.updateFullUI();
@@ -165,16 +125,9 @@
               this._showToast('error', 'البيانات المستلمة غير صالحة.');
               return;
             }
-            this._exitDemoMode();
-            localStorage.setItem(this.constants.STORAGE_KEYS.COURSES, JSON.stringify(courses));
-            this._markDataUpdated();
-            this.state.schedules = [];
-            this._addSchedule(null, true);
-            this.state.activeScheduleIndex = 0;
-            this._saveSchedules();
-            this._processAndDisplayData(courses);
-            this.updateFullUI();
+            const res = this._applyNewCoursesData(courses);
             this._checkUrlForSharedSchedule();
+            this._afterDataUpdate(res);
           }, false);
           if (window.opener) {
             let target = '*';
