@@ -1,8 +1,25 @@
 Object.assign(QU_ScheduleApp, {
+        _calendarFillsHeight() {
+          if (!isMobile) return true;
+          return window.innerWidth >= 768 && window.innerHeight >= 600;
+        },
+        _syncCalendarSizing() {
+          const cal = this.state.calendar;
+          if (!cal) return;
+          const fills = this._calendarFillsHeight();
+          if (this._calFills === fills) return;
+          this._calFills = fills;
+          document.body.classList.toggle('cal-fills-height', fills);
+          cal.setOption('expandRows', fills);
+          cal.setOption('height', fills ? '100%' : 'auto');
+          requestAnimationFrame(() => { try { cal.updateSize(); } catch (e) { } });
+        },
         _initializeCalendar() {
           if (this.state.calendar) this.state.calendar.destroy();
+          this._calFills = this._calendarFillsHeight();
+          document.body.classList.toggle('cal-fills-height', this._calFills);
           const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
-          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: isMobile ? 'auto' : '100%', expandRows: !isMobile, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const durMin = (arg.event.start && arg.event.end) ? Math.round((arg.event.end - arg.event.start) / 60000) : 999; const isShort = durMin <= 60; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: ' + (isShort ? '0.66rem' : '0.8rem') + '; line-height: ' + (isShort ? '1.2' : '1.4') + ';'; if (isShort) wrapper.classList.add('evt-1h'); wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small style="margin-top: auto;"><i class="ph ph-map-pin"></i> ${props.location}</small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) this.state.calendar.updateSize(); }, eventClick: (info) => { const p = info.event.extendedProps || {}; const sec = this.state.allCoursesData.find(c => c.uniqueId === p.uniqueId); if (!sec) return; const grp = this.state.groupedCourses[sec.code]; if (!grp) return; if (isMobile) { this._showMobileSectionDetails(sec, grp); } else { this._showSectionQuickView(sec, grp); } } };
+          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: this._calFills ? '100%' : 'auto', expandRows: this._calFills, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const durMin = (arg.event.start && arg.event.end) ? Math.round((arg.event.end - arg.event.start) / 60000) : 999; const isShort = durMin <= 60; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: ' + (isShort ? '0.66rem' : '0.8rem') + '; line-height: ' + (isShort ? '1.2' : '1.4') + ';'; if (isShort) wrapper.classList.add('evt-1h'); wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small class="evt-foot" style="margin-top: auto;"><span class="evt-loc"><i class="ph ph-map-pin"></i> ${props.location}</span><span class="evt-code">${props.code}</span></small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) { this._syncCalendarSizing(); this.state.calendar.updateSize(); } }, eventClick: (info) => { const p = info.event.extendedProps || {}; const sec = this.state.allCoursesData.find(c => c.uniqueId === p.uniqueId); if (!sec) return; const grp = this.state.groupedCourses[sec.code]; if (!grp) return; if (isMobile) { this._showMobileSectionDetails(sec, grp); } else { this._showSectionQuickView(sec, grp); } } };
           this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
           this.state.calendar.render();
           this._setupCalendarSizeGuard(calendarEl);
@@ -52,38 +69,61 @@ Object.assign(QU_ScheduleApp, {
           const activeNavBtn = document.querySelector('.mobile-nav-btn.active'); if (!activeNavBtn) return;
           const currentView = activeNavBtn.dataset.view;
           const titleEl = this.dom.mobileHeaderTitle;
+          const subtitleEl = this.dom.mobileHeaderSubtitle;
           const actionBtn = this.dom.mobileDynamicActionBtn;
-          const searchContainer = this.dom.mobileSearchContainer;
+          const header = document.querySelector('.mobile-header');
 
-          searchContainer.style.display = 'none';
-          titleEl.style.display = 'block';
+          this._setMobileSearchOpen(false);
+          const setSubtitle = text => { if (subtitleEl) subtitleEl.textContent = text || ''; };
+
+          const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+          const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
+          const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+          const uniqueCodes = new Set(selectedCourseDetails.map(c => c.code));
+          const totalCredits = this._totalCreditsOf(selectedCourseDetails);
 
           if (currentView === 'mobile-calendar-view') {
-            titleEl.textContent = this.state.schedules[this.state.activeScheduleIndex]?.name || 'الجدول';
+            titleEl.textContent = activeSchedule?.name || 'الجدول';
+            setSubtitle(uniqueCodes.size ? `${uniqueCodes.size} ${this._coursesWord(uniqueCodes.size)} · ${this._hoursText(totalCredits)}` : 'لم تُضِف أي مقرر بعد');
             actionBtn.innerHTML = '<i class="ph ph-camera"></i>';
             actionBtn.style.display = 'flex';
+            actionBtn.setAttribute('aria-label', 'حفظ الجدول كصورة');
             actionBtn.onclick = () => this._handleDownloadImage(true);
           } else if (currentView === 'mobile-courses-view') {
             titleEl.textContent = 'المقررات';
+            const available = Object.keys(this.state.groupedCourses || {}).filter(code => !this.state.hiddenCourseCodes.has(code)).length;
+            setSubtitle(available ? this._availableCoursesText(available) : 'في انتظار البيانات');
             actionBtn.innerHTML = '<i class="ph ph-magnifying-glass"></i>';
             actionBtn.style.display = 'flex';
-            actionBtn.onclick = () => {
-              titleEl.style.display = 'none';
-              searchContainer.style.display = 'flex';
-              this.dom.mobileSearchInput.focus();
-            };
+            actionBtn.setAttribute('aria-label', 'بحث في المقررات');
+            actionBtn.onclick = () => this._setMobileSearchOpen(true);
           } else if (currentView === 'mobile-my-schedule-view') {
-            titleEl.textContent = this.state.schedules[this.state.activeScheduleIndex]?.name || 'جدولي';
+            titleEl.textContent = activeSchedule?.name || 'جدولي';
+            setSubtitle(uniqueCodes.size ? `${uniqueCodes.size} ${this._coursesWord(uniqueCodes.size)} · ${this._hoursText(totalCredits)}` : 'جدولك فارغ');
             actionBtn.innerHTML = '<i class="ph ph-copy"></i>';
             actionBtn.style.display = 'flex';
-            const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
-            const selectedSections = activeSchedule ? activeSchedule.sections : new Set();
-            const selectedCourseDetails = Array.from(selectedSections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
+            actionBtn.setAttribute('aria-label', 'نسخ أرقام الشعب');
             actionBtn.onclick = () => this._handleCopyCRNs(selectedCourseDetails);
           } else if (currentView === 'mobile-my-exams-view') {
             titleEl.textContent = 'اختباراتي';
+            const examCount = selectedCourseDetails.filter(c => c.examPeriodId).reduce((set, c) => set.add(c.code), new Set()).size;
+            setSubtitle(examCount ? `${examCount} ${examCount === 1 ? 'اختبار' : examCount === 2 ? 'اختباران' : examCount <= 10 ? 'اختبارات' : 'اختباراً'}` : 'لا توجد اختبارات بعد');
             actionBtn.style.display = 'none';
           }
+
+          if (header) header.classList.toggle('has-action', actionBtn.style.display !== 'none');
+        },
+        _coursesWord(n) { return n === 1 ? 'مقرر' : n === 2 ? 'مقرران' : n <= 10 ? 'مقررات' : 'مقرراً'; },
+        _availableCoursesText(n) {
+          if (n === 1) return 'مقرر واحد متاح';
+          if (n === 2) return 'مقرران متاحان';
+          if (n <= 10) return `${n} مقررات متاحة`;
+          return `${n} مقرراً متاحاً`;
+        },
+        _setMobileSearchOpen(open) {
+          const header = document.querySelector('.mobile-header');
+          if (header) header.classList.toggle('searching', !!open);
+          if (open) { setTimeout(() => this.dom.mobileSearchInput?.focus(), 60); }
         },
         _typeLabel(t) { const s = String(t || '').trim(); if (!s) return ''; return /محاضرة|نظري/.test(s) ? s.replace('محاضرة', 'نظري') : s; },
         _escapeHTML(str) { return String(str ?? '').replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch])); },
@@ -110,7 +150,8 @@ Object.assign(QU_ScheduleApp, {
           const conflictDetails = isSelected ? [] : this._getConflictDetails(section, tempSelectedDetails);
           const isConflicted = conflictDetails.length > 0;
           const conflictBanner = this._buildConflictBanner(conflictDetails);
-          const courseSections = group.sections.filter(s => !this.state.userSettings.hideClosedCourses || !s.status.includes('مغلقة')).sort((a, b) => a.section.localeCompare(b.section, undefined, { numeric: true }));
+          const examDayBanner = isSelected ? '' : this._buildExamDayNotice(section, tempSelectedDetails);
+          const courseSections = this._visibleSectionsOf(group);
           const currentIndex = courseSections.findIndex(s => s.uniqueId === section.uniqueId);
           const visibleGroups = Object.values(this.state.groupedCourses).filter(g => !this.state.hiddenCourseCodes.has(g.code) && this._visibleSectionsOf(g).length > 0).sort((a, b) => a.code.localeCompare(b.code));
           const courseIdx = visibleGroups.findIndex(g => g.code === group.code);
@@ -128,9 +169,9 @@ Object.assign(QU_ScheduleApp, {
           const isFav = this._isFavInstructor(section.instructor);
           const instructorRow = `<div class="details-row"><span class="details-row-icon"><i class="ph ph-user"></i></span><div class="details-row-text"><span>المحاضر</span><strong>${this._escapeHTML(section.instructor || 'غير محدد')}</strong></div><button class="qv-btn qv-fav-btn ${isFav ? 'on' : ''}" id="sheet-fav-btn" style="flex:0 0 auto;padding:0.35rem 0.6rem;font-size:0.72rem;" aria-label="تفضيل المحاضر"><i class="${isFav ? 'ph-fill' : 'ph'} ph-star"></i></button></div>`;
           const noteText = (this.state.userSettings.courseNotes || {})[section.code] || '';
-          const watchCard = this._isSectionClosed(section) ? this._watchCardHTML(section) : '';
           const noteChip = `<button class="details-note-chip ${noteText ? 'has-note' : ''}" id="sheet-note-btn" aria-label="${noteText ? 'عرض وتعديل ملاحظتي على المقرر' : 'إضافة ملاحظة على المقرر'}"><i class="${noteText ? 'ph-fill ph-note' : 'ph ph-note-pencil'}"></i> ${noteText ? 'ملاحظتي' : 'ملاحظة'}</button>`;
-          panel.innerHTML = `<div class="details-grabber"></div><div class="details-body"><div class="details-header"><div class="details-title-wrap"><span class="color-dot" style="background-color: ${group.color};"></span><div class="details-title-text"><h4>${this._escapeHTML(section.name)} (${this._escapeHTML(section.code)})</h4><span class="details-eyebrow">شعبة ${this._escapeHTML(section.section)}</span></div></div><button class="details-close-btn" aria-label="إغلاق"><i class="ph ph-x"></i></button></div>${courseSwitcher}${conflictBanner}<div class="details-status-row"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status)}</span>${typeChip}${noteChip}</div>${watchCard}<div class="details-list">${instructorRow}${detailRow('ph-clock', 'المواعيد', timeStr)}${detailRow('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${detailRow('ph-file-text', 'الاختبار النهائي', this._escapeHTML(section.examPeriodId || 'لا يوجد'))}</div><div class="details-footer"><div class="details-stepper"><button class="details-nav-btn" id="details-prev-btn" ${currentIndex <= 0 ? 'disabled' : ''} aria-label="الشعبة السابقة"><i class="ph ph-caret-right"></i></button><span class="details-counter">${currentIndex + 1} من ${courseSections.length}</span><button class="details-nav-btn" id="details-next-btn" ${currentIndex >= courseSections.length - 1 ? 'disabled' : ''} aria-label="الشعبة التالية"><i class="ph ph-caret-left"></i></button></div><button class="details-action-btn ${actionBtnClass}" id="details-action-btn"><i class="${actionBtnIcon}"></i> ${actionBtnText}</button></div></div>`;
+          const previewChip = `<button class="details-note-chip sheet-preview-chip" id="sheet-preview-btn" aria-label="معاينة الجدول مع هذه الشعبة"><i class="ph ph-squares-four"></i> معاينة</button>`;
+          panel.innerHTML = `<div class="details-grabber"></div><div class="details-body"><div class="details-header"><div class="details-title-wrap"><span class="color-dot" style="background-color: ${group.color};"></span><div class="details-title-text"><h4>${this._escapeHTML(section.name)} (${this._escapeHTML(section.code)})</h4><span class="details-eyebrow">شعبة ${this._escapeHTML(section.section)}</span></div></div><button class="details-close-btn" aria-label="إغلاق"><i class="ph ph-x"></i></button></div>${courseSwitcher}${conflictBanner}${examDayBanner}<div class="details-status-row"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status)}</span>${typeChip}${noteChip}${previewChip}</div><div class="details-list">${instructorRow}${detailRow('ph-clock', 'المواعيد', timeStr)}${detailRow('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${detailRow('ph-file-text', 'الاختبار النهائي', this._escapeHTML(section.examPeriodId || 'لا يوجد'))}</div><div class="details-footer"><div class="details-stepper"><button class="details-nav-btn" id="details-prev-btn" ${currentIndex <= 0 ? 'disabled' : ''} aria-label="الشعبة السابقة"><i class="ph ph-caret-right"></i></button><span class="details-counter">${currentIndex + 1} من ${courseSections.length}</span><button class="details-nav-btn" id="details-next-btn" ${currentIndex >= courseSections.length - 1 ? 'disabled' : ''} aria-label="الشعبة التالية"><i class="ph ph-caret-left"></i></button></div><button class="details-action-btn ${actionBtnClass}" id="details-action-btn"><i class="${actionBtnIcon}"></i> ${actionBtnText}</button></div></div>`;
           panel.querySelector('.details-close-btn').onclick = () => this._hideMobileSectionDetails();
           panel.querySelector('#details-action-btn').onclick = () => {
             if (activeSchedule.sections.has(section.uniqueId)) {
@@ -144,10 +185,72 @@ Object.assign(QU_ScheduleApp, {
           const nextBtn = panel.querySelector('#details-next-btn'); if (nextBtn) { nextBtn.onclick = () => { if (currentIndex < courseSections.length - 1) this._showMobileSectionDetails(courseSections[currentIndex + 1], group, true) }; }
           const favBtn = panel.querySelector('#sheet-fav-btn'); if (favBtn) { favBtn.onclick = () => { this._toggleFavInstructor(section.instructor); this._showMobileSectionDetails(section, group, false); }; }
           const noteBtn = panel.querySelector('#sheet-note-btn'); if (noteBtn) { noteBtn.onclick = () => this._editCourseNote(section.code, () => this._showMobileSectionDetails(section, group, false)); }
+          const previewBtn = panel.querySelector('#sheet-preview-btn'); if (previewBtn) { previewBtn.onclick = () => this._showSectionSchedulePreview(section); }
           const cPrevBtn = panel.querySelector('#course-prev-btn'); if (cPrevBtn) { cPrevBtn.onclick = () => this._courseNavigate(-1); }
           const cNextBtn = panel.querySelector('#course-next-btn'); if (cNextBtn) { cNextBtn.onclick = () => this._courseNavigate(1); }
           const bodyEl = panel.querySelector('.details-body'); if (bodyEl && shouldUpdatePanel) bodyEl.scrollTop = 0;
           this.dom.mobileSectionDetailsOverlay.classList.add('open');
+        },
+        _qaPreviewCompanions(section, selectedIds) {
+          if (!this.state.userSettings.quickAddMode) return [];
+          const ordered = this.state.groupedCourses[section.code]?.sections || [];
+          const idx = ordered.findIndex(s => s.uniqueId === section.uniqueId);
+          if (idx === -1 || !ordered.some(s => this._qaCompanion(s)) || !ordered.some(s => !this._qaCompanion(s))) return [];
+          const skip = s => selectedIds.has(s.uniqueId) || (this.state.userSettings.hideClosedCourses && String(s.status || '').includes('مغلقة'));
+          if (this._qaCompanion(section)) {
+            let p = idx - 1;
+            while (p >= 0 && this._qaCompanion(ordered[p])) p--;
+            if (p < 0 || skip(ordered[p])) return [];
+            return [ordered[p]];
+          }
+          const companions = [];
+          for (let i = idx + 1; i < ordered.length; i++) { if (!this._qaCompanion(ordered[i])) break; companions.push(ordered[i]); }
+          const typeGroups = new Map();
+          companions.filter(c => !skip(c)).forEach(c => { const k = this._typeLabel(c.type) || 'مرافقة'; if (!typeGroups.has(k)) typeGroups.set(k, []); typeGroups.get(k).push(c); });
+          const picked = [];
+          typeGroups.forEach(arr => { if (arr.length === 1) picked.push(arr[0]); });
+          return picked;
+        },
+        _sectionPreviewList(section) {
+          const activeSchedule = this.state.schedules[this.state.activeScheduleIndex];
+          const selected = activeSchedule
+            ? Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean)
+            : [];
+          if (selected.some(s => s.uniqueId === section.uniqueId)) return { list: selected, replaced: false, already: true, extras: [], dropped: [] };
+          const extras = this._qaPreviewCompanions(section, new Set(selected.map(s => s.uniqueId)));
+          const added = [section].concat(extras);
+          const keys = new Set(added.map(s => s.code + '|' + this._canonType(s.type)));
+          const kept = selected.filter(s => !keys.has(s.code + '|' + this._canonType(s.type)));
+          const dropped = selected.filter(s => keys.has(s.code + '|' + this._canonType(s.type)));
+          return { list: kept.concat(added), replaced: dropped.length > 0, already: false, extras, dropped };
+        },
+        _showSectionSchedulePreview(section) {
+          const { list, replaced, already, extras, dropped } = this._sectionPreviewList(section);
+          const conflictMap = this._calculateConflicts(list);
+          const added = [section].concat(extras);
+          const secLabel = s => `شعبة ${this._escapeHTML(String(s.section))}${this._typeLabel(s.type) ? ` (${this._escapeHTML(this._typeLabel(s.type))})` : ''}`;
+          const clashing = added.filter(s => conflictMap.has(s.uniqueId));
+          const clashTxt = clashing.some(s => s.uniqueId === section.uniqueId)
+            ? (clashing.length > 1 ? 'هذه الشعبة والمرافقة لها تتعارضان مع جدولك.' : 'هذه الشعبة تتعارض مع جدولك.')
+            : `الشعبة المرافقة ${clashing.map(secLabel).join(' و')} تتعارض مع جدولك.`;
+          const droppedTxt = dropped.map(s => `${this._typeLabel(s.type) || ''} ${s.code}`.trim()).join(' و');
+          const note = already
+            ? 'هذه الشعبة مضافة في جدولك حالياً.'
+            : replaced
+              ? `المعاينة تستبدل ${this._escapeHTML(droppedTxt)} المضاف في جدولك ${dropped.length > 1 ? 'بهذه الشعب.' : 'بهذه الشعبة.'}`
+              : 'المعاينة تُظهر جدولك بعد إضافة هذه الشعبة.';
+          const banner = clashing.length
+            ? `<div class="sp-note warn"><i class="ph-fill ph-warning"></i> ${clashTxt}</div>`
+            : `<div class="sp-note"><i class="ph ph-info"></i> ${note}</div>`;
+          const qaBanner = extras.length ? `<div class="sp-note"><i class="ph ph-lightning"></i> الإضافة السريعة تضيف معها ${extras.map(secLabel).join(' و')}، والمعاينة تُظهر الجدول بعد الإضافة.</div>` : '';
+          Swal.fire({
+            title: `${this._escapeHTML(section.name)} — شعبة ${this._escapeHTML(section.section)}`,
+            html: `<div class="gen-summary custom-scrollbar">${banner}${qaBanner}${this._previewGridHTML(list)}</div>`,
+            showConfirmButton: false,
+            showCloseButton: true,
+            width: 'auto',
+            customClass: { popup: 'swal2-popup gen-preview-swal sheet-preview-swal' }
+          });
         },
         _hideMobileSectionDetails() { this.dom.mobileSectionDetailsOverlay.classList.remove('open'); },
         _initSheetSwipe() {
@@ -190,6 +293,86 @@ Object.assign(QU_ScheduleApp, {
           }
         },
         _getPluralizedSectionString(count) { if (count === 1) return "شعبة واحدة"; if (count === 2) return "شعبتين"; if (count >= 3 && count <= 10) return `${count} شعب`; return `${count} شعبة`; },
+        _conflictWithHTML(rels) {
+          if (!rels.length) return '';
+          const rows = rels.map(rel => {
+            const secLabel = s => `${this._typeLabel(s.type) ? this._typeLabel(s.type) + ' · ' : ''}شعبة ${s.section}`;
+            const secChips = rel.sections.map(s => `<span class="cx-row-sec">${this._escapeHTML(secLabel(s))}</span>`).join('');
+            const tags = `${rel.time.length ? '<span class="cx-tag time"><i class="ph-fill ph-clock"></i>وقت</span>' : ''}${rel.exam ? '<span class="cx-tag exam"><i class="ph-fill ph-file-text"></i>اختبار</span>' : ''}`;
+            const multi = rel.sections.length > 1;
+            const why = rel.time.map(t => `<div class="cx-why-line"><i class="ph-fill ph-clock cx-i-time"></i>${multi ? `${this._escapeHTML(secLabel(t.other))}<i class="cx-dot"></i>` : ''}${this._escapeHTML(t.day)}<i class="cx-dot"></i>${this._formatClock(t.from)} – ${this._formatClock(t.to)}<i class="cx-dot"></i>${this._formatDuration(t.mins)}</div>`);
+            if (rel.exam) {
+              const samePeriod = String(rel.exam.period) === String(rel.exam.otherPeriod);
+              const txt = samePeriod
+                ? `نفس فترة الاختبار النهائي<i class="cx-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))}`
+                : `تداخل وقت الاختبار النهائي<i class="cx-dot"></i>الفترة ${this._escapeHTML(String(rel.exam.period))} مع ${this._escapeHTML(String(rel.exam.otherPeriod))}${rel.exam.overlapMins ? `<i class="cx-dot"></i>${this._formatDuration(rel.exam.overlapMins)}` : ''}`;
+              why.push(`<div class="cx-why-line"><i class="ph-fill ph-file-text cx-i-exam"></i>${txt}${multi ? `<i class="cx-dot"></i>اختبار واحد لكل شعب المقرر` : ''}</div>`);
+            }
+            return `<div class="cx-row"><div class="cx-row-top"><span class="cx-row-name">${this._escapeHTML(rel.other.name)}</span>${secChips}<span class="cx-row-tags">${tags}</span></div><div class="cx-why">${why.join('')}</div></div>`;
+          }).join('');
+          const n = rels.length;
+          const count = n === 1 ? 'يتعارض مع مقرر واحد' : n === 2 ? 'يتعارض مع مقررين' : `يتعارض مع ${n} مقررات`;
+          const hasTime = rels.some(r => r.time.length), hasExam = rels.some(r => r.exam);
+          const kind = hasTime && hasExam ? ' بالاختبار والوقت' : hasExam ? ' بالاختبار' : ' بالوقت';
+          return `<div class="cx-with"><div class="cx-with-head">${count}${kind}</div>${rows}</div>`;
+        },
+        _conflictEdges(group) {
+          const edges = [];
+          for (let i = 0; i < group.length; i++) for (let j = i + 1; j < group.length; j++) if (this._isSectionConflicted(group[i], [group[j]])) edges.push([i, j]);
+          return edges;
+        },
+        _minRemovalSet(group) {
+          const n = group.length;
+          const edges = this._conflictEdges(group);
+          if (!edges.length) return [];
+          const deg = new Array(n).fill(0);
+          edges.forEach(e => { deg[e[0]]++; deg[e[1]]++; });
+          const order = group.map((_, i) => i).sort((a, b) => deg[b] - deg[a] || a - b);
+          const covers = mask => edges.every(e => ((mask >> e[0]) & 1) || ((mask >> e[1]) & 1));
+          if (n <= 16) {
+            for (let k = 1; k <= n; k++) {
+              const idx = Array.from({ length: k }, (_, i) => i);
+              for (;;) {
+                let mask = 0;
+                for (let i = 0; i < k; i++) mask |= 1 << order[idx[i]];
+                if (covers(mask)) return idx.map(i => group[order[i]]);
+                let p = k - 1;
+                while (p >= 0 && idx[p] === n - k + p) p--;
+                if (p < 0) break;
+                idx[p]++;
+                for (let q = p + 1; q < k; q++) idx[q] = idx[q - 1] + 1;
+              }
+            }
+          }
+          const rest = edges.slice(), chosen = [];
+          while (rest.length) {
+            const d = new Array(n).fill(0);
+            rest.forEach(e => { d[e[0]]++; d[e[1]]++; });
+            let best = 0;
+            for (let i = 1; i < n; i++) if (d[i] > d[best]) best = i;
+            chosen.push(best);
+            for (let i = rest.length - 1; i >= 0; i--) if (rest[i][0] === best || rest[i][1] === best) rest.splice(i, 1);
+          }
+          return chosen.map(i => group[i]);
+        },
+        _updateConflictModalState(popup, groups) {
+          let total = 0;
+          groups.forEach((group, gi) => {
+            const checked = new Set(Array.from(popup.querySelectorAll(`.conflict-remove-check[data-group="${gi}"]:checked`)).map(i => i.value));
+            total += checked.size;
+            const status = popup.querySelector(`.cx-status[data-group="${gi}"]`);
+            if (!status) return;
+            if (!checked.size) { status.className = 'cx-status warn'; status.innerHTML = '<i class="ph-fill ph-warning-circle"></i><span>لم تحدد أي شعبة — سيبقى التعارض كما هو</span>'; return; }
+            const remaining = group.filter(s => !checked.has(s.uniqueId));
+            const left = this._calculateConflicts(remaining);
+            if (!left.size) { status.className = 'cx-status ok'; status.innerHTML = `<i class="ph-fill ph-check-circle"></i><span>${checked.size === 1 ? 'بحذف شعبة واحدة فقط' : `بحذف ${this._getPluralizedSectionString(checked.size)}`} ينتهي تعارض هذه المجموعة</span>`; return; }
+            const names = Array.from(new Set(Array.from(left.keys()).map(id => (remaining.find(r => r.uniqueId === id) || {}).name).filter(Boolean)));
+            status.className = 'cx-status warn';
+            status.innerHTML = `<i class="ph-fill ph-warning-circle"></i><span>سيبقى تعارض بين ${this._escapeHTML(names.join(' و '))}</span>`;
+          });
+          const btn = Swal.getConfirmButton();
+          if (btn) btn.textContent = total ? `حذف ${this._getPluralizedSectionString(total)}` : 'بدون تغيير';
+        },
         _handleViewAllConflicts(conflictMap) {
           const allConflictingIds = new Set(conflictMap.keys());
           const conflictingSections = Array.from(allConflictingIds).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean);
@@ -205,31 +388,41 @@ Object.assign(QU_ScheduleApp, {
             }
           });
           const modalHTML = conflictGroups.map((group, groupIndex) => {
-            let isExam = false, isTime = false;
-            group.forEach(s => {
-              const msgs = conflictMap.get(s.uniqueId) || [];
-              if (msgs.some(m => m.includes('وقت'))) isTime = true;
-              if (msgs.some(m => m.includes('اختبار'))) isExam = true;
-            });
-            const typeStr = (isTime && isExam) ? '(وقت واختبار)' : (isExam ? '(اختبار)' : '(وقت)');
-            const groupItemsHTML = group.sort((a, b) => a.code.localeCompare(b.code)).map((section, itemIndex) => {
-              const detailsId = `details-${groupIndex}-${itemIndex}`;
-              return `<div class="conflict-item"><div class="conflict-item-flex"><label class="conflict-item-main-label"><input type="radio" name="conflict-group-${groupIndex}" value="${this._escapeHTML(section.uniqueId)}" ${itemIndex === 0 ? 'checked' : ''}><div class="custom-radio"></div><div class="conflict-item-info"><h4>${this._escapeHTML(section.name)}</h4><span>${this._escapeHTML(section.code)} - شعبة ${this._escapeHTML(section.section)}</span></div></label><button type="button" class="conflict-details-btn" data-details-id="${detailsId}">تفاصيل</button></div><div class="conflict-extra-details" id="${detailsId}"><div><strong>الاختبار النهائي:</strong> ${this._examSummaryText(section.examPeriodId, section.code)}</div><div><strong>المواعيد:</strong> ${this._escapeHTML(section.time.replace(/<br>/g, ' / ') || 'غير محدد')}</div><div><strong>المحاضر:</strong> ${this._escapeHTML(section.instructor || 'غير محدد')}</div><div><strong>المكان:</strong> ${this._escapeHTML(section.location || 'غير محدد')}</div></div></div>`;
+            const relsById = new Map(group.map(s => [s.uniqueId, this._conflictRelations(s, group)]));
+            const isTime = group.some(s => relsById.get(s.uniqueId).some(r => r.time.length));
+            const isExam = group.some(s => relsById.get(s.uniqueId).some(r => r.exam));
+            const kindsHTML = `<span class="cx-kinds">${isTime ? '<span class="cx-tag time"><i class="ph-fill ph-clock"></i>وقت</span>' : ''}${isExam ? '<span class="cx-tag exam"><i class="ph-fill ph-file-text"></i>اختبار</span>' : ''}</span>`;
+            const soloFix = new Set(group.filter(s => this._calculateConflicts(group.filter(o => o.uniqueId !== s.uniqueId)).size === 0).map(s => s.uniqueId));
+            const minSet = this._minRemovalSet(group);
+            const suggested = new Set(minSet.map(s => s.uniqueId));
+            const single = minSet.length === 1;
+            const allSolo = soloFix.size === group.length;
+            const ordered = group.slice().sort((a, b) => (soloFix.has(b.uniqueId) ? 1 : 0) - (soloFix.has(a.uniqueId) ? 1 : 0) || relsById.get(b.uniqueId).length - relsById.get(a.uniqueId).length || a.code.localeCompare(b.code));
+            const groupItemsHTML = ordered.map(section => {
+              const rels = relsById.get(section.uniqueId) || [];
+              const typeStr = this._typeLabel(section.type);
+              const metaTxt = `${section.code}${typeStr ? ' · ' + typeStr : ''} · شعبة ${section.section}`;
+              const examRow = section.examPeriodId ? `<div><strong>الاختبار النهائي:</strong> ${this._examSummaryText(section.examPeriodId)}</div>` : '';
+              const soloHint = (!allSolo && soloFix.has(section.uniqueId)) ? '<div class="cx-solo"><i class="ph-fill ph-lightbulb"></i>حذف هذه الشعبة وحدها يكفي لحل المجموعة</div>' : '';
+              return `<div class="cx-card${single ? ' single' : ''}"><label class="cx-pick"><input type="${single ? 'radio' : 'checkbox'}"${single ? ` name="cx-group-${groupIndex}"` : ''} class="conflict-remove-check" data-group="${groupIndex}" value="${this._escapeHTML(section.uniqueId)}" ${suggested.has(section.uniqueId) ? 'checked' : ''}><span class="cx-box"><svg class="cx-check" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5 10 17.5 19 7"></path></svg></span><span class="cx-info"><span class="cx-title">${this._escapeHTML(section.name)}</span><span class="cx-meta">${this._escapeHTML(metaTxt)}</span></span><span class="cx-flag">سيُحذف</span></label>${this._conflictWithHTML(rels)}${soloHint}<div class="cx-own">${examRow}<div><strong>المواعيد:</strong> ${this._escapeHTML(String(section.time || '').replace(/<br>/g, ' / ') || 'غير محدد')}</div></div><button type="button" class="cx-more"><span class="cx-more-show">عرض تفاصيل التعارض</span><span class="cx-more-hide">إخفاء التفاصيل</span><i class="ph-fill ph-caret-down"></i></button></div>`;
             }).join('');
-            return `<div class="conflict-group-container">
-<div class="conflict-group-title">
-<span>مجموعة التعارض ${groupIndex + 1}</span>
-<span style="font-size:0.85em; opacity:0.8; font-weight:normal">${typeStr}</span>
-</div>${groupItemsHTML}</div>`;
+            const noteHTML = single ? `<p class="cx-note">${allSolo ? 'يكفي حذف شعبة واحدة — اختر أي واحدة منها' : 'يكفي حذف شعبة واحدة — اختر واحدة'}</p>` : '';
+            return `<section class="cx-group"><div class="cx-group-head"><span class="cx-group-name">مجموعة التعارض ${groupIndex + 1}</span>${kindsHTML}</div>${noteHTML}<div class="cx-cards">${groupItemsHTML}</div><div class="cx-status" data-group="${groupIndex}"></div></section>`;
           }).join('');
+          const hintHTML = '<p class="cx-hint">حدد الشعب التي تريد <strong>حذفها</strong> — الاختيار المقترح هو أقل عدد يحل التعارض، وتقدر تغيّره.</p>';
           Swal.fire({
-            title: 'حل جميع التعارضات', html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML || '<p>لا توجد مجموعات تعارض واضحة.</p>'}</div>`, icon: 'warning', confirmButtonText: 'حفظ التغييرات', showCancelButton: true, cancelButtonText: 'إلغاء', customClass: { popup: 'swal2-popup wide-swal' },
-            didOpen: (popup) => { popup.querySelectorAll('.conflict-details-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); const detailsEl = document.getElementById(btn.dataset.detailsId); if (detailsEl) detailsEl.classList.toggle('visible'); }); }); },
-            preConfirm: () => {
-              const sectionsToRemove = new Set();
-              conflictGroups.forEach((group, groupIndex) => { const selectedRadio = Swal.getPopup().querySelector(`input[name="conflict-group-${groupIndex}"]:checked`); if (selectedRadio) { const selectedId = selectedRadio.value; group.forEach(section => { if (section.uniqueId !== selectedId) { sectionsToRemove.add(section.uniqueId); } }); } });
-              return Array.from(sectionsToRemove);
-            }
+            title: 'حل جميع التعارضات', html: `<div id="conflict-modal-content" class="custom-scrollbar">${modalHTML ? hintHTML + modalHTML : '<p>لا توجد مجموعات تعارض واضحة.</p>'}</div>`, icon: 'warning', confirmButtonText: 'حذف المحدد', showCancelButton: true, cancelButtonText: 'إلغاء', customClass: { popup: 'swal2-popup wide-swal conflict-swal' },
+            didOpen: (popup) => {
+              popup.querySelectorAll('.cx-more').forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); btn.closest('.cx-card').classList.toggle('is-open'); }); });
+              popup.querySelectorAll('.conflict-remove-check').forEach(inp => inp.addEventListener('change', () => this._updateConflictModalState(popup, conflictGroups)));
+              popup.querySelectorAll('.cx-card.single .cx-pick').forEach(lab => {
+                const inp = lab.querySelector('input');
+                lab.addEventListener('pointerdown', () => { lab.dataset.pre = inp.checked ? '1' : '0'; });
+                lab.addEventListener('click', (e) => { if (lab.dataset.pre === '1') { e.preventDefault(); inp.checked = false; this._updateConflictModalState(popup, conflictGroups); } lab.dataset.pre = '0'; });
+              });
+              this._updateConflictModalState(popup, conflictGroups);
+            },
+            preConfirm: () => Array.from(Swal.getPopup().querySelectorAll('.conflict-remove-check:checked')).map(i => i.value)
           }).then((result) => {
             if (result.isConfirmed && Array.isArray(result.value)) {
               const sectionsToRemove = result.value;
@@ -238,7 +431,9 @@ Object.assign(QU_ScheduleApp, {
                 sectionsToRemove.forEach(id => this._removeSectionAndUnlink(id, activeSchedule));
                 this.updateFullUI();
                 const pluralizedString = this._getPluralizedSectionString(sectionsToRemove.length);
-                this._showToast('success', `تم حل التعارضات وإزالة ${pluralizedString}.`);
+                const left = this._calculateConflicts(Array.from(activeSchedule.sections).map(id => this.state.allCoursesData.find(c => c.uniqueId === id)).filter(Boolean));
+                if (left.size) this._showToast('warning', `تمت إزالة ${pluralizedString} — وما زال في جدولك تعارض.`);
+                else this._showToast('success', `تم حل جميع التعارضات وإزالة ${pluralizedString}.`);
               } else { this._showToast('info', 'لم يتم إجراء أي تغييرات.'); }
             }
           });
