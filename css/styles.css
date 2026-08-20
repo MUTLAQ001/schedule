@@ -7415,6 +7415,11 @@ body.exporting-image .fc-event b {
   font-variant-numeric: tabular-nums;
 }
 
+.fc-event .evt-room,
+.fc-event .evt-teacher {
+  display: none;
+}
+
 body.exporting-image .fc-event .evt-1h .evt-loc {
   white-space: normal;
 }
