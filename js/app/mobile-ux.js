@@ -127,7 +127,7 @@
       this._markActiveMobileView();
 
       if (view === 'mobile-calendar-view') {
-        setTimeout(() => { try { this.state.calendar?.updateSize(); } catch (e) { } }, 60);
+        setTimeout(() => { this._refitCompactCalendar(); }, 60);
       }
     },
 
