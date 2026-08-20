@@ -33,7 +33,7 @@ Object.assign(QU_ScheduleApp, {
           });
         },
         _populateDOMElements() {
-          const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-header-subtitle', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-dynamic-action-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'quick-visibility-wrapper', 'quick-visibility-toggle-btn', 'quick-visibility-content', 'quick-visibility-swap-btn', 'quick-visibility-bulk', 'quick-visibility-show-all-btn', 'quick-visibility-hide-all-btn', 'expand-collapse-btn', 'share-schedule-btn', 'export-exams-ics-btn', 'mobile-export-exams-ics-btn'];
+          const ids = ['my-schedule-container', 'calendar', 'clear-calendar-btn', 'settings-btn', 'settings-modal', 'modal-overlay', 'install-section-container', 'install-overlay', 'no-data-message', 'schedule-tabs-container', 'desktop-courses-list', 'desktop-exams-list', 'main-header-title-wrapper', 'mobile-schedule-tabs-container', 'mobile-my-schedule-container', 'mobile-header-title', 'mobile-header-subtitle', 'mobile-settings-btn', 'mobile-courses-list', 'mobile-my-exams-list', 'mobile-calendar', 'mobile-section-details-overlay', 'details-panel', 'download-img-btn', 'desktop-search-input', 'mobile-search-input', 'desktop-date-toggle', 'mobile-my-exams-date-toggle', 'mobile-dynamic-action-btn', 'mobile-calendar-zoom-btn', 'mobile-search-container', 'mobile-close-search', 'desktop-search-toggle', 'desktop-search-container', 'quick-visibility-wrapper', 'quick-visibility-toggle-btn', 'quick-visibility-content', 'quick-visibility-swap-btn', 'quick-visibility-bulk', 'quick-visibility-show-all-btn', 'quick-visibility-hide-all-btn', 'expand-collapse-btn', 'share-schedule-btn', 'export-exams-ics-btn', 'mobile-export-exams-ics-btn'];
           ids.forEach(id => { this.dom[id.replace(/-(\w)/g, (_, c) => c.toUpperCase())] = document.getElementById(id); });
           this.dom.mobileDownloadImgBtn = null;
           if (isMobile) { this.dom.tabButtons = document.querySelectorAll('#mobile-courses-view .tab-btn'); this.dom.tabContents = document.querySelectorAll('#mobile-courses-view .tab-content'); this.dom.mobileNavButtons = document.querySelectorAll('.mobile-nav-btn'); this.dom.mobileViewContents = document.querySelectorAll('.mobile-view-content'); }
@@ -396,10 +396,10 @@ Object.assign(QU_ScheduleApp, {
             if (mainContent) applyExpand(mainContent, { overflow: 'visible', height: 'auto', width: '1100px' });
           }
 
-          if (this.state.calendar) { this.state.calendar.setOption('height', 'auto'); this.state.calendar.updateSize(); }
           const isLight = document.body.classList.contains('light');
           const solidBg = isLight ? '#ffffff' : '#141417';
           document.body.classList.add('exporting-image');
+          if (this.state.calendar) { this.state.calendar.setOption('height', 'auto'); this.state.calendar.updateSize(); }
 
           setTimeout(() => {
             const captureW = Math.ceil(Math.max(targetEl.scrollWidth, targetEl.offsetWidth, targetEl.getBoundingClientRect().width));
@@ -424,6 +424,7 @@ Object.assign(QU_ScheduleApp, {
               document.body.classList.remove('exporting-image');
               restoreAll();
               if (this.state.calendar && !isMobileContext) { this.state.calendar.setOption('height', '100%'); this.state.calendar.updateSize(); }
+              if (isMobileContext) this._refitCompactCalendar();
 
               const accent = this.state.userSettings.accentColor || '#8b5cf6';
               const wmH = 70 * sc;
@@ -638,6 +639,7 @@ Object.assign(QU_ScheduleApp, {
               document.body.classList.remove('exporting-image');
               restoreAll();
               if (this.state.calendar) { this.state.calendar.setOption('height', isMobileContext ? 'auto' : '100%'); this.state.calendar.updateSize(); }
+              if (isMobileContext) this._refitCompactCalendar();
               if (mobileCalViewPrevDisplay !== null && mobileCalView) mobileCalView.style.display = mobileCalViewPrevDisplay;
               console.error('html2canvas error:', e);
               btn.innerHTML = originalHTML;
