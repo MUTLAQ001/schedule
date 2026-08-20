@@ -595,6 +595,7 @@
     min-height: 0;
     height: auto;
     width: auto;
+    transition: none;
     margin: 0 var(--m-gutter);
     border-radius: var(--m-r-lg);
     border: 1px solid var(--m-line);
@@ -611,6 +612,146 @@
 
   .mobile-calendar-scroll-wrapper {
     overscroll-behavior-x: contain;
+  }
+
+  #mobile-calendar-view .main-content {
+    position: relative;
+  }
+
+  #mobile-calendar-view .card {
+    flex-shrink: 1;
+  }
+
+  .cal-zoom-btn {
+    position: absolute;
+    bottom: 10px;
+    left: calc(var(--m-gutter) + 8px);
+    z-index: 12;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.02rem;
+    line-height: 1;
+    color: var(--color-text-muted);
+    background: rgba(255, 255, 255, 0.07);
+    border: 1px solid var(--m-line);
+    border-radius: 50%;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    opacity: 0.75;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform var(--m-fast) var(--m-spring), opacity 0.2s ease, color 0.2s ease, background 0.2s ease;
+  }
+
+  .light .cal-zoom-btn {
+    background: rgba(0, 0, 0, 0.045);
+  }
+
+  .cal-zoom-btn:active {
+    transform: scale(0.86);
+    opacity: 1;
+    color: var(--color-primary);
+  }
+
+
+  body.exporting-image .cal-zoom-btn {
+    display: none;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar {
+    width: 100%;
+    min-width: 0;
+  }
+
+  body.cal-compact:not(.exporting-image) .mobile-calendar-scroll-wrapper {
+    overflow-x: hidden;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-timegrid-slot {
+    height: var(--m-cal-slot-h, 2.6em);
+    font-size: 9px;
+    line-height: 1;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-col-header-cell-cushion {
+    padding: 5px 1px;
+    font-size: 0.64rem;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar-view .schedule-tabs-container {
+    margin: 6px var(--m-gutter) 7px !important;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar-view .card {
+    padding-bottom: var(--m-cal-pad-b, 12px);
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-timegrid-slot-label-cushion {
+    padding-inline: 3px 3px;
+    font-size: 0.6rem;
+    line-height: 1.15;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event {
+    border-width: 1px;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event-main > div {
+    font-size: 0.6rem !important;
+    line-height: 1.18 !important;
+    justify-content: center;
+    padding: 0;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event-main > div > b,
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event-main > div > small:not(.evt-foot) {
+    display: none;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event .evt-foot {
+    margin-top: 0 !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    width: 100%;
+    min-width: 0;
+    text-align: center;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event .evt-code {
+    order: -1;
+    opacity: 1;
+    font-weight: 700;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event .evt-loc {
+    display: none;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event .evt-room,
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event .evt-teacher {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.92em;
+    opacity: 0.8;
+  }
+
+  body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event .evt-teacher:empty {
+    display: none;
   }
 
   #mobile-calendar-view > .stale-data-banner {
