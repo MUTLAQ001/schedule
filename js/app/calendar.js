@@ -1,7 +1,85 @@
 Object.assign(QU_ScheduleApp, {
         _calendarFillsHeight() {
           if (!isMobile) return true;
+          if (this._isCompactCalendar()) return false;
           return window.innerWidth >= 768 && window.innerHeight >= 600;
+        },
+        _isCompactCalendar() { return isMobile && !!this.state.userSettings.mobileCompactCalendar; },
+        _shortInstructor(name) {
+          const raw = String(name || '').trim();
+          if (!raw || raw === 'غير محدد') return '';
+          const parts = raw.replace(/^(أ\.?\s*د\.?|الدكتورة|الدكتور|الأستاذة|الأستاذ|د\.?|أ\.?|م\.?)\s+/, '').trim().split(/\s+/);
+          return parts[0] || '';
+        },
+        _shortRoom(location) {
+          const loc = String(location || '').trim();
+          if (!loc) return '';
+          const tail = loc.split('-').pop().trim() || loc;
+          return tail.length > 9 ? tail.split(/\s+/).pop() : tail;
+        },
+        _toggleCompactCalendar() {
+          this.state.userSettings.mobileCompactCalendar = !this._isCompactCalendar();
+          this._saveSettings();
+          this._applyCompactCalendar();
+          this._showToast('info', this._isCompactCalendar() ? 'الجدول مصغّر — كل المقررات تظهر بلا تمرير.' : 'تم تكبير الجدول.');
+        },
+        _applyCompactCalendar() {
+          if (!isMobile) return;
+          const on = this._isCompactCalendar();
+          document.body.classList.toggle('cal-compact', on);
+          this._updateCompactCalendarBtn();
+          if (on) { const wrap = document.querySelector('.mobile-calendar-scroll-wrapper'); if (wrap) wrap.scrollLeft = 0; }
+          this._fitCompactCalendar();
+          this._syncCalendarSizing();
+          this._forceCalendarRelayout();
+        },
+        _updateCompactCalendarBtn() {
+          const btn = this.dom.mobileCalendarZoomBtn;
+          if (!btn) return;
+          const on = this._isCompactCalendar();
+          btn.innerHTML = on ? '<i class="ph ph-arrows-out-simple"></i>' : '<i class="ph ph-arrows-in-simple"></i>';
+          btn.classList.toggle('is-on', on);
+          btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+          btn.setAttribute('aria-label', on ? 'تكبير الجدول' : 'تصغير الجدول ليظهر كاملاً');
+          btn.title = on ? 'تكبير الجدول' : 'تصغير الجدول ليظهر كاملاً';
+          btn.onclick = () => this._toggleCompactCalendar();
+        },
+        _fitCompactCalendar(laneCount) {
+          const root = this.dom.mobileCalendar;
+          if (!root) return;
+          const shell = root.closest('.calendar-wrapper');
+          if (!this._isCompactCalendar()) {
+            root.style.removeProperty('--m-cal-slot-h');
+            if (shell) shell.style.removeProperty('--m-cal-pad-b');
+            return;
+          }
+          const host = shell ? shell.parentElement : null;
+          if (!shell || !host) return;
+          const lanes = laneCount || root.querySelectorAll('.fc-timegrid-slot-lane').length;
+          if (!lanes) return;
+          const head = root.querySelector('.fc-scrollgrid-section-header');
+          const headH = head ? head.getBoundingClientRect().height : 40;
+          const avail = host.getBoundingClientRect().bottom - shell.getBoundingClientRect().top;
+          if (avail <= 0) return;
+          const slotH = Math.max(15, Math.floor((avail - headH - 14) / lanes));
+          const gridH = headH + slotH * lanes;
+          root.style.setProperty('--m-cal-slot-h', slotH + 'px');
+          shell.style.setProperty('--m-cal-pad-b', Math.max(12, Math.floor(avail - gridH - 2)) + 'px');
+        },
+        _forceCalendarRelayout() {
+          const cal = this.state.calendar;
+          if (!cal) return;
+          const fills = !!this._calFills;
+          try { cal.setOption('expandRows', !fills); cal.setOption('expandRows', fills); cal.updateSize(); } catch (e) { }
+        },
+        _refitCompactCalendar() {
+          if (!isMobile) return;
+          const root = this.dom.mobileCalendar;
+          const before = root ? root.style.getPropertyValue('--m-cal-slot-h') : '';
+          this._fitCompactCalendar();
+          const after = root ? root.style.getPropertyValue('--m-cal-slot-h') : '';
+          if (after !== before) { this._forceCalendarRelayout(); return; }
+          try { this.state.calendar?.updateSize(); } catch (e) { }
         },
         _syncCalendarSizing() {
           const cal = this.state.calendar;
@@ -18,17 +96,25 @@ Object.assign(QU_ScheduleApp, {
           if (this.state.calendar) this.state.calendar.destroy();
           this._calFills = this._calendarFillsHeight();
           document.body.classList.toggle('cal-fills-height', this._calFills);
+          document.body.classList.toggle('cal-compact', this._isCompactCalendar());
           const calendarEl = document.getElementById(isMobile ? 'mobile-calendar' : 'calendar');
-          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: this._calFills ? '100%' : 'auto', expandRows: this._calFills, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const durMin = (arg.event.start && arg.event.end) ? Math.round((arg.event.end - arg.event.start) / 60000) : 999; const isShort = durMin <= 60; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: ' + (isShort ? '0.66rem' : '0.8rem') + '; line-height: ' + (isShort ? '1.2' : '1.4') + ';'; if (isShort) wrapper.classList.add('evt-1h'); wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small class="evt-foot" style="margin-top: auto;"><span class="evt-loc"><i class="ph ph-map-pin"></i> ${props.location}</span><span class="evt-code">${props.code}</span></small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) { this._syncCalendarSizing(); this.state.calendar.updateSize(); } }, eventClick: (info) => { const p = info.event.extendedProps || {}; const sec = this.state.allCoursesData.find(c => c.uniqueId === p.uniqueId); if (!sec) return; const grp = this.state.groupedCourses[sec.code]; if (!grp) return; if (isMobile) { this._showMobileSectionDetails(sec, grp); } else { this._showSectionQuickView(sec, grp); } } };
+          const calendarOptions = { initialView: 'timeGridWeek', locale: 'ar', direction: this.state.userSettings.timeAxisPosition === 'right' ? 'rtl' : 'ltr', headerToolbar: false, allDaySlot: false, events: [], dayHeaderFormat: { weekday: isMobile ? 'short' : 'long' }, slotMinTime: '08:00:00', slotMaxTime: '14:00:00', hiddenDays: this.state.userSettings.showWeekends ? [] : [5, 6], nowIndicator: false, height: this._calFills ? '100%' : 'auto', expandRows: this._calFills, dayCellDidMount: (arg) => { if (arg.isToday) arg.el.style.backgroundColor = 'transparent'; }, eventContent: (arg) => { const props = arg.event.extendedProps; const durMin = (arg.event.start && arg.event.end) ? Math.round((arg.event.end - arg.event.start) / 60000) : 999; const isShort = durMin <= 60; const wrapper = document.createElement('div'); wrapper.style.cssText = 'display: flex; flex-direction: column; height: 100%; overflow: hidden; font-size: ' + (isShort ? '0.66rem' : '0.8rem') + '; line-height: ' + (isShort ? '1.2' : '1.4') + ';'; if (isShort) wrapper.classList.add('evt-1h'); wrapper.innerHTML = `<b style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-family: var(--font-title); font-weight: 400;">${arg.event.title.split('(')[0].trim()}</b><small>${props.section} - ${props.instructor}</small><small class="evt-foot" style="margin-top: auto;"><span class="evt-loc"><i class="ph ph-map-pin"></i> ${props.location}</span><span class="evt-room">${this._shortRoom(props.location)}</span><span class="evt-teacher">${this._shortInstructor(props.instructor)}</span><span class="evt-code">${props.code}</span></small>`; return { domNodes: [wrapper] }; }, windowResize: () => { if (this.state.calendar) { this._fitCompactCalendar(); this._syncCalendarSizing(); this._forceCalendarRelayout(); } }, eventClick: (info) => { const p = info.event.extendedProps || {}; const sec = this.state.allCoursesData.find(c => c.uniqueId === p.uniqueId); if (!sec) return; const grp = this.state.groupedCourses[sec.code]; if (!grp) return; if (isMobile) { this._showMobileSectionDetails(sec, grp); } else { this._showSectionQuickView(sec, grp); } } };
           this.state.calendar = new FullCalendar.Calendar(calendarEl, calendarOptions);
           this.state.calendar.render();
           this._setupCalendarSizeGuard(calendarEl);
+          if (isMobile) {
+            this._updateCompactCalendarBtn();
+            this._refitCompactCalendar();
+            clearTimeout(this._compactSettleTimer);
+            this._compactSettleTimer = setTimeout(() => this._refitCompactCalendar(), 350);
+          }
         },
         _setupCalendarSizeGuard(calendarEl) {
           const sync = () => {
             if (this._calSizeRaf) cancelAnimationFrame(this._calSizeRaf);
             this._calSizeRaf = requestAnimationFrame(() => {
               if (document.body.classList.contains('exporting-image')) return;
+              if (this._isCompactCalendar()) { this._refitCompactCalendar(); return; }
               try { this.state.calendar?.updateSize(); } catch (e) { }
             });
           };
@@ -45,6 +131,7 @@ Object.assign(QU_ScheduleApp, {
             document.addEventListener('visibilitychange', () => { if (!document.hidden) sync(); });
             window.addEventListener('pageshow', sync);
             window.addEventListener('focus', sync);
+            if (window.visualViewport) { window.visualViewport.addEventListener('resize', sync); }
           }
         },
         _addSchedule(name, isDefault = false) {
