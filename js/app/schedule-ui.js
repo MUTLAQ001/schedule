@@ -20,9 +20,11 @@ Object.assign(QU_ScheduleApp, {
           if (hasEvents) {
             let minHour = Math.min(8, earliest);
             let maxHour = Math.max(14, latest);
+            if (isMobile) this._fitCompactCalendar((maxHour - minHour) * 2);
             this.state.calendar.setOption('slotMinTime', `${String(minHour).padStart(2, '0')}:00:00`);
             this.state.calendar.setOption('slotMaxTime', `${String(maxHour).padStart(2, '0')}:00:00`);
           } else {
+            if (isMobile) this._fitCompactCalendar(12);
             this.state.calendar.setOption('slotMinTime', '08:00:00');
             this.state.calendar.setOption('slotMaxTime', '14:00:00');
           }
