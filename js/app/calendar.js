@@ -66,10 +66,10 @@ Object.assign(QU_ScheduleApp, {
           const headH = head ? head.getBoundingClientRect().height : 40;
           const avail = host.getBoundingClientRect().bottom - shell.getBoundingClientRect().top;
           if (avail <= 0) return;
-          const slotH = Math.max(15, Math.floor((avail - headH - 14) / lanes));
+          const slotH = Math.max(15, Math.round(((avail - headH - 4) / lanes) * 100) / 100);
           const gridH = headH + slotH * lanes;
           root.style.setProperty('--m-cal-slot-h', slotH + 'px');
-          shell.style.setProperty('--m-cal-pad-b', Math.max(12, Math.floor(avail - gridH - 2)) + 'px');
+          shell.style.setProperty('--m-cal-pad-b', Math.max(2, Math.floor(avail - gridH - 2)) + 'px');
         },
         _forceCalendarRelayout() {
           const cal = this.state.calendar;
