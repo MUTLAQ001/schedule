@@ -733,6 +733,19 @@
     opacity: 0.8;
   }
 
+  #mobile-calendar .fc-event .evt-time-start {
+    top: -0.12em;
+  }
+
+  #mobile-calendar .fc-event .evt-time-end {
+    bottom: -0.12em;
+  }
+
+  body.show-evt-times #mobile-calendar .fc-event-main > div {
+    padding-top: 0.72em;
+    padding-bottom: 0.78em;
+  }
+
   body.cal-compact:not(.exporting-image) #mobile-calendar .fc-event .evt-time {
     font-size: 0.4rem;
     opacity: 0.5;
