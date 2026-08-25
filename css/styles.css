@@ -7402,6 +7402,68 @@ body.exporting-image .fc-event b {
   gap: 0.4em;
 }
 
+.fc-event .evt-time {
+  display: none;
+  position: absolute;
+  font-size: 0.7em;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.fc-event .evt-time-start {
+  top: -0.4em;
+  inset-inline-start: 0;
+}
+
+.fc-event .evt-time-end {
+  bottom: -0.3em;
+  inset-inline-end: 0;
+}
+
+.fc-event .fc-event-main > div {
+  line-height: 1.4;
+}
+
+.fc-event .fc-event-main > div.evt-1h {
+  line-height: 1.2;
+}
+
+body.show-evt-times .fc-event .evt-time {
+  display: block;
+}
+
+body.show-evt-times .fc-event .fc-event-main > div {
+  padding-top: 0.55em;
+  padding-bottom: 0.62em;
+  line-height: 1.25;
+}
+
+body.show-evt-times .fc-event .fc-event-main > div.evt-1h {
+  line-height: 1.12;
+}
+
+body.show-evt-times .fc-event .fc-event-main > div > b {
+  flex-shrink: 0;
+}
+
+body.show-evt-times .fc-event .evt-foot {
+  min-height: 0;
+  overflow: hidden;
+}
+
+body.show-evt-times .fc-event .fc-event-main > div > small:not(.evt-foot) {
+  flex-shrink: 100;
+  min-height: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
 .fc-event .evt-loc {
   min-width: 0;
   overflow: hidden;
