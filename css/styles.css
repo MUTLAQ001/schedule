@@ -12413,3 +12413,761 @@ input.crf-input[type="number"] {
   border-color: var(--color-primary);
   color: #fff;
 }
+
+.swal2-popup.wide-swal.secedit-swal {
+  max-width: 660px;
+  display: flex !important;
+  flex-direction: column;
+  max-height: calc(100dvh - 44px);
+  margin: 10px auto;
+  padding: 1.35rem 1.15rem 1.15rem;
+}
+
+.swal2-popup.secedit-swal .swal2-title {
+  flex-shrink: 0;
+  padding: 0 0 0.5rem;
+  font-size: 1.25rem;
+}
+
+.swal2-popup.secedit-swal .swal2-html-container {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0 !important;
+  padding: 0 0.15rem;
+  display: flex !important;
+  overflow: hidden;
+}
+
+.swal2-popup.secedit-swal #secedit-host {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+}
+
+.data-btn.has-edits {
+  border-color: rgba(var(--rgb-primary), 0.55);
+  color: var(--color-primary);
+}
+
+.secedit {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  text-align: right;
+  direction: rtl;
+  color: var(--color-text);
+}
+
+.secedit-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.75;
+  color: var(--color-text-muted);
+}
+
+.secedit-flash {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-shrink: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(var(--rgb-success), 0.35);
+  background: rgba(var(--rgb-success), 0.12);
+  color: var(--color-success);
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.6;
+  animation: fadeInUp 0.25s ease;
+}
+
+.secedit-flash i {
+  flex: 0 0 auto;
+  font-size: 1rem;
+}
+
+.secedit-flash.error {
+  border-color: rgba(var(--rgb-danger), 0.35);
+  background: rgba(var(--rgb-danger), 0.12);
+  color: var(--color-danger);
+}
+
+.secedit-flash.info {
+  border-color: rgba(var(--rgb-info), 0.35);
+  background: rgba(var(--rgb-info), 0.12);
+  color: var(--color-info);
+}
+
+.secedit-top {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.secedit-seg {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.light .secedit-seg {
+  background: rgba(84, 60, 160, 0.05);
+}
+
+.secedit-seg-btn {
+  flex: 1 1 0;
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.5rem 0.6rem;
+  border: none;
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background var(--transition), color var(--transition);
+}
+
+.secedit-seg-btn:hover {
+  color: var(--color-text);
+}
+
+.secedit-seg-btn.active {
+  background: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 4px 14px -6px rgba(var(--rgb-primary), 0.8);
+}
+
+.secedit-seg-btn b {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--radius-full);
+  background: rgba(var(--rgb-primary), 0.22);
+  color: var(--color-primary);
+}
+
+.secedit-seg-btn.active b {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.secedit-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.secedit-search i {
+  position: absolute;
+  inset-inline-start: 0.85rem;
+  color: var(--color-text-muted);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.secedit-search input {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  padding-inline-start: 2.4rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: rgba(var(--rgb-primary), 0.06);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.secedit-search input:focus {
+  border-color: var(--color-primary);
+  background: rgba(var(--rgb-primary), 0.1);
+}
+
+.secedit-search input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.secedit-list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-inline-end: 0.2rem;
+}
+
+.secedit-row {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  font-family: var(--font-body);
+  text-align: right;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition), transform var(--transition);
+}
+
+.light .secedit-row {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.secedit-row:hover {
+  border-color: rgba(var(--item-color-rgb), 0.55);
+  background: rgba(var(--item-color-rgb), 0.08);
+  transform: translateY(-1px);
+}
+
+.secedit-row.is-edited {
+  border-color: rgba(var(--rgb-primary), 0.45);
+}
+
+.secedit-row-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.secedit-row-title {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.secedit-row-title em {
+  flex: 0 0 auto;
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--item-color);
+}
+
+.secedit-row-sub {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.secedit-row-sub i {
+  flex: 0 0 auto;
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+.secedit-row-side {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.secedit-row-num {
+  font-family: var(--font-title);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-text);
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+  background: rgba(var(--item-color-rgb), 0.16);
+  direction: ltr;
+}
+
+.secedit-tag {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: var(--radius-full);
+  background: rgba(var(--rgb-primary), 0.18);
+  color: var(--color-primary);
+}
+
+.secedit-row-go {
+  flex: 0 0 auto;
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.secedit-empty {
+  margin: 0;
+  padding: 2rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.secedit-empty i {
+  font-size: 1.6rem;
+  opacity: 0.5;
+}
+
+.secedit-empty.small {
+  padding: 1.1rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.secedit-foot {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding-top: 0.7rem;
+  border-top: 1px solid var(--color-border);
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.secedit-foot span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.secedit-reset-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba(var(--rgb-danger), 0.35);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-danger);
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.secedit-reset-all:hover {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.secedit-form {
+  gap: 0.9rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding-inline-end: 0.2rem;
+}
+
+.secedit-form-head {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  flex-shrink: 0;
+}
+
+.secedit-back {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.secedit-back:hover {
+  border-color: var(--color-primary);
+  background: rgba(var(--rgb-primary), 0.1);
+}
+
+.secedit-form-title {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.secedit-form-title strong {
+  font-family: var(--font-title);
+  font-size: 0.98rem;
+  font-weight: 600;
+  color: var(--color-text-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.secedit-form-title span {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.secedit-form-title b {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.secedit-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  flex-shrink: 0;
+}
+
+.secedit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.secedit-field.wide {
+  grid-column: 1 / -1;
+}
+
+.secedit-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.secedit-label i {
+  font-size: 0.9rem;
+  color: var(--item-color, var(--color-primary));
+}
+
+.secedit-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: rgba(var(--rgb-primary), 0.06);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.88rem;
+  outline: none;
+  unicode-bidi: plaintext;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+.secedit-input:focus {
+  border-color: var(--color-primary);
+  background: rgba(var(--rgb-primary), 0.1);
+}
+
+.secedit-times {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.8rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(0, 0, 0, 0.18);
+}
+
+.light .secedit-times {
+  background: rgba(84, 60, 160, 0.04);
+}
+
+.secedit-times-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.secedit-times-head > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.secedit-add-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid rgba(var(--rgb-primary), 0.4);
+  border-radius: var(--radius-full);
+  background: rgba(var(--rgb-primary), 0.12);
+  color: var(--color-primary);
+  font-family: var(--font-body);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.secedit-add-time:hover {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.secedit-time-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.secedit-time-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.65rem;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.light .secedit-time-row {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.secedit-time-row.has-error {
+  border-color: rgba(var(--rgb-danger), 0.5);
+}
+
+.secedit-time-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.secedit-days {
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.secedit-day {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.73rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.secedit-day:hover {
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.secedit-day.on {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.secedit-time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.secedit-time-inputs label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  color: var(--color-text-muted);
+}
+
+.secedit-time-inputs input[type="time"] {
+  padding: 0.4rem 0.6rem;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+  background: rgba(var(--rgb-primary), 0.07);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  direction: ltr;
+  outline: none;
+  color-scheme: dark;
+}
+
+.light .secedit-time-inputs input[type="time"] {
+  color-scheme: light;
+}
+
+.secedit-time-inputs input[type="time"]:focus {
+  border-color: var(--color-primary);
+}
+
+.secedit-del-time {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-full);
+  background: rgba(var(--rgb-danger), 0.12);
+  color: var(--color-danger);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+
+.secedit-del-time:hover {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.secedit-row-error,
+.secedit-row-preview {
+  font-size: 0.74rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.secedit-row-error {
+  color: var(--color-danger);
+}
+
+.secedit-row-preview {
+  color: var(--color-text-muted);
+  unicode-bidi: plaintext;
+}
+
+.secedit-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-shrink: 0;
+}
+
+.secedit-btn {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), border-color var(--transition), transform var(--transition);
+}
+
+.secedit-btn:active {
+  transform: scale(0.98);
+}
+
+.secedit-btn.primary {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+  box-shadow: 0 8px 20px -10px rgba(var(--rgb-primary), 0.9);
+}
+
+.secedit-btn.primary:hover {
+  background: var(--color-primary-dark);
+}
+
+.secedit-btn.ghost:hover:not(:disabled) {
+  border-color: rgba(var(--rgb-danger), 0.5);
+  color: var(--color-danger);
+}
+
+.secedit-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+@media (max-width: 560px) {
+  .swal2-popup.wide-swal.secedit-swal {
+    padding: 1.1rem 0.85rem 0.9rem;
+  }
+
+  .secedit-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .secedit-seg-btn {
+    font-size: 0.74rem;
+    padding: 0.5rem 0.35rem;
+  }
+
+  .secedit-row-sub {
+    font-size: 0.72rem;
+  }
+
+  .secedit-actions {
+    flex-direction: column-reverse;
+  }
+
+  .secedit-time-inputs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .secedit-time-inputs label {
+    display: grid;
+    grid-template-columns: 2.2rem 1fr;
+    align-items: center;
+  }
+
+  .secedit-time-inputs input[type="time"] {
+    width: 100%;
+  }
+}
