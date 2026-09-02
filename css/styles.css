@@ -12620,9 +12620,9 @@ input.crf-input[type="number"] {
 .secedit-row {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
+  gap: 0.6rem;
   width: 100%;
-  padding: 0.7rem 0.85rem;
+  padding: 0.65rem 0.8rem;
   border: 1px solid var(--color-border);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.03);
@@ -12652,7 +12652,15 @@ input.crf-input[type="number"] {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  gap: 0.15rem;
+}
+
+.secedit-row-meta {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.1rem 0.8rem;
 }
 
 .secedit-row-title {
@@ -12682,6 +12690,9 @@ input.crf-input[type="number"] {
 }
 
 .secedit-row-sub {
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
   display: flex;
   align-items: center;
   gap: 0.35rem;
@@ -12703,26 +12714,23 @@ input.crf-input[type="number"] {
   opacity: 0.8;
 }
 
-.secedit-row-side {
-  flex: 0 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.3rem;
-}
-
 .secedit-row-num {
+  flex: 0 0 auto;
+  min-width: 3.5rem;
+  text-align: center;
   font-family: var(--font-title);
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--color-text);
-  padding: 0.15rem 0.55rem;
-  border-radius: var(--radius-full);
+  color: var(--item-color);
+  padding: 0.3rem 0.55rem;
+  border-radius: 10px;
   background: rgba(var(--item-color-rgb), 0.16);
+  border: 1px solid rgba(var(--item-color-rgb), 0.28);
   direction: ltr;
 }
 
 .secedit-tag {
+  flex: 0 0 auto;
   font-size: 0.62rem;
   font-weight: 700;
   padding: 0.1rem 0.45rem;
@@ -12733,9 +12741,9 @@ input.crf-input[type="number"] {
 
 .secedit-row-go {
   flex: 0 0 auto;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--color-text-muted);
-  opacity: 0.7;
+  opacity: 0.45;
 }
 
 .secedit-empty {
@@ -12971,13 +12979,23 @@ input.crf-input[type="number"] {
 }
 
 .secedit-time-row {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.45rem 0.6rem;
   padding: 0.65rem;
   border: 1px solid var(--color-border);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.03);
+}
+
+.secedit-time-main {
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem 0.7rem;
 }
 
 .light .secedit-time-row {
@@ -12988,21 +13006,16 @@ input.crf-input[type="number"] {
   border-color: rgba(var(--rgb-danger), 0.5);
 }
 
-.secedit-time-top {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-
 .secedit-days {
-  flex: 1 1 auto;
+  flex: 0 1 auto;
+  min-width: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
+  gap: 0.28rem;
 }
 
 .secedit-day {
-  padding: 0.3rem 0.6rem;
+  padding: 0.3rem 0.55rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-full);
   background: transparent;
@@ -13063,6 +13076,7 @@ input.crf-input[type="number"] {
 
 .secedit-del-time {
   flex: 0 0 auto;
+  align-self: start;
   width: 30px;
   height: 30px;
   display: inline-flex;
@@ -13084,6 +13098,7 @@ input.crf-input[type="number"] {
 
 .secedit-row-error,
 .secedit-row-preview {
+  grid-column: 1 / -1;
   font-size: 0.74rem;
   display: inline-flex;
   align-items: center;
@@ -13166,11 +13181,33 @@ input.crf-input[type="number"] {
     font-size: 0.72rem;
   }
 
+  .secedit-row-num {
+    min-width: 2.9rem;
+    font-size: 0.8rem;
+    padding: 0.28rem 0.4rem;
+  }
+
+  .secedit-row {
+    gap: 0.5rem;
+    padding: 0.6rem 0.65rem;
+  }
+
   .secedit-actions {
     flex-direction: column-reverse;
   }
 
+  .secedit-days {
+    flex: 1 0 100%;
+    gap: 0.25rem;
+  }
+
+  .secedit-day {
+    padding: 0.3rem 0.42rem;
+    font-size: 0.7rem;
+  }
+
   .secedit-time-inputs {
+    flex: 1 0 100%;
     flex-direction: column;
     align-items: stretch;
   }
