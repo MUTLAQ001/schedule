@@ -141,9 +141,9 @@ Object.assign(QU_ScheduleApp, {
             const time = String(c.time || '').replace(/<br\s*\/?>/gi, ' · ') || 'بدون موعد';
             return `<button type="button" class="secedit-row ${this._seIsEdited(c) ? 'is-edited' : ''}" data-id="${this._escapeHTML(c.uniqueId)}" style="--item-color:${color};--item-color-rgb:${this._hexToRgb(group ? group.color : '#8b5cf6')};">
 <span class="secedit-row-main">
-<span class="secedit-row-title">${this._escapeHTML(c.name)}<em>${this._escapeHTML(c.code)}</em></span>
-<span class="secedit-row-sub"><i class="ph ph-user"></i>${this._escapeHTML(c.instructor || 'غير محدد')}</span>
-<span class="secedit-row-sub"><i class="ph ph-clock"></i>${this._escapeHTML(time)}</span>
+<span class="secedit-row-title"><b>${this._escapeHTML(c.name)}</b><em>${this._escapeHTML(c.code)}</em></span>
+<span class="secedit-row-sub"><i class="ph ph-user"></i><span>${this._escapeHTML(c.instructor || 'غير محدد')}</span></span>
+<span class="secedit-row-sub"><i class="ph ph-clock"></i><span>${this._escapeHTML(time)}</span></span>
 </span>
 <span class="secedit-row-side"><span class="secedit-row-num">${this._escapeHTML(String(c.section))}</span>${this._seIsEdited(c) ? '<span class="secedit-tag">معدّلة</span>' : ''}</span>
 <i class="ph ph-caret-left secedit-row-go"></i>
