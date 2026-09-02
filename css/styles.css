@@ -12452,6 +12452,7 @@ input.crf-input[type="number"] {
 
 .secedit {
   flex: 1 1 auto;
+  min-width: 0;
   min-height: 0;
   display: flex;
   flex-direction: column;
@@ -12524,6 +12525,7 @@ input.crf-input[type="number"] {
 .secedit-seg-btn {
   flex: 1 1 0;
   min-width: 0;
+  overflow: hidden;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -12604,6 +12606,7 @@ input.crf-input[type="number"] {
 
 .secedit-list {
   flex: 1 1 auto;
+  min-width: 0;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -12661,6 +12664,12 @@ input.crf-input[type="number"] {
   color: var(--color-text-dark);
   white-space: nowrap;
   overflow: hidden;
+}
+
+.secedit-row-title b {
+  min-width: 0;
+  font-weight: inherit;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -12679,6 +12688,11 @@ input.crf-input[type="number"] {
   font-size: 0.76rem;
   color: var(--color-text-muted);
   white-space: nowrap;
+  overflow: hidden;
+}
+
+.secedit-row-sub > span {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
 }
