@@ -15,7 +15,7 @@
           areAllExpanded: false,
           history: [],
           filters: { days: [], period: 'any', noConflict: false, favOnly: false },
-          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: false, mergeCoursesData: false, highPerformance: false, timeAxisPosition: 'right', timeAxisMigrated: false, closedVisibleMigrated: false, mobileCompactCalendar: true, showEventTimes: false, sidebarPosition: 'left', sidebarWidth: null, customLayout: null, quickAddMode: true, quickAddMigrated: false, courseNotes: {}, favInstructors: [], creditGpa: null, creditTermType: 'regular', creditGraduating: false }
+          userSettings: { theme: 'dark', accentColor: '#8b5cf6', customPalette: {}, showWeekends: false, minTime: '08:00:00', maxTime: '22:00:00', hiddenCourseCodes: [], hideClosedCourses: false, mergeCoursesData: false, highPerformance: false, timeAxisPosition: 'right', timeAxisMigrated: false, closedVisibleMigrated: false, mobileCompactCalendar: true, showEventTimes: false, sidebarPosition: 'left', sidebarWidth: null, customLayout: null, quickAddMode: true, quickAddMigrated: false, courseNotes: {}, sectionOverrides: {}, favInstructors: [], creditGpa: null, creditTermType: 'regular', creditGraduating: false }
         },
         constants: {
           PRESET_COLORS: { purple: '#8b5cf6', blue: '#3b82f6', pink: '#ec4899', green: '#22c55e', orange: '#f97316', red: '#ef4444' },
@@ -140,9 +140,10 @@
         _processAndDisplayData(courses) {
           this.dom.installOverlay.style.display = 'none';
           this.dom.installOverlay.classList.remove('visible');
-          this.state.allCoursesData = courses.map((section, index) => ({
-            ...section, uniqueId: `${section.code}-${section.section}-${index}`, timeSlots: this._parseTimeEntries(section.time)
-          }));
+          this.state.allCoursesData = courses.map((section, index) => {
+            const row = this._applySectionOverride(section);
+            return { ...row, uniqueId: `${section.code}-${section.section}-${index}`, timeSlots: this._parseTimeEntries(row.time) };
+          });
           const coursesByName = {};
           this.state.groupedCourses = this.state.allCoursesData.reduce((acc, course) => {
             if (!acc[course.code]) { acc[course.code] = { name: course.name, code: course.code, sections: [] }; if (!coursesByName[course.name]) coursesByName[course.name] = []; coursesByName[course.name].push(course.code); }
