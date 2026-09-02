@@ -256,7 +256,7 @@ Object.assign(QU_ScheduleApp, {
           const noteBox = `<div class="qv-note-box"><div class="qv-note-head"><span><i class="ph-fill ph-note"></i> ملاحظتي على المقرر</span><button class="qv-note-edit" data-qv="note"><i class="ph ph-pencil-simple"></i>${note ? 'تعديل' : 'إضافة'}</button></div><div class="qv-note-text">${note ? this._escapeHTML(note) : 'لا توجد ملاحظة بعد.'}</div></div>`;
           Swal.fire({
             title: `${this._escapeHTML(section.name)} (${this._escapeHTML(section.code)})`,
-            html: `${conflictBanner}${examDayBanner}<div class="details-status-row" style="justify-content:center;"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status || '')}</span><span class="details-type-chip"><i class="ph ${typeIcon}"></i> ${this._escapeHTML(typeStr || '')}</span><span class="details-type-chip"><i class="ph ph-hash"></i> شعبة ${this._escapeHTML(section.section)}</span></div>
+            html: `${conflictBanner}${examDayBanner}<div class="details-status-row" style="justify-content:center;"><span class="status-badge status-${isOpen ? 'open' : 'closed'}">${this._escapeHTML(section.status || '')}</span><span class="details-type-chip"><i class="ph ${typeIcon}"></i> ${this._escapeHTML(typeStr || '')}</span><span class="details-type-chip"><i class="ph ph-hash"></i> شعبة ${this._escapeHTML(section.section)}</span><button class="details-note-chip ${this._seIsEdited(section) ? 'has-note' : ''}" data-qv="edit"><i class="ph ph-pencil-simple-line"></i> ${this._seIsEdited(section) ? 'معدّلة' : 'تعديل البيانات'}</button></div>
 <div class="details-list" style="margin-top:0.8rem;">${row('ph-user', 'المحاضر', this._escapeHTML(section.instructor || 'غير محدد'))}${row('ph-clock', 'المواعيد', this._escapeHTML(timeStr))}${row('ph-map-pin', 'المكان', this._escapeHTML(section.location || 'غير محدد'))}${row('ph-file-text', 'الاختبار النهائي', this._escapeHTML(section.examPeriodId ? this._examSlotText(section.examPeriodId) : 'لا يوجد'))}</div>
 ${this._watchCardHTML(section)}${noteBox}${altsBlock}
 <div class="qv-actions"><button class="qv-btn" data-qv="crn"><i class="ph ph-copy"></i> نسخ رقم الشعبة</button><button class="qv-btn qv-fav-btn ${isFav ? 'on' : ''}" data-qv="fav"><i class="${isFav ? 'ph-fill' : 'ph'} ph-star"></i> ${isFav ? 'محاضر مفضل' : 'أضف للمفضلين'}</button><button class="qv-btn ${isSelected ? 'danger' : 'primary'}" data-qv="toggle"><i class="ph ${isSelected ? 'ph-trash' : 'ph-plus'}"></i> ${isSelected ? 'إزالة من الجدول' : 'إضافة للجدول'}</button></div>`,
@@ -277,6 +277,7 @@ ${this._watchCardHTML(section)}${noteBox}${altsBlock}
               });
               popup.querySelector('[data-qv="fav"]')?.addEventListener('click', () => { Swal.close(); this._toggleFavInstructor(section.instructor); });
               popup.querySelector('[data-qv="note"]')?.addEventListener('click', () => { Swal.close(); this._editCourseNote(section.code); });
+              popup.querySelector('[data-qv="edit"]')?.addEventListener('click', () => { Swal.close(); this._showSectionEditor(section.uniqueId); });
               popup.querySelector('[data-qv="toggle"]')?.addEventListener('click', () => {
                 Swal.close();
                 if (isSelected) this._removeWithUndo(section.uniqueId, schedule);
