@@ -140,12 +140,14 @@ Object.assign(QU_ScheduleApp, {
             const color = group ? group.color : 'var(--color-primary)';
             const time = String(c.time || '').replace(/<br\s*\/?>/gi, ' · ') || 'بدون موعد';
             return `<button type="button" class="secedit-row ${this._seIsEdited(c) ? 'is-edited' : ''}" data-id="${this._escapeHTML(c.uniqueId)}" style="--item-color:${color};--item-color-rgb:${this._hexToRgb(group ? group.color : '#8b5cf6')};">
+<span class="secedit-row-num">${this._escapeHTML(String(c.section))}</span>
 <span class="secedit-row-main">
-<span class="secedit-row-title"><b>${this._escapeHTML(c.name)}</b><em>${this._escapeHTML(c.code)}</em></span>
+<span class="secedit-row-title"><b>${this._escapeHTML(c.name)}</b><em>${this._escapeHTML(c.code)}</em>${this._seIsEdited(c) ? '<span class="secedit-tag">معدّلة</span>' : ''}</span>
+<span class="secedit-row-meta">
 <span class="secedit-row-sub"><i class="ph ph-user"></i><span>${this._escapeHTML(c.instructor || 'غير محدد')}</span></span>
 <span class="secedit-row-sub"><i class="ph ph-clock"></i><span>${this._escapeHTML(time)}</span></span>
 </span>
-<span class="secedit-row-side"><span class="secedit-row-num">${this._escapeHTML(String(c.section))}</span>${this._seIsEdited(c) ? '<span class="secedit-tag">معدّلة</span>' : ''}</span>
+</span>
 <i class="ph ph-caret-left secedit-row-go"></i>
 </button>`;
           }).join('') : `<p class="secedit-empty"><i class="ph ph-magnifying-glass"></i>${st.q ? 'لا توجد شعبة مطابقة لبحثك.' : st.scope === 'mine' ? 'جدولك فارغ — أضف شعباً أو اختر «كل الشعب».' : 'لا توجد شعب معدّلة بعد.'}</p>`;
@@ -277,11 +279,14 @@ ${edited ? `<div class="secedit-foot"><span><i class="ph ph-pencil-simple-line">
               .filter(x => x.d < 5 || showWeekend || r.days.includes(x.d))
               .map(x => `<button type="button" class="secedit-day ${r.days.includes(x.d) ? 'on' : ''}" data-row="${i}" data-day="${x.d}">${x.label}</button>`).join('');
             return `<div class="secedit-time-row ${err ? 'has-error' : ''}">
-<div class="secedit-time-top"><div class="secedit-days">${days}</div><button type="button" class="secedit-del-time" data-row="${i}" aria-label="حذف الموعد"><i class="ph ph-trash"></i></button></div>
+<div class="secedit-time-main">
+<div class="secedit-days">${days}</div>
 <div class="secedit-time-inputs">
 <label><span>من</span><input type="time" data-row="${i}" data-t="start" value="${this._escapeHTML(r.start)}"></label>
 <label><span>إلى</span><input type="time" data-row="${i}" data-t="end" value="${this._escapeHTML(r.end)}"></label>
 </div>
+</div>
+<button type="button" class="secedit-del-time" data-row="${i}" aria-label="حذف الموعد"><i class="ph ph-trash"></i></button>
 ${err ? `<span class="secedit-row-error"><i class="ph ph-warning-circle"></i> ${err}</span>` : `<span class="secedit-row-preview">${this._escapeHTML(this._seTimeString([r]))}</span>`}
 </div>`;
           }).join('');
