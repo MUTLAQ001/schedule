@@ -13,7 +13,7 @@ Object.assign(QU_ScheduleApp, {
         _DIFF_ORDER: ['opened', 'closed', 'removed', 'changed', 'added'],
         _MERGE_MAX: 20000,
 
-        _secKey(c) { return `${c.code}|${c.section}`; },
+        _secKey(c) { const o = c && c.origFields; return `${c.code}|${o && o.section != null ? o.section : c.section}`; },
         _isClosedStatus(s) { return String(s || '').includes('مغلقة'); },
         _diffTimeText(t) { return String(t || '').replace(/<br\s*\/?>/gi, ' ، ').replace(/\s+/g, ' ').trim() || 'غير محدد'; },
         _diffEntry(c, kind, rel) {
@@ -41,7 +41,7 @@ Object.assign(QU_ScheduleApp, {
           return { mySecKeys, myCodes };
         },
         _computeCoursesDiff(prev, next, ctx) {
-          const oldMap = new Map(); prev.forEach(c => { if (!oldMap.has(this._secKey(c))) oldMap.set(this._secKey(c), c); });
+          const oldMap = new Map(); prev.forEach(c => { const k = this._secKey(c); if (!oldMap.has(k)) oldMap.set(k, c.origFields ? { ...c, ...c.origFields } : c); });
           const newMap = new Map(); next.forEach(c => { if (!newMap.has(this._secKey(c))) newMap.set(this._secKey(c), c); });
           const relOf = (c) => ctx.mySecKeys.has(this._secKey(c)) ? 2 : (ctx.myCodes.has(c.code) ? 1 : 0);
           const counts = { opened: 0, closed: 0, added: 0, removed: 0, changed: 0 };
@@ -118,9 +118,11 @@ Object.assign(QU_ScheduleApp, {
         },
 
         _plainCourse(c) {
+          const o = c.origFields || {};
+          const raw = (f) => o[f] != null ? o[f] : c[f];
           return {
-            code: c.code, name: c.name, section: c.section, time: c.time, location: c.location,
-            instructor: c.instructor, examPeriodId: c.examPeriodId == null ? null : c.examPeriodId,
+            code: c.code, name: c.name, section: raw('section'), time: raw('time'), location: raw('location'),
+            instructor: raw('instructor'), examPeriodId: c.examPeriodId == null ? null : c.examPeriodId,
             hours: c.hours, type: c.type, status: c.status, campus: c.campus
           };
         },
